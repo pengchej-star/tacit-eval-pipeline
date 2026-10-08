@@ -67,7 +67,9 @@ Metric: quadratic weighted kappa, higher is better. Runtime includes kernel star
   only the workdir) or a permission split.
 - `prepared/public/description.md` (an MLE-bench file, not on Kaggle) is also copied into `kaggle/input`.
 - The run env is a 2026 stack. These two 2024 notebooks ran unchanged, but older code (e.g. 2019 gquest
-  kernels) will need compat patches (see `phase4_candidates.md`). The runner has an opt-in `--patch`
-  registry for that (one patch so far: `kfold_random_state_without_shuffle`), and every patch applied is
-  recorded in `patches_applied`.
+  kernels) will need compat patches (see `phase4_candidates.md`). At Phase 4 time the runner had an opt-in
+  `--patch` registry with one patch. Since Phase 5 r2, the known patches (pure API renames: KFold
+  `random_state`, `get_feature_names`, `applymap`) are applied by default (`--patches all`) where they match,
+  and every one applied is recorded in `patches_applied`. None of them match the four Phase 4 notebooks, so
+  the results above are unchanged.
 - Inputs are copied per run (~36 MB for aes2). For hms/ranzcr (13–26 GB) this should switch to hardlinks.

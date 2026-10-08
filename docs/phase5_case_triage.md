@@ -121,44 +121,62 @@ What the numbers say:
 ## Validating the EASY label: does it actually run?
 
 I sampled 15 EASY cases (seed 0): 8 aes2 and 7 gquest, i.e. 27 distinct versions. Each version was executed
-with `src/run_version.py` (CPU, 15-min timeout, tag `phase5_easy_sample` in `results/runs.jsonl`). Failures
-were **not fixed**. The one exception is the existing opt-in patch `kfold_random_state_without_shuffle`: a
-version failing with exactly that error was re-run once with it (tag `phase5_easy_sample_patched`).
+with `src/run_version.py` (CPU, 15-min timeout, 3 runs in parallel, tag `phase5_easy_sample`) in two rounds,
+both kept in `results/runs.jsonl` with a `run_round` field:
+
+- **r1**: the original `kaggle-run` env. Runs were unpatched; a version failing with exactly the KFold error
+  was retried once with that patch (tag `phase5_easy_sample_patched`).
+- **r2**: after the env fixes (+`wordcloud`, `pyarrow`, `gensim`, NLTK `punkt_tab`/`punkt`/`stopwords`/
+  `wordnet`) and with all known compat patches auto-applied: `kfold_random_state_without_shuffle`,
+  `sklearn_get_feature_names_out`, `pandas_applymap_to_map`. These are pure API renames, and each one applied
+  is recorded in `patches_applied`. Same seed, so the same 15 cases.
 
 The sample is clustered because EASY cases are: the 7 gquest cases come from only 2 kernels (6858560, 7676170),
 and 4 of the 8 aes2 cases come from kernel 56245635.
 
-| | ran as-is | ran with the existing patch |
-|---|---:|---:|
-| versions (27) | **2** (7%) | 4 (15%) |
-| cases, both versions OK (15) | **0** | 1 (gquest 7676170 v6→v7) |
+| | r1 as-is | r1 + KFold patch retry | **r2** (env fixes + auto patches) |
+|---|---:|---:|---:|
+| versions OK (of 27) | 2 (7%) | 4 (15%) | **13 (48%)** |
+| cases with both versions OK (of 15) | 0 | 1 | **5 (33%)** |
 
-Versions that ran: aes2 54551628 v23 (QWK 0.726, 237 s), aes2 56245635 v3 (0.642, 82 s), and with the patch
-gquest 7676170 v6 (0.098) and v7 (0.094), about 10 s each. All took far less than 15 min.
+In r2, 9 of the 13 OK versions needed a compat patch: all 8 gquest 7676170 versions (KFold, plus
+`get_feature_names` from v12 on), and aes2 55144245 v26 (`applymap`). The 5 cases that ran:
+- gquest 7676170 v6→v7, v12→v13, v16→v17, v24→v25;
+- aes2 54551628 v22→v23.
 
-**Failure causes** (first attempt, 25 failed versions):
+Two caveats on the r2 OK runs:
+- **aes2 54551628 v22 ran, but its predictions are near-uniform over 1–6** (QWK 0.013 here, 0.0 on Kaggle). It
+  is a placeholder version, so this case is not a meaningful before/after pair.
+- **aes2 56245635 v3 scored 0.642 in r1 and 0.628 in r2.** The notebook is not deterministic, so single runs of
+  it are noisy.
 
-| cause | versions | details |
-|---|---:|---|
-| package missing from our `kaggle-run` env | 12 | `wordcloud` ×9 (used only for EDA word-cloud plots), `pyarrow` ×2 (needed by polars `.to_pandas()`), `gensim` ×1 |
-| library API removed in the 2026 stack | 10 | scikit-learn `CountVectorizer.get_feature_names()` ×6 (removed in 1.2), `KFold(random_state=…)` without shuffle ×2 (fixed by the existing patch), pandas `DataFrame.applymap` ×2 (removed in pandas 3) |
-| NLTK data missing | 2 | NLTK ≥ 3.9 needs `punkt_tab`; the env only has `punkt` |
-| bug in the notebook itself | 1 | aes2 56245635 v2 uses `test` but defines `test_data`. This version has no Kaggle score, so it most likely failed on Kaggle too |
+**Failure causes.** r1 = first attempt, 25 failed versions; r2 = 14 failed versions.
+
+| cause | r1 | r2 | details |
+|---|---:|---:|---|
+| package missing from our env | 12 | 5 | r1: `wordcloud` ×9, `pyarrow` ×2, `gensim` ×1 (all fixed). r2: gquest 6858560 now stops at `pyLDAvis`. Its next import is Keras, and the env has no TensorFlow/Keras at all |
+| library API removed in the 2026 stack | 10 | 4 | r1: `get_feature_names` ×6, `KFold(random_state)` ×2, `applymap` ×2 (all fixed by patches). r2: aes2 56245635 v4/v12/v13/v14 fail in an EDA plot: newer seaborn/matplotlib reject the `kde=` keyword |
+| NLTK data missing | 2 | 0 | `punkt_tab` (fixed) |
+| out of memory | 0 | 2 | aes2 54081903 v26/v27 (polars feature engineering). The kernel was killed by the 32 GB job limit (cgroup `oom_kill` = 2) while 3 runs shared the node. In r1 these failed earlier, on `pyarrow` |
+| timeout (15 min) | 0 | 1 | aes2 54826193 v3 (Kaggle runtime 3.8 min). In r1 it failed earlier, on NLTK data |
+| bug in the notebook itself | 1 | 2 | aes2 56245635 v2 (`test` undefined) and 55144245 v25 (drops a missing `score` column). Neither has a Kaggle score; v26 of 55144245 runs fine |
 
 **How accurate was the static label?**
 
-- **What it claims held for all 27 versions.** No failure came from an external input, a GPU, the internet, or
-  a timeout.
-- **"EASY" does not mean "runs as-is".** Only 2 of 27 versions (0 of 15 cases) ran unchanged, because the
-  static scan does not check (a) whether every imported package and data file exists in our env, or (b) API
-  breakage between the notebook's era and our 2026 stack.
-- **Most failures look cheap to remove**, but per the brief none of these fixes were tried:
-  - add `wordcloud`, `gensim`, `pyarrow` and NLTK `punkt_tab` to the env (14 of 25 failures);
-  - add two more recorded compat patches, `get_feature_names` → `get_feature_names_out` and
-    `applymap` → `map` (8 more).
+- **What it checks held in both rounds.** No failure came from an external input, a GPU, or the internet.
+  The r2 timeout and OOM are about our CPU/memory budget (3 parallel runs on a 32 GB job), not hidden GPU
+  or training needs.
+- **"EASY" still does not mean "runs as-is".** It means "no blocker the static scan can see". Fixing the env
+  and adding three rename patches took the sample from 2/27 to 13/27 versions (0/15 → 5/15 cases). Every fix
+  exposed the next problem, e.g. `wordcloud` → `pyLDAvis` → Keras, or `pyarrow` → OOM.
+- **What is left:**
+  - EDA/plotting code written for older seaborn/matplotlib (4);
+  - packages we still lack: `pyLDAvis`, TensorFlow/Keras (5);
+  - memory/time limits with parallel runs (3);
+  - real bugs in unscored versions (2).
 
-  Those versions might still fail later in the notebook. For example, gquest 6858560 calls
-  `train[...].sample(6079)`, hard-coding Kaggle's train size, while MLE-bench's train has 5,471 rows. So it
-  would fail even with `wordcloud` installed.
-- **Requiring a Kaggle score helps.** A version that was Kaggle-scored ran end to end on Kaggle. The one genuine
-  code bug was in an unscored version. `cases.csv` has `both_kaggle_scored` to filter on.
+  Plot-only failures would be avoided by stubbing plotting, but that changes the notebook, so it was not done.
+- **Requiring a Kaggle score helps.** Both genuine code bugs were in versions without a Kaggle score. A
+  Kaggle-scored version ran end to end on Kaggle. `cases.csv` has `both_kaggle_scored` to filter on.
+- gquest 6858560 also hard-codes Kaggle's train size (`train[...].sample(6079)`; MLE-bench train has 5,471
+  rows), so it would fail later even with every package installed.

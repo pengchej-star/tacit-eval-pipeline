@@ -49,7 +49,7 @@ mlebench grade-sample /data/user_data/$USER/mlebench-cache/learning-agency-lab-a
 
 ```bash
 python src/run_version.py --comp learning-agency-lab-automated-essay-scoring-2 --key-id 55844901 --version 2 --timeout 900
-# optional: --patch kfold_random_state_without_shuffle   (opt-in compat patch, recorded in the results row)
+# compat patches (API renames) are applied by default and recorded; --patches none to disable
 ```
 
 This creates `/data/user_data/$USER/runs/<comp>__<key_id>_vNNN__<time>/` (read-only copies of `prepared/public`
@@ -103,14 +103,21 @@ Triage (details in `triage/` and the docs):
 
   \* almost all *unverified*: the input's Kaggle ref was not found, or its access check was rate-limited.
   Many are probably downloadable (see `docs/phase5_case_triage.md`).
-- **EASY ≠ runs as-is.** Of 15 sampled EASY cases (aes2 + gquest), **0** ran unchanged and 1 ran with the
-  existing compat patch (2 of 27 versions ran unchanged). Failures were all environment problems:
-  - 12 versions: packages missing from our env (`wordcloud`, `pyarrow`, `gensim`);
-  - 10 versions: removed sklearn/pandas APIs (`get_feature_names`, `KFold(random_state)`, `applymap`);
-  - 2 versions: NLTK data missing;
-  - 1 version: a real bug in the notebook.
+- **EASY ≠ runs as-is.** The same 15 sampled EASY cases (aes2 + gquest) were executed twice (`run_round` in
+  `results/runs.jsonl`):
 
-  None failed because of what the static label checks (external inputs, GPU, internet, runtime).
+  | round | versions OK (of 27) | cases OK (of 15) |
+  |---|---:|---:|
+  | r1: original env, no patches (KFold patch on retry) | 2 (4) | 0 (1) |
+  | r2: + `wordcloud`/`pyarrow`/`gensim`/NLTK data, all compat patches auto-applied | **13** | **5** |
+
+  Remaining r2 failures (14 versions):
+  - 5 × still-missing packages (`pyLDAvis`; no TensorFlow/Keras in the env);
+  - 4 × EDA plots broken by newer seaborn/matplotlib;
+  - 2 × out of memory and 1 × 15-min timeout, with 3 parallel runs on a 32 GB CPU job;
+  - 2 × real bugs in versions that have no Kaggle score.
+
+  None failed because of what the static label checks (external inputs, GPU, internet).
 
 ## Known limitations
 
@@ -118,8 +125,8 @@ Triage (details in `triage/` and the docs):
   train/test (e.g. aes2 test = 1,731 held-out essays vs Kaggle's ~8k hidden ones). Only compare scores produced
   by this pipeline, and always re-run the expert baseline.
 - **Older code may need compatibility patches.** The run env is a 2026 stack (pandas 3, scikit-learn 1.9).
-  Patches are opt-in (`--patch`), regex-based, and recorded in `patches_applied`. The env also lacks some
-  packages that Kaggle's image has.
+  Known patches (pure API renames) are auto-applied (`--patches all`, default) where they match and recorded
+  in `patches_applied`. The env still lacks some packages that Kaggle's image has (e.g. TensorFlow).
 - **gquest mostly relies on pretrained weights** (BERT/USE/... from external Kaggle datasets). Its runnable,
   self-contained notebooks are few and weak (Kaggle score ≤ 0.14, best 0.31 with a small MLP).
 - **No container isolation.** The notebook only gets copies of `prepared/public`, and nothing points at the
@@ -136,9 +143,10 @@ Triage (details in `triage/` and the docs):
 2. Resolve external inputs exactly with Meta Kaggle's `KernelVersionDatasetSources` table (exact
    `owner/dataset` per kernel version) instead of searching Kaggle by folder name. That will turn the
    "unverified" `MISSING_EXTERNAL_INPUT` labels into confirmed missing or downloadable.
-3. Widen the runnable set. The EASY validation shows the cheapest wins:
-   - add `pyarrow`, `wordcloud`, `gensim` and NLTK `punkt_tab` to `kaggle-run`;
-   - add two recorded compat patches (`get_feature_names` → `get_feature_names_out`, `applymap` → `map`).
+3. Widen the runnable set. After round r2, the next cheap steps are:
+   - add `pyLDAvis` and TensorFlow/Keras to `kaggle-run`;
+   - run memory-heavy notebooks one at a time (or on a bigger job);
+   - prefer cases where both versions have a Kaggle score.
 
    Then download the external datasets that are still available (`NEEDS_EXTERNAL_DOWNLOAD`) into
    `kaggle/input`, and use a GPU node for `NEEDS_GPU` / `NEEDS_TRAINING`.
