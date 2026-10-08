@@ -34,8 +34,8 @@ repeat runs gave identical scores.
 
 **The 7 paired competitions.**
 - **Ready**: aes2 and gquest are prepared, and grading is verified.
-- **Downloadable, not prepared yet**: hms and ranzcr have accepted rules and work to download, at 20 GB and
-  13 GB zipped.
+- **Downloadable, not prepared yet**: hms (20 GB zipped) and ranzcr (13 GB zipped). Rules are accepted and the
+  download works.
 - **No public grader**: amex, commonlit and equity (see §4).
 
 **Case triage** (static, aes2 / gquest / hms / ranzcr):
