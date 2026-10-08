@@ -11,7 +11,7 @@ Steps
      ../input/<comp> already work because the cwd is kaggle/working. No other change is made, unless a
      compatibility patch is requested with --patch (recorded in patches_applied).
   4. Execute with papermill on the `kaggle-run` kernel (so IPython magics like %%capture work), with a
-     per-cell and an overall timeout. The executed notebook and the log are kept in the workdir.
+     wall-clock timeout for the whole run (the process group is killed on timeout). The executed notebook and the log are kept in the workdir.
   5. Find submission.csv in kaggle/working and grade it with mlebench's grade_csv, the function
      behind `mlebench grade-sample`.
   6. Append one JSON row to results/runs.jsonl.
@@ -25,11 +25,13 @@ Example (run from the repo root, in the env that has mlebench installed):
 
 import argparse
 import datetime as dt
+import fcntl
 import getpass
 import json
 import os
 import re
 import shutil
+import signal
 import socket
 import stat
 import subprocess
@@ -146,7 +148,8 @@ def main():
     ap.add_argument("--version", type=int, help="TraceML version_number")
     ap.add_argument("--code-file", type=Path, help="run this .ipynb/.py instead of a TraceML version")
     ap.add_argument("--patch", action="append", default=[], choices=sorted(PATCHES), help="compat patch to apply")
-    ap.add_argument("--timeout", type=int, default=3600, help="seconds, per cell and (+5 min) for the whole run")
+    ap.add_argument("--timeout", type=int, default=3600, help="wall-clock seconds for the whole notebook run")
+    ap.add_argument("--tag", default="", help="free-text label stored in the results row (e.g. a batch name)")
     ap.add_argument("--human-dir", type=Path, default=USER_DATA / "traceml/extracted/human")
     ap.add_argument("--traceml-dir", type=Path, default=USER_DATA / "traceml/hf")
     ap.add_argument("--mlebench-cache", type=Path, default=USER_DATA / "mlebench-cache")
@@ -185,16 +188,21 @@ def main():
     t0 = time.time()
     status, error = None, ""
     with open(log, "w") as fh:
+        # own process group, so a timeout also kills the Jupyter kernel that papermill started
+        proc = subprocess.Popen(cmd, cwd=working, env=env, stdout=fh, stderr=subprocess.STDOUT, start_new_session=True)
         try:
-            rc = subprocess.run(cmd, cwd=working, env=env, stdout=fh, stderr=subprocess.STDOUT,
-                                timeout=args.timeout + 300).returncode
+            rc = proc.wait(timeout=args.timeout)
         except subprocess.TimeoutExpired:
+            os.killpg(proc.pid, signal.SIGKILL)
+            proc.wait()
             rc, status = None, "TIMEOUT"
     runtime = round(time.time() - t0, 1)
     log_text = log.read_text(errors="replace")
     if status is None and rc != 0:
         status = "TIMEOUT" if re.search(r"CellTimeoutError|Cell execution timed out", log_text) else "EXEC_FAILED"
-    if status:
+    if status == "TIMEOUT":
+        error = f"killed after {args.timeout} s\n" + tail(log_text, n_lines=10)
+    elif status:
         error = tail(log_text)
 
     submission, report = None, {}
@@ -230,11 +238,14 @@ def main():
         "workdir": str(workdir),
         "host": socket.gethostname(),
         "run_env": str(args.run_env),
+        "tag": args.tag,
         "error_tail": error,
     }
     args.results.parent.mkdir(parents=True, exist_ok=True)
-    with open(args.results, "a") as fh:
+    with open(args.results, "a") as fh:  # locked: several runs may append at once
+        fcntl.flock(fh, fcntl.LOCK_EX)
         fh.write(json.dumps(row) + "\n")
+        fcntl.flock(fh, fcntl.LOCK_UN)
     print(f"[done] status={status} score={row['score']} kaggle_score={row['kaggle_score']} runtime_s={runtime}")
     if error:
         print("[error_tail]\n" + error)
