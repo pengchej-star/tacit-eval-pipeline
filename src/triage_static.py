@@ -7,7 +7,9 @@ Outputs
 Version status (first matching rule wins, worst first):
   NO_CODE                  no code file in the TraceML tarball, or no code cells
   NON_PYTHON               notebook language is not Python (e.g. R)
-  MISSING_EXTERNAL_INPUT   reads /kaggle/input/<x> (x != the competition) that we cannot find or access
+  MISSING_EXTERNAL_INPUT   reads /kaggle/input/<x> (x != the competition) that we cannot find or access;
+                           missing_unverified=True when no Kaggle ref was found for <x> at all (name search
+                           only), so the input may still exist -- see docs/phase5_case_triage.md
   NEEDS_INTERNET           pip install from PyPI, wget/curl/requests, HF-hub / torchvision / timm downloads
   NEEDS_GPU                cuda / device='cuda' / GPU tree methods / TPU ...
   NEEDS_TRAINING           deep-learning training, or Kaggle runtime > 15 min (or unknown)
@@ -118,6 +120,7 @@ class Kaggle:
             self.cache.setdefault(k, {})
         self.comp_probe = json.loads(comp_probe_path.read_text()) if comp_probe_path.exists() else {}
         self.workers, self.lock, self.local = workers, threading.Lock(), threading.local()
+        self.deadline = float("inf")  # wall-clock time after which no new API calls are made
 
     def api(self):
         if not hasattr(self.local, "api"):
@@ -140,17 +143,21 @@ class Kaggle:
         with cf.ThreadPoolExecutor(self.workers) as ex:
             futs = {ex.submit(self._safe, fn, k): k for k in todo}
             for fut in cf.as_completed(futs):
+                res = fut.result()
+                if res.get("skipped"):  # API budget used up: leave uncached so a later run can fill it in
+                    continue
                 with self.lock:
-                    self.cache[section][futs[fut]] = fut.result()
+                    self.cache[section][futs[fut]] = res
                 done += 1
                 if done % 50 == 0:
                     print(f"    {label}: {done}/{len(todo)}", flush=True)
                     self.save()
         self.save()
 
-    @staticmethod
-    def _safe(fn, key, tries=5):
+    def _safe(self, fn, key, tries=5):
         for attempt in range(tries):
+            if time.time() > self.deadline:
+                return {"ok": False, "skipped": True}
             try:
                 return fn(key)
             except Exception as e:  # noqa: BLE001
@@ -236,7 +243,7 @@ class Kaggle:
             return s["hits"], "search"
         return [], "unresolved"
 
-    def resolve_all(self, needs):
+    def resolve_all(self, needs, search=True):
         """needs: list of (kernel_ref, name). Fills the search and access caches."""
         pool = {}
         for md in self.cache["kernel_meta"].values():
@@ -246,7 +253,11 @@ class Kaggle:
         comp_slugs = set(self.comp_probe)
         unresolved = sorted({n for k, n in needs if n not in comp_slugs
                              and self.candidates(k, n, pool)[1] == "unresolved"})
-        self._parallel("search", unresolved, self._search, "exact-slug search")
+        if search:
+            self._parallel("search", unresolved, self._search, "exact-slug search")
+        else:  # names not in any kernel's metadata (and not searched before) stay unresolved = unverified
+            print(f"[kaggle] exact-slug search skipped (--no-search); {len(unresolved)} names not in metadata "
+                  f"({sum(n in self.cache['search'] for n in unresolved)} searched in an earlier run)", flush=True)
         refs = set()
         for k, n in needs:
             if n in comp_slugs:
@@ -256,17 +267,24 @@ class Kaggle:
         return pool
 
     def status(self, kernel_ref, name, pool):
-        """Return (available: bool, how: str) for one external folder name."""
+        """Return (available, how, verified) for one external folder name.
+
+        verified=False means no Kaggle ref was found for the folder name at all, so "missing" is a guess:
+        the name search only sees public items on its first result page.
+        """
         if name in self.comp_probe:  # another competition's data
             ok = self.comp_probe[name].get("download_status") == 200
-            return ok, f"competition:{name}" + ("" if ok else " (rules not accepted)")
+            return ok, f"competition:{name}" + ("" if ok else " (rules not accepted)"), True
         cands, src = self.candidates(kernel_ref, name, pool)
         if not cands:
-            return False, f"{name}: not found"
-        for c in cands:
-            if (self.cache["ref_access"].get(c) or {}).get("ok"):
-                return True, c
-        return False, f"{cands[0]}: not accessible ({src})"
+            return False, f"{name}: no Kaggle ref found (unverified)", False
+        checks = [self.cache["ref_access"].get(c) for c in cands]
+        for c, chk in zip(cands, checks):
+            if (chk or {}).get("ok"):
+                return True, c, True
+        if any(chk is None or chk.get("http_status") == 429 for chk in checks):
+            return False, f"{cands[0]}: access not checked (rate limit / API budget) (unverified)", False
+        return False, f"{cands[0]}: not accessible ({src})", True
 
 
 def sources_by_folder(md):
@@ -290,7 +308,8 @@ def version_status(r):
     if r["language"] != "python":
         return "NON_PYTHON", f"language={r['language']}"
     if r["missing_external"]:
-        return "MISSING_EXTERNAL_INPUT", "missing: " + r["missing_external"][:150]
+        tag = "unverified: no Kaggle ref found or access not checked" if r["missing_unverified"] else "not accessible"
+        return "MISSING_EXTERNAL_INPUT", f"missing ({tag}): " + r["missing_external"][:150]
     if r["internet"]:
         return "NEEDS_INTERNET", "pip install / download / pretrained weights from the internet"
     if r["gpu"]:
@@ -317,6 +336,10 @@ def main():
     ap.add_argument("--comp-probe", type=Path, default=USER_DATA / "traceml/kaggle_probe.json",
                     help="competition probe cache written by triage_competitions.py")
     ap.add_argument("--no-kaggle", action="store_true", help="skip API calls; every external input is 'unknown'")
+    ap.add_argument("--api-budget-min", type=float, default=float("inf"),
+                    help="stop making new Kaggle API calls after this many minutes; the rest stay unverified")
+    ap.add_argument("--no-search", action="store_true",
+                    help="skip the (rate-limited) exact-slug search; names not in kernel metadata stay unverified")
     ap.add_argument("--out-dir", type=Path, default=REPO / "triage")
     args = ap.parse_args()
 
@@ -347,6 +370,7 @@ def main():
             row["has_code"] = not row["empty_code"]
         rows.append(row)
     V = pd.DataFrame(rows)
+    V["kernel_ref"] = V.kernel_ref.fillna("")  # a few key_ids have no slug in kernels.parquet
     for col in ("n_external", "code_lines"):
         V[col] = V[col].fillna(0).astype(int)
     print(f"scanned {len(V)} versions ({V.has_code.sum()} with code) in {V.comp.nunique()} comps", flush=True)
@@ -356,30 +380,34 @@ def main():
     if args.no_kaggle:
         V["missing_external"] = V.external_inputs.fillna("")
         V["available_external"] = ""
+        V["missing_unverified"] = V.n_external > 0
     else:
         kg = Kaggle(args.kaggle_cache, args.comp_probe)
-        kg.kernel_sources(sorted({kr for kr in V.kernel_ref.dropna()}))
-        pool = kg.resolve_all(needs)
+        kg.deadline = time.time() + 60 * args.api_budget_min
+        kg.kernel_sources(sorted({kr for kr in V.kernel_ref if kr}))
+        pool = kg.resolve_all(needs, search=not args.no_search)
         status_cache, ext_rows = {}, []
         for kr, n in sorted(set(needs)):
-            ok, how = kg.status(kr, n, pool)
-            status_cache[(kr, n)] = (ok, how)
-        miss, avail = [], []
+            status_cache[(kr, n)] = kg.status(kr, n, pool)
+        miss, avail, unver = [], [], []
         for kr, ext in zip(V.kernel_ref, V.external_inputs.fillna("")):
             names = [n for n in ext.split(";") if n]
-            miss.append(";".join(n for n in names if not status_cache[(kr, n)][0]))
+            missing = [n for n in names if not status_cache[(kr, n)][0]]
+            miss.append(";".join(missing))
             avail.append(";".join(status_cache[(kr, n)][1] for n in names if status_cache[(kr, n)][0]))
-        V["missing_external"], V["available_external"] = miss, avail
-        # one row per unique external folder name, for the docs
-        for (kr, n), (ok, how) in status_cache.items():
-            ext_rows.append({"kernel_ref": kr, "folder": n, "available": ok, "resolved_as": how})
+            # unverified = every missing input is one we could not resolve to a Kaggle ref at all
+            unver.append(bool(missing) and all(not status_cache[(kr, n)][2] for n in missing))
+        V["missing_external"], V["available_external"], V["missing_unverified"] = miss, avail, unver
+        # one row per (kernel, external folder name), for the docs
+        for (kr, n), (ok, how, verified) in status_cache.items():
+            ext_rows.append({"kernel_ref": kr, "folder": n, "available": ok, "verified": verified, "resolved_as": how})
         pd.DataFrame(ext_rows).sort_values(["available", "folder"]).to_csv(args.out_dir / "external_inputs.csv", index=False)
 
     V["status"], V["reason"] = zip(*[version_status(r) for r in V.to_dict("records")])
     args.out_dir.mkdir(parents=True, exist_ok=True)
     cols = ["comp", "key_id", "version", "author_tier", "kernel_ref", "status", "reason", "has_code", "language",
             "has_kaggle_score", "kaggle_score", "kaggle_runtime_min", "n_external", "external_inputs",
-            "missing_external", "available_external", "dynamic_input_ref", "old_input_layout", "dl_train",
+            "missing_external", "missing_unverified", "available_external", "dynamic_input_ref", "old_input_layout", "dl_train",
             "classical_fit", "load_weights", "gpu", "internet", "writes_submission", "code_lines", "code_file"]
     V[cols].sort_values(["comp", "key_id", "version"]).to_csv(args.out_dir / "versions.csv", index=False)
 
