@@ -1,0 +1,32 @@
+# Secrets
+kaggle.json
+.kaggle/
+*.token
+.env
+*.env
+
+# Data, models, large outputs (keep these under /data/user_data/$USER)
+data/
+*.tar.gz
+*.zip
+*.parquet
+*.csv.gz
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+*.h5
+*.pkl
+workdirs/
+results/*
+!results/runs.jsonl
+
+# Triage CSVs are deliverables and must stay tracked
+!triage/*.csv
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.ipynb_checkpoints/
