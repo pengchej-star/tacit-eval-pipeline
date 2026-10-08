@@ -8,8 +8,9 @@ Steps
      prepared/private is never copied, linked or mentioned to the notebook. Copies (not a directory
      symlink) are used because `<symlink>/../private` would resolve to the real prepared/private.
   3. Rewrite the literal paths /kaggle/input and /kaggle/working to the workdir. Relative paths such as
-     ../input/<comp> already work because the cwd is kaggle/working. No other change is made, unless a
-     compatibility patch is requested with --patch (recorded in patches_applied).
+     ../input/<comp> already work because the cwd is kaggle/working. The only other changes are the
+     known compatibility patches (API renames, see PATCHES): applied by default wherever their pattern
+     matches (--patches none to disable), and every one applied is recorded in patches_applied.
   4. Execute with papermill on the `kaggle-run` kernel (so IPython magics like %%capture work), with a
      wall-clock timeout for the whole run (the process group is killed on timeout). The executed notebook and the log are kept in the workdir.
   5. Find submission.csv in kaggle/working and grade it with mlebench's grade_csv, the function
@@ -43,7 +44,8 @@ import nbformat
 USER_DATA = Path("/data/user_data") / getpass.getuser()
 REPO = Path(__file__).resolve().parents[1]
 
-# Compatibility patches: applied only when requested with --patch, and always recorded.
+# Compatibility patches: pure API renames between the notebooks' library versions and our 2026 stack.
+# Applied wherever the pattern matches (default --patches all) and always recorded with their count.
 # Each must keep the notebook's logic; the "why" explains why it is behaviour-preserving.
 PATCHES = {
     "kfold_random_state_without_shuffle": dict(
@@ -51,6 +53,18 @@ PATCHES = {
         repl=r"KFold(\1)",
         why="scikit-learn >= 0.24 raises ValueError for KFold(random_state=..., shuffle=False); "
             "random_state had no effect without shuffling, so dropping it keeps the same folds.",
+    ),
+    "sklearn_get_feature_names_out": dict(
+        pattern=r"\.get_feature_names\(([^()]*)\)",
+        repl=r".get_feature_names_out(\1).tolist()",
+        why="scikit-learn 1.2 removed get_feature_names(); get_feature_names_out() returns the same names as an "
+            "array, and .tolist() restores the old list return type.",
+    ),
+    "pandas_applymap_to_map": dict(
+        pattern=r"\.applymap\(",
+        repl=".map(",
+        why="pandas 3 removed DataFrame.applymap / Styler.applymap; DataFrame.map / Styler.map (pandas >= 2.1) "
+            "are the same element-wise operation under the new name.",
     ),
 }
 ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
@@ -93,7 +107,9 @@ def stage_inputs(public: Path, dest: Path) -> int:
 
 
 def rewrite(nb, workdir: Path, patch_names: list[str]):
-    """Rewrite Kaggle absolute paths and apply requested patches. Returns (n_path_rewrites, patches_applied)."""
+    """Rewrite Kaggle absolute paths and apply the given patches where they match.
+
+    Returns (n_path_rewrites, patches_applied); only patches that changed something are listed."""
     mapping = {"/kaggle/input": str(workdir / "kaggle/input"), "/kaggle/working": str(workdir / "kaggle/working")}
     n_paths = 0
     patch_counts = {name: 0 for name in patch_names}
@@ -109,10 +125,7 @@ def rewrite(nb, workdir: Path, patch_names: list[str]):
             patch_counts[name] += k
         cell.source = src
         cell.outputs, cell.execution_count = [], None
-    unused = [n for n, k in patch_counts.items() if k == 0]
-    if unused:
-        raise ValueError(f"requested patch(es) did not match anything in this notebook: {unused}")
-    applied = [{"name": n, "n_replacements": k, "why": PATCHES[n]["why"]} for n, k in patch_counts.items()]
+    applied = [{"name": n, "n_replacements": k, "why": PATCHES[n]["why"]} for n, k in patch_counts.items() if k]
     return n_paths, applied
 
 
@@ -147,7 +160,10 @@ def main():
     ap.add_argument("--key-id", help="TraceML key_id (= Kaggle kernel id for humans)")
     ap.add_argument("--version", type=int, help="TraceML version_number")
     ap.add_argument("--code-file", type=Path, help="run this .ipynb/.py instead of a TraceML version")
-    ap.add_argument("--patch", action="append", default=[], choices=sorted(PATCHES), help="compat patch to apply")
+    ap.add_argument("--patches", default="all",
+                    help="compat patches: 'all' (default, apply every known patch where it matches), 'none', "
+                         f"or a comma-separated subset of {sorted(PATCHES)}")
+    ap.add_argument("--run-round", default="", help="round label stored in the results row (e.g. r1, r2)")
     ap.add_argument("--timeout", type=int, default=3600, help="wall-clock seconds for the whole notebook run")
     ap.add_argument("--tag", default="", help="free-text label stored in the results row (e.g. a batch name)")
     ap.add_argument("--human-dir", type=Path, default=USER_DATA / "traceml/extracted/human")
@@ -172,7 +188,16 @@ def main():
     n_inputs = stage_inputs(args.mlebench_cache / args.comp / "prepared/public", workdir / "kaggle/input" / args.comp)
     shutil.copy2(code, workdir / f"original{code.suffix}")
     nb = load_notebook(code)
-    n_paths, patches = rewrite(nb, workdir, args.patch)
+    if args.patches == "all":
+        patch_names = sorted(PATCHES)
+    elif args.patches == "none":
+        patch_names = []
+    else:
+        patch_names = [n.strip() for n in args.patches.split(",") if n.strip()]
+        unknown = [n for n in patch_names if n not in PATCHES]
+        if unknown:
+            ap.error(f"unknown patch(es) {unknown}; known: {sorted(PATCHES)}")
+    n_paths, patches = rewrite(nb, workdir, patch_names)
     nb.metadata["kernelspec"] = {"name": args.kernel, "display_name": args.kernel, "language": "python"}
     nb_in, nb_out, log = workdir / "notebook.ipynb", workdir / "executed.ipynb", workdir / "run.log"
     nbformat.write(nb, nb_in)
@@ -239,6 +264,7 @@ def main():
         "host": socket.gethostname(),
         "run_env": str(args.run_env),
         "tag": args.tag,
+        "run_round": args.run_round,
         "error_tail": error,
     }
     args.results.parent.mkdir(parents=True, exist_ok=True)

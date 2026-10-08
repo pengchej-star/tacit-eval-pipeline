@@ -2,11 +2,12 @@
 
 Samples cases with status EASY from triage/cases.csv (fixed seed, a fixed number per comp), runs every
 distinct version of those cases with src/run_version.py (CPU, timeout per run), and prints per-case
-outcomes. Every run is appended to results/runs.jsonl with --tag.
+outcomes. Every run is appended to results/runs.jsonl with --tag and --run-round.
 
-Failures are not fixed. The one exception is the existing opt-in patch in run_version.py: if a run fails with
-the exact error that patch addresses, the version is re-run once with --patch (tagged "<tag>_patched"), and
-both rows are kept.
+Failures are not fixed here. run_version.py applies its known compat patches (pure API renames) by default and
+records them in patches_applied; pass --patches none to measure the unpatched behaviour.
+(Round r1 on 2026-10-08 used an older version of this script, which ran unpatched and retried once with the
+KFold patch on that exact error; those retries are tagged "<tag>_patched".)
 
 Usage:
   python src/validate_easy_sample.py --per-comp learning-agency-lab-automated-essay-scoring-2=8 \
@@ -23,16 +24,12 @@ from pathlib import Path
 import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
-KNOWN_PATCHES = {  # error text -> run_version.py --patch name
-    "Setting a random_state has no effect since shuffle is False": "kfold_random_state_without_shuffle",
-}
 
 
-def run(comp, key_id, version, timeout, tag, patch=None):
+def run(comp, key_id, version, timeout, tag, run_round, patches):
     cmd = [sys.executable, str(REPO / "src/run_version.py"), "--comp", comp, "--key-id", str(key_id),
-           "--version", str(version), "--timeout", str(timeout), "--tag", tag]
-    if patch:
-        cmd += ["--patch", patch]
+           "--version", str(version), "--timeout", str(timeout), "--tag", tag, "--run-round", run_round,
+           "--patches", patches]
     out = subprocess.run(cmd, capture_output=True, text=True).stdout
     run_id = next((l.split()[1] for l in out.splitlines() if l.startswith("[run]")), None)
     return run_id
@@ -54,6 +51,8 @@ def main():
     ap.add_argument("--timeout", type=int, default=900)
     ap.add_argument("--workers", type=int, default=3)
     ap.add_argument("--tag", default="phase5_easy_sample")
+    ap.add_argument("--run-round", default="", help="e.g. r2; stored in every results row")
+    ap.add_argument("--patches", default="all", help="passed to run_version.py (all / none / names)")
     ap.add_argument("--results", type=Path, default=REPO / "results/runs.jsonl")
     args = ap.parse_args()
 
@@ -72,34 +71,30 @@ def main():
 
     def job(cv):
         comp, key_id, v = cv
-        row = last_row(run(comp, key_id, v, args.timeout, args.tag), args.results)
-        first = row
-        patch = next((p for msg, p in KNOWN_PATCHES.items() if msg in (row.get("error_tail") or "")), None)
-        if row["status"] != "OK" and patch:
-            row = last_row(run(comp, key_id, v, args.timeout, args.tag + "_patched", patch), args.results)
-        return cv, first, row, patch
+        return cv, last_row(run(comp, key_id, v, args.timeout, args.tag, args.run_round, args.patches), args.results)
 
     with cf.ThreadPoolExecutor(args.workers) as ex:
-        for cv, first, final, patch in ex.map(job, versions):
-            outcome[cv] = (first, final, patch)
-            print(f"[{len(outcome)}/{len(versions)}] {cv[1]} v{cv[2]}: {first['status']}"
-                  + (f" -> with --patch {patch}: {final['status']}" if patch else "")
-                  + f"  score={final.get('score')}  {final.get('runtime_s')}s", flush=True)
+        for cv, row in ex.map(job, versions):
+            outcome[cv] = row
+            patches = [p["name"] for p in row.get("patches_applied") or []]
+            print(f"[{len(outcome)}/{len(versions)}] {cv[1]} v{cv[2]}: {row['status']}  score={row.get('score')}  "
+                  f"{row.get('runtime_s')}s  patches={patches}", flush=True)
 
     rows = []
     for r in S.itertuples():
         a, b = outcome[(r.comp, r.key_id, r.v_k)], outcome[(r.comp, r.key_id, r.v_k1)]
         rows.append({"comp": r.comp, "key_id": r.key_id, "v_k": r.v_k, "v_k1": r.v_k1,
-                     "status_v_k": a[0]["status"], "status_v_k1": b[0]["status"],
-                     "ran_unpatched": a[0]["status"] == "OK" and b[0]["status"] == "OK",
-                     "ran_with_patches": a[1]["status"] == "OK" and b[1]["status"] == "OK",
-                     "score_v_k": a[1].get("score"), "score_v_k1": b[1].get("score"),
-                     "runtime_s": (a[1].get("runtime_s") or 0) + (b[1].get("runtime_s") or 0)})
+                     "status_v_k": a["status"], "status_v_k1": b["status"],
+                     "ran": a["status"] == "OK" and b["status"] == "OK",
+                     "patched": bool(a.get("patches_applied") or b.get("patches_applied")),
+                     "score_v_k": a.get("score"), "score_v_k1": b.get("score"),
+                     "runtime_s": (a.get("runtime_s") or 0) + (b.get("runtime_s") or 0)})
     R = pd.DataFrame(rows)
     pd.set_option("display.width", 250)
     print("\n" + R.to_string())
-    print(f"\ncases fully run without patches: {R.ran_unpatched.sum()}/{len(R)}; "
-          f"with existing patches: {R.ran_with_patches.sum()}/{len(R)}")
+    n_ok = sum(r["status"] == "OK" for r in outcome.values())
+    print(f"\nversions OK: {n_ok}/{len(outcome)}; cases with both versions OK: {R.ran.sum()}/{len(R)} "
+          f"(of which {int((R.ran & R.patched).sum())} needed a compat patch)")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
-# conda env kaggle-run: Python 3.11.17, created 2026-10-08 on babel-l5-20
+# conda env kaggle-run: Python 3.11.17, created 2026-10-08 on babel-l5-20; updated 2026-10-08 (+wordcloud, pyarrow, gensim)
 # path: /data/user_data/pengchej/software/anaconda3/envs/kaggle-run
-# torch from https://download.pytorch.org/whl/cpu (CPU build); NLTK data (stopwords, punkt, wordnet) in $CONDA_PREFIX/share/nltk_data
+# torch from https://download.pytorch.org/whl/cpu (CPU build); NLTK data (punkt_tab, punkt, stopwords, wordnet, omw-1.4) in $CONDA_PREFIX/share/nltk_data
 # recreate: conda create -n kaggle-run python=3.11 && pip install -r env/kaggle-run.txt --extra-index-url https://download.pytorch.org/whl/cpu
 annotated-doc==0.0.5
 anyio==4.15.1
@@ -25,6 +25,7 @@ fastjsonschema==2.22.2
 filelock==3.32.3
 fonttools==4.66.1
 fsspec==2026.7.0
+gensim==4.4.0
 graphviz==0.21
 h11==0.16.0
 hf-xet==1.7.0
@@ -77,6 +78,7 @@ prompt_toolkit==3.0.53
 psutil==7.2.2
 ptyprocess==0.7.0
 pure_eval==0.2.4
+pyarrow==25.0.1
 Pygments==2.21.0
 pyparsing==3.3.3
 python-dateutil==2.9.0.post0
@@ -94,6 +96,7 @@ seaborn==0.13.2
 setuptools==83.0.0
 shellingham==1.5.4
 six==1.17.0
+smart_open==8.0.2
 soupsieve==2.10
 stack-data==0.6.3
 sympy==1.14.0
@@ -112,4 +115,6 @@ urllib3==2.8.0
 wcwidth==0.9.2
 webencodings==0.6.1
 wheel==0.47.0
+wordcloud==1.9.6
+wrapt==2.5.0
 xgboost==3.2.0
