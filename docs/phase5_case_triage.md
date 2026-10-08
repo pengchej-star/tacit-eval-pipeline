@@ -18,11 +18,16 @@ The other 5 skip versions that TraceML filtered out (`adjacent = False` in the C
 | `triage/external_inputs.csv` | 1,057 | one row per (kernel, external `/kaggle/input/<x>` folder): available?, resolved Kaggle ref |
 
 ```bash
-python src/triage_static.py --comps learning-agency-lab-automated-essay-scoring-2 google-quest-challenge \
-    hms-harmful-brain-activity-classification ranzcr-clip-catheter-line-classification
-python src/validate_easy_sample.py --cases <cases.csv> --per-comp learning-agency-lab-automated-essay-scoring-2=8 \
+# as run for the committed CSVs (Kaggle API calls bounded; see "unverified" below)
+python src/triage_static.py --no-search --api-budget-min 15 --comps learning-agency-lab-automated-essay-scoring-2 \
+    google-quest-challenge hms-harmful-brain-activity-classification ranzcr-clip-catheter-line-classification
+python src/validate_easy_sample.py --per-comp learning-agency-lab-automated-essay-scoring-2=8 \
     --per-comp google-quest-challenge=7 --seed 0 --timeout 900 --workers 3
 ```
+
+The validation was started from an offline (`--no-kaggle`) `cases.csv` while the API run was still going. That
+is fine because the EASY label does not depend on the API: a version with any external input is never EASY.
+The 340 EASY cases in the committed `cases.csv` are exactly the same set, so `--seed 0` gives the same sample.
 
 ## How a version is labelled (static, nothing executed)
 
