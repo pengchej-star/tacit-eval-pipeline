@@ -71,6 +71,16 @@ python src/validate_easy_sample.py --per-comp learning-agency-lab-automated-essa
 
 Kaggle API answers are cached, so reruns are cheap.
 
+**Maintained list of cases that run** (rebuild after every batch of runs):
+
+```bash
+python src/runnable_cases.py     # -> triage/runnable_cases.csv
+```
+
+One row per expert case whose two versions have both been run: runnable or not, our scores vs Kaggle scores,
+whether the improvement direction matches, patches and external inputs used, the first blocker otherwise, and
+Kaggle links to both exact versions.
+
 ## Results so far
 
 Expert re-runs (aes2, metric QWK, higher is better; Phase 4):
