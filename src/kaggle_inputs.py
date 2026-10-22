@@ -4,14 +4,15 @@ An input is a "kind:ref" string, as written by triage_static.py in versions.csv 
   dataset:<owner>/<slug>        mounted at kaggle/input/<slug>
   kernel:<owner>/<slug>         (the kernel's output files) mounted at kaggle/input/<slug>
   competition:<slug>            mounted at kaggle/input/<slug>
+  dataset:<owner>/<slug>@<N>    a specific dataset version (default: the current version)
 Models (model:...) are not supported yet.
 
 Cache layout: <cache>/<kind>/<ref>/files/... plus <cache>/<kind>/<ref>/meta.json once complete. Downloads go to a
 temporary directory and are renamed into place, so a crash never leaves a half-filled entry. Several runs may ask
 for the same input at once; a per-input file lock makes the second one wait and reuse the first download.
 
-Datasets and competitions: the size is read from the response header before writing anything, and the stream has a
-hard wall-clock deadline (the kaggle client has no total timeout). Kernel outputs use the kaggle client as-is.
+Datasets and competitions: the size is read from the response header before writing anything. Kernel outputs are
+streamed file by file. Every download has a size cap and a hard wall-clock deadline (the kaggle client has neither).
 
 Limitation: this downloads the *current* version of a dataset or kernel output, which may differ from the version
 the expert's notebook used.
@@ -46,11 +47,17 @@ def _api():
 
 
 def parse(spec):
+    """'kind:ref[@version]' -> (kind, ref, folder). The version suffix stays part of ref; see split_version()."""
     kind, _, ref = spec.partition(":")
     if kind not in ("dataset", "kernel", "competition", "model") or not ref:
         raise ValueError(f"bad input spec {spec!r}; expected dataset:/kernel:/competition:<ref>")
-    folder = ref.split("/")[1] if kind == "model" else ref.split("/")[-1]
+    folder = ref.split("/")[1] if kind == "model" else split_version(ref)[0].split("/")[-1]
     return kind, ref, folder
+
+
+def split_version(ref):
+    base, _, ver = ref.partition("@")
+    return base, (int(ver) if ver else None)
 
 
 def _stream_zip(response, out_zip, max_bytes, deadline_s):
@@ -80,9 +87,11 @@ def _download(kind, ref, dest, max_bytes, deadline_s):
     timeout = (10, 120)
     if kind in ("dataset", "competition"):
         if kind == "dataset":
-            owner, slug = ref.split("/", 1)
+            base, version = split_version(ref)
+            owner, slug = base.split("/", 1)
+            kw = {"dataset_version_number": version} if version else {}
             resp = api.datasets_download_with_http_info(owner_slug=owner, dataset_slug=slug, _preload_content=False,
-                                                        _request_timeout=timeout)[0]
+                                                        _request_timeout=timeout, **kw)[0]
         else:
             resp = api.competitions_data_download_files_with_http_info(id=ref, _preload_content=False,
                                                                        _request_timeout=timeout)[0]
@@ -96,13 +105,35 @@ def _download(kind, ref, dest, max_bytes, deadline_s):
             zpath.unlink()
         else:  # a single non-zipped file
             dest.mkdir(parents=True, exist_ok=True)
-            zpath.rename(dest / Path(ref).name)
+            zpath.rename(dest / Path(split_version(ref)[0]).name)
         return n
     if kind == "kernel":
+        # the kaggle client reads each output file fully into memory with no timeout; stream them instead
+        import requests
+
+        total, t0 = 0, time.time()
+        for item in kernel_output_files(api, ref):
+            out = dest / item["fileName"]
+            out.parent.mkdir(parents=True, exist_ok=True)
+            with requests.get(item["url"], stream=True, timeout=(10, 120)) as r:
+                r.raise_for_status()
+                with open(out, "wb") as fh:
+                    for chunk in r.iter_content(CHUNK):
+                        fh.write(chunk)
+                        total += len(chunk)
+                        if max_bytes and total > max_bytes:
+                            raise InputError("INPUT_TOO_LARGE", f"kernel output exceeded {max_bytes / 1e9:.1f} GB")
+                        if time.time() - t0 > deadline_s:
+                            raise InputError("INPUT_DOWNLOAD_FAILED", f"download exceeded {deadline_s} s")
         dest.mkdir(parents=True, exist_ok=True)
-        api.kernels_output(ref, str(dest), force=True, quiet=True)
-        return sum(p.stat().st_size for p in dest.rglob("*") if p.is_file())
+        return total
     raise InputError("INPUT_UNSUPPORTED", f"{kind} inputs are not supported yet ({ref})")
+
+
+def kernel_output_files(api, ref):
+    """[{fileName, url}] for a kernel's output (latest version)."""
+    owner, slug = ref.split("/", 1)
+    return api.process_response(api.kernel_output_with_http_info(owner, slug, _request_timeout=(10, 120)))["files"]
 
 
 def fetch(spec, cache, max_bytes=20e9, deadline_s=3600):
