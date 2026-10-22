@@ -341,11 +341,16 @@ def main():
     ap.add_argument("--no-search", action="store_true",
                     help="skip the (rate-limited) exact-slug search; names not in kernel metadata stay unverified")
     ap.add_argument("--out-dir", type=Path, default=REPO / "triage")
+    ap.add_argument("--key-ids-file", type=Path,
+                    help="CSV with a key_id column (e.g. triage/selection.csv): only scan these kernels")
     args = ap.parse_args()
 
     st = pd.read_parquet(args.traceml_dir / "data/paired/state.parquet",
                          columns=["key_id", "version_number", "comp", "group", "is_agent", "score", "raw_code_path"])
     st = st[~st.is_agent & st.comp.isin(args.comps)].copy()
+    if args.key_ids_file:
+        keep = set(pd.read_csv(args.key_ids_file, dtype={"key_id": str}).key_id)
+        st = st[st.key_id.isin(keep)]
     kern = pd.read_parquet(args.traceml_dir / "extras/kernels.parquet", columns=["kernel_id", "kernel_slug"])
     slug_of = dict(zip(kern.kernel_id.astype(str), kern.kernel_slug))
 
@@ -416,7 +421,7 @@ def main():
                           columns=["key_id", "comp", "is_agent", "v_old", "v_new", "edge_kind", "coarse_actions",
                                    "score_effect"])
     # only within-kernel steps; 'fork' / 'code_sim' edges start from a version of a *different* kernel
-    act = act[~act.is_agent & act.comp.isin(args.comps) & (act.edge_kind == "version")]
+    act = act[~act.is_agent & act.comp.isin(args.comps) & (act.edge_kind == "version") & act.key_id.isin(set(V.key_id))]
     vi = V.set_index(["key_id", "version"])
     case_rows = []
     for a in act.itertuples():

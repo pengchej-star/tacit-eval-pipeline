@@ -17,6 +17,11 @@ Steps
      behind `mlebench grade-sample`.
   6. Append one JSON row to results/runs.jsonl.
 
+External Kaggle inputs (datasets, kernel outputs, other competitions) can be mounted at kaggle/input/<slug> with
+--external kind:ref, or looked up per version from triage_static.py's versions.csv with --inputs-from. They are
+downloaded once into a shared cache (src/kaggle_inputs.py) and hardlinked into the workdir. A version whose
+triage row lists a missing input is not executed (status MISSING_EXTERNAL_INPUT).
+
 A notebook that raises an error is not graded, even if it wrote a submission.csv before failing
 (the same as on Kaggle).
 
@@ -40,6 +45,8 @@ import time
 from pathlib import Path
 
 import nbformat
+
+import kaggle_inputs
 
 USER_DATA = Path("/data/user_data") / getpass.getuser()
 REPO = Path(__file__).resolve().parents[1]
@@ -129,6 +136,24 @@ def rewrite(nb, workdir: Path, patch_names: list[str]):
     return n_paths, applied
 
 
+def inputs_for_version(versions_csv: Path, key_id, version):
+    """Look up a version's external inputs in triage_static.py's versions.csv.
+
+    Returns (status, error, specs): status is MISSING_EXTERNAL_INPUT if any input is missing, else None."""
+    import pandas as pd
+
+    v = pd.read_csv(versions_csv, dtype={"key_id": str})
+    row = v[(v.key_id == str(key_id)) & (v.version == version)]
+    if row.empty:
+        return "NOT_IN_TRIAGE", f"key_id={key_id} v{version} not in {versions_csv}", []
+    row = row.iloc[0]
+    missing = row.missing_external if isinstance(row.missing_external, str) else ""
+    if missing:
+        return "MISSING_EXTERNAL_INPUT", f"missing: {missing}", []
+    avail = row.available_external if isinstance(row.available_external, str) else ""
+    return None, "", [s for s in avail.split(";") if s]
+
+
 def kaggle_score(traceml_dir: Path, key_id: str, version: int):
     import pandas as pd
 
@@ -173,6 +198,12 @@ def main():
     ap.add_argument("--run-env", type=Path, default=USER_DATA / "software/anaconda3/envs/kaggle-run")
     ap.add_argument("--kernel", default="kaggle-run")
     ap.add_argument("--results", type=Path, default=REPO / "results/runs.jsonl")
+    ap.add_argument("--external", action="append", default=[],
+                    help="external input to mount, e.g. dataset:owner/slug, kernel:owner/slug, competition:slug")
+    ap.add_argument("--inputs-from", type=Path,
+                    help="versions.csv from triage_static.py: mount this version's available_external inputs")
+    ap.add_argument("--inputs-cache", type=Path, default=USER_DATA / "kaggle-inputs")
+    ap.add_argument("--max-input-gb", type=float, default=20.0, help="per-input download limit")
     args = ap.parse_args()
 
     if args.code_file is None and (args.key_id is None or args.version is None):
@@ -208,26 +239,44 @@ def main():
     cmd = [str(args.run_env / "bin/python"), "-m", "papermill", str(nb_in), str(nb_out),
            "-k", args.kernel, "--cwd", str(working), "--execution-timeout", str(args.timeout),
            "--log-output", "--no-progress-bar"]
-    print(f"[run] {run_id}\n      code={code}\n      inputs={n_inputs} files, path rewrites={n_paths}, patches={[p['name'] for p in patches]}", flush=True)
-
-    t0 = time.time()
     status, error = None, ""
-    with open(log, "w") as fh:
-        # own process group, so a timeout also kills the Jupyter kernel that papermill started
-        proc = subprocess.Popen(cmd, cwd=working, env=env, stdout=fh, stderr=subprocess.STDOUT, start_new_session=True)
+    specs, externals = list(args.external), []
+    if args.inputs_from:
+        status, error, found = inputs_for_version(args.inputs_from, args.key_id, args.version)
+        specs += [s for s in found if s not in specs]
+    for spec in specs if status is None else []:
+        kind, ref, folder = kaggle_inputs.parse(spec)
+        dest = workdir / "kaggle/input" / folder
+        if folder == args.comp or dest.exists():
+            continue
         try:
-            rc = proc.wait(timeout=args.timeout)
-        except subprocess.TimeoutExpired:
-            os.killpg(proc.pid, signal.SIGKILL)
-            proc.wait()
-            rc, status = None, "TIMEOUT"
+            files_dir, info = kaggle_inputs.fetch(spec, args.inputs_cache, max_bytes=args.max_input_gb * 1e9)
+        except kaggle_inputs.InputError as e:
+            status, error = e.status, f"{spec}: {e}"
+            break
+        externals.append({**info, "n_files": kaggle_inputs.mount(files_dir, dest)})
+    print(f"[run] {run_id}\n      code={code}\n      inputs={n_inputs} files, external={[x['spec'] for x in externals]}, "
+          f"path rewrites={n_paths}, patches={[p['name'] for p in patches]}", flush=True)
+
+    t0, rc, log_text = time.time(), 0, ""
+    if status is None:
+        with open(log, "w") as fh:
+            # own process group, so a timeout also kills the Jupyter kernel that papermill started
+            proc = subprocess.Popen(cmd, cwd=working, env=env, stdout=fh, stderr=subprocess.STDOUT,
+                                    start_new_session=True)
+            try:
+                rc = proc.wait(timeout=args.timeout)
+            except subprocess.TimeoutExpired:
+                os.killpg(proc.pid, signal.SIGKILL)
+                proc.wait()
+                rc, status = None, "TIMEOUT"
+        log_text = log.read_text(errors="replace")
     runtime = round(time.time() - t0, 1)
-    log_text = log.read_text(errors="replace")
     if status is None and rc != 0:
         status = "TIMEOUT" if re.search(r"CellTimeoutError|Cell execution timed out", log_text) else "EXEC_FAILED"
     if status == "TIMEOUT":
         error = f"killed after {args.timeout} s\n" + tail(log_text, n_lines=10)
-    elif status:
+    elif status in ("EXEC_FAILED",):
         error = tail(log_text)
 
     submission, report = None, {}
@@ -258,6 +307,7 @@ def main():
         "above_median": report.get("above_median"),
         "runtime_s": runtime,
         "patches_applied": patches,
+        "external_inputs": externals,
         "path_rewrites": n_paths,
         "submission": str(submission.relative_to(workdir)) if submission else None,
         "workdir": str(workdir),
