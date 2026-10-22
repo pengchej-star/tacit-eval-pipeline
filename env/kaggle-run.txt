@@ -1,4 +1,4 @@
-# conda env kaggle-run: Python 3.11.17, created 2026-10-08 on babel-l5-20; updated 2026-10-08 (+wordcloud, pyarrow, gensim; 2026-10-21: +datasets)
+# conda env kaggle-run: Python 3.11.17, created 2026-10-08 on babel-l5-20; updated 2026-10-08 (+wordcloud, pyarrow, gensim; 2026-10-21: +datasets, sentencepiece, tiktoken, protobuf)
 # path: /data/user_data/pengchej/software/anaconda3/envs/kaggle-run
 # torch from https://download.pytorch.org/whl/cpu (CPU build); NLTK data (punkt_tab, punkt, stopwords, wordnet, omw-1.4) in $CONDA_PREFIX/share/nltk_data
 # recreate: conda create -n kaggle-run python=3.11 && pip install -r env/kaggle-run.txt --extra-index-url https://download.pytorch.org/whl/cpu
@@ -84,6 +84,7 @@ polars==2.0.0
 polars-runtime-32==2.0.0
 prompt_toolkit==3.0.53
 propcache==0.5.4
+protobuf==7.36.2
 psutil==7.2.2
 ptyprocess==0.7.0
 pure_eval==0.2.4
@@ -102,6 +103,7 @@ safetensors==0.8.0
 scikit-learn==1.9.1
 scipy==1.17.1
 seaborn==0.13.2
+sentencepiece==0.2.2
 setuptools==83.0.0
 shellingham==1.5.4
 six==1.17.0
@@ -111,6 +113,7 @@ stack-data==0.6.3
 sympy==1.14.0
 tenacity==9.2.1
 threadpoolctl==3.7.0
+tiktoken==0.14.0
 tinycss2==1.5.1
 tokenizers==0.23.2
 torch==2.14.1+cpu

@@ -174,6 +174,24 @@ def grade(submission: Path, comp: str, cache: Path) -> dict:
     return grade_csv(submission, competition).to_dict()
 
 
+def shell_errors(executed_nb: Path, n_lines: int = 8) -> str:
+    """Tracebacks printed by `!cmd` shell cells. A failing shell command does not stop the notebook, so the root
+    cause is often only visible there, while the final error is a downstream symptom (e.g. no submission.csv)."""
+    try:
+        nb = nbformat.read(executed_nb, as_version=4)
+    except Exception:  # noqa: BLE001 - notebook may not exist if papermill died early
+        return ""
+    found = []
+    for i, cell in enumerate(nb.cells):
+        if cell.cell_type != "code" or not cell.source.lstrip().startswith("!"):
+            continue
+        text = ANSI.sub("", "".join(o.get("text", "") for o in cell.get("outputs", [])))
+        if "Traceback" in text or "Error" in text:
+            lines = [l for l in text.splitlines() if l.strip()]
+            found.append(f"[shell cell {i}]\n" + "\n".join(lines[-n_lines:]))
+    return ("\n".join(found) + "\n[final error]\n") if found else ""
+
+
 def tail(text: str, n_lines: int = 30, n_chars: int = 3000) -> str:
     lines = [l for l in ANSI.sub("", text).splitlines() if l.strip()]
     return "\n".join(lines[-n_lines:])[-n_chars:]
@@ -277,7 +295,7 @@ def main():
     if status == "TIMEOUT":
         error = f"killed after {args.timeout} s\n" + tail(log_text, n_lines=10)
     elif status in ("EXEC_FAILED",):
-        error = tail(log_text)
+        error = shell_errors(nb_out) + tail(log_text)
 
     submission, report = None, {}
     if status is None:
