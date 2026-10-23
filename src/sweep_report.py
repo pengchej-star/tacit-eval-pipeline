@@ -22,7 +22,9 @@ RULES = [
     ("missing package", r"ModuleNotFoundError|No module named"),
     ("out of memory", r"DeadKernelError|Kernel died"),
     ("needs GPU", r"CUDA|cuda|OpenCL|NVIDIA|nvidia|GPU"),
-    ("old code vs new libraries", r"AttributeError|ImportError|cannot import name|unexpected keyword|deprecated"),
+    # "Invalid value ... for dtype": pandas 3 raises where pandas 2 upcast the column with a warning
+    ("old code vs new libraries",
+     r"AttributeError|ImportError|cannot import name|unexpected keyword|deprecated|Invalid value .* for dtype"),
     ("file or path not found", r"FileNotFoundError|No such file"),
 ]
 STATUS = {"OK": "runs and is graded", "MISSING_EXTERNAL_INPUT": "external input missing", "TIMEOUT": "timeout",

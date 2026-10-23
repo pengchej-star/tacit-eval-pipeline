@@ -4,6 +4,7 @@
 #   OUT      output dir: results_<shard>.jsonl per shard (merge into results/runs.jsonl afterwards)
 #   NSHARDS  total shards over all arrays; OFFSET  first shard of this array (lets CPU and GPU arrays share one list)
 #   TIMEOUT  seconds per version (default 1200); TAG  stored in each results row
+#   RUN_ARGS extra run_version.py arguments, e.g. "--run-env <venv> --kernel <name>"
 # Example:
 #   sbatch -p preempt -c 4 --mem=24G -a 0-12 --export=ALL,LIST=...,OUT=...,NSHARDS=25,OFFSET=0,TAG=sweep slurm/sweep.sbatch
 #SBATCH -J sweep
@@ -23,7 +24,7 @@ while IFS=$'\t' read -r comp key version stage runtime; do
     # skip versions this shard already ran (a preempted job is requeued and starts over)
     if [ -f "$RES" ] && grep -q "\"key_id\": \"$key\", \"version\": $version," "$RES"; then continue; fi
     python "$REPO/src/run_version.py" --comp "$comp" --key-id "$key" --version "$version" \
-      --timeout "${TIMEOUT:-1200}" --tag "${TAG:-sweep}:$stage" --results "$RES" \
+      --timeout "${TIMEOUT:-1200}" --tag "${TAG:-sweep}:$stage" --results "$RES" ${RUN_ARGS:-} \
       --inputs-from /data/user_data/pengchej/traceml/triage_4comp_refresh/versions.csv </dev/null 2>&1 | grep -E "^\[(run|done)\]"
   fi
 done < "$LIST"
