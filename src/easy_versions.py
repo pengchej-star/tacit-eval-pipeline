@@ -5,7 +5,7 @@ score and runtime, our latest run (status, coarse failure reason from sweep_repo
 version is part of a runnable case, and a link to the exact Kaggle version. Re-run after new runs.
 
 Usage:
-  python src/easy_versions.py --versions <triage dir>/versions.csv
+  python src/easy_versions.py
 """
 
 import argparse
@@ -24,7 +24,7 @@ REPO = Path(__file__).resolve().parents[1]
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--versions", type=Path, default=USER_DATA / "traceml/triage_4comp_refresh/versions.csv")
+    ap.add_argument("--versions", type=Path, default=REPO / "triage/versions.csv")
     ap.add_argument("--results", type=Path, default=REPO / "results/runs.jsonl")
     ap.add_argument("--cases", type=Path, default=REPO / "triage/runnable_cases.csv")
     ap.add_argument("--traceml-dir", type=Path, default=USER_DATA / "traceml/hf")
