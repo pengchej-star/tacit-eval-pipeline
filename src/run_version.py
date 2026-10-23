@@ -94,7 +94,10 @@ def load_notebook(path: Path) -> nbformat.NotebookNode:
 
 
 def stage_inputs(public: Path, dest: Path) -> int:
-    """Copy prepared/public into dest as read-only files. Returns the number of files."""
+    """Hardlink (or copy, across filesystems) prepared/public into dest as read-only files. Returns the number of files.
+
+    Hardlinks, not symlinks: a symlink would reveal the cache path and with it ../private. hms public is 23 GB, so
+    copying it per run is not an option."""
     if public.name != "public" or not public.is_dir():
         raise ValueError(f"expected a prepared/public directory, got {public}")
     n = 0
@@ -107,7 +110,10 @@ def stage_inputs(public: Path, dest: Path) -> int:
             out.mkdir(parents=True, exist_ok=True)
             continue
         out.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, out)
+        try:
+            os.link(src, out)
+        except OSError:
+            shutil.copy2(src, out)
         out.chmod(stat.S_IRUSR | stat.S_IRGRP)
         n += 1
     return n
@@ -252,8 +258,9 @@ def main():
     nbformat.write(nb, nb_in)
 
     env = {k: v for k, v in os.environ.items() if k not in ("PYTHONPATH", "TRACEML_MLEBENCH_CACHE")}
+    # PIP_REQUIRE_VIRTUALENV: a notebook's `!pip install` must not change the shared run env (many runs use it at once)
     env.update(PATH=f"{args.run_env / 'bin'}:{env.get('PATH', '')}", CONDA_PREFIX=str(args.run_env),
-               MPLBACKEND="Agg", KAGGLE_KERNEL_RUN_TYPE="Batch")
+               MPLBACKEND="Agg", KAGGLE_KERNEL_RUN_TYPE="Batch", PIP_REQUIRE_VIRTUALENV="1")
     cmd = [str(args.run_env / "bin/python"), "-m", "papermill", str(nb_in), str(nb_out),
            "-k", args.kernel, "--cwd", str(working), "--execution-timeout", str(args.timeout),
            "--log-output", "--no-progress-bar"]
