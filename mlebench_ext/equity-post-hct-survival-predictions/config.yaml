@@ -1,0 +1,18 @@
+# Own MLE-bench entry (not part of official MLE-bench). Source of truth: tacit-eval-pipeline/mlebench_ext/.
+# Symlinked into <mle-bench>/mlebench/competitions/ by mlebench_ext/link.sh, so the import paths below resolve.
+id: equity-post-hct-survival-predictions
+name: CIBMTR - Equity in post-HCT Survival Predictions
+competition_type: code
+awards_medals: true
+# prizes: omitted (not used for grading)
+description: mlebench/competitions/equity-post-hct-survival-predictions/description.md
+
+dataset:
+  answers: equity-post-hct-survival-predictions/prepared/private/answers.csv
+  sample_submission: equity-post-hct-survival-predictions/prepared/public/sample_submission.csv
+
+grader:
+  name: stratified-concordance-index
+  grade_fn: mlebench.competitions.equity-post-hct-survival-predictions.grade:grade
+
+preparer: mlebench.competitions.equity-post-hct-survival-predictions.prepare:prepare
