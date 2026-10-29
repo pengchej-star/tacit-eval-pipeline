@@ -133,3 +133,23 @@ Sources: [CMU RCD request](https://www.cmu.edu/rcd/request.html), [CMU RCD FAQ](
 [RunPod pricing](https://www.runpod.io/pricing), [Lambda pricing](https://lambda.ai/pricing), [Modal preemption](https://modal.com/docs/guide/preemption),
 [AWS research credits](https://aws.amazon.com/government-education/research-and-technical-computing/cloud-credit-for-research/),
 [OpenAI Researcher Access](https://openai.com/form/researcher-access-program).
+
+## First GPU runs (Oct 29, evening)
+
+GPU env `kaggle-run-gpu` (CUDA torch + timm, `env/kaggle-run-gpu.txt`) works on an L40S. Two of the 16 "runnable
+today" best versions were run as 1-GPU jobs, and both failed within seconds on a missing Python module. The cause
+was not the GPU; it was two gaps in how we fetch external inputs:
+
+| version | error | cause |
+|---|---|---|
+| hms ryanirl/hms-baseline-sub v18 | `No module named 'eeg_cnn_rnn_w1'` | we download the **current** version of dataset `ryanirl/hms-models`; the expert's notebook used an older version that still had this file |
+| aes2 lenferdetroud/aes2-tuning-ensemble v2 | `No module named 'aes2_preproces_cache_vectorize'` | a Kaggle **utility script** (mounted under `/kaggle/usr/lib/<slug>/` and put on the Python path); the static triage only looks for `/kaggle/input/...` references, so it never fetched it |
+
+So "all external inputs located" is optimistic: an input can be located but be the wrong version, and utility
+scripts are not detected at all.
+
+**Fix found:** each notebook's metadata (`metadata.kaggle.dataSources`) lists the exact inputs Kaggle attached:
+`datasetVersion` (with the dataset version id), `kernelVersion` (the exact notebook version whose output or
+utility script was used), and the competition data bundle. It also gives `metadata.kaggle.accelerator` (e.g.
+`gpu`). Resolving inputs from these ids, rather than from folder names, removes both gaps. This replaces the
+Meta Kaggle step planned earlier.

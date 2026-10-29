@@ -1,0 +1,9 @@
+# venv on top of conda env kaggle-run (python -m venv --system-site-packages), for notebooks that need a GPU
+# path: /data/user_data/pengchej/software/venvs/kaggle-run-gpu; jupyter kernel: kaggle-run-gpu
+# CUDA 13.0 wheels (Babel driver 610, CUDA 13.3); install with
+#   pip install -r env/kaggle-run-gpu.txt --index-url https://download.pytorch.org/whl/cu130 --extra-index-url https://pypi.org/simple
+#   python -m ipykernel install --prefix "$VIRTUAL_ENV" --name kaggle-run-gpu
+# everything else comes from env/kaggle-run.txt; only these override or add to it (no TensorFlow yet):
+torch==2.14.1+cu130
+torchvision==0.29.1+cu130
+timm==1.0.30
