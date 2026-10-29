@@ -148,8 +148,18 @@ was not the GPU; it was two gaps in how we fetch external inputs:
 So "all external inputs located" is optimistic: an input can be located but be the wrong version, and utility
 scripts are not detected at all.
 
-**Fix found:** each notebook's metadata (`metadata.kaggle.dataSources`) lists the exact inputs Kaggle attached:
-`datasetVersion` (with the dataset version id), `kernelVersion` (the exact notebook version whose output or
-utility script was used), and the competition data bundle. It also gives `metadata.kaggle.accelerator` (e.g.
-`gpu`). Resolving inputs from these ids, rather than from folder names, removes both gaps. This replaces the
-Meta Kaggle step planned earlier.
+**Partial fix:** a notebook's metadata (`metadata.kaggle.dataSources`) lists the exact inputs Kaggle attached:
+`datasetVersion` (dataset version id), `kernelVersion` (the exact notebook version whose output or utility script was
+used), the competition data bundle, and `metadata.kaggle.accelerator`. Resolving inputs from these ids removes both
+gaps. But only the newer competitions carry it: every sampled version of aes2, hms and equity (2024–25) has it, and
+none of gquest, ranzcr, commonlit and amex (2020–22) does. For those, exact versions still need Meta Kaggle's
+`KernelVersionDatasetSources` table (or picking the dataset version that predates the notebook version).
+
+A third run, ranzcr ttahara/ranzcr-multi-head-model-inference v41, hit the same problem after two environment fixes:
+- first `cv2` and `albumentations` were missing; both are now added to the GPU env;
+- then `timm` said `Unknown model (resnet200d_320)`. The notebook appends a bundled timm copy (dataset
+  `yasufuminakama/pytorch-image-models`) to `sys.path`. Our installed timm 1.0.30 shadows that copy, and the
+  current version of the dataset (timm 0.4.13) no longer has that model either. The expert used an older
+  version, and this 2021 notebook has no `dataSources` metadata to say which.
+
+So far, then, 0 of 3 GPU versions ran, all because of external inputs or the environment, not the GPU.
