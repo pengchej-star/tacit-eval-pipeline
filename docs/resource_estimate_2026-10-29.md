@@ -2,7 +2,7 @@
 
 Question from the team: if we run the human expert code as it is, especially the best-scoring version of each of the
 top-10 notebooks per competition (Yaqing's 70 kernels, `triage/selection.csv`), what resources do we need and how
-long will it take? Also: what if Babel stays hard to use?
+long will it take? And what if Babel stays hard to use (last section)?
 
 Nothing was executed for this estimate. It comes from the static triage (`triage/selection_versions.csv`) and the
 runtimes Kaggle recorded for each version. Table: `triage/top_versions.csv` (one row per kernel, built by
@@ -73,3 +73,63 @@ same time as the expert version: median 11 min, mean 53 min.
 - One kernel's best version has no recorded Kaggle runtime (ranzcr `goldenlock/image-model-single-model-…`).
 - Kaggle runtimes are wall clock on Kaggle hardware, not measurements on Babel. Task 1 of this week (time one
   notebook per competition on Babel) replaces them with real numbers.
+
+## If Babel stays hard to use
+
+Babel today: our account only has the `preempt` partition. On Oct 29 a GPU job was preempted after 6 min, and
+CPU-only jobs waited 40+ min (low fair-share, and the CVPR deadline on Nov 16 keeps GPUs ~90% allocated). The
+non-preemptible `general` partition rejects our QoS. The Babel wiki is behind CMU login, so its rules for getting
+`general` access were not read.
+
+Options (researched 2026-10-29; prices are list prices for GPU only):
+
+| option | cost | how to get it | longest uninterrupted run | expert notebooks | 12 h agent runs |
+|---|---|---|---|---|---|
+| Babel `general` partition | free | account change via advisor (process not verified) | 2 days (LTI page) | yes | yes, best fit |
+| CMU ORCHARD (Google Cloud, 296 H100) | compute free in the pilot; storage billed | PI submits a request; needs an ACCESS ID; a 30-min Bootstrap job first | General queue: 1 GPU, 12 h, "will not be interrupted" | yes | almost (12 h < TraceML's 13.2 h hard kill) |
+| PSC Bridges-2 via NSF ACCESS Explore | free | short proposal + advisor letter; days to ~2 weeks (unofficial) | 48 h | yes | yes (OpenAI API from compute nodes not verified) |
+| NAIRR Pilot Start-Up | free, up to 2,000 GPU-h for 3 months | advisor letter; ~2–3 weeks | depends on host | yes | yes |
+| Kaggle | free, ~30 GPU-h per week | immediate | 12 h session | yes: same paths and similar hardware, code runs almost unchanged | no |
+| Rented on-demand GPU (RunPod Secure Cloud, Lambda) | ~$0.6–4 per GPU-h | immediate | not preempted | yes | yes |
+| Spot instances, Modal, Vast, RunPod Community | cheapest | immediate | preemptible | yes | no (a preempted run restarts from zero) |
+
+- **Rented GPU, cost:**
+  - Expert notebooks (60–90 GPU-h): about $35–100 on an L4 or A6000.
+  - Agent baseline (~92 GPU-h incl. the hard-kill margin): about $55 (L4 / A6000) to $300 (H100).
+  - All 32 agent runs: $230–1,300.
+  - The OpenAI API for the agent comes on top. gpt-5.4-mini is $0.75 / $4.50 per M input / output tokens (aggregator price); tokens per run are unknown.
+- **Kaggle route for the expert notebooks:**
+  1. Upload MLE-bench `prepared/public` as a private dataset (limit 200 GB; hms 26 GB and ranzcr 13 GB fit).
+  2. Attach the public weight datasets, push each notebook with `kaggle kernels push`, then download `submission.csv`.
+  3. Grade on Babel, so the answers never leave Babel.
+  - 60–90 GPU-h is 2–3 weeks of one account's quota. CPU sessions (the amex LightGBM runs) do not use GPU quota.
+- **Credit programs are too slow for this month:**
+  - AWS Cloud Credit for Research: up to $5k, 90–120 days.
+  - Google Cloud research credits: PhD students and faculty.
+  - OpenAI Researcher Access: up to $1k, quarterly review, credits around Jan 2027 at the earliest.
+- **For a fair agent baseline, match TraceML's GPU.** A 12 h budget buys very different amounts of training on an
+  L4 and on an H100. `run_meta.json` only gives the device index (`"gpu": "2"`), so the GPU type still has to come
+  from the paper or the authors.
+
+Suggested order:
+1. Ask Sherry now for **Babel `general` access** and an **ORCHARD request** (the PI submits it). Both are free and
+   not preemptible.
+2. **Agent baseline:** if neither arrives within about a week, rent one on-demand GPU of the same type TraceML used.
+3. **Expert notebooks:** keep short runs on Babel `preempt`, and send long or overflow runs to Kaggle.
+4. **Longer term:** ACCESS Explore (Bridges-2, 48 h jobs) or a NAIRR Start-Up.
+
+Checked against the official page: the ORCHARD queues and the ACCESS ID requirement (cmu.edu/rcd/request.html,
+cmu.edu/rcd/faq.html). Not verified:
+- Babel's `general` access process;
+- ORCHARD turnaround;
+- internet access from ORCHARD and Bridges-2 compute nodes;
+- Kaggle's concurrent-session limit and whether a notebook's environment can be pinned when pushed through the API;
+- Colab and AWS spot prices.
+
+Sources: [CMU RCD request](https://www.cmu.edu/rcd/request.html), [CMU RCD FAQ](https://www.cmu.edu/rcd/faq.html),
+[LTI Babel page](https://lti.cs.cmu.edu/misc-pages/hpc1/babel.html), [PSC Bridges-2 guide](https://www.psc.edu/resources/bridges-2/user-guide/),
+[ACCESS project types](https://allocations.access-ci.org/project-types), [NAIRR Start-Up](https://nairrpilot.org/opportunities/startup-project),
+[Kaggle notebooks docs](https://www.kaggle.com/docs/notebooks), [Kaggle kernel metadata](https://github.com/Kaggle/kaggle-api/blob/main/docs/kernels_metadata.md),
+[RunPod pricing](https://www.runpod.io/pricing), [Lambda pricing](https://lambda.ai/pricing), [Modal preemption](https://modal.com/docs/guide/preemption),
+[AWS research credits](https://aws.amazon.com/government-education/research-and-technical-computing/cloud-credit-for-research/),
+[OpenAI Researcher Access](https://openai.com/form/researcher-access-program).
