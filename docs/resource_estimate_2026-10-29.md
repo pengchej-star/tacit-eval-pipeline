@@ -162,4 +162,33 @@ A third run, ranzcr ttahara/ranzcr-multi-head-model-inference v41, hit the same 
   current version of the dataset (timm 0.4.13) no longer has that model either. The expert used an older
   version, and this 2021 notebook has no `dataSources` metadata to say which.
 
-So far, then, 0 of 3 GPU versions ran, all because of external inputs or the environment, not the GPU.
+Then three GPU versions that need **no external inputs** (`n_external == 0`, PyTorch) were run, to test the GPU
+itself and to time it:
+
+| version | result | Babel vs Kaggle runtime |
+|---|---|---|
+| gquest pavelvpster/google-q-a-labeling-tf-idf-pytorch v5 | **OK**: MLE-bench 0.337 (Kaggle 0.297) | 79 s on an L40S vs 194 s |
+| gquest alonalon/hirarchical-attention-with-text-augmentation v8 | failed: `gensim.summarization` was removed in gensim 4 | – |
+| hms hideyukizushi/hms-only-spectrograms-efficientnetv2… v6 | trained, then failed: loads `best_model_fold0.pth` from an input folder that the static triage missed | 207 s vs 190 s (training part) |
+
+Then ranzcr v41 was rerun with dataset version 5 (timm 0.3.2) and a new compat patch, `prefer_attached_libraries`,
+which turns `sys.path.append(<input path>)` into `sys.path.insert(0, ...)`. The attached timm then loads, but it
+imports `torch._six`, which torch 2 removed.
+
+**Tally: 1 of 6 GPU versions ran.** The GPU itself works; one data point says Babel is about 2.5× faster than
+Kaggle. Every failure was about old library versions or external inputs:
+- a deleted dataset version: `ryanirl/hms-models` returns 404 for every old version;
+- utility scripts;
+- inputs referenced by a dynamically built path;
+- old library versions needing old dependencies (timm 0.3 → torch < 2, gensim < 4).
+
+### Leakage: expert models trained on Kaggle's full train set
+
+MLE-bench builds its test set from Kaggle's **train** set, because Kaggle's own test labels are private. An expert
+notebook that loads weights or features prepared outside the notebook (37 of the 70 best versions are
+"inference, saved models") used models that were most likely trained on all of Kaggle's train set. Our test rows
+are part of that set. Example: aes2 v2 loads `X.pickle` / `y.pickle` that a preprocessing kernel computed on the
+full train set. Such a version has seen our test labels, so its MLE-bench score is inflated, and so is the score of
+any agent edit that starts from it. Only versions that train inside the notebook on `prepared/public` are scored
+cleanly. The same applies to our own amex, commonlit and equity splits (see `docs/own_graders.md`). This needs a
+team decision before investing in making inference-only versions run.

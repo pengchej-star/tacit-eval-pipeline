@@ -73,6 +73,12 @@ PATCHES = {
         why="pandas 3 removed DataFrame.applymap / Styler.applymap; DataFrame.map / Styler.map (pandas >= 2.1) "
             "are the same element-wise operation under the new name.",
     ),
+    "prefer_attached_libraries": dict(
+        pattern=r"sys\.path\.append\(\s*(?=[rRfF]?['\"](?:\.\./input/|[^'\"\n]*/kaggle/input/))",
+        repl="sys.path.insert(0, ",
+        why="notebooks attach a copy of a library as an input (e.g. an old timm) and append it to sys.path; a newer "
+            "copy installed in our run env would shadow it, so the attached copy goes first.",
+    ),
 }
 ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
 
