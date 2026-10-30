@@ -3,6 +3,7 @@
 # CUDA 13.0 wheels (Babel driver 610, CUDA 13.3); install with
 #   pip install -r env/kaggle-run-gpu.txt --index-url https://download.pytorch.org/whl/cu130 --extra-index-url https://pypi.org/simple
 #   python -m ipykernel install --prefix "$VIRTUAL_ENV" --name kaggle-run-gpu
+#   cp env/kaggle-run-gpu-sitecustomize.py "$VIRTUAL_ENV/lib/python3.11/site-packages/sitecustomize.py"   # torch._six shim
 # everything else comes from env/kaggle-run.txt; only these override or add to it (no TensorFlow yet):
 torch==2.14.1+cu130
 torchvision==0.29.1+cu130
