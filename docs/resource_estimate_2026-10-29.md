@@ -265,3 +265,16 @@ failed runs):
 | total | | ~11,000 GPU-h + ~$2,700 API |
 
 On 32 GPUs: about 2 weeks on Babel (free) or rented A100s (~$22k), about 10 days on rented H100s (~$23k).
+
+**Final framing for the Oct 30 meeting: every pivot, run like the 7-pivot pilot** (expert v_k, agent v_k+1′,
+expert v_k+1, once each, no extracted knowledge). 3,315 human pivots in the 7 comps, 5,289 distinct expert versions.
+
+| | one pivot | all 3,315 pivots |
+|---|---|---|
+| expert v_k and v_k+1, re-run | ~40 min on an A100 | 5,289 versions: ~2,300 GPU-h |
+| agent writes v_k+1′ and runs it | ~35 min + $0.41 API | 3,315 versions: ~1,900 GPU-h + ~$1,400 API |
+| total | ~1.3 h + $0.41 | ~4,300 GPU-h + ~$1,400 API |
+
+- On 32 GPUs: about 6 days on Babel (free) or rented A100s (~$9k), about 4 days on rented H100s (~$9k).
+- The 7 pilot pivots took 13–28 min each, but they were light notebooks.
+- Adding the with-knowledge condition doubles the agent row.
