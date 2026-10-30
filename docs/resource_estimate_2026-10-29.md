@@ -254,3 +254,14 @@ because the heavy training notebooks mostly did not run yet, so they understate 
   from Kaggle runtimes (mean 35 min per version) halved for A100-class cards, plus 1.5× for failed runs.
 - On an H100, GPU-bound parts run about 2× faster, but the agent's thinking time does not shrink. So the small rows
   cost a bit more on an H100 and the large row costs about the same.
+
+**Per version and total** (final slide 2 of the Oct 30 deck; same assumptions as above, totals include 1.5× for
+failed runs):
+
+| | one version | all versions (7 comps) |
+|---|---|---|
+| expert version, re-run | ~20 min on an A100 (median 3 min) | 13,411 versions: ~7,000 GPU-h |
+| agent writes a version and runs it | ~35 min on an A100 + $0.41 API | 3,315 pivots × ± knowledge = 6,630: ~4,000 GPU-h + ~$2,700 API |
+| total | | ~11,000 GPU-h + ~$2,700 API |
+
+On 32 GPUs: about 2 weeks on Babel (free) or rented A100s (~$22k), about 10 days on rented H100s (~$23k).
