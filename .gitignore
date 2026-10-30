@@ -33,3 +33,6 @@ __pycache__/
 
 # Tool caches created in the working directory
 cache/
+
+# labels shared by Yaqing (not ours to publish)
+pivot_labels.csv

@@ -80,6 +80,7 @@ PATCHES = {
             "copy installed in our run env would shadow it, so the attached copy goes first.",
     ),
 }
+RANK_ONLY_METRICS = {"ranzcr-clip-catheter-line-classification"}  # AUC: scores outside [0, 1] are rescaled, see grade()
 ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
 
 
@@ -178,12 +179,36 @@ def kaggle_score(traceml_dir: Path, key_id: str, version: int):
     return None
 
 
+def rescale_to_unit_interval(submission: Path):
+    """Min-max scale every score column that leaves [0, 1]; returns the rescaled copy, or None if none did.
+
+    Kaggle accepted any scores for AUC metrics (only the order counts), so some notebooks submit ranks; MLE-bench's
+    AUC helper rejects values outside [0, 1]. Scaling keeps the order within each column, so the AUC is unchanged."""
+    import pandas as pd
+
+    df = pd.read_csv(submission)
+    cols = [c for c in df.columns[1:] if pd.api.types.is_numeric_dtype(df[c]) and (df[c].min() < 0 or df[c].max() > 1)]
+    if not cols:
+        return None
+    for c in cols:
+        lo, hi = df[c].min(), df[c].max()
+        df[c] = (df[c] - lo) / (hi - lo) if hi > lo else 0.5
+    out = submission.with_name("submission_rescaled.csv")
+    df.to_csv(out, index=False)
+    return out
+
+
 def grade(submission: Path, comp: str, cache: Path) -> dict:
     from mlebench.grade import grade_csv
     from mlebench.registry import registry
 
     competition = registry.set_data_dir(cache).get_competition(comp)
-    return grade_csv(submission, competition).to_dict()
+    report = grade_csv(submission, competition).to_dict()
+    if not report.get("valid_submission") and comp in RANK_ONLY_METRICS:
+        rescaled = rescale_to_unit_interval(submission)
+        if rescaled:
+            report = {**grade_csv(rescaled, competition).to_dict(), "rescaled_to_unit_interval": True}
+    return report
 
 
 def shell_errors(executed_nb: Path, n_lines: int = 8) -> str:
@@ -341,6 +366,7 @@ def main():
         "external_inputs": externals,
         "path_rewrites": n_paths,
         "submission": str(submission.relative_to(workdir)) if submission else None,
+        "submission_rescaled": bool(report.get("rescaled_to_unit_interval")),
         "workdir": str(workdir),
         "host": socket.gethostname(),
         "run_env": str(args.run_env),
