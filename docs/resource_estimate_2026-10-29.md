@@ -237,3 +237,20 @@ because the heavy training notebooks mostly did not run yet, so they understate 
   and light.
 - Source: `/data/user_data/pengchej/traceml/versions_7comps.csv` (static triage of all 7 comps) joined with
   `pivot_labels.csv` (not in git).
+
+**Cost by scope** (slide 2 of the Oct 30 deck). Rental prices are on-demand list prices from comparison sites
+(Oct 2026, indicative): A100 80 GB about $1.2–2.8 per GPU-hour, H100 about $2.7–4.3; the table uses $2 and $3.
+
+| scope | agent API | GPU-hours (A100 class) | wall clock | rented A100 / H100 |
+|---|---:|---:|---:|---:|
+| next round: 7 pivots, ± knowledge, 3 runs each (42 runs) | ~$17 | ~12 h | ~3 h on 4 GPUs | ~$25 / ~$35 |
+| all 42 pivots that run today, same design (252 runs) | ~$105 | ~70 h | ~9 h on 8 GPUs | ~$140 / ~$210 |
+| all 3,315 human pivots, ± knowledge, once (6,630 runs) | ~$2,700 | ~5,000 h (±2×) | ~1 week on 32 GPUs | ~$10k / ~$10k |
+| TraceML's own baseline, 7 × 12 h | OpenAI, unknown | 84 h | 12 h on 7 GPUs | ~$170 / ~$250 |
+
+- The Babel cards we got (L40S, A6000, A100 40 GB, RTX 6000 Ada, L40, RTX Pro 6000) are all about A100 class for
+  this work. Babel has no H100 on our partition.
+- The all-pivots row: the 5,289 expert versions, one run of each agent-edited notebook and the agent's own time,
+  from Kaggle runtimes (mean 35 min per version) halved for A100-class cards, plus 1.5× for failed runs.
+- On an H100, GPU-bound parts run about 2× faster, but the agent's thinking time does not shrink. So the small rows
+  cost a bit more on an H100 and the large row costs about the same.
