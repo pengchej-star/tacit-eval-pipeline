@@ -88,8 +88,10 @@ def main():
     ap.add_argument("--key-id", required=True)
     ap.add_argument("--version", type=int, required=True, help="v_k, the last version the agent sees")
     ap.add_argument("--external", action="append", default=[], help="input to mount, as in run_version.py")
-    ap.add_argument("--minutes", type=int, default=40, help="agent time budget (hard limit +10 min)")
+    ap.add_argument("--minutes", type=int, default=40, help="agent time budget (killed at +10 min)")
     ap.add_argument("--model", default="wine-claude-opus-5-5")
+    ap.add_argument("--max-usd", type=float, default=10.0,
+                    help="claude --max-budget-usd: stop the agent at this spend (Claude Code's own cost estimate)")
     ap.add_argument("--grade", action="store_true", help="run and grade the agent's version afterwards")
     ap.add_argument("--grade-timeout", type=int, default=2700)
     ap.add_argument("--agent-runs", type=Path, default=USER_DATA / "agent_runs")
@@ -151,8 +153,10 @@ def main():
            "--bind", f"{run / 'kaggle'}:/kaggle", "--bind", f"{ws}:/workspace",
            "--bind", f"{claude}:/opt/claude:ro", "--pwd", "/workspace",
            str(args.sif), "timeout", str((args.minutes + 10) * 60),
-           "/opt/claude", "-p", PROMPT, "--dangerously-skip-permissions", "--output-format", "stream-json", "--verbose"]
-    print(f"[agent] {run_id}\n        model={args.model} budget={args.minutes} min, history v001..v{k:03d}", flush=True)
+           "/opt/claude", "-p", PROMPT, "--dangerously-skip-permissions", "--max-budget-usd", str(args.max_usd),
+           "--output-format", "stream-json", "--verbose"]
+    print(f"[agent] {run_id}\n        model={args.model} budget={args.minutes} min / ${args.max_usd:g}, "
+          f"history v001..v{k:03d}", flush=True)
     t0 = time.time()
     with open(run / "transcript.jsonl", "w") as out, open(run / "agent.stderr", "w") as err:
         rc = subprocess.run(cmd, env=env, stdout=out, stderr=err).returncode
@@ -166,7 +170,7 @@ def main():
             final = msg
     solution = ws / "solution" / f"{nxt}.py"
     meta = {"run_id": run_id, "comp": args.comp, "key_id": args.key_id, "v_k": k, "model": args.model,
-            "minutes_budget": args.minutes, "agent_s": round(time.time() - t0, 1), "exit_code": rc,
+            "minutes_budget": args.minutes, "max_usd": args.max_usd, "agent_s": round(time.time() - t0, 1), "exit_code": rc,
             "num_turns": final.get("num_turns"), "cost_usd_reported": final.get("total_cost_usd"),
             "usage": final.get("usage"), "solution": solution.exists(), "external": args.external}
     (run / "meta.json").write_text(json.dumps(meta, indent=2))
