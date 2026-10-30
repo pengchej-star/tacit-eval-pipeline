@@ -129,7 +129,27 @@ def stage_inputs(public: Path, dest: Path) -> int:
             shutil.copy2(src, out)
         out.chmod(stat.S_IRUSR | stat.S_IRGRP)
         n += 1
+    restore_kaggle_columns(public.parent.parent.name, dest / "sample_submission.csv")
     return n
+
+
+# Columns the Kaggle original sample_submission.csv has but MLE-bench's leaves out because it grades fewer classes.
+# Notebooks written for Kaggle index the original layout (e.g. ranzcr `test.iloc[:, 1:12]`); the graders read only
+# the columns they score, so restoring the layout changes no grade.
+KAGGLE_EXTRA_COLUMNS = {
+    "ranzcr-clip-catheter-line-classification": ["CVC - Normal", "Swan Ganz Catheter Present"],
+}
+
+
+def restore_kaggle_columns(comp: str, sample_submission: Path):
+    extra = KAGGLE_EXTRA_COLUMNS.get(comp)
+    if not extra or not sample_submission.exists():
+        return
+    lines = sample_submission.read_text().splitlines()
+    sample_submission.unlink()  # a hardlink into the cache: replace it, never write through it
+    sample_submission.write_text("\n".join([lines[0] + "".join("," + c for c in extra)]
+                                           + [line + ",0" * len(extra) for line in lines[1:]]) + "\n")
+    sample_submission.chmod(stat.S_IRUSR | stat.S_IRGRP)
 
 
 def rewrite(nb, workdir: Path, patch_names: list[str]):
