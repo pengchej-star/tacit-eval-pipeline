@@ -34,7 +34,7 @@ from pathlib import Path
 import pandas as pd
 
 import kaggle_inputs
-from run_version import find_code, kaggle_score, load_notebook, stage_inputs
+from run_version import comp_aliases, find_code, kaggle_score, load_notebook, stage_inputs
 
 USER_DATA = Path("/data/user_data") / getpass.getuser()
 REPO = Path(__file__).resolve().parents[1]
@@ -132,7 +132,11 @@ def main():
     (ws / "task.md").write_text(TASK.format(title=c["name"], comp=args.comp, metric=c["metric"], direction=c["score_direction"],
                                             last=f"v{k:03d}", next=nxt, minutes=args.minutes))
 
-    stage_inputs(args.mlebench_cache / args.comp / "prepared/public", run / "kaggle/input" / args.comp)
+    public = args.mlebench_cache / args.comp / "prepared/public"
+    stage_inputs(public, run / "kaggle/input" / args.comp)
+    history = "\n".join(p.read_text() for p in (ws / "history").glob("v*.py"))
+    for alias in comp_aliases(history, args.comp):
+        stage_inputs(public, run / "kaggle/input" / alias)
     for spec in args.external:
         files_dir, _ = kaggle_inputs.fetch(spec, args.inputs_cache)
         kaggle_inputs.mount(files_dir, run / "kaggle/input" / kaggle_inputs.parse(spec)[2])

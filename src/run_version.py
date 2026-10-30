@@ -92,6 +92,12 @@ def find_code(human_dir: Path, key_id: str, version: int) -> Path:
     raise FileNotFoundError(f"no code file for key_id={key_id} version={version} under {human_dir}")
 
 
+def comp_aliases(text: str, comp: str) -> set[str]:
+    """Input folders the code reads that name the competition in other letter case (Kaggle mounts equity as
+    /kaggle/input/equity-post-HCT-survival-predictions, while its slug is lower case)."""
+    return {f for f in re.findall(r"/kaggle/input/([\w.-]+)", text) if f.lower() == comp.lower() and f != comp}
+
+
 def load_notebook(path: Path) -> nbformat.NotebookNode:
     if path.suffix == ".py":  # Kaggle script kernel: run it as a single cell
         nb = nbformat.v4.new_notebook()
@@ -274,6 +280,8 @@ def main():
     n_inputs = stage_inputs(args.mlebench_cache / args.comp / "prepared/public", workdir / "kaggle/input" / args.comp)
     shutil.copy2(code, workdir / f"original{code.suffix}")
     nb = load_notebook(code)
+    for alias in comp_aliases("\n".join(c.source for c in nb.cells), args.comp):
+        stage_inputs(args.mlebench_cache / args.comp / "prepared/public", workdir / "kaggle/input" / alias)
     if args.patches == "all":
         patch_names = sorted(PATCHES)
     elif args.patches == "none":
