@@ -1,0 +1,45 @@
+{
+  "run_id": "ranzcr-clip-catheter-line-classification__15164527_v029__agent__20261030-024609",
+  "comp": "ranzcr-clip-catheter-line-classification",
+  "key_id": "15164527",
+  "v_k": 28,
+  "model": "wine-claude-opus-5-5",
+  "minutes_budget": 40,
+  "max_usd": 10.0,
+  "agent_s": 648.9,
+  "exit_code": 0,
+  "num_turns": 24,
+  "cost_usd_reported": 0.6430694,
+  "usage": {
+    "input_tokens": 46,
+    "cache_creation_input_tokens": 77078,
+    "cache_read_input_tokens": 635877,
+    "output_tokens": 6516,
+    "output_tokens_details": {
+      "thinking_tokens": 1888
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 77078
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "solution": true,
+  "external": [
+    "dataset:ammarali32/efficientnetb5cv9621",
+    "dataset:yasufuminakama/pytorch-image-models@5",
+    "dataset:ammarali32/pytorch-images-seresnet",
+    "dataset:ammarali32/resnet200d-public",
+    "dataset:ammarali32/seresnet152d-cv9615",
+    "dataset:ammarali32/startingpointschestx",
+    "dataset:ttahara/ranzcr-clip-weights-for-multi-head-model-v2"
+  ]
+}

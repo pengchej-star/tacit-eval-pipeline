@@ -1,0 +1,3 @@
+v003 keeps v002's Kaplan-Meier survival-probability target and 10-fold Trainer, but replaces the single default XGBoost with tuned, regularized gradient boosters (shallow XGBoost with early stopping on GPU, CatBoost, LightGBM) and submits a rank-average ensemble of the three.
+Default XGBoost (depth 6, lr 0.3, 100 trees) overfits this noisy target; shallower, slower-learning trees with early stopping and a diverse ensemble typically lift the stratified C-index by roughly 0.005-0.01.
+I also made the pip installs offline/no-op if lifelines exists and fixed `score()` mutating its inputs (it deletes the ID column) by passing copies.
