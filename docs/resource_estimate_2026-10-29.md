@@ -192,3 +192,32 @@ full train set. Such a version has seen our test labels, so its MLE-bench score 
 any agent edit that starts from it. Only versions that train inside the notebook on `prepared/public` are scored
 cleanly. The same applies to our own amex, commonlit and equity splits (see `docs/own_graders.md`). This needs a
 team decision before investing in making inference-only versions run.
+
+## Measured on Babel (update, Oct 30)
+
+Task 1 asked for measured times. Every version that ran and was graded on Babel so far (`results/runs.jsonl`,
+status OK: Oct 23 sweep, GPU tests, pivot runs):
+
+| comp | versions run | runtime median / max |
+|---|---:|---:|
+| aes2 | 92 | 72 s / 15 min |
+| hms | 70 | 18 s / 13 min |
+| gquest | 37 | 17 s / 2 min |
+| ranzcr (GPU) | 6 | 88 s / 2 min |
+| equity | 2 | 34 s / 39 s |
+| amex, commonlit | 0 | not measured |
+
+These are not the same versions as the 70 above. They are mostly light notebooks (classical models, inference),
+because the heavy training notebooks mostly did not run yet, so they understate the heavy ones.
+
+**One pivot case** (the 7 in `docs/agent_pivots_2026-10-30.md`):
+- One SLURM job runs expert v_k, the agent and expert v_k+1, and grades all three.
+- Wall clock: 13–28 min on one node with 1 GPU and 8 CPUs.
+- Agent (Claude Code + Opus 5.5): 3–22 min (mean 10) and $0.18–0.73 (mean $0.41) per run, by Claude Code's own
+  cost estimate. $2.89 for all 7.
+
+**Projections**, assuming $0.41 and about 17 node-minutes per agent run (agent time plus running and grading its code):
+- Next round: 7 pivots × with/without knowledge × 3 repeats = 42 agent runs, about $17 and 12 node-hours.
+- 42 human pivots have both versions running on Babel already (aes2 20, gquest 14, hms 4, ranzcr 3, equity 1; by
+  author tier 31 Contributor, 5 Expert, 3 Master, 3 Grandmaster). All of them × 2 × 3 = 252 agent runs, about $105
+  and 70 node-hours.
