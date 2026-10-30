@@ -221,3 +221,19 @@ because the heavy training notebooks mostly did not run yet, so they understate 
 - 42 human pivots have both versions running on Babel already (aes2 20, gquest 14, hms 4, ranzcr 3, equity 1; by
   author tier 31 Contributor, 5 Expert, 3 Master, 3 Grandmaster). All of them × 2 × 3 = 252 agent runs, about $105
   and 70 node-hours.
+
+**Larger scopes** (all 7 paired competitions; Kaggle's recorded runtime, before failed runs and reruns):
+
+| scope | versions | Kaggle runtime | needs GPU |
+|---|---:|---:|---:|
+| 70 best versions (above) | 70 | 62 h | 86% |
+| all 3,315 human pivots (Yaqing's labels) | 5,289 | ~3,100 h | 60% |
+| all human versions with code (427 notebooks) | 13,411 | ~9,100 h (4,300 GPU + 4,900 CPU) | 56% |
+
+- Median 5 min per version, but a long tail: the mean is 41 min, and amex and equity notebooks run for hours.
+- Agent at all 3,315 pivots, with and without knowledge, once each: 6,630 runs, about $2,700 of API. Each run also
+  runs the edited notebook (about as long as the expert version, mean 35 min), about 5,000 node-hours.
+- Static triage of the 5,289 pivot versions: 83% need external inputs we have not prepared; 225 are inputs-complete
+  and light.
+- Source: `/data/user_data/pengchej/traceml/versions_7comps.csv` (static triage of all 7 comps) joined with
+  `pivot_labels.csv` (not in git).
