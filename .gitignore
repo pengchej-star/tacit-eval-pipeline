@@ -21,6 +21,8 @@ data/
 workdirs/
 results/*
 !results/runs.jsonl
+!results/agent_runs.jsonl
+!results/agent_pilot/
 
 # Triage CSVs are deliverables and must stay tracked
 !triage/*.csv
