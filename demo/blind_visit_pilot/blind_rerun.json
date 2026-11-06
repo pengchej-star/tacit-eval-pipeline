@@ -1,0 +1,4500 @@
+[
+ {
+  "step_id": "13521245:8->9",
+  "node": "T",
+  "expert": "13521245",
+  "child": "T.6",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "LB score is 0.952, which is in the range of a well-trained single model for this competition; not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": "No local CV scores are computed in the notebook, so there is no way to compare validation vs LB.",
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference code calls model.predict(dtest) once with augment=False and no TTA (no flip averaging or multi-crop); TTA has not been applied.",
+    "order": 2
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "Inference uses IMSIZE[6]=528 (EfficientNet-B6 resolution) but the model is loaded from 'ranzcr-efficientnet-tpu-training/model.h5' which is an EfficientNet-B7 (native resolution 600=IMSIZE[7]). This is a resolution mismatch.",
+    "order": 3
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   2925,
+   399
+  ],
+  "prompt_chars": 8827
+ },
+ {
+  "step_id": "13521245:12->13",
+  "node": "T",
+  "expert": "13521245",
+  "child": "T.2",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "yes",
+    "evidence": "After v12 the score dropped to 0.81275, far below the v9/v10 peak of ~0.957 and far below what a single well-trained EfficientNet should achieve (~0.95+). The v12 change removed the efficientnet imports, likely breaking the model load so predictions are degraded — this points to a pipeline bug.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "no",
+    "evidence": "Resolution sweeps (IMSIZE[5] vs [6] vs [7]) produced meaningful score differences (0.944–0.957), not just noise, so tuning has not plateaued — but the current score regression to 0.81 is clearly a bug, not a tuning plateau.",
+    "order": 4
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference code in v12 shows no TTA — model.predict(dtest) is called once with augment=False and no flip averaging.",
+    "order": 3
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "v12 uses IMSIZE[5]=456 for test decoding, but the best LB scores (0.953–0.957) were achieved with IMSIZE[7]=600 (v9) and even IMSIZE[6]=528 (v7). Additionally, removing the efficientnet package in v12 likely broke the model weights loading, causing the resolution/model mismatch to compound into the 0.81 score.",
+    "order": 2
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   3253,
+   500
+  ],
+  "prompt_chars": 10115
+ },
+ {
+  "step_id": "13521245:12->13",
+  "node": "T",
+  "expert": "13521245",
+  "child": "T.4",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "yes",
+    "evidence": "After v12 the score dropped to 0.81275, far below the v9/v10 peak of ~0.957 and far below what a single well-trained EfficientNet should achieve (~0.95+). The v12 change removed the efficientnet imports, likely breaking the model load so predictions are degraded.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "no",
+    "evidence": "Resolution sweeps (IMSIZE[5] vs [6] vs [7]) produced meaningful score differences (0.944–0.957), not just noise, so tuning has not plateaued — but the current crisis is a regression from removing imports, not a plateau.",
+    "order": 4
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference code has augment=False and no TTA loop; predictions are made from a single pass with no flip/rotation averaging.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "v11 changed to IMSIZE[5]=456 and score dropped to 0.94487 vs 0.95705 at IMSIZE[7]=600 in v10; the current code still uses IMSIZE[5]. The best score was achieved at IMSIZE[7], indicating a resolution mismatch with the training resolution or that a higher-res setting is available but not being used.",
+    "order": 2
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   3253,
+   473
+  ],
+  "prompt_chars": 10115
+ },
+ {
+  "step_id": "13542132:2->3",
+  "node": "T",
+  "expert": "13542132",
+  "child": "T.2",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "LB score is 0.94363, which is a reasonable AUC for a single Xception model on this task — not nonsensically low or indicative of a bug.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "Only one model checkpoint (Xception_750_TPU.h5) is loaded; no other diverse models or checkpoints are visible in the notebook or referenced inputs.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": "No local CV scores are computed — all validation/training code is commented out, so there is no way to compare CV vs LB.",
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "not_checked",
+    "evidence": "No hyperparameter sweeps have been performed in this inference-only notebook; training was done externally.",
+    "order": null
+   },
+   "E05": {
+    "id": "E05",
+    "state": "yes",
+    "evidence": "Only Xception has been used. Stronger backbones like EfficientNet-B5/B7 or ResNet200d, commonly used in public solutions for this competition, have not been tried.",
+    "order": 3
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference pipeline in cell [25] calls model.predict(test_df) with no TTA — augment=False is set in the test dataset builder and no flip/multi-crop averaging is applied.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": "The model was trained externally at 750×750 and inference uses TARGET_SIZE=750, so they appear matched, but we cannot verify the external training resolution with certainty.",
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": "No information about remaining submission attempts is visible in the notebook.",
+    "order": null
+   }
+  },
+  "usage": [
+   4931,
+   483
+  ],
+  "prompt_chars": 14881
+ },
+ {
+  "step_id": "13542132:4->5",
+  "node": "T.1",
+  "expert": "13542132",
+  "child": "T.1.4",
+  "checks": {
+   "E60": {
+    "id": "E60",
+    "state": "yes",
+    "evidence": "The notebook has large blocks of commented-out code (train/val split, dataset building, model creation, TPU setup) that are dead code but don't cause runtime errors since they're commented out; the active inference pipeline runs cleanly. No runtime errors from stale references.",
+    "order": 1
+   },
+   "E09": {
+    "id": "E09",
+    "state": "no",
+    "evidence": "The model is loaded via models.load_model() which loads both architecture and weights together from the .h5 file, so there is no separate architecture definition that could mismatch. model.summary() is called successfully.",
+    "order": 2
+   },
+   "E72": {
+    "id": "E72",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E16": {
+    "id": "E16",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E11": {
+    "id": "E11",
+    "state": "yes",
+    "evidence": "v2→v3 added brightness augmentation and LB went from 0.94363 to 0.95160 (improvement), but v3→v4 changed train/val split ratio and LB dropped to 0.94725. However, there is no local CV metric being computed at all (training/validation code is commented out), so CV-LB correlation cannot be assessed — the issue is that no local CV exists.",
+    "order": 4
+   },
+   "E10": {
+    "id": "E10",
+    "state": "yes",
+    "evidence": "v3→v4 bundled both the train/val split ratio change (0.80/0.20 → 0.85/0.15) and a dropout change (0.2→0.3), making it impossible to attribute the LB drop from 0.95160 to 0.94725 to either change alone.",
+    "order": 5
+   },
+   "E12": {
+    "id": "E12",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E13": {
+    "id": "E13",
+    "state": "yes",
+    "evidence": "All training and validation code is commented out. The notebook only loads a pre-trained model and runs inference — there is no active local validation scheme at all, so local scores cannot be computed.",
+    "order": 3
+   },
+   "E352": {
+    "id": "E352",
+    "state": "no",
+    "evidence": "No fold-based cross-validation is implemented; only a single pre-trained model is loaded for inference. No per-fold scores exist.",
+    "order": 6
+   },
+   "E353": {
+    "id": "E353",
+    "state": "yes",
+    "evidence": "The best prior submission was v3 at LB 0.95160 (brightness augmentation added). v4 changed split/dropout parameters and dropped to 0.94725. The commented-out training code shows the changes but the loaded model is still the same baseline 'Xception_750_TPU.h5' — the split/dropout changes in commented code don't affect inference, so the score drop likely comes from the brightness augmentation parameter or other subtle change in the active pipeline.",
+    "order": 7
+   }
+  },
+  "usage": [
+   5804,
+   721
+  ],
+  "prompt_chars": 17780
+ },
+ {
+  "step_id": "13542132:10->11",
+  "node": "T",
+  "expert": "13542132",
+  "child": "T.4",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current best LB is 0.95160, which is reasonable for a single Xception model on this task — not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "Only one model (Xception_750_TPU.h5) is loaded; no other diverse models or checkpoints are visible in the notebook or referenced as available.",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": "No local CV scores are computed — the train/val split and training code are all commented out, so there's no way to compare CV vs LB.",
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Scores across v2-v10 fluctuate between ~0.944 and ~0.952 with augmentation/hyperparameter tweaks producing changes within ~0.01 noise range, suggesting the current recipe is near its optimum.",
+    "order": 2
+   },
+   "E05": {
+    "id": "E05",
+    "state": "yes",
+    "evidence": "Only Xception has been used; stronger backbones like EfficientNet-B5/B7 or ResNet200d (mentioned in task description as common in public solutions) have not been tried.",
+    "order": 4
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference pipeline in cell [25] simply calls model.predict(test_df) with no TTA — augment=False is explicitly set for test_df.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": "The pretrained model was trained externally (Xception_750_TPU.h5) and we cannot verify its training resolution, though TARGET_SIZE=750 is used for inference.",
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": "No information about remaining submission attempts is visible in the notebook.",
+    "order": null
+   }
+  },
+  "usage": [
+   6162,
+   509
+  ],
+  "prompt_chars": 18740
+ },
+ {
+  "step_id": "13542132:10->11",
+  "node": "T",
+  "expert": "13542132",
+  "child": "T.2",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current best LB is 0.95160, which is reasonable for a single Xception model on this task — not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "Only one model (Xception_750_TPU.h5) is loaded; no other diverse models or checkpoints are visible in the notebook or referenced as available.",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": "No local CV scores are computed — the train/val split and training code are all commented out, so there is no visible CV vs LB comparison.",
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Scores across v2-v10 fluctuate between ~0.944 and ~0.952 with augmentation/hyperparameter tweaks producing changes within ~0.01 noise range, suggesting the current recipe is near its optimum.",
+    "order": 2
+   },
+   "E05": {
+    "id": "E05",
+    "state": "yes",
+    "evidence": "Only Xception has been used; stronger backbones like EfficientNet-B5/B7 or ResNet200d (mentioned in task description as common in public solutions) have not been tried.",
+    "order": 4
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference pipeline in cell [25] simply calls model.predict(test_df) with no TTA — augment=False is explicitly set for test_df.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": "The pretrained model was trained externally (Xception_750_TPU.h5) and loaded directly; there's no way to verify training resolution from the notebook alone.",
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": "No information about remaining submission attempts is visible in the notebook.",
+    "order": null
+   }
+  },
+  "usage": [
+   6162,
+   505
+  ],
+  "prompt_chars": 18740
+ },
+ {
+  "step_id": "13542132:11->12",
+  "node": "T",
+  "expert": "13542132",
+  "child": "T.4",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current best LB is 0.95160 which is reasonable for a single Xception model; not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "Only one model (Xception_750_TPU.h5) is loaded for inference; no other trained models or checkpoints are visible in the notebook or referenced datasets.",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": "No local CV scores are computed — all training/validation code is commented out, so there is no way to compare CV vs LB.",
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Versions v3-v11 show augmentation and hyperparameter tweaks yielding scores oscillating between 0.943-0.952 with no clear improvement trend; the best (0.95160) was v3 and recent changes haven't surpassed it, suggesting near-plateau.",
+    "order": 2
+   },
+   "E05": {
+    "id": "E05",
+    "state": "yes",
+    "evidence": "Only Xception has been used; stronger backbones like EfficientNet-B5/B7 or ResNet200d (mentioned in task description as common in public notebooks) have not been tried.",
+    "order": 4
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference code simply calls model.predict(test_df) with no TTA — no flips, rotations, or multi-crop averaging are applied.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": "The pretrained model was trained at 750 resolution and inference uses TARGET_SIZE=750, so they match; no higher-res checkpoint is visible.",
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": "No information about remaining submission attempts is visible in the notebook or edit history.",
+    "order": null
+   }
+  },
+  "usage": [
+   6481,
+   506
+  ],
+  "prompt_chars": 19810
+ },
+ {
+  "step_id": "13542132:11->12",
+  "node": "T",
+  "expert": "13542132",
+  "child": "T.2",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current best LB is 0.95160, which is reasonable for a single Xception model on this task — not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook loads only one model (Xception_750_TPU.h5); no other trained models or checkpoints are visible in the code or inputs.",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": "No local CV scores are computed — training/validation code is commented out, so there is no way to compare CV vs LB.",
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Scores across v2-v11 fluctuate between ~0.943 and ~0.952 with augmentation/hyperparameter tweaks, and the best score (0.95160) was achieved at v3 with minimal changes; subsequent tuning (v4-v11) has not exceeded it, suggesting plateau within noise.",
+    "order": 2
+   },
+   "E05": {
+    "id": "E05",
+    "state": "yes",
+    "evidence": "Only Xception has been used; stronger backbones like EfficientNet-B5/B7 or ResNet200d (mentioned in task description as common in public notebooks) have not been tried.",
+    "order": 4
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference code simply calls model.predict(test_df) with no TTA — no flips, rotations, or multi-crop averaging are applied.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": "The pretrained model was trained at 750×750 on TPU and inference also uses TARGET_SIZE=750, but we cannot verify the exact training resolution from the notebook alone.",
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": "No information about remaining submission attempts is visible in the notebook or edit history.",
+    "order": null
+   }
+  },
+  "usage": [
+   6481,
+   520
+  ],
+  "prompt_chars": 19810
+ },
+ {
+  "step_id": "13577502:6->7",
+  "node": "T",
+  "expert": "13577502",
+  "child": "T.6",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "LB 0.9518 (v5) and 0.9495 (v6) are reasonable for a single model on this competition; not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "no",
+    "evidence": "Only one real model change was made (v4→v5, jumping from 0.882 to 0.952); there have been no hyperparameter sweeps showing plateau behavior.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "yes",
+    "evidence": "The notebook uses Xception; stronger backbones like EfficientNet-B5/B7 or ResNet200d (mentioned in competition description as typical public solutions) have not been tried.",
+    "order": 4
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference code sets augment=False and runs a single forward pass with no TTA (no flip averaging or multi-crop).",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   3218,
+   378
+  ],
+  "prompt_chars": 9736
+ },
+ {
+  "step_id": "13577502:6->7",
+  "node": "T",
+  "expert": "13577502",
+  "child": "T.1",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "LB 0.9518 (v5) and 0.9495 (v6) are reasonable for a single model on this competition; not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "no",
+    "evidence": "Only one real model change was made (v4→v5 jumping from 0.882 to 0.952), and v5→v6 was a re-run with slight score variation (0.9518→0.9495). There have not been multiple hyperparameter sweeps to conclude plateauing.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "yes",
+    "evidence": "The notebook uses Xception; stronger backbones like EfficientNet-B5/B7 or ResNet200d (mentioned in competition description as typical public solutions) have not been tried in this pipeline.",
+    "order": 4
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference code sets augment=False and does a single forward pass with no TTA (no flip averaging or multi-crop).",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "yes",
+    "evidence": "The expert has used roughly 4 scored submissions across 6 versions, well within Kaggle's typical daily limit of 5 submissions, leaving room for more experiments.",
+    "order": 2
+   }
+  },
+  "usage": [
+   3218,
+   446
+  ],
+  "prompt_chars": 9736
+ },
+ {
+  "step_id": "13702907:8->9",
+  "node": "T",
+  "expert": "13702907",
+  "child": "T.8",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "The best LB score achieved is 0.95131, which is in the range of a reasonably well-trained single EfficientNetB7 model for this competition. Not nonsensically low.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "In v2→v3 the expert had three separate models and ensemble averaging (ans). The weight path '../input/efficientnet-tpu/models/model.h5' suggests a single checkpoint is used now; the earlier ensemble code was removed in v3→v4. There may be additional checkpoints in that input directory, but the current code only loads one.",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": "No local CV / validation scores are computed or visible anywhere in the notebook; cannot compare to LB.",
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "no",
+    "evidence": "No hyperparameter sweeps have been performed; the edits so far are bug fixes, re-runs, and switching between single model vs ensemble. No tuning plateau is visible.",
+    "order": 4
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": "No evidence the expert investigated alternative backbones; only EfficientNetB7 is used throughout.",
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference pipeline in the current code has augment=False and no TTA (no flip averaging or multi-crop). TTA has not been applied.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "IMSIZE[-2] = 600 is used for inference. The v5→v6 change switched from IMSIZE[-1]=512 to IMSIZE[-2]=600, which improved the score from 0.94772 to 0.95131, suggesting 600 matches training resolution better. However, the score instability across re-runs (0.95131→0.95073→0.94510) hints at possible remaining resolution or pipeline issues. The expert has been actively investigating resolution matching.",
+    "order": 6
+   },
+   "E08": {
+    "id": "E08",
+    "state": "yes",
+    "evidence": "The expert has already made 6 submissions (v3, v4, v6, v7, v8) out of the typical Kaggle daily limit of 5 (across multiple days), and is continuing to iterate, suggesting sufficient submission budget remains.",
+    "order": 2
+   }
+  },
+  "usage": [
+   3059,
+   620
+  ],
+  "prompt_chars": 9096
+ },
+ {
+  "step_id": "13702907:16->17",
+  "node": "T",
+  "expert": "13702907",
+  "child": "T.1",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.95396, which is in a reasonable range for this competition and not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "Earlier versions used multiple models (v2-v3 had 3-model ensemble), and the expert has access to multiple checkpoints (e.g., '../input/efficientnet-tpu/models/model.h5' and '../input/effnet-tpu-2/model.h5'). Currently only a single model is used for inference.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": "No validation scores are computed in the notebook; there is no local CV to compare against LB.",
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Recent re-runs and small changes (v6-v15) show scores fluctuating between 0.945-0.954 with no clear upward trend from incremental tuning, suggesting near-plateau behavior.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": "No evidence the expert evaluated alternative backbones; only EfficientNetB7 has been used throughout.",
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference code in cell [11] calls model.predict(dtest) directly with no TTA (no flips, no multi-crop averaging).",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "The IMSIZE tuple contains multiple resolutions and the expert has been switching between them (512, 600). The current inference uses IMSIZE[-2]=600, but it's unclear if this matches the training resolution of the loaded checkpoint, and higher-res options exist in the tuple.",
+    "order": 5
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": "No information about remaining submission count is visible in the notebook or edit history.",
+    "order": null
+   }
+  },
+  "usage": [
+   3652,
+   526
+  ],
+  "prompt_chars": 11174
+ },
+ {
+  "step_id": "13848868:3->4",
+  "node": "T",
+  "expert": "13848868",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "LB score is 0.93727, which is a reasonable score for this competition and not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E05": {
+    "id": "E05",
+    "state": "yes",
+    "evidence": "The notebook only uses ResNeXt50_32x4d as the backbone. Public notebooks typically use EfficientNet/ResNet200d style CNNs, which have not been tried here.",
+    "order": 3
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference pipeline in run_inference_loop has no TTA — it runs a single forward pass per image with no flips or multi-crop averaging.",
+    "order": 2
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   6090,
+   330
+  ],
+  "prompt_chars": 17553
+ },
+ {
+  "step_id": "13848868:3->4",
+  "node": "T.7",
+  "expert": "13848868",
+  "child": "T.7.1",
+  "checks": {
+   "E03": {
+    "id": "E03",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E255": {
+    "id": "E255",
+    "state": "no",
+    "evidence": "The recent edits (v2→v3) adjusted image size, fold count, and rank conversion but did not involve debugging/fixing individual ensemble components that now need recombining.",
+    "order": 3
+   },
+   "E53": {
+    "id": "E53",
+    "state": "no",
+    "evidence": "The notebook only runs fold-averaged inference; there is no code or output showing individual fold/model standalone scores.",
+    "order": 4
+   },
+   "E54": {
+    "id": "E54",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E55": {
+    "id": "E55",
+    "state": "no",
+    "evidence": "Only one architecture family is used: MultiHeadResNeXt (resnext50_32x4d) across all 4 folds. No other architecture families are present.",
+    "order": 1
+   },
+   "E56": {
+    "id": "E56",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E51": {
+    "id": "E51",
+    "state": "no",
+    "evidence": "The submission code writes `test_preds_arr.mean(axis=0)` which is the 4-fold ensemble average, not a stale single-model prediction.",
+    "order": 5
+   },
+   "E52": {
+    "id": "E52",
+    "state": "yes",
+    "evidence": "v1→v2 enabled CONVERT_TO_RANK (rank-based blending, LB 0.93064), then v2→v3 disabled it (raw probability averaging, LB 0.93727). Both approaches have been tried and compared.",
+    "order": 2
+   },
+   "E397": {
+    "id": "E397",
+    "state": "no",
+    "evidence": "The current ensemble uses equal-weight (uniform) blending via `test_preds_arr.mean(axis=0)` — no non-uniform weights are used.",
+    "order": 6
+   }
+  },
+  "usage": [
+   6037,
+   480
+  ],
+  "prompt_chars": 17470
+ },
+ {
+  "step_id": "13848868:5->6",
+  "node": "T",
+  "expert": "13848868",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "LB score is 0.93873, which is a reasonable score for this competition and not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": "No local CV scores are reported in the notebook; only LB scores are visible, so we cannot compare CV vs LB.",
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "no",
+    "evidence": "Recent changes (rank conversion on/off, fold count, image size) produced meaningful score differences (0.93064→0.93727→0.93707→0.93873), not just noise.",
+    "order": 2
+   },
+   "E05": {
+    "id": "E05",
+    "state": "yes",
+    "evidence": "The notebook uses only ResNeXt50_32x4d as the backbone. Public solutions typically use EfficientNet or ResNet200d, which have not been tried here.",
+    "order": 3
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference pipeline applies only Normalize and ToTensorV2 with no horizontal flip or other TTA; TTA is absent.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   6322,
+   389
+  ],
+  "prompt_chars": 18409
+ },
+ {
+  "step_id": "13848868:18->19",
+  "node": "T",
+  "expert": "13848868",
+  "child": "T.3",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current best LB is 0.94396, which is competitive for a single-model ResNeXt50 pipeline; not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": "No local CV scores are visible in the notebook or edit history to compare against LB scores.",
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Many recent edits are just toggling CONVERT_TO_RANK and switching between 4/5 folds, with scores oscillating in a narrow band (0.939–0.944). The v15 best of 0.94396 vs v10's 0.94330 shows diminishing returns from incremental tuning.",
+    "order": 2
+   },
+   "E05": {
+    "id": "E05",
+    "state": "yes",
+    "evidence": "Only resnext50_32x4d has been used throughout all versions; no other backbone (e.g., EfficientNet, ResNet200d) has been tried, and public notebooks typically use those stronger backbones.",
+    "order": 3
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference code shows a simple forward pass with no horizontal flip or other TTA applied — only a single-pass prediction loop is visible.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "no",
+    "evidence": "IMAGE_SIZE is set to (448,448) matching the training notebook reference; the v11 attempt at 512x512 hurt the score (0.93722), suggesting a mismatch when resolution was changed without retraining.",
+    "order": 5
+   },
+   "E08": {
+    "id": "E08",
+    "state": "yes",
+    "evidence": "The expert has already made 18 submissions with many incremental changes, and continues to experiment freely, indicating sufficient submission budget remains.",
+    "order": 6
+   }
+  },
+  "usage": [
+   7430,
+   506
+  ],
+  "prompt_chars": 23133
+ },
+ {
+  "step_id": "13848868:18->19",
+  "node": "T",
+  "expert": "13848868",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current best LB is 0.94396, which is competitive for this task and not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": "No local CV scores are visible in the notebook or edit history to compare against LB scores.",
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Recent edits are mostly toggling CONVERT_TO_RANK and minor architecture changes, with scores oscillating in a narrow band (0.939-0.944). The expert has tried multi-head vs single-head, different image sizes, different fold counts, rank vs no-rank — all producing small, noisy changes suggesting near-plateau.",
+    "order": 2
+   },
+   "E05": {
+    "id": "E05",
+    "state": "yes",
+    "evidence": "Only resnext50_32x4d has been used throughout all versions. Public solutions mention EfficientNet and ResNet200d backbones which have not been tried.",
+    "order": 3
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference pipeline in the notebook shows no TTA — images are loaded, normalized, and passed through the model once with no horizontal flip or other augmentation averaging.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "yes",
+    "evidence": "The expert has made 18 versions with many submissions, and continues to submit incremental changes (toggling flags, etc.), indicating sufficient submission budget remains.",
+    "order": 5
+   }
+  },
+  "usage": [
+   7430,
+   445
+  ],
+  "prompt_chars": 23133
+ },
+ {
+  "step_id": "13848868:32->33",
+  "node": "T.6",
+  "expert": "13848868",
+  "child": "T.6.n74",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.95407, which is competitive and close to the expert's best of 0.95418 — not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E09": {
+    "id": "E09",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E218": {
+    "id": "E218",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E15": {
+    "id": "E15",
+    "state": "no",
+    "evidence": "Scores in the 0.94–0.95 AUC range across many versions indicate predictions are on a reasonable scale.",
+    "order": 2
+   },
+   "E219": {
+    "id": "E219",
+    "state": "yes",
+    "evidence": "LB score of 0.95407 is strong and close to the expert's best (0.95418); the pipeline has been iteratively validated across 30+ versions with consistent scores, indicating it is bug-free and in a reasonable range.",
+    "order": 3
+   },
+   "E50": {
+    "id": "E50",
+    "state": "no",
+    "evidence": "Chest X-rays have laterality (heart is on the left, catheters have specific anatomical paths), so horizontal flip is NOT a valid invariance for this data.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "no",
+    "evidence": "v31 already increased IMAGE_SIZE to (512,512) and achieved the best score of 0.95418; the current inference resolution matches the training resolution.",
+    "order": 5
+   },
+   "E49": {
+    "id": "E49",
+    "state": "yes",
+    "evidence": "The expert has been toggling CONVERT_TO_RANK back and forth across many versions while also changing model architecture (SSEBlock vs SpatialAttentionBlock, channel widths, image size); the post-processing setting may be stale relative to the v31 architecture/resolution change.",
+    "order": 6
+   },
+   "E385": {
+    "id": "E385",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E386": {
+    "id": "E386",
+    "state": "no",
+    "evidence": "The notebook has been producing valid LB scores across 30+ versions, so submission CSV writing code must exist (even though the code is truncated in the view).",
+    "order": 7
+   },
+   "E387": {
+    "id": "E387",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E388": {
+    "id": "E388",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   7744,
+   617
+  ],
+  "prompt_chars": 24251
+ },
+ {
+  "step_id": "15082684:13->14",
+  "node": "T",
+  "expert": "15082684",
+  "child": "T.1",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Best LB score is 0.96040, which is in the range of a reasonable single-model submission for this competition, not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "The expert has tried many different checkpoints (resnet200d_2516, 2721, 2723, 2812, 2813, 2823, 0318, 0211 across multiple epochs) but CFG.model is always a single-element list — no multi-checkpoint ensembling has been done.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "yes",
+    "evidence": "Several checkpoints with high CV (e.g., cv9650, cv9589) scored much lower on LB (0.95917, 0.95923), while the best LB (0.96040) came from a cv9564 checkpoint — CV and LB are not well correlated, suggesting distribution mismatch.",
+    "order": 3
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "The expert has tried 12 different checkpoint swaps across versions v3-v13 with LB scores ranging 0.953-0.960, all within a narrow band — incremental checkpoint selection appears to have plateaued.",
+    "order": 4
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference code uses only get_transforms(data='valid') with a simple Resize+Normalize — no horizontal flip or other TTA is applied.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "yes",
+    "evidence": "The expert has already made 12 submissions (v2-v13) and is still actively experimenting, suggesting sufficient submission budget remains.",
+    "order": 6
+   }
+  },
+  "usage": [
+   4259,
+   514
+  ],
+  "prompt_chars": 12824
+ },
+ {
+  "step_id": "15082684:13->14",
+  "node": "T",
+  "expert": "15082684",
+  "child": "T.1",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "The best LB score achieved is 0.96040, which is in a reasonable range for a single-fold ResNet200d model on this competition. Not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "CFG.model is a list with only one checkpoint, and the expert has tried many different checkpoints across versions (resnet200d_2516, 2721, 2723, 2812, 2813, 2823, 0318, 0211 variants). Multiple diverse checkpoints exist but are not combined into an ensemble.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "yes",
+    "evidence": "Checkpoint cv9650 scored LB 0.95917, cv9589 scored LB 0.95923, cv9572 scored LB 0.95326 — local CV scores (e.g., 9650 vs 9572) don't correlate well with LB scores, suggesting some CV-LB mismatch, though not extreme.",
+    "order": 3
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "The expert has tried 12 different checkpoint swaps across v3-v13 with LB scores ranging from 0.953 to 0.960 — all single-checkpoint swaps produce small, noisy changes suggesting the single-model approach is near its optimum.",
+    "order": 4
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference code uses only get_transforms(data='valid') with a simple Resize+Normalize — no horizontal flip or other TTA is applied.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "yes",
+    "evidence": "The expert has already made 12 submissions (v2-v13) and is still actively experimenting, indicating sufficient submission budget remains.",
+    "order": 6
+   }
+  },
+  "usage": [
+   4259,
+   542
+  ],
+  "prompt_chars": 12824
+ },
+ {
+  "step_id": "15082684:23->24",
+  "node": "T",
+  "expert": "15082684",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Best LB score is 0.96591, which is competitive for a single-model submission in this competition; not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "The current config only loads a single checkpoint ('resnet200d_0814_fold0_epoch11_cv9618.pth') despite having n_fold=5 and multiple checkpoints available from earlier versions (v19 used five fold checkpoints). Multiple diverse models/checkpoints exist but are not combined.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "yes",
+    "evidence": "The multihead checkpoint loaded has CV 0.9618 but the best LB with multihead was 0.96591 (v22 with 5-fold ensemble); the single checkpoint v23 was not submitted. Earlier checkpoints show CV ~0.965 but LB ~0.959, indicating some CV-LB gap but not extreme leakage.",
+    "order": 3
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Versions v5-v14 show extensive checkpoint sweeping with LB scores fluctuating in a narrow band (0.953-0.959), indicating near-plateau for single-model tuning of the original architecture.",
+    "order": 4
+   },
+   "E05": {
+    "id": "E05",
+    "state": "no",
+    "evidence": "A domain-specific pretrained backbone (resnet200d_320_chestx) is already being used as the student initialization for the multihead model (CFG.student path).",
+    "order": 5
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference function simply runs a forward pass with no horizontal flip or other TTA; only valid-time transforms (Resize + Normalize) are applied.",
+    "order": 6
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   6241,
+   523
+  ],
+  "prompt_chars": 19331
+ },
+ {
+  "step_id": "15082684:24->25",
+  "node": "T.1",
+  "expert": "15082684",
+  "child": "T.1.4",
+  "checks": {
+   "E60": {
+    "id": "E60",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E09": {
+    "id": "E09",
+    "state": "yes",
+    "evidence": "v23->v24 refactored inference to handle multi-GPU state dict key stripping and per-model architecture instantiation, and the expert previously added state dict inspection logging (v19-v20). The current code has model_archs=['MultiHeadResNet200D'] but loads a checkpoint 'resnet200d_0820_fold0_epoch12_cv9628.pth' — the architecture/checkpoint alignment is a known concern given the history of swapping between multihead and non-multihead configs.",
+    "order": 1
+   },
+   "E72": {
+    "id": "E72",
+    "state": "no",
+    "evidence": "The competition metric is macro-averaged AUC over 11 labels, which is rank-based. The notebook does not compute a local metric at all during inference — it only produces predictions. No local metric mismatch exists because no local metric is computed.",
+    "order": 3
+   },
+   "E16": {
+    "id": "E16",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E11": {
+    "id": "E11",
+    "state": "yes",
+    "evidence": "Comparing CV scores in checkpoint filenames vs LB: cv9584->LB 0.95452, cv9562->LB 0.95717, cv9575->LB 0.95450, cv9572->LB 0.95685, cv9577->LB 0.95610, cv9650->LB 0.95917, cv9572->LB 0.95326, cv9662->LB 0.96509. The relationship is clearly non-monotonic — e.g., cv9562 got higher LB than cv9584, and cv9628 got LB 0.96249 which is lower than cv9662's 0.96509 despite similar CV ranges.",
+    "order": 2
+   },
+   "E10": {
+    "id": "E10",
+    "state": "yes",
+    "evidence": "v16 bundled multihead architecture change with checkpoint swap (LB 0.95870); v18 changed normalization AND size was already changed in v17 (LB 0.96509); v23 bundled multi-GPU fix, map_location change, and single checkpoint selection together (not submitted). Multiple changes were bundled in several submissions.",
+    "order": 4
+   },
+   "E12": {
+    "id": "E12",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E13": {
+    "id": "E13",
+    "state": "yes",
+    "evidence": "The notebook is inference-only with no local validation code. CV scores are only visible from checkpoint filenames, and there is no structured local evaluation — the expert relies entirely on LB feedback.",
+    "order": 5
+   },
+   "E352": {
+    "id": "E352",
+    "state": "no",
+    "evidence": "v19 attempted 5-fold averaging but scored 0.96183, lower than single multihead checkpoint v22 at 0.96591. Per-fold scores are only visible from checkpoint filenames, not from a systematic per-fold evaluation. No structured per-fold analysis has been done.",
+    "order": 6
+   },
+   "E353": {
+    "id": "E353",
+    "state": "yes",
+    "evidence": "Best prior submission was v22 at LB 0.96591 using multihead=True with a single checkpoint and 5-fold multihead checkpoints loaded. Current v24 scores 0.96249 with a different single checkpoint — the best configuration has not been restored. The expert needs to return to the v22 setup (or v18's 0.96509 normalization + single multihead checkpoint).",
+    "order": 7
+   }
+  },
+  "usage": [
+   6426,
+   878
+  ],
+  "prompt_chars": 20225
+ },
+ {
+  "step_id": "15082684:24->25",
+  "node": "T.1",
+  "expert": "15082684",
+  "child": "T.1.4",
+  "checks": {
+   "E60": {
+    "id": "E60",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E09": {
+    "id": "E09",
+    "state": "yes",
+    "evidence": "v23 added logic to strip 'module.' prefix for multi-GPU checkpoints, and v24 refactored per-model architecture loading. The expert has been actively debugging state dict key mismatches across versions, and the current code has explicit CFG.multi_gpu branching for key stripping.",
+    "order": 2
+   },
+   "E72": {
+    "id": "E72",
+    "state": "no",
+    "evidence": "Competition metric is macro-averaged AUC; the notebook uses sigmoid outputs for ranking which is monotonic and doesn't affect AUC. No local metric computation code exists in the inference notebook to be misaligned.",
+    "order": 5
+   },
+   "E16": {
+    "id": "E16",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E11": {
+    "id": "E11",
+    "state": "yes",
+    "evidence": "CV scores in checkpoint names vs LB scores show non-monotonic relationship: e.g., cv9584 got LB 0.95452, cv9562 got LB 0.95717 (v7), cv9650 got LB 0.95917 (v12), cv9572 got LB 0.95326 (v13), cv9662 got LB 0.96509 (v18 after normalization change). The relationship is clearly noisy and non-monotonic.",
+    "order": 1
+   },
+   "E10": {
+    "id": "E10",
+    "state": "yes",
+    "evidence": "v18 bundled normalization change with size=640 (from v17, not submitted), making it impossible to attribute the large jump to 0.96509 to either change alone. v24 bundled refactored inference loop with single checkpoint, dropping from 0.96591 to 0.96249.",
+    "order": 3
+   },
+   "E12": {
+    "id": "E12",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E13": {
+    "id": "E13",
+    "state": "yes",
+    "evidence": "This is an inference-only notebook with no local validation code. The expert relies entirely on CV scores embedded in checkpoint filenames and LB submissions, with no structured local validation scheme present.",
+    "order": 4
+   },
+   "E352": {
+    "id": "E352",
+    "state": "no",
+    "evidence": "v19 used five fold checkpoints but scored 0.96183, lower than single multihead checkpoint v22 at 0.96591. Current v24 uses only a single fold checkpoint. Per-fold scores are only visible as filename suffixes, not systematically collected or compared.",
+    "order": 6
+   },
+   "E353": {
+    "id": "E353",
+    "state": "yes",
+    "evidence": "Best prior submission was v22 at LB 0.96591 (multihead=True, single checkpoint, 5-fold list replaced by single checkpoint in v23/v24). Current v24 scores 0.96249, significantly lower. The pipeline has diverged: v22 used multi-state loading inside batch loop with 5 multihead checkpoints, while v24 uses refactored per-model loop with only 1 checkpoint.",
+    "order": 7
+   }
+  },
+  "usage": [
+   6426,
+   769
+  ],
+  "prompt_chars": 20225
+ },
+ {
+  "step_id": "15082684:26->27",
+  "node": "T.1",
+  "expert": "15082684",
+  "child": "T.1.4",
+  "checks": {
+   "E60": {
+    "id": "E60",
+    "state": "no",
+    "evidence": "The notebook code runs inference end-to-end without obvious dead code causing runtime errors; the only unused class (RanzcrClassifier) is conditionally selected and doesn't interfere.",
+    "order": 3
+   },
+   "E09": {
+    "id": "E09",
+    "state": "yes",
+    "evidence": "Expert already added state dict inspection logging (v20) and toggled multihead flag (v22) to fix architecture/checkpoint mismatches; v24 refactored per-model loading. The current code correctly instantiates MultiHeadResNet200D when model_archs says so, and loads state['model'] directly.",
+    "order": 2
+   },
+   "E72": {
+    "id": "E72",
+    "state": "no",
+    "evidence": "Competition metric is macro-averaged AUC; the notebook applies sigmoid and outputs probabilities. AUC is rank-based so no scale/transform mismatch exists. No local metric code is present to diverge.",
+    "order": 4
+   },
+   "E16": {
+    "id": "E16",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E11": {
+    "id": "E11",
+    "state": "yes",
+    "evidence": "CV scores in checkpoint filenames vs LB scores are non-monotonic: cv9584→LB0.9545, cv9572→LB0.9569, cv9650→LB0.9592, cv9662→LB0.9659(v18)→0.9651, cv9712→LB0.9649, cv9694→not submitted. Higher CV does not reliably predict higher LB.",
+    "order": 1
+   },
+   "E10": {
+    "id": "E10",
+    "state": "yes",
+    "evidence": "v18 bundled image size change (640), normalization change, and multihead model into one submission yielding 0.96509; v16 bundled multihead architecture + new checkpoint. Attribution is unclear for those jumps.",
+    "order": 5
+   },
+   "E12": {
+    "id": "E12",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E13": {
+    "id": "E13",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E352": {
+    "id": "E352",
+    "state": "yes",
+    "evidence": "Per-fold CV scores are visible in checkpoint names (fold0 cv9662, fold3 cv9694, fold4 cv9712, etc.) showing meaningful variance across folds, but currently only a single fold checkpoint is used for inference rather than ensembling all folds.",
+    "order": 6
+   },
+   "E353": {
+    "id": "E353",
+    "state": "yes",
+    "evidence": "Best LB was v22 at 0.96591 using multihead=True, size=640, custom normalization, and a single multihead checkpoint. Current v26 uses fold3 checkpoint (cv9694) instead of the v22 checkpoint, and only 1 fold instead of the 5-fold ensemble attempted in v19. The best configuration has not been fully restored.",
+    "order": 7
+   }
+  },
+  "usage": [
+   6434,
+   720
+  ],
+  "prompt_chars": 20235
+ },
+ {
+  "step_id": "15082684:27->28",
+  "node": "T",
+  "expert": "15082684",
+  "child": "T.1",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current best LB is 0.96591, which is competitive for a single-model submission in this competition; no indication of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "The expert has multiple checkpoints across folds (e.g., fold0-fold4 multihead checkpoints seen in v19-v27) but is currently only using a single checkpoint for inference, so combining them would be an untapped ensemble.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "yes",
+    "evidence": "Checkpoint filenames encode CV scores (e.g., cv9714, cv9712, cv9694) which are ~0.97, while LB scores are ~0.965-0.966, showing a notable gap between local CV and LB.",
+    "order": 3
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Recent versions (v22-v27) involve swapping checkpoints with marginal or no LB improvement (0.96591, 0.96249, 0.96490, and several not submitted), indicating the expert is near a plateau with incremental changes.",
+    "order": 4
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference function in the notebook simply runs a single forward pass per image with no horizontal flip or other TTA applied.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   6297,
+   445
+  ],
+  "prompt_chars": 19427
+ },
+ {
+  "step_id": "15082684:27->28",
+  "node": "T",
+  "expert": "15082684",
+  "child": "T.1",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current best LB is 0.96591, which is competitive for a single-model submission in this competition; no indication of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "The expert has multiple checkpoints across folds (fold0-fold4) and different training runs (0623, 0820, 1011, 0318, etc.) visible in the edit history, and currently only a single checkpoint is used for inference.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "yes",
+    "evidence": "Checkpoint filenames encode CV scores (e.g., cv9714, cv9712, cv9694) which are ~0.97, while LB scores are ~0.965-0.966, showing a notable gap between local CV and LB.",
+    "order": 3
+   },
+   "E04": {
+    "id": "E04",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E05": {
+    "id": "E05",
+    "state": "no",
+    "evidence": "A domain-specific pretrained backbone (resnet200d_320_chestx) is already being used as the student initialization, and the expert has been using ResNet200D throughout.",
+    "order": 4
+   },
+   "E06": {
+    "id": "E06",
+    "state": "yes",
+    "evidence": "The inference function simply runs a single forward pass with no horizontal flip or other TTA; get_transforms only has Resize+Normalize+ToTensor.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   6297,
+   439
+  ],
+  "prompt_chars": 19427
+ },
+ {
+  "step_id": "15082684:28->29",
+  "node": "T.1",
+  "expert": "15082684",
+  "child": "T.1.4",
+  "checks": {
+   "E60": {
+    "id": "E60",
+    "state": "no",
+    "evidence": "The notebook code runs successfully for inference (v28 scored LB 0.96904); no evidence of dead code causing runtime errors.",
+    "order": 3
+   },
+   "E09": {
+    "id": "E09",
+    "state": "no",
+    "evidence": "v22 enabled multihead=True to match multihead checkpoints, and v23 fixed DataParallel key stripping; current code correctly loads MultiHeadResNet200D with matching state dict, and LB 0.96904 confirms successful loading.",
+    "order": 4
+   },
+   "E72": {
+    "id": "E72",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E16": {
+    "id": "E16",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E11": {
+    "id": "E11",
+    "state": "yes",
+    "evidence": "Checkpoint CV scores and LB scores are not monotonically correlated: e.g., cv9572 got LB 0.95610, cv9577 got LB 0.95610 (same), cv9650 got LB 0.95917, cv9572 (different run) got LB 0.95326, cv9662 got LB 0.95870, cv9714 got LB 0.96904 but cv9715 also got 0.96904. Multiple checkpoints with higher CV did not always yield higher LB.",
+    "order": 1
+   },
+   "E10": {
+    "id": "E10",
+    "state": "yes",
+    "evidence": "Several submissions bundled multiple changes: v16 changed model architecture + checkpoint simultaneously; v18 changed normalization + size was already changed in v17; v19 changed from multihead to non-multihead + switched to 5-fold ensemble simultaneously.",
+    "order": 2
+   },
+   "E12": {
+    "id": "E12",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E13": {
+    "id": "E13",
+    "state": "yes",
+    "evidence": "This is an inference-only notebook with no local validation code; all evaluation relies on LB submissions and offline CV numbers embedded in checkpoint filenames.",
+    "order": 5
+   },
+   "E352": {
+    "id": "E352",
+    "state": "yes",
+    "evidence": "Per-fold CV scores are visible in checkpoint filenames (e.g., fold0 cv9715, fold3 cv9694, fold4 cv9712) showing meaningful variance across folds, but currently only a single fold (fold0) is used for inference rather than ensembling multiple folds.",
+    "order": 6
+   },
+   "E353": {
+    "id": "E353",
+    "state": "yes",
+    "evidence": "The best prior submission was v28 at LB 0.96904 using a single multihead checkpoint (fold0_epoch9_cv9715) at size 640 with custom normalization. Earlier v19 attempted 5-fold averaging but scored only 0.96183, suggesting the multi-fold ensemble configuration was not properly set up. The current single-model config matches the best score.",
+    "order": 7
+   }
+  },
+  "usage": [
+   6428,
+   726
+  ],
+  "prompt_chars": 20224
+ },
+ {
+  "step_id": "15082684:28->29",
+  "node": "T.1",
+  "expert": "15082684",
+  "child": "T.1.4",
+  "checks": {
+   "E60": {
+    "id": "E60",
+    "state": "no",
+    "evidence": "The notebook code runs successfully through inference (v28 scored LB 0.96904); no evidence of dead code causing runtime errors.",
+    "order": 3
+   },
+   "E09": {
+    "id": "E09",
+    "state": "no",
+    "evidence": "v22 enabled multihead=True to match multihead checkpoints, and v23 fixed DataParallel key stripping; current code loads MultiHeadResNet200D with matching state dict and scores 0.96904 successfully.",
+    "order": 4
+   },
+   "E72": {
+    "id": "E72",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E16": {
+    "id": "E16",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E11": {
+    "id": "E11",
+    "state": "yes",
+    "evidence": "CV and LB are not monotonically correlated: e.g., cv9650 → LB 0.95917, cv9572 → LB 0.95326, cv9662 → LB 0.95870, cv9712 → LB 0.96490, cv9714 (epoch6) not submitted but cv9715 (epoch9) → LB 0.96904. Meanwhile cv9628 → LB 0.96249. The relationship is noisy/non-monotonic.",
+    "order": 1
+   },
+   "E10": {
+    "id": "E10",
+    "state": "yes",
+    "evidence": "Several submissions bundled multiple changes: v16 changed architecture + checkpoint + multihead flag simultaneously (LB 0.95870); v18 changed normalization + size in sequence; v23-v24 refactored loading + changed checkpoints together.",
+    "order": 2
+   },
+   "E12": {
+    "id": "E12",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E13": {
+    "id": "E13",
+    "state": "yes",
+    "evidence": "This is an inference-only notebook; there is no local validation code — the expert relies entirely on CV scores embedded in checkpoint filenames and LB submissions, with no structured local validation scheme.",
+    "order": 5
+   },
+   "E352": {
+    "id": "E352",
+    "state": "yes",
+    "evidence": "Per-fold CV scores are visible in checkpoint names: fold0 cv9715, fold3 cv9694, fold4 cv9712, etc. There is meaningful variance across folds (9694–9715), and v19 previously attempted multi-fold averaging but scored only 0.96183 vs single-fold 0.96904.",
+    "order": 6
+   },
+   "E353": {
+    "id": "E353",
+    "state": "yes",
+    "evidence": "The best prior submission is v28 (LB 0.96904) using single MultiHeadResNet200D checkpoint at size 640 with custom normalization. The current code matches this configuration exactly.",
+    "order": 7
+   }
+  },
+  "usage": [
+   6428,
+   688
+  ],
+  "prompt_chars": 20224
+ },
+ {
+  "step_id": "15164527:6->7",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96755, which is competitive and consistent with well-trained models; not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "The notebook already has 3 models ensembled (ResNet200D, SeResNet152D, EfficientNetB5) and is adding a 4th 'ResNet200D Multi-head' model with 5-fold checkpoints from 'ranzcr-clip-weights-for-multi-head-model-v2'. These new fold-level checkpoints are being integrated.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip averaging) is already implemented in the inference() function: 'y_preds1 = model(images)' and 'y_preds2 = model(images.flip(-1))' are averaged.",
+    "order": 3
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "The first three models use IMAGE_SIZE=640 for inference but their checkpoint names suggest training at 320 (e.g., 'resnet200d_320_CV9632.pth'). The new multi-head model uses IMAGE_SIZE=(512,512). There is a resolution mismatch/inconsistency across models.",
+    "order": 4
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   6480,
+   470
+  ],
+  "prompt_chars": 18844
+ },
+ {
+  "step_id": "15164527:6->7",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96755, which is competitive and consistent with well-trained models; not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "The notebook already has 3 models ensembled (ResNet200D, SeResNet152D, EfficientNetB5) and is adding a 4th 'ResNet200D Multi-head' model with 5-fold checkpoints from 'ranzcr-clip-weights-for-multi-head-model-v2'. These new fold-level checkpoints are being integrated.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip averaging) is already implemented in the inference() function: 'y_preds1 = model(images)' and 'y_preds2 = model(images.flip(-1))' are averaged.",
+    "order": 3
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "The first three models use IMAGE_SIZE=640 for inference but their checkpoint names suggest training at 320 (e.g., 'resnet200d_320_CV9632.pth'). The new multi-head model uses IMAGE_SIZE=(512,512). There is a resolution mismatch/inconsistency across models.",
+    "order": 4
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   6480,
+   470
+  ],
+  "prompt_chars": 18844
+ },
+ {
+  "step_id": "15164527:9->10",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96733 (peak 0.96766), which is competitive with public single-model baselines (ResNet200D ~0.965, SeResNet152D ~0.962, EfficientNetB5 ~0.962). This is not nonsensically low.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook already ensembles ResNet200D, SeResNet152D, EfficientNetB5, and a multi-head ResNet200D model (4 models combined). However, the multi-head model uses 5-fold checkpoints that are already being combined. All available models are already in the ensemble.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Recent weight tuning across v5-v9 shows scores oscillating in a narrow band (0.96642→0.96679→0.96755→0.96744→0.96766→0.96733), with the last change (increasing B5 weight) actually hurting the score, suggesting the ensemble weighting is near its optimum.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "The inference function already applies horizontal flip TTA: 'y_preds1 = model(images)' and 'y_preds2 = model(images.flip(-1))' with averaging.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "The first three models were trained at 320px resolution but inference uses IMAGE_SIZE=640 (a mismatch). The multi-head model uses 512x512. This resolution mismatch between training and inference is visible in the code.",
+    "order": 5
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   6777,
+   534
+  ],
+  "prompt_chars": 19903
+ },
+ {
+  "step_id": "15164527:11->12",
+  "node": "T.7",
+  "expert": "15164527",
+  "child": "T.7.1",
+  "checks": {
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "The notebook includes a 4th model (ResNet200D Multi-head with 5-fold CV) whose code is present but whose predictions have not yet been blended into the final ensemble submission.",
+    "order": 2
+   },
+   "E255": {
+    "id": "E255",
+    "state": "yes",
+    "evidence": "v1-v3 were spent debugging/fixing the EfficientNetB5 classifier attribute mismatch and memory issues; the multi-head ResNet200D model code (bottom half of notebook) appears to have been added in v6 but its integration into the final blend has been iteratively adjusted since.",
+    "order": 5
+   },
+   "E53": {
+    "id": "E53",
+    "state": "yes",
+    "evidence": "Individual CV scores are known from the model filenames: resnet200d CV=0.9632, seresnet152d CV=0.9615, efficientnet_b5 CV=0.9621. The multi-head model weights are in 'ranzcr-clip-weights-for-multi-head-model-v2'.",
+    "order": 1
+   },
+   "E54": {
+    "id": "E54",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E55": {
+    "id": "E55",
+    "state": "yes",
+    "evidence": "Models span ResNet200D, SeResNet152D, EfficientNet-B5, and a multi-head ResNet200D variant — three distinct architecture families.",
+    "order": 3
+   },
+   "E56": {
+    "id": "E56",
+    "state": "yes",
+    "evidence": "Individual CV scores are 0.9632, 0.9615, and 0.9621 — tightly clustered within ~0.17% of each other, no single model clearly dominates.",
+    "order": 4
+   },
+   "E51": {
+    "id": "E51",
+    "state": "no",
+    "evidence": "The submission-writing cell (cell 12) is commented out, and the active blend in cell 11 combines predictions200d, predictions152d, predictionsB5 plus the multi-head model predictions — the ensemble output is what gets written.",
+    "order": 6
+   },
+   "E52": {
+    "id": "E52",
+    "state": "no",
+    "evidence": "No rank-based blending code or comparison appears anywhere in the notebook or edit history; only weighted probability averaging (with and without power transforms) has been tried.",
+    "order": 7
+   },
+   "E397": {
+    "id": "E397",
+    "state": "yes",
+    "evidence": "Current blend weights are [0.50, 0.12, 0.20, 0.18] (from v11 edit), clearly non-uniform. The edit history (v4–v11) shows only non-uniform weight tuning; equal-weight blending was never explicitly tested.",
+    "order": 8
+   }
+  },
+  "usage": [
+   6902,
+   661
+  ],
+  "prompt_chars": 20476
+ },
+ {
+  "step_id": "15164527:15->16",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.6",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96778, which is competitive and consistent with well-trained single models (individual models report CV 96.32, 96.15, 96.21). No bug or miscalibration is indicated.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook already ensembles ResNet200D, SeResNet152D, EfficientNetB5, and a multi-head ResNet200D (5-fold). All available models are already combined.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "From v4 through v15, the expert has been tweaking blend weights and transforms (sqrt vs linear vs rank-based), with scores oscillating in a narrow band ~0.9664–0.9678. Recent changes (v13: 0.96772, v14: 0.96765, v15: 0.96778) show changes within noise, indicating the ensemble recipe is near its optimum.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "The inference function already applies horizontal flip TTA: 'y_preds2 = model(images.flip(-1))' and averages with the original prediction.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "IMAGE_SIZE is set to 640 for the first three models but the model names reference '_320' (e.g., 'resnet200d_320_CV9632.pth'), and the multi-head model uses IMAGE_SIZE=(512,512). There is a resolution mismatch between training (320) and inference (640) for the first three models.",
+    "order": 5
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   7380,
+   525
+  ],
+  "prompt_chars": 22092
+ },
+ {
+  "step_id": "15164527:15->16",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.6",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96778, which is competitive and consistent with well-trained single models (individual models have CV ~0.96). No bug or miscalibration is indicated.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook already ensembles ResNet200D, SeResNet152D, EfficientNetB5, and a multi-head ResNet200D (5-fold). All available models are already combined.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "From v4 (0.96642) through v15 (0.96778), many weight-tuning and transform experiments produced tiny changes (e.g., v11=0.96772, v12=0.96760, v13=0.96772, v14=0.96765, v15=0.96778), indicating the ensemble blending is near its optimum with changes within noise.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "The inference function already applies horizontal flip TTA: 'y_preds1 = model(images)' and 'y_preds2 = model(images.flip(-1))' are averaged.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "IMAGE_SIZE is set to 640 for the first three models but the model names reference '_320' (e.g., 'resnet200d_320_CV9632.pth'), and the multi-head model uses 512x512. There is a resolution mismatch between training (320) and inference (640).",
+    "order": 5
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   7380,
+   517
+  ],
+  "prompt_chars": 22092
+ },
+ {
+  "step_id": "15164527:18->19",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96795, which is competitive and consistent with well-trained models (public notebooks report similar ranges). No bug or miscalibration is indicated.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook already ensembles ResNet200D, SeResNet152D, EfficientNetB5, and a multi-head ResNet200D (5-fold). All available models are already combined.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "From v7 through v18, the expert has been tweaking blend weights and transforms (sqrt vs linear, rank-based vs probability) with scores oscillating between ~0.96733 and 0.96806 — most changes produce differences of ~0.001 or less, suggesting near-plateau.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip averaging) was added in v16, and the inference function clearly performs both original and flipped forward passes: 'y_preds = (y_preds1.sigmoid()... + y_preds2.sigmoid()...) / 2'.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "Inference uses IMAGE_SIZE=640 but model names reference '_320' (resnet200d_320, seresnet152d_320) and the multi-head model uses IMAGE_SIZE=(512,512). There is a resolution mismatch between training and inference for the first three models.",
+    "order": 5
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   7651,
+   493
+  ],
+  "prompt_chars": 23051
+ },
+ {
+  "step_id": "15164527:18->19",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96795, which is competitive and consistent with well-trained models (public notebooks report similar ranges). No bug or miscalibration is indicated.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook already ensembles ResNet200D, SeResNet152D, EfficientNetB5, and a multi-head ResNet200D (5-fold). All available models are already combined.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "From v7 through v18, the expert has been tweaking blend weights and transforms (sqrt vs linear, rank-based vs probability) with scores oscillating between ~0.96733 and 0.96806 — most changes produce differences of ~0.001 or less, suggesting near-plateau.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip averaging) was added in v16, and the inference function clearly performs both original and flipped forward passes: 'y_preds = (y_preds1.sigmoid()... + y_preds2.sigmoid()...) / 2'.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "Inference uses IMAGE_SIZE=640 but model names reference '_320' (resnet200d_320, seresnet152d_320) and the multi-head model uses IMAGE_SIZE=(512,512). There is a resolution mismatch between training and inference for the first three models.",
+    "order": 5
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   7651,
+   493
+  ],
+  "prompt_chars": 23051
+ },
+ {
+  "step_id": "15164527:19->20",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96803, which is competitive and consistent with well-trained models in this competition. No bug or miscalibration is indicated.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook already ensembles ResNet200D, SeResNet152D, EfficientNetB5, and a multi-head ResNet200D (5-fold). All available models are already combined.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "From v8 through v19, the expert has been tweaking blend weights and transforms with scores oscillating between ~0.96733 and 0.96806 — changes of ~0.001 or less, suggesting near-plateau.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "v16 added horizontal-flip TTA (forward pass on original + flipped, averaged), which is visible in the inference function. TTA is already applied.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "yes",
+    "evidence": "The expert is already at v19 with many submissions made, and continues to iterate, indicating sufficient submission budget remains.",
+    "order": 5
+   }
+  },
+  "usage": [
+   7680,
+   410
+  ],
+  "prompt_chars": 23051
+ },
+ {
+  "step_id": "15164527:19->20",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96803, which is competitive and consistent with well-trained single models (individual models scored ~0.96+). No bug or miscalibration is indicated.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook already ensembles ResNet200D, SeResNet152D, EfficientNetB5, and a multi-head ResNet200D (5-fold). All available models are already combined.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Recent weight-tuning edits (v13-v19) show scores oscillating in a narrow band: 0.96772, 0.96765, 0.96778, 0.96806, 0.96789, 0.96795, 0.96803. Changes are within ~0.001, suggesting near-plateau for ensemble weight tuning.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip averaging) was added in v16 and is present in the current inference function: 'y_preds2 = model(images.flip(-1))' with averaging.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "yes",
+    "evidence": "The expert is already at v19 with many submissions made, and continues to iterate with small changes, indicating sufficient submission budget remains.",
+    "order": 5
+   }
+  },
+  "usage": [
+   7680,
+   460
+  ],
+  "prompt_chars": 23051
+ },
+ {
+  "step_id": "15164527:20->21",
+  "node": "T.7",
+  "expert": "15164527",
+  "child": "T.7.1",
+  "checks": {
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "All four model sources (ResNet200D, SeResNet152D, EfficientNetB5, and the multi-head ResNet200D fold-averaged model) are already combined in the ensemble blend. No unused trained models are visible.",
+    "order": 3
+   },
+   "E255": {
+    "id": "E255",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E53": {
+    "id": "E53",
+    "state": "yes",
+    "evidence": "The notebook title and input paths reference individual model CV scores: resnet200d CV9632, seresnet152d CV96.15, efficientnet_b5 CV96.21. The multi-head model also has fold-level validation. Individual standalone scores are known.",
+    "order": 1
+   },
+   "E54": {
+    "id": "E54",
+    "state": "no",
+    "evidence": "All four models (ResNet200D, SeResNet152D, EfficientNetB5, multi-head ResNet200D) have been part of the ensemble since at least v6 and have known CV scores; no new untested model exists.",
+    "order": 4
+   },
+   "E55": {
+    "id": "E55",
+    "state": "yes",
+    "evidence": "The ensemble includes ResNet200D, SeResNet152D, and EfficientNet-B5 — three different architecture families (ResNet variant, SE-ResNet variant, EfficientNet).",
+    "order": 2
+   },
+   "E56": {
+    "id": "E56",
+    "state": "yes",
+    "evidence": "Individual model CV scores are 96.32, 96.15, and 96.21 — all within ~0.17 of each other, tightly clustered with no single dominant model.",
+    "order": 5
+   },
+   "E51": {
+    "id": "E51",
+    "state": "no",
+    "evidence": "The submission code (visible in earlier versions and the blend logic) writes the combined ensemble predictions to submission.csv, not a single-model output.",
+    "order": 6
+   },
+   "E52": {
+    "id": "E52",
+    "state": "yes",
+    "evidence": "Rank-based blending was introduced in v13 (LB 0.96772) and has been compared against raw probability averaging (v7 LB 0.96744) and square-root-transformed averaging (v8 LB 0.96766). Both approaches have been tried.",
+    "order": 7
+   },
+   "E397": {
+    "id": "E397",
+    "state": "yes",
+    "evidence": "Current blend weights are non-uniform (0.40/0.50/0.17/0.18 in v20). Equal-weight blending has never been explicitly tested — all versions from v4 onward use non-uniform weights.",
+    "order": 8
+   }
+  },
+  "usage": [
+   7647,
+   645
+  ],
+  "prompt_chars": 22953
+ },
+ {
+  "step_id": "15164527:22->23",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96808, which is competitive and consistent with well-trained models; no indication of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook already ensembles ResNet200D, SeResNet152D, EfficientNetB5, and a multi-head ResNet200D (fold-averaged). All available models are already combined.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "From v15 (0.96806) through v22 (0.96808), many weight-tuning iterations produced changes of ~0.0001-0.0004, oscillating around 0.968, indicating the ensemble weighting is near its optimum and changes are within noise.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip averaging) was added in v16 and is present in the current inference function: 'y_preds2 = model(images.flip(-1))' with averaging.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   7702,
+   407
+  ],
+  "prompt_chars": 23051
+ },
+ {
+  "step_id": "15164527:22->23",
+  "node": "T.7",
+  "expert": "15164527",
+  "child": "T.7.1",
+  "checks": {
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "All available models (ResNet200D, SeResNet152D, EfficientNetB5, and the multi-head ResNet200D fold model) are already combined in the rank-based ensemble blend used for submission.",
+    "order": 2
+   },
+   "E255": {
+    "id": "E255",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E53": {
+    "id": "E53",
+    "state": "yes",
+    "evidence": "Individual model CV scores are known from the model filenames and earlier notebook descriptions: ResNet200D CV 96.32, SeResNet152D CV 96.15, EfficientNetB5 CV 96.21. The multi-head model also has fold-level predictions.",
+    "order": 3
+   },
+   "E54": {
+    "id": "E54",
+    "state": "no",
+    "evidence": "All four model sources (ResNet200D, SeResNet152D, EfficientNetB5, multi-head fold model) have been used in the ensemble since early versions; no new untested model is present.",
+    "order": 4
+   },
+   "E55": {
+    "id": "E55",
+    "state": "yes",
+    "evidence": "The ensemble includes ResNet200D, SeResNet152D, EfficientNetB5, and a multi-head ResNet200D — spanning ResNet, SE-ResNet, and EfficientNet architecture families.",
+    "order": 1
+   },
+   "E56": {
+    "id": "E56",
+    "state": "yes",
+    "evidence": "Individual model CV scores are 96.32, 96.15, and 96.21 — tightly clustered within ~0.17 points, with no single model clearly dominating.",
+    "order": 5
+   },
+   "E51": {
+    "id": "E51",
+    "state": "no",
+    "evidence": "The submission is written from the rank-based blend of all four prediction arrays (test_preds_arr, predictions200d, predictions152d, predictionsB5), not a single model's output.",
+    "order": 6
+   },
+   "E52": {
+    "id": "E52",
+    "state": "yes",
+    "evidence": "Raw probability averaging (with sqrt transform) was used in v4-v12, and rank-based blending was introduced in v13 (LB 0.96772) and has been the approach since; both have been tried and compared via LB scores.",
+    "order": 7
+   },
+   "E397": {
+    "id": "E397",
+    "state": "yes",
+    "evidence": "Current blend weights are non-uniform (0.40/0.50/0.17/0.23 as of v22). Equal-weight blending has never been explicitly tested — all versions from v4 onward used non-uniform weights.",
+    "order": 8
+   }
+  },
+  "usage": [
+   7643,
+   641
+  ],
+  "prompt_chars": 22953
+ },
+ {
+  "step_id": "15164527:22->23",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96808, which is competitive and consistent with well-trained models (public notebooks report similar ranges). No bug or miscalibration is indicated.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook already ensembles ResNet200D, SeResNet152D, EfficientNetB5, and a multi-head ResNet200D (fold-averaged). All available models are already combined.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "From v15 (0.96806) through v22 (0.96808), roughly 8 versions of weight tuning produced scores oscillating in a narrow band (~0.96760–0.96809), indicating the ensemble weighting is near its optimum and changes are within noise.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip averaging) was added in v16 and is present in the current inference function: 'y_preds2 = model(images.flip(-1))' with averaging.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "yes",
+    "evidence": "The expert has already made 22 versions with many LB submissions, and continues to iterate with small changes, suggesting sufficient submission budget remains.",
+    "order": 5
+   }
+  },
+  "usage": [
+   7702,
+   439
+  ],
+  "prompt_chars": 23051
+ },
+ {
+  "step_id": "15164527:22->23",
+  "node": "T.7",
+  "expert": "15164527",
+  "child": "T.7.1",
+  "checks": {
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "All available models (ResNet200D, SeResNet152D, EfficientNetB5, and the multi-head ResNet200D fold model) are already combined in the rank-based ensemble blend used for submission.",
+    "order": 2
+   },
+   "E255": {
+    "id": "E255",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E53": {
+    "id": "E53",
+    "state": "yes",
+    "evidence": "Individual model CV scores are known from the model filenames and earlier notebook descriptions: ResNet200D CV 96.32, SeResNet152D CV 96.15, EfficientNetB5 CV 96.21.",
+    "order": 3
+   },
+   "E54": {
+    "id": "E54",
+    "state": "no",
+    "evidence": "All four model components (ResNet200D, SeResNet152D, EfficientNetB5, multi-head fold model) have been used in the ensemble since early versions; no new untested model is present.",
+    "order": 4
+   },
+   "E55": {
+    "id": "E55",
+    "state": "yes",
+    "evidence": "The ensemble spans ResNet200D, SeResNet152D, and EfficientNetB5 — three distinct architecture families.",
+    "order": 1
+   },
+   "E56": {
+    "id": "E56",
+    "state": "yes",
+    "evidence": "Individual CV scores are 96.32, 96.15, and 96.21 — tightly clustered within ~0.17 points, no single model clearly dominates.",
+    "order": 5
+   },
+   "E51": {
+    "id": "E51",
+    "state": "no",
+    "evidence": "The submission CSV is written from the rank-based blended ensemble output combining all four prediction arrays, not a single-model prediction.",
+    "order": 6
+   },
+   "E52": {
+    "id": "E52",
+    "state": "yes",
+    "evidence": "Rank-based blending was introduced in v13 (LB 0.96772) and raw probability averaging (with sqrt transform) was used in earlier versions (e.g., v8 LB 0.96766); both approaches have been tried and compared.",
+    "order": 7
+   },
+   "E397": {
+    "id": "E397",
+    "state": "yes",
+    "evidence": "Current blend weights are non-uniform (0.40/0.50/0.17/0.18 in v22); equal-weight blending has never been explicitly tested across the edit history.",
+    "order": 8
+   }
+  },
+  "usage": [
+   7643,
+   583
+  ],
+  "prompt_chars": 22953
+ },
+ {
+  "step_id": "15164527:25->26",
+  "node": "T.7",
+  "expert": "15164527",
+  "child": "T.7.1",
+  "checks": {
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "All three models (ResNet200D, SeResNet152D, EfficientNetB5) plus the multi-head model have been combined in the ensemble since early versions; no new uncombined model exists.",
+    "order": 3
+   },
+   "E255": {
+    "id": "E255",
+    "state": "yes",
+    "evidence": "v23→v24 commented out secondary model inferences and limited to fold 0 only for debugging; v24→v25 added a debug line (test_preds_arr[999] = test_pred). These components were isolated/disabled and need to be recombined into the full ensemble.",
+    "order": 1
+   },
+   "E53": {
+    "id": "E53",
+    "state": "yes",
+    "evidence": "Individual model standalone scores are known from the referenced source notebooks: ResNet200D LB ~96.5, SeResNet152D LB ~96.2, EfficientNetB5 LB ~96.21, as indicated in the notebook markdown titles and model paths.",
+    "order": 4
+   },
+   "E54": {
+    "id": "E54",
+    "state": "no",
+    "evidence": "No new untested model has been introduced; all models (ResNet200D, SeResNet152D, EfficientNetB5, multi-head ResNet200D) have been used in prior submissions.",
+    "order": 5
+   },
+   "E55": {
+    "id": "E55",
+    "state": "yes",
+    "evidence": "The ensemble spans ResNet200D, SeResNet152D, and EfficientNetB5 — three different architecture families (ResNet variant, SE-ResNet variant, EfficientNet).",
+    "order": 6
+   },
+   "E56": {
+    "id": "E56",
+    "state": "yes",
+    "evidence": "Individual model LB scores are ~96.5, ~96.2, and ~96.21 — all within ~0.3 points of each other, tightly clustered with no single dominant model.",
+    "order": 7
+   },
+   "E51": {
+    "id": "E51",
+    "state": "yes",
+    "evidence": "In v24, the ensemble blending and secondary model inferences were commented out, and only fold 0 runs, resulting in LB 0.61268 — the submission CSV contains a stale/broken single-fold prediction rather than the full ensemble output.",
+    "order": 2
+   },
+   "E52": {
+    "id": "E52",
+    "state": "yes",
+    "evidence": "Rank-based blending was introduced in v13 (LB 0.96772) after raw probability averaging with power transforms was used in earlier versions (e.g., v8 LB 0.96766), so both approaches have been tried.",
+    "order": 8
+   },
+   "E397": {
+    "id": "E397",
+    "state": "yes",
+    "evidence": "The blend weights have always been non-uniform (e.g., 0.40/0.50/0.17/0.15 in v23); no version used equal weights (0.25 each) as a baseline comparison.",
+    "order": 9
+   }
+  },
+  "usage": [
+   7659,
+   709
+  ],
+  "prompt_chars": 22953
+ },
+ {
+  "step_id": "15164527:27->28",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "yes",
+    "evidence": "v24 scored 0.61268 (catastrophically low) and v26 scored 0.95875, both far below the ~0.968 baseline, indicating the current pipeline (with commented-out models and only 1-fold inference) is broken/incomplete rather than just suboptimal.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "Three diverse models (ResNet200D, SeResNet152D, EfficientNetB5) plus a multi-head ResNet200D with 5 folds already exist and were previously ensembled together in earlier versions (v10-v20 achieved ~0.968).",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Versions v10-v20 show ensemble weight tuning producing score changes of ~0.001 or less (0.96760-0.96811), indicating the blending recipe is near its optimum.",
+    "order": 4
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip averaging) was added in v16 and is present in the current inference function: 'y_preds2 = model(images.flip(-1))' with averaging.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "IMAGE_SIZE is set to 640 for the first three models but the model checkpoints are named 'resnet200d_320' and 'seresnet152d_320', suggesting training was at 320 while inference runs at 640; the multi-head model uses 512x512. There is a potential resolution mismatch.",
+    "order": 6
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   7709,
+   513
+  ],
+  "prompt_chars": 23051
+ },
+ {
+  "step_id": "15164527:28->29",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "yes",
+    "evidence": "Current scores from v26-v28 (0.95875, 0.96212, 0.96063) are far below the best achieved score of 0.96811 (v23), and the expert is running only single folds (fold 0, 1, 2) instead of all folds, indicating a pipeline issue from the v24 debugging changes that commented out multi-fold aggregation and secondary model inferences.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "Three diverse models (ResNet200D, SeResNet152D, EfficientNetB5) plus multi-head model folds already exist and were previously combined in the ensemble (v10-v23). They are currently loaded but their inference is commented out (cell 11).",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "From v10 to v23, the expert made ~13 incremental blend-weight tuning changes with scores oscillating in a narrow band (0.96760–0.96811), indicating the ensemble recipe was near its optimum before the v24 debugging detour.",
+    "order": 4
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip averaging) was added in v16 and is present in the current inference function (cell 9): 'y_preds2 = model(images.flip(-1))' with averaging.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "IMAGE_SIZE is set to 640 for the first pipeline but models were trained at 320 (model names include '_320'). The multi-head pipeline uses 512x512. There is a resolution mismatch between inference (640) and training (320) for the first set of models.",
+    "order": 2
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   7716,
+   547
+  ],
+  "prompt_chars": 23051
+ },
+ {
+  "step_id": "15164527:32->33",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96800, which is competitive and consistent with well-trained models; not indicative of a bug.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook already ensembles ResNet200D, SeResNet152D, EfficientNetB5, and a multi-head ResNet200D (5-fold), all combined via rank-based blending.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "From v14 through v32, weight tuning changes produce score fluctuations of ~0.001 or less (e.g., 0.96778→0.96806→0.96789→0.96795→0.96803→0.96809→0.96808→0.96811→0.96797→0.96800), indicating the ensemble weights are near their optimum.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip averaging) was added in v16 and is present in the current inference function: 'y_preds2 = model(images.flip(-1))' with averaging.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E08": {
+    "id": "E08",
+    "state": "yes",
+    "evidence": "The expert has already made 32 versions with many submissions, and continues to submit incremental weight changes, suggesting sufficient submission budget remains.",
+    "order": 5
+   }
+  },
+  "usage": [
+   7732,
+   458
+  ],
+  "prompt_chars": 23077
+ },
+ {
+  "step_id": "15164527:33->34",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96804, which is competitive and consistent with well-trained models; not indicative of a bug.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook already ensembles ResNet200D, SeResNet152D, EfficientNetB5, and a multi-head ResNet200D (5-fold), all combined via rank-based blending.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Recent weight-tuning versions (v16-v23, v31-v33) show score oscillating in a narrow band ~0.96789-0.96811, with changes of ±0.001 or less, indicating plateau.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "The inference function already performs horizontal flip TTA: 'y_preds1 = model(images)' and 'y_preds2 = model(images.flip(-1))' with averaged sigmoid outputs.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "Inference uses IMAGE_SIZE=640 but the multi-head model uses 512x512 and model checkpoints are named 'resnet200d_320' / 'seresnet152d_320', suggesting training was at 320 resolution while inference is at 640. A resolution mismatch or opportunity for higher-res exists.",
+    "order": 5
+   },
+   "E08": {
+    "id": "E08",
+    "state": "yes",
+    "evidence": "The expert has made 33 versions with many submissions, and continues to iterate with small weight changes, suggesting sufficient submission budget remains.",
+    "order": 6
+   }
+  },
+  "usage": [
+   7764,
+   497
+  ],
+  "prompt_chars": 23077
+ },
+ {
+  "step_id": "15164527:41->42",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current best LB is 0.96804 and individual folds score 0.958–0.964, which are in the expected range for these public models — not indicative of a bug.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "The notebook loads ResNet200D, SeResNet152D, EfficientNetB5 single-model checkpoints plus 5-fold ResNet200D and a multi-head ResNet200D, but recent versions (v39-v41) only run one fold at a time (i==2 guard), so most models/folds are not yet contributing to the ensemble.",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": "No local CV scores are computed in the notebook; only LB scores are available, so no direct comparison is possible.",
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Versions v31-v34 show weight-tuning changes producing only tiny LB differences (0.96797→0.96800→0.96804→0.96797), indicating the blending weights are near their optimum.",
+    "order": 4
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": "No evidence the expert investigated additional pretrained backbones beyond the ones already in the notebook.",
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip) is already implemented in both inference pipelines: the first uses images.flip(-1) averaging, and the second has tta_inference_func with hflip.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "The single-model checkpoints (ResNet200D, SeResNet152D, EfficientNetB5) were trained at 320px but inference uses IMAGE_SIZE=640; the 5-fold ResNet200D uses image_size=512 while checkpoints are named 'resnet200d_foldX_cv95X.pth' — there is a resolution mismatch/opportunity.",
+    "order": 6
+   },
+   "E08": {
+    "id": "E08",
+    "state": "yes",
+    "evidence": "The expert has made 41 versions with many submissions, and continues to iterate with single-fold debug runs (v39-v41), indicating sufficient submission budget remains.",
+    "order": 2
+   }
+  },
+  "usage": [
+   7546,
+   603
+  ],
+  "prompt_chars": 23077
+ },
+ {
+  "step_id": "15164527:41->42",
+  "node": "T",
+  "expert": "15164527",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current best LB is 0.96804 and individual folds score 0.958–0.964, which are in the expected range for these public models — not indicative of a bug.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "The notebook loads ResNet200D, SeResNet152D, EfficientNetB5 single-model checkpoints plus 5-fold ResNet200D and a multi-head ResNet200D, but the current inference loop only runs one fold (i==2) of the 5-fold model and the single-model inference block is commented out — several models/checkpoints are not yet contributing to the ensemble.",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Versions v31–v34 show weight-tuning changes producing only tiny score movements (0.96797→0.96800→0.96804→0.96797), indicating the blending weights are near their optimum.",
+    "order": 4
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip) is already implemented in both inference pipelines: the first uses y_preds2 = model(images.flip(-1)), and the second has tta_inference_func with hflip.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "The single-model pipeline uses IMAGE_SIZE=640 while the 5-fold ResNet200D pipeline uses image_size=512; the single-model checkpoints were trained at 320 (resnet200d_320) but inferred at 640, showing a resolution mismatch and potential for using a higher-res or matched-res approach.",
+    "order": 6
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   7546,
+   529
+  ],
+  "prompt_chars": 23077
+ },
+ {
+  "step_id": "15164527:47->48",
+  "node": "T.7",
+  "expert": "15164527",
+  "child": "T.7.1",
+  "checks": {
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "All available models (ResNet200D, SeResNet152D, EfficientNetB5, 5-fold ResNet200D, multi-head ResNet200D) are already combined in the rank-blend ensemble used for submission.",
+    "order": 3
+   },
+   "E255": {
+    "id": "E255",
+    "state": "yes",
+    "evidence": "Versions v39-v43 show extensive debugging of individual inference components (index conditions for resnet200d loading were fixed iteratively), and v44 recombined them into the ensemble. The recent v45-v47 edits are weight-tuning on the reassembled ensemble, so the debugging/recombination cycle is complete.",
+    "order": 4
+   },
+   "E53": {
+    "id": "E53",
+    "state": "yes",
+    "evidence": "Individual model scores are known from the original notebook references (ResNet200D CV 96.32, SeResNet152D CV 96.15, EfficientNetB5 CV 96.21) and the fold models have per-fold CV scores (953-957). Standalone runs in v39-v43 also gave individual LB scores (e.g., 0.95841, 0.95872, 0.96110).",
+    "order": 1
+   },
+   "E54": {
+    "id": "E54",
+    "state": "no",
+    "evidence": "All models in the notebook (ResNet200D, SeResNet152D, EfficientNetB5, 5-fold ResNet200D, multi-head ResNet200D) have been run and their predictions verified through multiple submission iterations.",
+    "order": 5
+   },
+   "E55": {
+    "id": "E55",
+    "state": "yes",
+    "evidence": "The ensemble spans ResNet200D, SeResNet152D, and EfficientNetB5 — three different architecture families (ResNet variant, SE-ResNet variant, EfficientNet).",
+    "order": 2
+   },
+   "E56": {
+    "id": "E56",
+    "state": "yes",
+    "evidence": "Individual model CV scores are tightly clustered: ResNet200D CV 96.32, SeResNet152D CV 96.15, EfficientNetB5 CV 96.21 — all within ~0.17 points of each other, no single model clearly dominates.",
+    "order": 6
+   },
+   "E51": {
+    "id": "E51",
+    "state": "no",
+    "evidence": "The submission code (visible in earlier versions and the blend logic) writes the rank-averaged ensemble output to submission.csv, not a single-model prediction.",
+    "order": 7
+   },
+   "E52": {
+    "id": "E52",
+    "state": "yes",
+    "evidence": "Rank-based blending has been the primary approach since at least v31, with extensive weight tuning across v31-v47. The earlier code also had raw probability averaging commented out (e.g., '0.5 * (predictions200d ** 0.5) + ...' style blending), indicating both approaches were considered.",
+    "order": 8
+   },
+   "E397": {
+    "id": "E397",
+    "state": "yes",
+    "evidence": "The current blend uses highly non-uniform weights (e.g., predictions200d 0.45, predictions152d 0.23, predictionsB5 0.20, fold weights at 0.02 each). Versions v31-v47 show continuous non-uniform weight tuning with no evidence that equal-weight blending was explicitly compared as a baseline.",
+    "order": 9
+   }
+  },
+  "usage": [
+   7549,
+   812
+  ],
+  "prompt_chars": 23051
+ },
+ {
+  "step_id": "15164527:47->48",
+  "node": "T.7",
+  "expert": "15164527",
+  "child": "T.7.2",
+  "checks": {
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "All available models (ResNet200D, SeResNet152D, EfficientNetB5, 5-fold ResNet200D, multi-head ResNet200D) are already combined in the rank-blend ensemble used for submission.",
+    "order": 3
+   },
+   "E255": {
+    "id": "E255",
+    "state": "yes",
+    "evidence": "Versions v39-v43 show extensive debugging of individual inference components (index conditions for resnet200d loading), and v44 recombined them into the ensemble. Recent versions v44-v47 are all about retuning blend weights after that recombination.",
+    "order": 2
+   },
+   "E53": {
+    "id": "E53",
+    "state": "yes",
+    "evidence": "Individual model scores are known from the original notebook references (ResNet200D CV 96.32, SeResNet152D CV 96.15, EfficientNetB5 CV 96.21) and standalone LB runs (e.g., v40 LB 0.95841 for single model index 1).",
+    "order": 4
+   },
+   "E54": {
+    "id": "E54",
+    "state": "no",
+    "evidence": "All models in the notebook (ResNet200D, SeResNet152D, EfficientNetB5, 5-fold ResNet200D, multi-head ResNet200D) have been run and their predictions verified through multiple submission iterations.",
+    "order": 5
+   },
+   "E55": {
+    "id": "E55",
+    "state": "yes",
+    "evidence": "Ensemble includes ResNet200D, SeResNet152D, and EfficientNetB5 — three different architecture families (ResNet variant, SE-ResNet variant, EfficientNet).",
+    "order": 1
+   },
+   "E56": {
+    "id": "E56",
+    "state": "yes",
+    "evidence": "Individual model CV scores are tightly clustered: ResNet200D CV 96.32, SeResNet152D CV 96.15, EfficientNetB5 CV 96.21 — all within ~0.17 of each other, no single model clearly dominates.",
+    "order": 6
+   },
+   "E51": {
+    "id": "E51",
+    "state": "no",
+    "evidence": "The submission generation code (visible in the notebook's later cells) uses the rank-blended ensemble output combining all model predictions, not a single-model prediction.",
+    "order": 7
+   },
+   "E52": {
+    "id": "E52",
+    "state": "yes",
+    "evidence": "Rank-based blending has been used since at least v31 (rank-averaged ensemble with explicit weights). Earlier versions used raw probability averaging/power averaging (e.g., the commented-out line with 0.5*(predictions200d**0.5)+...), so both approaches have been tried.",
+    "order": 8
+   },
+   "E397": {
+    "id": "E397",
+    "state": "yes",
+    "evidence": "Current blend weights are clearly non-uniform (e.g., v47: test_preds contributions at 0.02 each, predictions200d at 0.45, predictions152d at 0.23, predictionsB5 at 0.20). Versions v31-v47 show extensive weight tuning but no explicit equal-weight baseline comparison.",
+    "order": 9
+   }
+  },
+  "usage": [
+   7549,
+   763
+  ],
+  "prompt_chars": 23051
+ },
+ {
+  "step_id": "15173072:11->12",
+  "node": "T",
+  "expert": "15173072",
+  "child": "T.6",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "yes",
+    "evidence": "LB score is 0.55637, far below the ~0.95+ AUC expected from a single well-trained ResNet200D (the checkpoint filename itself says 'cv954'). This strongly suggests a bug or miscalibration in the inference pipeline.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "Only one checkpoint (resnet200d_fold4_cv954.pth) is loaded; the input dataset likely contains multiple fold checkpoints (fold0–fold4) but only fold4 is used. Multiple checkpoints exist but are not ensembled.",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "no",
+    "evidence": "No hyperparameter sweeps have been performed; the expert has only been debugging the inference pipeline (fixing model loading, pretrained flags, batch size, normalization). There is no tuning plateau.",
+    "order": 5
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "The inference function already applies horizontal-flip TTA: it computes y_preds1 from original images and y_preds2 from images.flip(-1), then averages them.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "IMAGE_SIZE is set to 640 in inference. The checkpoint name 'resnet200d_fold4_cv954' doesn't specify its training resolution; if the model was trained at a different resolution (e.g., 512 or 768), there is a potential mismatch. The expert has no way to confirm the training resolution from the available code.",
+    "order": 6
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   3335,
+   497
+  ],
+  "prompt_chars": 10469
+ },
+ {
+  "step_id": "15173072:11->12",
+  "node": "T.6",
+  "expert": "15173072",
+  "child": "T.6.3",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "yes",
+    "evidence": "LB scores are 0.50990 and 0.55637, far below the ~0.95+ AUC a single well-trained ResNet200D should achieve, strongly indicating a pipeline bug.",
+    "order": 1
+   },
+   "E09": {
+    "id": "E09",
+    "state": "yes",
+    "evidence": "model.load_state_dict uses strict=False, meaning key mismatches are silently ignored. The checkpoint was trained with potentially different architecture flags (e.g., DataParallel wrapping, different head structure), and the resulting 0.55 score confirms weights are not loading correctly.",
+    "order": 2
+   },
+   "E218": {
+    "id": "E218",
+    "state": "no",
+    "evidence": "The code already has map_location logic for CPU/GPU, timm is imported via sys.path, and v7/v8 produced submissions successfully — no device or import errors are blocking inference.",
+    "order": 5
+   },
+   "E15": {
+    "id": "E15",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E219": {
+    "id": "E219",
+    "state": "no",
+    "evidence": "Current score of 0.556 is far below public baselines (~0.95+), so the pipeline is clearly not bug-free.",
+    "order": 3
+   },
+   "E50": {
+    "id": "E50",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E49": {
+    "id": "E49",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E385": {
+    "id": "E385",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E386": {
+    "id": "E386",
+    "state": "no",
+    "evidence": "Cell [12] writes predictions to 'submission.csv' — the submission writing code is present.",
+    "order": 6
+   },
+   "E387": {
+    "id": "E387",
+    "state": "no",
+    "evidence": "Cell [10] calls model.eval() before inference, so the model is correctly in eval mode.",
+    "order": 7
+   },
+   "E388": {
+    "id": "E388",
+    "state": "no",
+    "evidence": "BATCH_SIZE is 12 at 640×640 resolution, which is conservative and unlikely to cause OOM.",
+    "order": 4
+   }
+  },
+  "usage": [
+   3587,
+   573
+  ],
+  "prompt_chars": 11754
+ },
+ {
+  "step_id": "15173072:11->12",
+  "node": "T",
+  "expert": "15173072",
+  "child": "T.6",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "yes",
+    "evidence": "LB score is 0.55637, far below the ~0.95+ AUC expected from a single well-trained ResNet200D (the checkpoint filename itself says 'cv954'). This strongly suggests a bug or miscalibration in the inference pipeline.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "Only one checkpoint (resnet200d_fold4_cv954.pth) is loaded; the input dataset likely contains multiple fold checkpoints (fold0–fold4) but only fold4 is used. Multiple checkpoints exist but are not ensembled.",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "no",
+    "evidence": "No hyperparameter sweeps have been performed; the expert has only been debugging the inference pipeline (fixing model loading, pretrained flags, batch size, normalization). There is no tuning plateau.",
+    "order": 5
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "The inference function already applies horizontal-flip TTA: it computes y_preds1 from original images and y_preds2 from images.flip(-1), then averages them.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "IMAGE_SIZE is set to 640 in inference. The checkpoint name 'resnet200d_fold4_cv954' doesn't specify its training resolution; if the model was trained at a different resolution (e.g., 512 or 768), there is a potential mismatch. The expert has no way to confirm the training resolution from the available code.",
+    "order": 6
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   3335,
+   497
+  ],
+  "prompt_chars": 10469
+ },
+ {
+  "step_id": "15173072:11->12",
+  "node": "T.6",
+  "expert": "15173072",
+  "child": "T.6.n85",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "yes",
+    "evidence": "LB scores of 0.50990 and 0.55637 are far below the ~0.95+ AUC a single well-trained ResNet200D should achieve, indicating a pipeline bug.",
+    "order": 1
+   },
+   "E09": {
+    "id": "E09",
+    "state": "yes",
+    "evidence": "model.load_state_dict uses strict=False, meaning key mismatches are silently ignored. The checkpoint was trained with a potentially different architecture (e.g., with DataParallel 'module.' prefix or different head structure), and pretrained=False means the backbone starts random if keys don't match.",
+    "order": 2
+   },
+   "E218": {
+    "id": "E218",
+    "state": "no",
+    "evidence": "The code already has map_location logic handling CPU/GPU, device is printed, and v8 successfully produced a submission (LB 0.55637), so device/library issues are resolved.",
+    "order": 5
+   },
+   "E15": {
+    "id": "E15",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E219": {
+    "id": "E219",
+    "state": "no",
+    "evidence": "Score of 0.556 is far below public baselines (~0.95+), so the pipeline is clearly not bug-free.",
+    "order": 3
+   },
+   "E50": {
+    "id": "E50",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E49": {
+    "id": "E49",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E385": {
+    "id": "E385",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E386": {
+    "id": "E386",
+    "state": "no",
+    "evidence": "Cell [12] writes predictions to 'submission.csv' with proper formatting — this is already implemented.",
+    "order": 6
+   },
+   "E387": {
+    "id": "E387",
+    "state": "no",
+    "evidence": "Cell [10] calls model.eval() before inference, so the model is correctly in eval mode.",
+    "order": 7
+   },
+   "E388": {
+    "id": "E388",
+    "state": "no",
+    "evidence": "BATCH_SIZE is 12 at 640×640 resolution, which is conservative and unlikely to cause OOM.",
+    "order": 4
+   }
+  },
+  "usage": [
+   3587,
+   577
+  ],
+  "prompt_chars": 11754
+ },
+ {
+  "step_id": "15173072:15->16",
+  "node": "T",
+  "expert": "15173072",
+  "child": "T.2",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "The current LB score is 0.96062, which is in a reasonable range for a single well-trained model on this competition — not indicative of a bug or miscalibration anymore (earlier versions with scores ~0.5 had bugs that were already fixed).",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "Only a single checkpoint (resnet200d_fold4_cv954.pth) is loaded; the input dataset name suggests multiple folds exist (fold4 implies folds 0-3 also exist), but they are not yet combined.",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "The inference function already applies horizontal flip TTA: it computes y_preds1 from images and y_preds2 from images.flip(-1), then averages them.",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "The checkpoint name includes 'cv954' suggesting it was trained at a certain resolution, while inference uses IMAGE_SIZE=512 (changed from 640 in v13). The training resolution is unknown but a mismatch is plausible, and v12→v13 showed changing resolution from 640→512 gave only marginal improvement (0.96062 vs 0.95987).",
+    "order": 5
+   },
+   "E08": {
+    "id": "E08",
+    "state": "yes",
+    "evidence": "The expert has made submissions at v7, v8, v12, v13, v14 (5 submissions so far out of typically 5/day with many days remaining), and v15 was not submitted, suggesting budget remains for further experiments.",
+    "order": 2
+   }
+  },
+  "usage": [
+   3641,
+   513
+  ],
+  "prompt_chars": 11656
+ },
+ {
+  "step_id": "15173072:19->20",
+  "node": "T.1",
+  "expert": "15173072",
+  "child": "T.1.2",
+  "checks": {
+   "E60": {
+    "id": "E60",
+    "state": "no",
+    "evidence": "The notebook runs end-to-end for inference and produces submissions successfully (multiple LB scores obtained). The commented-out DataParallel and blend line are inert but don't cause errors.",
+    "order": 3
+   },
+   "E09": {
+    "id": "E09",
+    "state": "yes",
+    "evidence": "model.load_state_dict uses strict=False, meaning mismatched keys are silently ignored. The ResNet200D class redefines global_pool and fc as Identity then adds custom pooling/fc, so checkpoint keys may not align. No logging or inspection is done to verify what loaded.",
+    "order": 2
+   },
+   "E72": {
+    "id": "E72",
+    "state": "yes",
+    "evidence": "Competition metric is macro-averaged AUC (rank-based, scale-invariant), yet the expert has been tuning a multiplicative scaling factor (×100, ×50) on predictions. AUC is invariant to monotonic transforms, so this scaling cannot affect a properly computed AUC — the fact that LB scores changed (0.96→0.96) suggests something else is going on or the scaling is irrelevant noise.",
+    "order": 1
+   },
+   "E16": {
+    "id": "E16",
+    "state": "yes",
+    "evidence": "The jump from v11→v12 (×100 scaling) gave 0.95987, a huge gain from 0.55637. Subsequent multiplier tweaks (×50 in v15, normalization mean adjustments v16-v19) show flat or declining scores: 0.96062, 0.95220, 0.95712, 0.95760, 0.95672.",
+    "order": 4
+   },
+   "E11": {
+    "id": "E11",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E10": {
+    "id": "E10",
+    "state": "yes",
+    "evidence": "v8 bundled a new checkpoint, enabling model.eval(), removing boilerplate, and adding a blend line — all in one submission. v9 bundled batch size reduction, normalization change, pretrained flag change, and checkpoint swap.",
+    "order": 5
+   },
+   "E12": {
+    "id": "E12",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E13": {
+    "id": "E13",
+    "state": "yes",
+    "evidence": "The notebook is inference-only with no local validation/CV code at all. The expert relies entirely on LB scores to judge changes, with no local metric computation.",
+    "order": 6
+   },
+   "E352": {
+    "id": "E352",
+    "state": "no",
+    "evidence": "Only a single fold checkpoint (fold4) is used; no per-fold scores have been collected or compared.",
+    "order": 7
+   },
+   "E353": {
+    "id": "E353",
+    "state": "yes",
+    "evidence": "Best prior submission was v13/v14 at 0.96062 (IMAGE_SIZE=512, BATCH_SIZE=64/128, mean=[0.485,0.456,0.406], ×100 scaling). Current v19 has drifted to mean=[0.5,0.458,0.426] and ×50 scaling, scoring only 0.95672 — the best configuration has not been restored.",
+    "order": 8
+   }
+  },
+  "usage": [
+   4161,
+   771
+  ],
+  "prompt_chars": 13664
+ },
+ {
+  "step_id": "15173072:19->20",
+  "node": "T.1",
+  "expert": "15173072",
+  "child": "T.1.n41",
+  "checks": {
+   "E60": {
+    "id": "E60",
+    "state": "no",
+    "evidence": "The notebook runs end-to-end for inference without runtime errors; the only 'dead' code is a commented-out DataParallel line and a commented-out blend line, neither of which causes failures.",
+    "order": 3
+   },
+   "E09": {
+    "id": "E09",
+    "state": "yes",
+    "evidence": "model.load_state_dict uses strict=False, meaning mismatched keys are silently ignored. The architecture uses custom pooling/fc replacements (Identity + AdaptiveAvgPool2d + Linear) which may not match the checkpoint's saved keys, and no logging or inspection is done to verify alignment.",
+    "order": 2
+   },
+   "E72": {
+    "id": "E72",
+    "state": "yes",
+    "evidence": "Competition metric is macro-averaged AUC (rank-based), yet the expert has been tuning a multiplicative scalar (predictions * 50, previously *100) which cannot affect AUC rankings. The local pipeline has no metric computation at all — no local AUC is calculated — so the expert is optimizing a scale factor that is irrelevant to the rank-based LB metric.",
+    "order": 1
+   },
+   "E16": {
+    "id": "E16",
+    "state": "yes",
+    "evidence": "The jump from v11→v12 (adding *100) gave 0.95987, a massive gain. Subsequent multiplier/normalization tweaks (v12-v19) have oscillated between 0.952 and 0.961 with no clear improvement trend, indicating diminishing/noisy returns from further scaling adjustments.",
+    "order": 4
+   },
+   "E11": {
+    "id": "E11",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E10": {
+    "id": "E10",
+    "state": "yes",
+    "evidence": "v16 bundled a normalization mean change with the existing *50 scaling (changed in v15 but not submitted alone), making it impossible to attribute the v16 LB drop to either factor independently.",
+    "order": 5
+   },
+   "E12": {
+    "id": "E12",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E13": {
+    "id": "E13",
+    "state": "yes",
+    "evidence": "The notebook is inference-only with no local validation whatsoever — no CV folds, no local AUC computation, no train/val split. All evaluation is done via LB submissions.",
+    "order": 6
+   },
+   "E352": {
+    "id": "E352",
+    "state": "no",
+    "evidence": "Only a single fold checkpoint (fold4) is used; no per-fold scores have been collected or compared.",
+    "order": 7
+   },
+   "E353": {
+    "id": "E353",
+    "state": "yes",
+    "evidence": "The best prior submission was v13/v14 at 0.96062 (IMAGE_SIZE=512, BATCH_SIZE=64/128, *100 scaling, ImageNet normalization). Current v19 scores 0.95672 due to changed normalization means and *50 scaling — the best configuration has not been restored.",
+    "order": 8
+   }
+  },
+  "usage": [
+   4161,
+   723
+  ],
+  "prompt_chars": 13664
+ },
+ {
+  "step_id": "15173072:20->21",
+  "node": "T",
+  "expert": "15173072",
+  "child": "T.2",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB is 0.95319 (v20), and the best was 0.96062 (v13/v14). These are in the range of a single well-trained model; the earlier 0.50990 bug was already fixed by v12's *100 scaling.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "Only one checkpoint (resnet200d_fold4_cv954.pth) is loaded; the models list has a single entry. The checkpoint name implies fold4 of a multi-fold CV, so other fold checkpoints likely exist but are not ensembled.",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Recent versions (v13-v20) tweaked normalization stats, resolution, and scaling, producing scores oscillating between ~0.952 and ~0.961 — changes are small and not consistently improving, suggesting the current single-model recipe is near its optimum.",
+    "order": 4
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "The inference function already applies horizontal-flip TTA: it computes y_preds1 from images and y_preds2 from images.flip(-1), then averages them.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "The checkpoint filename says 'cv954' suggesting it was trained at a specific resolution. IMAGE_SIZE was changed from 512 to 640 across versions with mixed results (v13 at 512 scored 0.96062, v20 at 640 scored 0.95319), indicating a likely resolution mismatch between training and inference.",
+    "order": 2
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   4127,
+   518
+  ],
+  "prompt_chars": 13244
+ },
+ {
+  "step_id": "15173072:25->26",
+  "node": "T.7",
+  "expert": "15173072",
+  "child": "T.7.1",
+  "checks": {
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "The dataset at '../input/resnet200d-baseline-benchmark-public/' contains multiple checkpoint files (fold0_cv953, fold1_cv955, fold2_cv955, fold3_cv957, fold4_cv954). Currently only fold4_cv954 and fold1_cv955 are used; the others are available but not combined.",
+    "order": 2
+   },
+   "E255": {
+    "id": "E255",
+    "state": "no",
+    "evidence": "Recent edits (v22-v25) have been swapping checkpoints and adjusting blend weights in the ensemble, but there's no evidence of isolated debugging/fixing of individual components that now need recombining.",
+    "order": 6
+   },
+   "E53": {
+    "id": "E53",
+    "state": "no",
+    "evidence": "Individual standalone LB scores for each checkpoint are not known. The CV scores in filenames (cv953, cv954, cv955, cv957) give rough guidance, but no individual LB submission was made for each checkpoint alone — all recent submissions used blends.",
+    "order": 3
+   },
+   "E54": {
+    "id": "E54",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E55": {
+    "id": "E55",
+    "state": "no",
+    "evidence": "All models are ResNet200D checkpoints from different folds of the same architecture — no architectural diversity exists among ensemble candidates.",
+    "order": 4
+   },
+   "E56": {
+    "id": "E56",
+    "state": "yes",
+    "evidence": "The checkpoint CV scores are tightly clustered: cv953, cv954, cv955, cv957 — all within a narrow range, no single model clearly dominates.",
+    "order": 5
+   },
+   "E51": {
+    "id": "E51",
+    "state": "no",
+    "evidence": "The submission code writes 'predictions *100 + predictions957 *100/4', which combines both models' outputs, so the submission does contain ensembled predictions (not a stale single-model output).",
+    "order": 1
+   },
+   "E52": {
+    "id": "E52",
+    "state": "no",
+    "evidence": "No rank-based blending has been tried in any version; all blending has been raw probability averaging/weighting.",
+    "order": 7
+   },
+   "E397": {
+    "id": "E397",
+    "state": "yes",
+    "evidence": "Current blend formula is 'predictions*100 + predictions957*100/4' which gives ~80%/20% weighting — clearly non-uniform. Equal-weight blending (v22 with denominator 2) scored 0.96421, the best so far, but the expert has since moved away from it without a systematic comparison.",
+    "order": 8
+   }
+  },
+  "usage": [
+   4310,
+   627
+  ],
+  "prompt_chars": 13690
+ },
+ {
+  "step_id": "15203842:6->7",
+  "node": "T.7",
+  "expert": "15203842",
+  "child": "T.7.2",
+  "checks": {
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "Both models (ResNet200D 5-fold and Tawara's multi-head model) are already combined into a blended ensemble in the notebook.",
+    "order": 2
+   },
+   "E255": {
+    "id": "E255",
+    "state": "no",
+    "evidence": "Recent edits (v4-v6) show only blend weight adjustments and re-runs, no debugging or fixing of individual components.",
+    "order": 5
+   },
+   "E53": {
+    "id": "E53",
+    "state": "yes",
+    "evidence": "The ResNet200D folds have known CV scores (e.g., cv953, cv955, cv957) from filenames, and the two sources have been submitted individually (the referenced public kernels have known LB scores ~0.965).",
+    "order": 1
+   },
+   "E54": {
+    "id": "E54",
+    "state": "no",
+    "evidence": "Both models (Sin's ResNet200D and Tawara's multi-head model) are established public kernels that have been tested; no new untested model is present.",
+    "order": 3
+   },
+   "E55": {
+    "id": "E55",
+    "state": "yes",
+    "evidence": "The ensemble combines ResNet200D (Sin's model) with Tawara's multi-head model, which are different architecture families/approaches.",
+    "order": 4
+   },
+   "E56": {
+    "id": "E56",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E51": {
+    "id": "E51",
+    "state": "no",
+    "evidence": "The notebook code creates a blended submission: 'sub = .50*sub + .50*submission' and writes it to submission.csv, so the ensemble output is what gets submitted.",
+    "order": 6
+   },
+   "E52": {
+    "id": "E52",
+    "state": "no",
+    "evidence": "The code has CONVERT_TO_RANK = False and there is no evidence rank-based blending was ever tried or compared.",
+    "order": 7
+   },
+   "E397": {
+    "id": "E397",
+    "state": "no",
+    "evidence": "v5 changed the blend to .50/.50 (equal weights), and v4 used .45/.55 (non-uniform). Both have been tried: v4 scored 0.96671, v5 scored 0.96676, so equal-weight has been compared.",
+    "order": 8
+   }
+  },
+  "usage": [
+   6350,
+   559
+  ],
+  "prompt_chars": 18192
+ },
+ {
+  "step_id": "15203842:7->8",
+  "node": "T",
+  "expert": "15203842",
+  "child": "T.8",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "LB score is 0.96676, which is competitive and close to public benchmark levels (~0.965), not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook already ensembles two model sources (Sin's 5-fold ResNet200D and Tawara's ResNet200D) with a 50/50 blend. Both are already combined.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "v4→v5 changed blend from 45/55 to 50/50 and score only moved from 0.96671 to 0.96676 — a tiny 0.00005 change, suggesting blend tuning is near its optimum.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "Both inference pipelines already apply TTA: Sin's uses tta_inference_func with horizontal flip, and Tawara's averages y_preds1 and y_preds2 = model(images.flip(-1)).",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "Sin's model trains/infers at 512px while Tawara's model uses IMAGE_SIZE=640 but the checkpoint name is 'resnet200d_320', suggesting a training resolution of 320. There is a potential mismatch and higher-res inference could be explored.",
+    "order": 5
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   4948,
+   476
+  ],
+  "prompt_chars": 14897
+ },
+ {
+  "step_id": "15203842:12->13",
+  "node": "T",
+  "expert": "15203842",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96756, which is competitive and close to top public benchmarks (~0.965-0.967), not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook already ensembles two model sources (Sin's 5-fold ResNet200D and Ammarali32's single ResNet200D) with a 50/50 blend. Both are already combined.",
+    "order": 2
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "v4→v5 changed blend from 45/55 to 50/50 and score moved only from 0.96671 to 0.96676 — a 0.00005 change, essentially within noise, suggesting blend tuning has plateaued.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "Both inference pipelines already apply horizontal flip TTA: tta_inference_func uses x.flip(-1) and Ammarali32's inference averages y_preds1 and y_preds2 = model(images.flip(-1)).",
+    "order": 4
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "Sin's model trains/infers at 512px while Ammarali32's model uses 640px but was trained at 320px (model name 'resnet200d_320'). There is a resolution mismatch between training (320) and inference (640) for the second model, and higher-res training checkpoints could potentially be tried.",
+    "order": 5
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   5266,
+   504
+  ],
+  "prompt_chars": 16020
+ },
+ {
+  "step_id": "15372370:3->4",
+  "node": "T",
+  "expert": "15372370",
+  "child": "T.6",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "LB score is 0.96342, which is a reasonable score for this competition and not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "no",
+    "evidence": "The notebook already ensembles 5 folds (FOLDS = [0, 1, 2, 3, 4]) from the same model architecture. There is no evidence of additional diverse model architectures/checkpoints available but unused.",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E05": {
+    "id": "E05",
+    "state": "no",
+    "evidence": "The model already uses a domain-specific pretrained backbone: resnet200d_320 pretrained on ChestX ('startingpointschestx/resnet200d_320_chestx.pth').",
+    "order": 4
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip averaging) was already added in v1->v2: 'Add horizontal-flip test-time augmentation and average predictions'.",
+    "order": 2
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "Training used 512x512 images (noted in markdown: 'image size: 3x512x512') but inference resizes to IMAGE_SIZE = (640, 640), a resolution mismatch. The base model name is 'resnet200d_320' suggesting yet another resolution.",
+    "order": 5
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   6213,
+   452
+  ],
+  "prompt_chars": 17790
+ },
+ {
+  "step_id": "15372370:3->4",
+  "node": "T",
+  "expert": "15372370",
+  "child": "T.8",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "LB score is 0.96342, which is a reasonable score for this competition (public notebooks typically achieve around 0.96–0.97), so it's not nonsensically low or indicative of a bug.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "yes",
+    "evidence": "The notebook uses 5 folds (FOLDS = [0, 1, 2, 3, 4]) of the same ResNet200D model. Only one model architecture is present; no diverse models (e.g., EfficientNet) are available for cross-architecture ensembling.",
+    "order": 3
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E05": {
+    "id": "E05",
+    "state": "no",
+    "evidence": "The notebook already uses a domain-specific pretrained backbone: 'resnet200d_320_chestx.pth' from the ChestX pretrained model shared by @ammarali32.",
+    "order": 4
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip averaging) was already added in v1→v2: 'Add horizontal-flip test-time augmentation and average predictions'.",
+    "order": 2
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "IMAGE_SIZE is set to (640, 640) but the model is 'resnet200d_320' (trained at 512x512 per the markdown: 'image size: 3x512x512'). The inference resolution (640) does not match the training resolution (512).",
+    "order": 5
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   6213,
+   478
+  ],
+  "prompt_chars": 17790
+ },
+ {
+  "step_id": "15372370:5->6",
+  "node": "T",
+  "expert": "15372370",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96726, which is a reasonable score for this competition and not indicative of a bug or miscalibration.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E05": {
+    "id": "E05",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "v5 already applies horizontal flip TTA: 'average predictions across the three models and their horizontal flips (TTA)'",
+    "order": 2
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "IMAGE_SIZE is set to (640, 640) but the model base is 'resnet200d_320' (trained at 320). The code resizes test images to 640x640, suggesting a possible resolution mismatch or that a higher-res inference is being attempted.",
+    "order": 3
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   6396,
+   346
+  ],
+  "prompt_chars": 18517
+ },
+ {
+  "step_id": "15372370:11->12",
+  "node": "T",
+  "expert": "15372370",
+  "child": "T.7",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96835, which is competitive and not far below expected single-model performance for this competition.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Recent changes (v7→v8: 0.96830, v10→v11: 0.96835) show very small score differences (~0.0005), suggesting TTA/inference tuning is near its optimum.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "no",
+    "evidence": "The model already uses a domain-specific pretrained backbone (resnet200d_320 pretrained on ChestX via startingpointschestx).",
+    "order": 4
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip averaging with 0.7/0.3 weighting) is present in the current inference pipeline code from v10/v11.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "IMAGE_SIZE is set to (640, 640) but the model base is 'resnet200d_320' (trained at 512x512 per the markdown). There is a resolution mismatch between training (512) and inference (640).",
+    "order": 2
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   7033,
+   423
+  ],
+  "prompt_chars": 20998
+ },
+ {
+  "step_id": "15372370:11->12",
+  "node": "T",
+  "expert": "15372370",
+  "child": "T.8",
+  "checks": {
+   "E01": {
+    "id": "E01",
+    "state": "no",
+    "evidence": "Current LB score is 0.96835, which is competitive and not far below expected single-model performance for this competition.",
+    "order": 1
+   },
+   "E03": {
+    "id": "E03",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E02": {
+    "id": "E02",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E04": {
+    "id": "E04",
+    "state": "yes",
+    "evidence": "Recent changes (v7→v8: 0.96830, v10→v11: 0.96835) show very small score differences (~0.0005), suggesting TTA/inference tuning is near its optimum.",
+    "order": 3
+   },
+   "E05": {
+    "id": "E05",
+    "state": "no",
+    "evidence": "The model already uses a domain-specific pretrained backbone (resnet200d_320 pretrained on ChestX via startingpointschestx).",
+    "order": 4
+   },
+   "E06": {
+    "id": "E06",
+    "state": "no",
+    "evidence": "TTA (horizontal flip averaging with 0.7/0.3 weighting) is present in the current inference pipeline code.",
+    "order": 5
+   },
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "IMAGE_SIZE is set to (640, 640) but the model base is 'resnet200d_320' (trained at 512x512 per the markdown). There is a resolution mismatch between training (512) and inference (640).",
+    "order": 2
+   },
+   "E08": {
+    "id": "E08",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   7033,
+   417
+  ],
+  "prompt_chars": 20998
+ }
+]

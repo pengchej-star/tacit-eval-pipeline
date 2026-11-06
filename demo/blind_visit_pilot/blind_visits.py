@@ -123,6 +123,9 @@ def run(v):
 
 
 todo = [v for v in visits if v["node"] in NODES]
+if os.environ.get("SUBSET"):
+    keep = {tuple(k) for k in json.load(open(os.environ["SUBSET"]))}
+    todo = [v for v in todo if (v["step_id"], v["node"]) in keep]
 print(f"{len(todo)} visits to re-annotate", flush=True)
 with ThreadPoolExecutor(int(os.environ.get("WORKERS", "8"))) as ex:
     res = list(ex.map(run, todo))
