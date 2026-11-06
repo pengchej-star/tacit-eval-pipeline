@@ -69,9 +69,12 @@ each was stopped within a few minutes.
 
 **ranzcr 13848868 (pilot): the expert's exact edits plus flip TTA.**
 
-**ranzcr 15173072: the same fix as the expert, plus a fold ensemble.**
-- It reverted v16's normalization mean to the ImageNet values; v16's change had lowered the LB score. That is what
-  the expert's v17 did.
+**ranzcr 15173072: a fix the expert reached five versions later, plus a fold ensemble.**
+- It reverted v16's normalization mean to the ImageNet values; v16's change had lowered the LB score.
+- The expert's v17 did not do that. It tried another hand-picked mean, `[0.475, 0.436, 0.406]` after v16's
+  `[0.495, 0.446, 0.416]`, and kept probing values through v21. It went back to the ImageNet values only in v22
+  (LB 0.9643, its best so far). *Corrected 2026-11-06: this note first said the agent made the same edit as the
+  expert's v17.*
 - It also ensembled all 5 fold checkpoints with flip TTA, and loaded weights with `strict=True`.
 - The extra folds were trained on most of our test images, so part of the +0.013 is likely leakage.
 
