@@ -124,7 +124,7 @@ def run(v):
 
 todo = [v for v in visits if v["node"] in NODES]
 print(f"{len(todo)} visits to re-annotate", flush=True)
-with ThreadPoolExecutor(8) as ex:
+with ThreadPoolExecutor(int(os.environ.get("WORKERS", "8"))) as ex:
     res = list(ex.map(run, todo))
 OUT.write_text(json.dumps(res, indent=1, ensure_ascii=False))
 tin, tout = sum(r["usage"][0] for r in res), sum(r["usage"][1] for r in res)
