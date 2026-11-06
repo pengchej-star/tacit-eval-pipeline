@@ -1,0 +1,9 @@
+--- v01.py
++++ v02.py
+@@ -54,5 +54,5 @@
+ 
+ kappa_score = cohen_kappa_score(test_y, preds, weights='quadratic')
+-print(kappa_score)
++print("validation kappa score:", kappa_score)
+ 
+ # %% [8] markdown

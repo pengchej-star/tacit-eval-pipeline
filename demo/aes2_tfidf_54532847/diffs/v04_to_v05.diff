@@ -1,0 +1,159 @@
+--- v04.py
++++ v05.py
+@@ -2,5 +2,5 @@
+ import numpy as np
+ import pandas as pd
+-from sklearn.model_selection import train_test_split
++from sklearn.model_selection import train_test_split, KFold
+ from sklearn.feature_extraction.text import TfidfVectorizer
+ from sklearn.linear_model import LogisticRegression
+@@ -9,18 +9,39 @@
+ from sklearn.ensemble import VotingClassifier
+ from sklearn.metrics import cohen_kappa_score
++from sklearn.calibration import CalibratedClassifierCV
+ import gc
+ 
+ # %% [2]
+-train = pd.read_csv("/kaggle/input/learning-agency-lab-automated-essay-scoring-2/train.csv")
++SEED = 1124
++ONLINE = False
++CV = 3
+ 
+-# %% [3] markdown
++# %% [3]
++data = pd.read_csv("/kaggle/input/learning-agency-lab-automated-essay-scoring-2/train.csv")
++
++# %% [4] markdown
+ # # Evaluation
+ 
+-# %% [4]
+-train_X, test_X, train_y, test_y = train_test_split(train[['full_text']], train['score'], test_size=0.3)
++# %% [5]
++def init_model():
++    clf_sgd = SGDClassifier(max_iter=10000, tol=1e-4, loss="modified_huber") 
++#     clf_sgd2 = CalibratedClassifierCV(SGDClassifier(max_iter=8000, tol=1e-4, loss="hinge"), cv=3, method='sigmoid')
++#     clf_sgd3 = SGDClassifier(max_iter=8000, tol=2e-4, loss="log_loss")
++#     clf_nb = MultinomialNB(alpha=0.02)
+ 
+-print(f"train shape: {train_X.shape}, test shape: {test_X.shape}")
++    ensemble = VotingClassifier(
++        estimators=[
++            ('sgd', clf_sgd), # 0.572
++#             ('sgd2', clf_sgd2), # 0.576
++#             ('sgd3', clf_sgd3),  # 0.580
++#             ('nb', clf_nb),  # 0.413
++#             ('lr', clf_lr)
++        ],
++        voting='soft', 
++#         weights=[0.4, 0.5, 0.1],
++        n_jobs=-1)
++    return ensemble
+ 
+-# %% [5]
++# %% [6]
+ vectorizer = TfidfVectorizer(
+     ngram_range=(1, 3), 
+@@ -32,55 +53,27 @@
+ )
+ 
+-tf_train = vectorizer.fit_transform(train_X['full_text'])
+-tf_test = vectorizer.transform(test_X['full_text'])
+-
+-# %% [6]
+-"""
+-loss{‘hinge’, ‘log_loss’, ‘modified_huber’, ‘squared_hinge’, ‘perceptron’, ‘squared_error’, ‘huber’, ‘epsilon_insensitive’, ‘squared_epsilon_insensitive’}, default=’hinge’
+-The loss function to be used.
+-
+-‘hinge’ gives a linear SVM.
+-
+-‘log_loss’ gives logistic regression, a probabilistic classifier.
+-
+-‘modified_huber’ is another smooth loss that brings tolerance to outliers as well as probability estimates.
+-
+-‘squared_hinge’ is like hinge but is quadratically penalized.
+-
+-‘perceptron’ is the linear loss used by the perceptron algorithm.
+-
+-The other losses, ‘squared_error’, ‘huber’, ‘epsilon_insensitive’ and ‘squared_epsilon_insensitive’ are designed for regression but can be useful in classification as well; see SGDRegressor for a description.
+-
+-"""
+-
+-from sklearn.calibration import CalibratedClassifierCV
+-
+-def init_model():
+-    clf_sgd = SGDClassifier(max_iter=8000, tol=1e-4, loss="modified_huber") 
+-    clf_sgd2 = CalibratedClassifierCV(SGDClassifier(max_iter=8000, tol=1e-4, loss="hinge"), cv=3, method='sigmoid')
+-    clf_sgd3 = SGDClassifier(max_iter=8000, tol=2e-4, loss="log_loss")
+-#     clf_nb = MultinomialNB(alpha=0.02)
+-
+-    ensemble = VotingClassifier(
+-        estimators=[
+-            ('sgd', clf_sgd), # 0.572
+-            ('sgd2', clf_sgd2), # 0.576
+-            ('sgd3', clf_sgd3),  # 0.580
+-#             ('nb', clf_nb),  # 0.413
+-#             ('lr', clf_lr)
+-        ],
+-        voting='soft', 
+-        weights=[0.4, 0.5, 0.1],
+-        n_jobs=-1)
+-    return ensemble
++tf_data = vectorizer.fit_transform(data['full_text'])
+ 
+ # %% [7]
+-model = init_model()
+-model.fit(tf_train, train_y)
+-gc.collect()
+-preds = np.argmax(model.predict_proba(tf_test), axis=1) + 1
++%%time
++if not ONLINE:
++    metrics = pd.DataFrame(np.zeros((1, CV)), columns=[f'kappa_{i}' for i in range(1, CV+1)])
++    kf = KFold(n_splits=CV)
+ 
+-kappa_score = cohen_kappa_score(test_y, preds, weights='quadratic')
+-print("validation kappa score:", kappa_score)
++    for i, (train_idx, val_idx) in enumerate(kf.split(tf_data)):
++        print("Training fold", i+1)
++        train_X = tf_data[train_idx]
++        train_y = data['score'].iloc[train_idx]
++        val_X = tf_data[val_idx]
++        val_y = data['score'].iloc[val_idx]
++
++        model = init_model()
++        model.fit(train_X, train_y)
++        preds = np.argmax(model.predict_proba(val_X), axis=1) + 1
++
++        kappa_score = cohen_kappa_score(val_y, preds, weights='quadratic')
++        metrics.loc[0, f'kappa_{i+1}'] = kappa_score
++    metrics['kappa_mean'] = metrics.mean(axis=1)
++    display(metrics)
+ 
+ # %% [8] markdown
+@@ -92,16 +85,14 @@
+ 
+ # %% [10]
+-tf_train = vectorizer.fit_transform(train['full_text'])
+-tf_test = vectorizer.transform(test['full_text'])
++if ONLINE:
++    print("Online submission")
++    tf_test = vectorizer.transform(test['full_text'])
++    model = init_model()
++    model.fit(tf_data, data['score'])
+ 
+-# %% [11]
+-model = init_model()
+-model.fit(tf_train, train['score'])
+-
+-print(gc.collect())
+-preds = np.argmax(model.predict_proba(tf_test), axis=1) + 1
+-
+-# %% [12]
+-sub['score'] = preds
+-sub.to_csv('submission.csv', index=False)
+-display(sub.head())
++    print(gc.collect())
++    preds = np.argmax(model.predict_proba(tf_test), axis=1) + 1
++    
++    sub['score'] = preds
++    sub.to_csv('submission.csv', index=False)
++    display(sub.head())

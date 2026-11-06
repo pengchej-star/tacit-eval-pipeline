@@ -1,0 +1,39 @@
+--- v12.py
++++ v13.py
+@@ -37,5 +37,5 @@
+ # %% [5]
+ vectorizer = TfidfVectorizer(
+-    ngram_range=(1, 3), 
++    ngram_range=(1, 2), 
+     lowercase=False, 
+     sublinear_tf=True, 
+@@ -49,9 +49,9 @@
+ # %% [6]
+ def init_model(iterations):
+-    clf_sgd = SGDClassifier(max_iter=iterations, tol=1e-4, loss="modified_huber") 
+-    clf_sgd2 = CalibratedClassifierCV(SGDClassifier(max_iter=iterations, tol=1e-4, loss="hinge"), cv=3, method='sigmoid')
+-    clf_sgd3 = SGDClassifier(max_iter=iterations, tol=1e-4, loss="log_loss")
++#     clf_sgd = SGDClassifier(max_iter=iterations, tol=1e-4, loss="modified_huber") 
++#     clf_sgd2 = CalibratedClassifierCV(SGDClassifier(max_iter=iterations, tol=1e-4, loss="hinge"), cv=3, method='sigmoid')
++#     clf_sgd3 = SGDClassifier(max_iter=iterations, tol=1e-4, loss="log_loss")
+     
+-    param = {'n_iter': 1500,'verbose': -1,'objective': 'multiclass',
++    param = {'n_estimators': 200,'verbose': -1,'objective': 'multiclass',
+           'metric': 'multi_logloss','learning_rate': 0.1, 
+           'colsample_bytree': 0.72, 'colsample_bynode': 0.58, 
+@@ -95,4 +95,5 @@
+         kappa_score = cohen_kappa_score(val_y, preds, weights='quadratic')
+         metrics.loc[0, f'kappa_{i+1}'] = kappa_score
++        break
+     metrics['kappa_mean'] = metrics.mean(axis=1)
+     display(metrics)
+@@ -125,6 +126,8 @@
+ 
+     print(gc.collect())
+-    preds = np.argmax(model.predict_proba(tf_test), axis=1) + 1
++#     preds = np.argmax(model.predict_proba(tf_test), axis=1) + 1
++    preds = model.predict(tf_test)
+     
++    sub = test[['essay_id']]
+     sub['score'] = preds
+     sub.to_csv('submission.csv', index=False)
