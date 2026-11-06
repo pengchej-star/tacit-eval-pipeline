@@ -1,0 +1,2459 @@
+[
+ {
+  "step_id": "13521245:1->2",
+  "node": "T.6.n74",
+  "expert": "13521245",
+  "child": "T.6.n74.n76",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E30": {
+    "id": "E30",
+    "state": "yes",
+    "evidence": "The decode_image function normalizes by dividing by 255.0, but we don't know what normalization the loaded model was trained with (e.g., EfficientNet expects specific preprocessing). There's a potential mismatch, but without knowing the training pipeline details, we can only note the /255.0 normalization is present.",
+    "order": 3
+   },
+   "E244": {
+    "id": "E244",
+    "state": "no",
+    "evidence": "This is the first version (v1) with no prior submissions or scores recorded, so no baseline score exists at any resolution.",
+    "order": 4
+   },
+   "E245": {
+    "id": "E245",
+    "state": "yes",
+    "evidence": "This is v1 (the first edit), and the code has only a single resolution of (300, 300) hardcoded in decode_image. No resolution sweep has been attempted.",
+    "order": 2
+   },
+   "E246": {
+    "id": "E246",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E64": {
+    "id": "E64",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "no",
+    "evidence": "No prior resolution probes have been submitted; this is the first version with no leaderboard scores yet.",
+    "order": 5
+   },
+   "E392": {
+    "id": "E392",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E393": {
+    "id": "E393",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E394": {
+    "id": "E394",
+    "state": "no",
+    "evidence": "No submissions have been made yet (v1 is the first edit), so there are no scores to compare for run-to-run variance.",
+    "order": 6
+   },
+   "E395": {
+    "id": "E395",
+    "state": "no",
+    "evidence": "No sweep has been done; only one resolution (300x300) is in the code and no submissions exist yet.",
+    "order": 7
+   },
+   "E396": {
+    "id": "E396",
+    "state": "no",
+    "evidence": "The model is loaded via tf.keras.load_model('') with an empty string path — no checkpoint filename, metadata, or external documentation is visible in the notebook to determine the training resolution.",
+    "order": 1
+   }
+  },
+  "usage": [
+   2329,
+   634
+  ],
+  "prompt_chars": 7434
+ },
+ {
+  "step_id": "13521245:8->9",
+  "node": "T.6.n74",
+  "expert": "13521245",
+  "child": "T.6.n74.n75",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "IMSIZE[6]=528 is used for inference, but the checkpoint 'model.h5' from 'ranzcr-efficientnet-tpu-training' may have been trained at a different resolution. The v6→v7 change specifically added IMSIZE and test_decoder to match the model's expected input size, and the jump from ~0.80 to ~0.95 confirms resolution alignment mattered. However, it's unclear if 528 is exactly the training resolution or just an approximation.",
+    "order": 1
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "Both training and inference use simple tf.cast/255.0 normalization (no ImageNet mean/std subtraction). The decode function divides by 255.0, which is standard for EfficientNet with this keras package. No mismatch is visible.",
+    "order": 5
+   },
+   "E244": {
+    "id": "E244",
+    "state": "yes",
+    "evidence": "v1-v5 used default 300x300 resolution (scores ~0.78-0.80), v7-v8 used IMSIZE[6]=528 (scores ~0.95). So at least two resolutions have been evaluated with scores recorded.",
+    "order": 2
+   },
+   "E245": {
+    "id": "E245",
+    "state": "no",
+    "evidence": "Multiple resolutions have been tested: 300x300 in earlier versions and 528x528 in v7/v8, so this is false.",
+    "order": 3
+   },
+   "E246": {
+    "id": "E246",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E64": {
+    "id": "E64",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "yes",
+    "evidence": "Going from 300→528 improved score dramatically from ~0.80 to ~0.95, showing a strong improving trend with increased resolution toward the training resolution.",
+    "order": 6
+   },
+   "E392": {
+    "id": "E392",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E393": {
+    "id": "E393",
+    "state": "no",
+    "evidence": "v6→v7 changed both the model checkpoint path AND the resolution simultaneously (from 300 to 528 and from one .h5 to another), so the resolution effect is confounded with the checkpoint change.",
+    "order": 7
+   },
+   "E394": {
+    "id": "E394",
+    "state": "yes",
+    "evidence": "v7 scored 0.95237 and v8 (identical code, same resolution 528) scored 0.94959, showing some run-to-run variance of ~0.003 at the same resolution.",
+    "order": 8
+   },
+   "E395": {
+    "id": "E395",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E396": {
+    "id": "E396",
+    "state": "yes",
+    "evidence": "The code uses IMSIZE[6]=528 which corresponds to EfficientNet-B6's standard resolution, but the model is described as EfficientNet-B7 (standard resolution 600=IMSIZE[7]). The checkpoint filename 'ranzcr-efficientnet-tpu-training/model.h5' and the notebook title reference B7, suggesting the training resolution might actually be 600, not 528. The IMSIZE tuple is visible in code and the public training notebook can be consulted.",
+    "order": 4
+   }
+  },
+  "usage": [
+   3211,
+   888
+  ],
+  "prompt_chars": 10542
+ },
+ {
+  "step_id": "13521245:9->10",
+  "node": "T.6.n74",
+  "expert": "13521245",
+  "child": "T.6.n74.n75",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "Both training and inference pipelines use tf.cast(img, tf.float32) / 255.0 normalization — no mismatch visible.",
+    "order": 4
+   },
+   "E244": {
+    "id": "E244",
+    "state": "yes",
+    "evidence": "v7 used IMSIZE[6]=528 (LB 0.95237), v8 re-ran same (LB 0.94959), v9 used IMSIZE[7]=600 (LB 0.95342). Multiple resolutions have been evaluated.",
+    "order": 1
+   },
+   "E245": {
+    "id": "E245",
+    "state": "no",
+    "evidence": "At least two resolutions have been tested: IMSIZE[6]=528 in v7 and IMSIZE[7]=600 in v9.",
+    "order": 2
+   },
+   "E246": {
+    "id": "E246",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E64": {
+    "id": "E64",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "yes",
+    "evidence": "Going from IMSIZE[6]=528 (0.95237) to IMSIZE[7]=600 (0.95342) shows an improving trend with increasing resolution, motivating further probes.",
+    "order": 3
+   },
+   "E392": {
+    "id": "E392",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E393": {
+    "id": "E393",
+    "state": "no",
+    "evidence": "Between v7, v8, and v9 only the target_size index changed (IMSIZE[6] to IMSIZE[7]); the same model.h5 checkpoint was loaded each time, so resolution is not confounded with architecture changes.",
+    "order": 6
+   },
+   "E394": {
+    "id": "E394",
+    "state": "yes",
+    "evidence": "v7 and v8 both used IMSIZE[6]=528 with the same code but scored 0.95237 and 0.94959 respectively, showing ~0.003 run-to-run variance.",
+    "order": 5
+   },
+   "E395": {
+    "id": "E395",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E396": {
+    "id": "E396",
+    "state": "yes",
+    "evidence": "The checkpoint is loaded from 'ranzcr-efficientnet-tpu-training/model.h5' and the IMSIZE tuple corresponds to standard EfficientNet resolutions; EfficientNet-B7's native resolution is 600 (IMSIZE[7]), identifiable from the model name and public notebook reference.",
+    "order": 7
+   }
+  },
+  "usage": [
+   3297,
+   735
+  ],
+  "prompt_chars": 10876
+ },
+ {
+  "step_id": "13521245:10->11",
+  "node": "T.6.n74",
+  "expert": "13521245",
+  "child": "T.6.n74.n79",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "Both training and inference pipelines use tf.cast(img, tf.float32) / 255.0 normalization — no mismatch visible in the code.",
+    "order": 4
+   },
+   "E244": {
+    "id": "E244",
+    "state": "yes",
+    "evidence": "Multiple resolutions have been evaluated: IMSIZE[6]=528 scored 0.95237 (v7), and IMSIZE[7]=600 scored 0.95342 (v9) and 0.95705 (v10), so a baseline and at least one other resolution have been tested.",
+    "order": 2
+   },
+   "E245": {
+    "id": "E245",
+    "state": "no",
+    "evidence": "A resolution sweep has already been attempted: IMSIZE[6]=528 in v7 and IMSIZE[7]=600 in v9/v10.",
+    "order": 3
+   },
+   "E246": {
+    "id": "E246",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E64": {
+    "id": "E64",
+    "state": "yes",
+    "evidence": "EfficientNet-B7 native resolution is 600; current inference uses IMSIZE[7]=600, which matches the model's native training resolution.",
+    "order": 1
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "yes",
+    "evidence": "Scores improved from 528→600 (0.95237→0.95342/0.95705), showing an improving trend with increasing resolution.",
+    "order": 5
+   },
+   "E392": {
+    "id": "E392",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E393": {
+    "id": "E393",
+    "state": "no",
+    "evidence": "Between v7 and v9 only the IMSIZE index changed (6→7), same model checkpoint was loaded, so resolution change is not confounded by architecture change.",
+    "order": 7
+   },
+   "E394": {
+    "id": "E394",
+    "state": "yes",
+    "evidence": "At IMSIZE[7]=600, v9 scored 0.95342 and v10 (identical code re-run) scored 0.95705 — a ~0.004 difference at the same resolution, indicating notable run-to-run variance.",
+    "order": 6
+   },
+   "E395": {
+    "id": "E395",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E396": {
+    "id": "E396",
+    "state": "yes",
+    "evidence": "The checkpoint is loaded from 'ranzcr-efficientnet-tpu-training/model.h5' and the IMSIZE tuple corresponds to standard EfficientNet resolutions; B7 native is 600. The linked public training notebook confirms this.",
+    "order": 8
+   }
+  },
+  "usage": [
+   3406,
+   738
+  ],
+  "prompt_chars": 11273
+ },
+ {
+  "step_id": "13577502:6->7",
+  "node": "T.6.n74",
+  "expert": "13577502",
+  "child": "T.6.n74.n75",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "no",
+    "evidence": "Both training (Part 1 notebook description) and inference use img_size=512; the model was trained at 512 and inference is at 512, so they match.",
+    "order": 1
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "Both training and inference pipelines use the same normalization: tf.cast(img, tf.float32) / 255.0 via the same build_decoder function. No mismatch.",
+    "order": 2
+   },
+   "E244": {
+    "id": "E244",
+    "state": "no",
+    "evidence": "Submissions exist at 512 (v5: 0.9518, v6: 0.9495) but no other resolution has been evaluated; earlier v1/v4 used a different pipeline/model entirely, not a resolution variation of the same model.",
+    "order": 3
+   },
+   "E245": {
+    "id": "E245",
+    "state": "yes",
+    "evidence": "No resolution sweep has been attempted — only 512 has been tested with the current tf.data/Xception pipeline (v5 and v6).",
+    "order": 4
+   },
+   "E246": {
+    "id": "E246",
+    "state": "no",
+    "evidence": "Inference resolution is 512 and training resolution is 512; they are equal, so inference is not larger than training.",
+    "order": 5
+   },
+   "E64": {
+    "id": "E64",
+    "state": "yes",
+    "evidence": "Inference img_size=512 matches the training resolution of 512 as stated in the version 6 description.",
+    "order": 6
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "no",
+    "evidence": "No resolution probes have been done — only one resolution (512) has been used with this model, so no trend exists.",
+    "order": 7
+   },
+   "E392": {
+    "id": "E392",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E393": {
+    "id": "E393",
+    "state": "yes",
+    "evidence": "v1/v4 used a completely different pipeline (ImageDataGenerator, different model) at a different resolution, so any comparison with v5/v6 is confounded by architecture and pipeline changes.",
+    "order": 8
+   },
+   "E394": {
+    "id": "E394",
+    "state": "yes",
+    "evidence": "v5 scored 0.9518 and v6 scored 0.9495 at the same 512 resolution with no code changes, showing ~0.002 run-to-run variance.",
+    "order": 9
+   },
+   "E395": {
+    "id": "E395",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E396": {
+    "id": "E396",
+    "state": "yes",
+    "evidence": "The version 6 markdown explicitly states 'img_size = 512' for training, and the inference code also sets img_size = 512. The Part 1 training notebook is referenced and the resolution is documented.",
+    "order": 10
+   }
+  },
+  "usage": [
+   3504,
+   759
+  ],
+  "prompt_chars": 11441
+ },
+ {
+  "step_id": "13577502:7->8",
+  "node": "T.6.n74",
+  "expert": "13577502",
+  "child": "T.6.n74.n75",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "Both training and inference use tf.cast(img, tf.float32) / 255.0 normalization — no mismatch visible.",
+    "order": 4
+   },
+   "E244": {
+    "id": "E244",
+    "state": "yes",
+    "evidence": "v5 scored 0.95180 at img_size=512 and v7 scored 0.95306 at img_size=800, so at least two resolutions have been evaluated.",
+    "order": 1
+   },
+   "E245": {
+    "id": "E245",
+    "state": "no",
+    "evidence": "Two resolutions have already been tested: 512 (v5) and 800 (v7), so a sweep has been attempted.",
+    "order": 2
+   },
+   "E246": {
+    "id": "E246",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E64": {
+    "id": "E64",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "yes",
+    "evidence": "Going from 512 (0.95180) to 800 (0.95306) showed an improving trend with higher resolution, motivating further probes.",
+    "order": 3
+   },
+   "E392": {
+    "id": "E392",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E393": {
+    "id": "E393",
+    "state": "no",
+    "evidence": "Between v5 and v7 the only code change was img_size from 512 to 800; the same model checkpoint (model.h5) was loaded, so resolution is not confounded with architecture changes.",
+    "order": 6
+   },
+   "E394": {
+    "id": "E394",
+    "state": "yes",
+    "evidence": "v5 scored 0.95180 and v6 (identical code, same resolution 512) scored 0.94950, showing ~0.002 run-to-run variance at the same resolution.",
+    "order": 5
+   },
+   "E395": {
+    "id": "E395",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E396": {
+    "id": "E396",
+    "state": "no",
+    "evidence": "The checkpoint is loaded from '../input/tensorflow-data-dataset-tpu-part1/model.h5' — the filename and notebook markdown mention Xception with img_size=800 training, but the exact training resolution is stated in the markdown (img_size=800), so it can be determined. However, the training resolution appears to be 800, matching v7 inference.",
+    "order": 7
+   }
+  },
+  "usage": [
+   3575,
+   697
+  ],
+  "prompt_chars": 11724
+ },
+ {
+  "step_id": "13577502:8->9",
+  "node": "T.6.n74",
+  "expert": "13577502",
+  "child": "T.6.n74.n75",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "v8 uses img_size=600 for inference, but the training notebook description says img_size=600 for v8. However, v5 (img_size=512) scored 0.9518, v7 (img_size=800) scored 0.9531, and v8 (img_size=600) scored 0.9158, suggesting a mismatch between inference resolution and the model's actual training resolution. The large score drop at 600 implies the model was likely trained at a different resolution (possibly 512 or 800).",
+    "order": 2
+   },
+   "E30": {
+    "id": "E30",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E244": {
+    "id": "E244",
+    "state": "yes",
+    "evidence": "Multiple resolutions have been evaluated: 512 (v5: 0.9518), 800 (v7: 0.9531), and 600 (v8: 0.9158). A baseline and multiple alternative resolutions exist.",
+    "order": 1
+   },
+   "E245": {
+    "id": "E245",
+    "state": "no",
+    "evidence": "A resolution sweep has already been attempted across 512, 800, and 600 in versions v5, v7, and v8.",
+    "order": 3
+   },
+   "E246": {
+    "id": "E246",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E64": {
+    "id": "E64",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "yes",
+    "evidence": "Scores: 512→0.9518, 800→0.9531, 600→0.9158. The trend shows 800 was best, 512 close behind, and 600 was much worse. This suggests the optimal resolution is around 512-800, and 600 is a poor choice, motivating further probing near 800 or matching training resolution.",
+    "order": 4
+   },
+   "E392": {
+    "id": "E392",
+    "state": "yes",
+    "evidence": "The v8 markdown states 'Version 8: using ResNet152, trainable = True, dropout 0.4, batch_size = 16*8, img_size = 600' — this is a new training checkpoint (ResNet152 at 600) loaded from '../input/tensorflow-data-dataset-tpu-part1/model.h5'. The model changed from earlier versions (which used EfficientNet), so a new checkpoint trained at 600 exists and is being tested.",
+    "order": 5
+   },
+   "E393": {
+    "id": "E393",
+    "state": "yes",
+    "evidence": "Between v7 (0.9531) and v8 (0.9158), both the model architecture (changed to ResNet152 per the markdown) and the resolution (800→600) changed simultaneously, making it impossible to attribute the score drop to resolution alone.",
+    "order": 6
+   },
+   "E394": {
+    "id": "E394",
+    "state": "yes",
+    "evidence": "v5 and v6 both used img_size=512 but scored 0.9518 and 0.9495 respectively — a ~0.002 difference from the same resolution, indicating non-trivial run-to-run variance.",
+    "order": 7
+   },
+   "E395": {
+    "id": "E395",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E396": {
+    "id": "E396",
+    "state": "yes",
+    "evidence": "The markdown in v8 explicitly states the training configuration: 'Version 8: using ResNet152, trainable = True, dropout 0.4, batch_size = 16*8, img_size = 600', so the training resolution for the current checkpoint is 600.",
+    "order": 8
+   }
+  },
+  "usage": [
+   3643,
+   961
+  ],
+  "prompt_chars": 11950
+ },
+ {
+  "step_id": "13577502:9->10",
+  "node": "T.6.n74",
+  "expert": "13577502",
+  "child": "T.6.n74.n75",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "Training description says 'img_size = 800 + random_crop(600,600)', so the model was trained at 800 with crops to 600. Inference is at 800 (no crop), which doesn't match the effective training resolution of 600. Multiple resolutions have been tried (512, 800, 600) with varying results.",
+    "order": 2
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "Both training and inference use the same normalization: tf.cast(img, tf.float32) / 255.0. No other normalization (e.g., ImageNet mean/std) is applied in either pipeline.",
+    "order": 5
+   },
+   "E244": {
+    "id": "E244",
+    "state": "yes",
+    "evidence": "Multiple resolutions tested: 512 (v5: 0.9518), 800 (v7: 0.9531), 600 (v8: 0.9158), 800 again (v9: 0.9442). A baseline at training-matched resolution and other resolutions have been evaluated.",
+    "order": 1
+   },
+   "E245": {
+    "id": "E245",
+    "state": "no",
+    "evidence": "Multiple resolutions have been swept: 512, 800, 600 across v5-v9.",
+    "order": 3
+   },
+   "E246": {
+    "id": "E246",
+    "state": "yes",
+    "evidence": "Training uses random_crop(600,600) so effective training resolution is 600. Inference at 800 is 33% larger than 600, which is >20% bigger.",
+    "order": 4
+   },
+   "E64": {
+    "id": "E64",
+    "state": "yes",
+    "evidence": "The model was trained with img_size=800 and random_crop to 600. Inference at 800 is at or above the model's native input resolution (800 resize, 600 effective crop).",
+    "order": 6
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "yes",
+    "evidence": "Scores: 512→0.9518, 800→0.9531, 600→0.9158, 800→0.9442. 800 consistently outperforms 600; 512 is close to 800. The trend suggests 800 is better than 600 but there's variance between runs at 800 (0.9531 vs 0.9442).",
+    "order": 7
+   },
+   "E392": {
+    "id": "E392",
+    "state": "no",
+    "evidence": "The same model.h5 checkpoint from 'tensorflow-data-dataset-tpu-part1' is used across versions. No new training checkpoint at a different resolution is visible.",
+    "order": 10
+   },
+   "E393": {
+    "id": "E393",
+    "state": "no",
+    "evidence": "Between v7 (800, 0.9531) and v8 (600, 0.9158) and v9 (800, 0.9442), only img_size changed — same model weights and architecture. Resolution changes are not confounded by model changes.",
+    "order": 8
+   },
+   "E394": {
+    "id": "E394",
+    "state": "yes",
+    "evidence": "At resolution 800, v7 scored 0.9531 and v9 scored 0.9442 — a notable difference of ~0.009 with the same code and resolution, suggesting run-to-run or environment variance.",
+    "order": 9
+   },
+   "E395": {
+    "id": "E395",
+    "state": "yes",
+    "evidence": "Training effective resolution is 600 (random_crop). At 600 the score was 0.9158, while at 800 it was 0.9531 and at 512 it was 0.9518. Non-matched resolutions (800, 512) outperform the training-matched 600.",
+    "order": 11
+   },
+   "E396": {
+    "id": "E396",
+    "state": "yes",
+    "evidence": "The version 9 markdown states: 'img_size = 800 + random_crop(600,600)' — the training resolution is documented in the notebook description itself.",
+    "order": 12
+   }
+  },
+  "usage": [
+   3738,
+   1031
+  ],
+  "prompt_chars": 12270
+ },
+ {
+  "step_id": "13577502:10->11",
+  "node": "T.6.n74",
+  "expert": "13577502",
+  "child": "T.6.n74.n75",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "Training notebook description says img_size=900 with random_crop(800,800), so training resolution is 800x800 after crop, but inference is resizing to 900x900 — a mismatch. Earlier versions tested 512, 600, 800, 900.",
+    "order": 2
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "Both training and inference pipelines use tf.cast(img, tf.float32) / 255.0 normalization — no mismatch visible in the code.",
+    "order": 5
+   },
+   "E244": {
+    "id": "E244",
+    "state": "yes",
+    "evidence": "Multiple resolutions have been evaluated: 512 (0.9518), 800 (0.9531), 600 (0.9158), 800 again (0.9442), 900 (0.9474). A baseline at training-matched resolution (800) exists and other resolutions have been tested.",
+    "order": 1
+   },
+   "E245": {
+    "id": "E245",
+    "state": "no",
+    "evidence": "A resolution sweep has already been attempted across 512, 600, 800, and 900 — multiple resolutions tested.",
+    "order": 3
+   },
+   "E246": {
+    "id": "E246",
+    "state": "yes",
+    "evidence": "Training uses random_crop(800,800) so effective training resolution is 800. Inference at 900 is 12.5% larger — not quite >20%, but close. At 512 it was much smaller. Current 900 is larger than training 800.",
+    "order": 6
+   },
+   "E64": {
+    "id": "E64",
+    "state": "yes",
+    "evidence": "The model was trained at img_size=900 with random_crop to 800x800. Current inference resolution of 900 exceeds the effective 800x800 training resolution.",
+    "order": 7
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "yes",
+    "evidence": "Scores: 512→0.9518, 800→0.9531 (best), 600→0.9158, 800→0.9442, 900→0.9474. The best score was at 800 (v7), and going to 900 degraded slightly. Going below 800 also degraded. The trend suggests 800 is near-optimal and moving away in either direction hurts.",
+    "order": 4
+   },
+   "E392": {
+    "id": "E392",
+    "state": "no",
+    "evidence": "The training notebook description in v10 markdown is the same model (Xception, img_size=900, random_crop 800). No new checkpoint at a different resolution is mentioned or available.",
+    "order": 8
+   },
+   "E393": {
+    "id": "E393",
+    "state": "yes",
+    "evidence": "Between v4→v5 the model architecture changed (from Keras ImageDataGenerator to tf.data + different model checkpoint) simultaneously with resolution change to 512, confounding that comparison. However, v6-v10 only changed resolution with the same model.",
+    "order": 9
+   },
+   "E394": {
+    "id": "E394",
+    "state": "yes",
+    "evidence": "At resolution 800: v7 scored 0.9531 but v9 scored 0.9442 — a notable difference (~0.009) at the same resolution, suggesting run-to-run or other variance complicates conclusions.",
+    "order": 10
+   },
+   "E395": {
+    "id": "E395",
+    "state": "yes",
+    "evidence": "Training-matched resolution (800, effective crop) scored 0.9531 in v7 — the best score. But v9 at 800 scored only 0.9442, while v5 at 512 scored 0.9518. The inconsistency makes it unclear, though the best single score is at 800.",
+    "order": 11
+   },
+   "E396": {
+    "id": "E396",
+    "state": "yes",
+    "evidence": "The markdown in the notebook explicitly states: 'img_size = 900 + random_crop(800,800)' for the training configuration, so the training resolution is known to be 900 resize then 800 crop.",
+    "order": 12
+   }
+  },
+  "usage": [
+   3801,
+   1039
+  ],
+  "prompt_chars": 12487
+ },
+ {
+  "step_id": "13577502:11->12",
+  "node": "T.6.n74",
+  "expert": "13577502",
+  "child": "T.6.n74.n75",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "The training notebook description says img_size=1000 for v11, but earlier versions used 512/800/900. The model.h5 was trained at a specific resolution (likely 512 or similar from the Part1 training notebook), and inference is now at 1000, which likely doesn't match training resolution. The score degradation pattern (best at 800, worse at 600/900/1000) suggests mismatch.",
+    "order": 2
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "Both training and inference pipelines use the same normalization: tf.cast(img, tf.float32) / 255.0, as seen in the build_decoder function which is shared. No other normalization (e.g., ImageNet mean/std) is applied.",
+    "order": 5
+   },
+   "E244": {
+    "id": "E244",
+    "state": "yes",
+    "evidence": "Multiple resolutions have been evaluated: 512 (v5: 0.95180), 800 (v7: 0.95306), 600 (v8: 0.91580), 800 again (v9: 0.94416), 900 (v10: 0.94742). A baseline and multiple other resolutions exist.",
+    "order": 1
+   },
+   "E245": {
+    "id": "E245",
+    "state": "no",
+    "evidence": "A resolution sweep has clearly been attempted across v5-v10 with resolutions 512, 800, 600, 800, 900, and now 1000.",
+    "order": 3
+   },
+   "E246": {
+    "id": "E246",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E64": {
+    "id": "E64",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "yes",
+    "evidence": "The scores show: 512→0.9518, 800→0.9531 (best), 600→0.9158, 800→0.9442, 900→0.9475. The trend shows 800 was the peak, and going higher (900, 1000) or lower (600) degrades performance. The trend suggests 800 is optimal and further increases are not helping.",
+    "order": 4
+   },
+   "E392": {
+    "id": "E392",
+    "state": "no",
+    "evidence": "The same model.h5 checkpoint from '../input/tensorflow-data-dataset-tpu-part1/model.h5' has been used throughout. The markdown describes training parameters but the checkpoint hasn't changed across inference resolution experiments.",
+    "order": 7
+   },
+   "E393": {
+    "id": "E393",
+    "state": "no",
+    "evidence": "Across v5-v11, only the img_size parameter changed between versions (the model weights and architecture remained the same model.h5). Resolution changes are not confounded by architecture changes.",
+    "order": 8
+   },
+   "E394": {
+    "id": "E394",
+    "state": "yes",
+    "evidence": "At resolution 800, v7 scored 0.95306 but v9 scored 0.94416 — a notable difference of ~0.009 at the same resolution, suggesting run-to-run or checkpoint variance complicates conclusions.",
+    "order": 6
+   },
+   "E395": {
+    "id": "E395",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E396": {
+    "id": "E396",
+    "state": "no",
+    "evidence": "The training notebook title and markdown mention parameters (Xception, img_size=1000, etc.) but the actual training resolution of the saved model.h5 checkpoint is not definitively confirmed from the inference notebook alone. The markdown describes v11 settings but the model was trained in a separate Part1 notebook whose exact final resolution isn't verifiable from this code.",
+    "order": 9
+   }
+  },
+  "usage": [
+   3870,
+   965
+  ],
+  "prompt_chars": 12779
+ },
+ {
+  "step_id": "13702907:5->6",
+  "node": "T.6.n74",
+  "expert": "13702907",
+  "child": "T.6.n74.n76",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "Both training and inference use tf.cast(img, tf.float32) / 255.0 normalization — no separate mean/std normalization is applied in either pipeline, so they match.",
+    "order": 3
+   },
+   "E244": {
+    "id": "E244",
+    "state": "no",
+    "evidence": "Only two submitted versions exist (v3 at 0.94606, v4 at 0.94772), both at IMSIZE[-1]=512. No other resolution has been evaluated.",
+    "order": 2
+   },
+   "E245": {
+    "id": "E245",
+    "state": "yes",
+    "evidence": "Submission history shows only 512×512 inference resolution was ever used; no resolution sweep or variation has been attempted.",
+    "order": 1
+   },
+   "E246": {
+    "id": "E246",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E64": {
+    "id": "E64",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "no",
+    "evidence": "No prior resolution probes exist — only one resolution (512) has been tested, so there is no trend to observe.",
+    "order": 4
+   },
+   "E392": {
+    "id": "E392",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E393": {
+    "id": "E393",
+    "state": "yes",
+    "evidence": "v3→v4 changed from ensemble of 3 models to single model simultaneously; score difference (0.94606→0.94772) cannot be attributed to resolution since resolution stayed at 512 but model count changed.",
+    "order": 5
+   },
+   "E394": {
+    "id": "E394",
+    "state": "no",
+    "evidence": "Only one submission per configuration exists (v3 ensemble at 512, v4 single model at 512); no repeated runs at the same resolution to assess variance.",
+    "order": 6
+   },
+   "E395": {
+    "id": "E395",
+    "state": "no",
+    "evidence": "No non-matched resolution has been tested, so no comparison is possible.",
+    "order": 7
+   },
+   "E396": {
+    "id": "E396",
+    "state": "no",
+    "evidence": "The checkpoint is loaded from '../input/efficientnet-tpu/models/model.h5' — the filename and code provide no metadata about the original training resolution. The IMSIZE tuple lists standard EfficientNet resolutions (224–600) plus 512, but which was used for training is not documented.",
+    "order": 8
+   }
+  },
+  "usage": [
+   3126,
+   678
+  ],
+  "prompt_chars": 10112
+ },
+ {
+  "step_id": "13848868:30->31",
+  "node": "T.6.n74",
+  "expert": "13848868",
+  "child": "T.6.n74.n75",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "no",
+    "evidence": "Both training and inference use IMAGE_SIZE = (448, 448); the notebook header states 'image size: 3x448x448' and the resize/inference code uses the same IMAGE_SIZE variable.",
+    "order": 1
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "Inference normalization uses mean=[0.4887381077884414], std=[0.23064819430546407] which matches the training notebook's statistics (same values hardcoded in the inference transform list).",
+    "order": 2
+   },
+   "E244": {
+    "id": "E244",
+    "state": "no",
+    "evidence": "All submissions from v12 onward use 448×448; no other resolution has been evaluated in the submission history.",
+    "order": 3
+   },
+   "E245": {
+    "id": "E245",
+    "state": "yes",
+    "evidence": "The entire edit history from v12 to v30 shows only 448×448 resolution; no resolution sweep or variation has been attempted.",
+    "order": 4
+   },
+   "E246": {
+    "id": "E246",
+    "state": "no",
+    "evidence": "Inference resolution is 448×448 and training resolution is also 448×448; they match, so inference is not larger.",
+    "order": 5
+   },
+   "E64": {
+    "id": "E64",
+    "state": "yes",
+    "evidence": "IMAGE_SIZE = (448, 448) for inference matches the training resolution of 448×448 as stated in the notebook header.",
+    "order": 6
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "no",
+    "evidence": "No prior resolution probes exist — only one resolution (448×448) has been used across all submissions.",
+    "order": 7
+   },
+   "E392": {
+    "id": "E392",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E393": {
+    "id": "E393",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E394": {
+    "id": "E394",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E395": {
+    "id": "E395",
+    "state": "no",
+    "evidence": "No sweep was done; only one resolution tested, so no comparison is possible.",
+    "order": 8
+   },
+   "E396": {
+    "id": "E396",
+    "state": "yes",
+    "evidence": "The notebook header explicitly states 'image size: 3x448x448' and the training notebook link is provided; IMAGE_SIZE=(448,448) is set in the code.",
+    "order": 9
+   }
+  },
+  "usage": [
+   7762,
+   655
+  ],
+  "prompt_chars": 24730
+ },
+ {
+  "step_id": "13848868:32->33",
+  "node": "T.6.n74",
+  "expert": "13848868",
+  "child": "T.6.n74.n75",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "The inference pipeline uses Normalize with mean=[0.4887...] and std=[0.2306...], and these appear to be the same custom statistics used during training (referenced in the training notebook link). No mismatch is visible.",
+    "order": 4
+   },
+   "E244": {
+    "id": "E244",
+    "state": "yes",
+    "evidence": "v30 used 448x448 (scores ~0.947), v31 switched to 512x512 (score 0.95418), and v32 is also at 512x512 (score 0.95407). At least two resolutions have been evaluated.",
+    "order": 1
+   },
+   "E245": {
+    "id": "E245",
+    "state": "no",
+    "evidence": "Multiple resolutions have been tested: 448x448 in earlier versions and 512x512 from v31 onward.",
+    "order": 2
+   },
+   "E246": {
+    "id": "E246",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E64": {
+    "id": "E64",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "yes",
+    "evidence": "Going from 448x448 to 512x512 in v31 improved score from ~0.947 to 0.95418, showing a clear improving trend with increased resolution.",
+    "order": 3
+   },
+   "E392": {
+    "id": "E392",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E393": {
+    "id": "E393",
+    "state": "yes",
+    "evidence": "v30->v31 changed IMAGE_SIZE from 448 to 512 AND simultaneously swapped SSEBlock for SpatialAttentionBlock with [64,32,16,1], so the resolution change is confounded with an architecture change.",
+    "order": 5
+   },
+   "E394": {
+    "id": "E394",
+    "state": "yes",
+    "evidence": "At 512x512 resolution, v31 scored 0.95418 (CONVERT_TO_RANK=False) and v32 scored 0.95407 (CONVERT_TO_RANK=True), showing minor variation from postprocessing changes but not from different checkpoints at the same config. Earlier at 448x448 with the same model architecture, scores varied (e.g., v25=0.94815, v26=0.94964, v27=0.94944) due to rank-conversion toggling, making it hard to isolate resolution effects cleanly.",
+    "order": 6
+   },
+   "E395": {
+    "id": "E395",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E396": {
+    "id": "E396",
+    "state": "yes",
+    "evidence": "The notebook header states 'image size: 3x512x512' and links to the training notebook (scriptVersionId=52531312). The training resolution can be determined from this documentation.",
+    "order": 7
+   }
+  },
+  "usage": [
+   7790,
+   790
+  ],
+  "prompt_chars": 24752
+ },
+ {
+  "step_id": "13848868:34->35",
+  "node": "T.6.n74",
+  "expert": "13848868",
+  "child": "T.6.n74.n75",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "IMAGE_SIZE is (640,640) at inference. The training notebook link references settings, and earlier versions used 448 and 512. The v31 jump to 512 improved score significantly (0.95418), while v33 at 640 dropped to 0.94942, suggesting 640 may not match training resolution.",
+    "order": 2
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "Normalization stats in inference (mean=0.4887, std=0.2306) appear consistent across versions and match what would be used in training; no evidence of a mismatch.",
+    "order": 7
+   },
+   "E244": {
+    "id": "E244",
+    "state": "yes",
+    "evidence": "Multiple resolutions have been evaluated: 448 (v16-v21 era ~0.950-0.952), 512 (v31: 0.95418, v32: 0.95407), and 640 (v33: 0.94942, v34: 0.94844). A baseline at training-matched resolution exists and others have been tested.",
+    "order": 1
+   },
+   "E245": {
+    "id": "E245",
+    "state": "no",
+    "evidence": "A resolution sweep has already been attempted: 448, 512, and 640 have all been tested across multiple submissions.",
+    "order": 3
+   },
+   "E246": {
+    "id": "E246",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E64": {
+    "id": "E64",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "yes",
+    "evidence": "Clear trend: 448→512 improved score (0.952→0.954), but 512→640 degraded it (0.954→0.949). This shows a peak around 512 and degradation at 640, motivating returning to 512 rather than going higher.",
+    "order": 4
+   },
+   "E392": {
+    "id": "E392",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E393": {
+    "id": "E393",
+    "state": "yes",
+    "evidence": "v31 changed resolution from 448→512 AND simultaneously swapped SSEBlock for SpatialAttentionBlock with [64,32,16,1] channels AND flipped CONVERT_TO_RANK. Multiple changes confound resolution attribution, though v33 (512→640) only changed resolution and CONVERT_TO_RANK.",
+    "order": 6
+   },
+   "E394": {
+    "id": "E394",
+    "state": "yes",
+    "evidence": "At 512x512, v31 scored 0.95418 (CONVERT_TO_RANK=False) and v32 scored 0.95407 (CONVERT_TO_RANK=True), showing small variance. At 640x640, v33=0.94942 and v34=0.94844 with only the rank flag differing, showing consistent degradation vs 512.",
+    "order": 5
+   },
+   "E395": {
+    "id": "E395",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E396": {
+    "id": "E396",
+    "state": "yes",
+    "evidence": "The training notebook is linked (https://www.kaggle.com/ttahara/ranzcr-multi-head-model-training?scriptVersionId=52606857) and the markdown says 'image size: 3x640x640', indicating training was at 640x640. However, the best inference scores came at 512, creating ambiguity.",
+    "order": 8
+   }
+  },
+  "usage": [
+   7792,
+   916
+  ],
+  "prompt_chars": 24752
+ },
+ {
+  "step_id": "13848868:36->37",
+  "node": "T.6.n74",
+  "expert": "13848868",
+  "child": "T.6.n74.n77",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "The inference pipeline uses Normalize with mean=[0.4887...] and std=[0.2306...], and these appear consistent across versions with no indication of a mismatch with training.",
+    "order": 5
+   },
+   "E244": {
+    "id": "E244",
+    "state": "yes",
+    "evidence": "Multiple resolutions have been tested: 448x448 (v31 baseline before change), 512x512 (v31 LB 0.95418, v35 LB 0.95590), and 640x640 (v33 LB 0.94942). A baseline at training-matched resolution exists and other resolutions have been evaluated.",
+    "order": 1
+   },
+   "E245": {
+    "id": "E245",
+    "state": "no",
+    "evidence": "A resolution sweep has already been attempted: 448->512 (v31), 512->640 (v33), 640->512 (v35). Multiple resolutions tested.",
+    "order": 2
+   },
+   "E246": {
+    "id": "E246",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E64": {
+    "id": "E64",
+    "state": "yes",
+    "evidence": "Current inference resolution is 512x512. The training notebook link references 512x512 image size, and the markdown says 'image size: 3x512x512', so inference matches training resolution.",
+    "order": 3
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "yes",
+    "evidence": "Resolution sweep shows: 448->512 improved (0.95233->0.95418 at v31), 512->640 degraded (0.95418->0.94942 at v33), 640->512 improved back (0.94844->0.95590 at v35). Clear trend that 512 is optimal and going larger hurts.",
+    "order": 4
+   },
+   "E392": {
+    "id": "E392",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E393": {
+    "id": "E393",
+    "state": "yes",
+    "evidence": "v23 changed both the model architecture (added SpatialAttentionBlock, SingleHeadModel) AND toggled CONVERT_TO_RANK simultaneously, and v31 changed resolution, attention block, AND CONVERT_TO_RANK together, confounding attribution.",
+    "order": 6
+   },
+   "E394": {
+    "id": "E394",
+    "state": "yes",
+    "evidence": "At 512x512, scores vary: v31=0.95418 (CONVERT_TO_RANK=False), v32=0.95407 (CONVERT_TO_RANK=True), v35=0.95590 (CONVERT_TO_RANK=False), v36=0.95509 (CONVERT_TO_RANK=True). The ~0.001-0.002 variation from the CONVERT_TO_RANK toggle shows some run-to-run/config variance at the same resolution.",
+    "order": 7
+   },
+   "E395": {
+    "id": "E395",
+    "state": "no",
+    "evidence": "The training-matched resolution (512x512) scored best at 0.95590 (v35), outperforming both 448x448 and 640x640. No non-matched resolution outperformed it.",
+    "order": 8
+   },
+   "E396": {
+    "id": "E396",
+    "state": "yes",
+    "evidence": "The notebook markdown explicitly states 'image size: 3x512x512' and the training notebook link is provided, confirming the training resolution is 512x512.",
+    "order": 9
+   }
+  },
+  "usage": [
+   7784,
+   929
+  ],
+  "prompt_chars": 24752
+ },
+ {
+  "step_id": "15082684:16->17",
+  "node": "T.6.n74",
+  "expert": "15082684",
+  "child": "T.6.n74.n76",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "Inference uses standard ImageNet normalization (mean=[0.485,0.456,0.406], std=[0.229,0.224,0.225]) which is the standard for ResNet/timm models; no evidence of a mismatch.",
+    "order": 3
+   },
+   "E244": {
+    "id": "E244",
+    "state": "no",
+    "evidence": "All prior submissions varied checkpoints, not resolution. Only 512 has been used for inference throughout all versions.",
+    "order": 5
+   },
+   "E245": {
+    "id": "E245",
+    "state": "yes",
+    "evidence": "All 16 versions use CFG.size=512 for inference; no resolution variation has ever been attempted.",
+    "order": 4
+   },
+   "E246": {
+    "id": "E246",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E64": {
+    "id": "E64",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "no",
+    "evidence": "No resolution probes have been submitted; all submissions used the same 512 resolution.",
+    "order": 6
+   },
+   "E392": {
+    "id": "E392",
+    "state": "yes",
+    "evidence": "The MultiHeadResNet200D uses base_name='resnet200d_320' (suggesting 320px training resolution) and the student checkpoint is 'resnet200d_320_chestx.pth', yet inference runs at CFG.size=512.",
+    "order": 1
+   },
+   "E393": {
+    "id": "E393",
+    "state": "yes",
+    "evidence": "v15->v16 simultaneously changed the architecture (added MultiHeadResNet200D with spatial attention) and the checkpoint, so any score difference from v12 (0.95917) to v16 (0.95870) is confounded by architecture change, not resolution.",
+    "order": 7
+   },
+   "E394": {
+    "id": "E394",
+    "state": "yes",
+    "evidence": "Multiple checkpoints at the same 512 inference resolution show wide score variation: e.g., v3=0.96040, v7=0.95452, v12=0.95917, v13=0.95326 — substantial variance across runs/checkpoints.",
+    "order": 8
+   },
+   "E395": {
+    "id": "E395",
+    "state": "no",
+    "evidence": "No resolution sweep has been done, so no comparison between matched and non-matched resolutions exists.",
+    "order": 9
+   },
+   "E396": {
+    "id": "E396",
+    "state": "yes",
+    "evidence": "The base model name 'resnet200d_320' and the student checkpoint filename 'resnet200d_320_chestx.pth' strongly suggest the model was pretrained/trained at 320px resolution.",
+    "order": 2
+   }
+  },
+  "usage": [
+   6192,
+   747
+  ],
+  "prompt_chars": 19581
+ },
+ {
+  "step_id": "15082684:17->18",
+  "node": "T.6.n74",
+  "expert": "15082684",
+  "child": "T.6.n74.n76",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "yes",
+    "evidence": "The checkpoint name contains '320' (resnet200d_320) indicating training at 320px, but CFG.size=640 for inference — a clear mismatch. v16 used size=512, v17 changed to 640, neither matches 320.",
+    "order": 1
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "Inference uses standard ImageNet normalization (mean=[0.485,0.456,0.406], std=[0.229,0.224,0.225]) which is the same as typical training pipelines for these models.",
+    "order": 5
+   },
+   "E244": {
+    "id": "E244",
+    "state": "yes",
+    "evidence": "v16 scored 0.95870 at size=512; v17 changed to size=640 but was not submitted. The baseline at 512 exists, and a second resolution (640) has been set up but not yet evaluated on LB.",
+    "order": 6
+   },
+   "E245": {
+    "id": "E245",
+    "state": "no",
+    "evidence": "v16 used size=512 and v17 changed to size=640, so at least two resolutions have been considered/tested.",
+    "order": 7
+   },
+   "E246": {
+    "id": "E246",
+    "state": "yes",
+    "evidence": "Training resolution is 320 (from checkpoint name resnet200d_320), inference resolution is 640 — that's 100% larger, well above 20%.",
+    "order": 2
+   },
+   "E64": {
+    "id": "E64",
+    "state": "yes",
+    "evidence": "The model's native training resolution is 320 (per checkpoint name resnet200d_320_chestx.pth), and inference is at 640, which is well above the training resolution.",
+    "order": 3
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E391": {
+    "id": "E391",
+    "state": "no",
+    "evidence": "Only one resolution (512) has an LB score (0.95870 in v16); v17 at 640 was not submitted, so there is no multi-point trend to observe.",
+    "order": 8
+   },
+   "E392": {
+    "id": "E392",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E393": {
+    "id": "E393",
+    "state": "yes",
+    "evidence": "v15→v16 simultaneously changed the architecture (added MultiHeadResNet200D with spatial attention) AND the checkpoint, while v16→v17 changed only the resolution (512→640). The v16 score conflates architecture and resolution changes with earlier single-head results.",
+    "order": 9
+   },
+   "E394": {
+    "id": "E394",
+    "state": "yes",
+    "evidence": "At size=512 with different checkpoints/architectures, scores varied widely: e.g., v3=0.96040, v4=0.95923, v7=0.95452, v12=0.95917, v16=0.95870 — substantial variance across runs at similar resolutions.",
+    "order": 10
+   },
+   "E395": {
+    "id": "E395",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E396": {
+    "id": "E396",
+    "state": "yes",
+    "evidence": "The base model name in the MultiHeadResNet200D class is 'resnet200d_320' and the student checkpoint path is 'resnet200d_320_chestx.pth', clearly indicating 320px training resolution.",
+    "order": 4
+   }
+  },
+  "usage": [
+   6254,
+   877
+  ],
+  "prompt_chars": 19877
+ },
+ {
+  "step_id": "15082684:17->18",
+  "node": "T.2.5.n16",
+  "expert": "15082684",
+  "child": "T.2.5.n16.n17",
+  "checks": {
+   "E31": {
+    "id": "E31",
+    "state": "yes",
+    "evidence": "The dataset is chest X-rays (medical grayscale images) while the pretrained backbone (resnet200d) was pretrained on ImageNet (natural RGB images), which is a substantially different pixel distribution.",
+    "order": 1
+   },
+   "E130": {
+    "id": "E130",
+    "state": "no",
+    "evidence": "Chest X-rays are medical grayscale images, not natural RGB imagery similar to ImageNet.",
+    "order": 2
+   },
+   "E131": {
+    "id": "E131",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E132": {
+    "id": "E132",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E133": {
+    "id": "E133",
+    "state": "yes",
+    "evidence": "The code uses timm models which expose default_cfg with mean/std; the inference code uses standard ImageNet values [0.485, 0.456, 0.406] / [0.229, 0.224, 0.225], which are the documented defaults for resnet200d in timm.",
+    "order": 3
+   },
+   "E134": {
+    "id": "E134",
+    "state": "no",
+    "evidence": "The timm library documents the exact pretraining normalization values in model.default_cfg, so they are not unknown or ambiguous.",
+    "order": 4
+   },
+   "E30": {
+    "id": "E30",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E364": {
+    "id": "E364",
+    "state": "yes",
+    "evidence": "The dataset is chest X-rays (grayscale) read with cv2.imread and converted to RGB via cv2.cvtColor(BGR2RGB), meaning the same grayscale values are replicated across 3 channels, yet the normalization uses different per-channel values [0.485, 0.456, 0.406].",
+    "order": 5
+   },
+   "E365": {
+    "id": "E365",
+    "state": "no",
+    "evidence": "The edit history shows the expert has been swapping model checkpoints, not perturbing normalization values.",
+    "order": 6
+   },
+   "E366": {
+    "id": "E366",
+    "state": "no",
+    "evidence": "The submission history shows no normalization value changes at all — all edits have been checkpoint swaps or architecture changes.",
+    "order": 7
+   },
+   "E367": {
+    "id": "E367",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   }
+  },
+  "usage": [
+   6214,
+   582
+  ],
+  "prompt_chars": 19307
+ },
+ {
+  "step_id": "15173072:12->13",
+  "node": "T.6.n74",
+  "expert": "15173072",
+  "child": "T.6.n74.n78",
+  "checks": {
+   "E07": {
+    "id": "E07",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E30": {
+    "id": "E30",
+    "state": "no",
+    "evidence": "Inference uses Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]) which are standard ImageNet stats, matching what resnet200d training pipelines typically use. No evidence of a mismatch.",
+    "order": 3
+   },
+   "E244": {
+    "id": "E244",
+    "state": "no",
+    "evidence": "Only one resolution (IMAGE_SIZE=640) has been used across all submissions; no other resolution has been evaluated.",
+    "order": 4
+   },
+   "E245": {
+    "id": "E245",
+    "state": "yes",
+    "evidence": "All versions use IMAGE_SIZE=640 and no other resolution has been tested in any submission (v7: 0.509, v8: 0.556, v12: 0.960 — all at 640).",
+    "order": 2
+   },
+   "E246": {
+    "id": "E246",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E64": {
+    "id": "E64",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E23": {
+    "id": "E23",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E247": {
+    "id": "E247",
+    "state": "no",
+    "evidence": "Only 3 submissions have been made (v7, v8, v12) out of typically 5/day on Kaggle, so the expert is not severely constrained.",
+    "order": 5
+   },
+   "E391": {
+    "id": "E391",
+    "state": "no",
+    "evidence": "No resolution probes have been done — all submissions used the same 640 resolution, so there is no trend to observe.",
+    "order": 6
+   },
+   "E392": {
+    "id": "E392",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E393": {
+    "id": "E393",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E394": {
+    "id": "E394",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E395": {
+    "id": "E395",
+    "state": "no",
+    "evidence": "No sweep has been performed; only one resolution tested, so no comparison is possible.",
+    "order": 7
+   },
+   "E396": {
+    "id": "E396",
+    "state": "yes",
+    "evidence": "The checkpoint filename 'resnet200d_fold4_cv954.pth' comes from a public notebook titled 'resnet200d-baseline-benchmark-public', and the inference code uses IMAGE_SIZE=640 which likely matches the training resolution from that public notebook. The filename and source path provide some metadata about training origin.",
+    "order": 1
+   }
+  },
+  "usage": [
+   3709,
+   672
+  ],
+  "prompt_chars": 12524
+ },
+ {
+  "step_id": "15173072:15->16",
+  "node": "T.2.5.n16",
+  "expert": "15173072",
+  "child": "T.2.5.n16.n18",
+  "checks": {
+   "E31": {
+    "id": "E31",
+    "state": "yes",
+    "evidence": "The dataset is chest X-rays (medical imaging) while the pretrained backbone (resnet200d) was pretrained on ImageNet (natural images), so there is a substantial domain gap in pixel distribution.",
+    "order": 1
+   },
+   "E130": {
+    "id": "E130",
+    "state": "no",
+    "evidence": "The target dataset consists of chest X-rays (medical images), not natural RGB imagery similar to ImageNet.",
+    "order": 2
+   },
+   "E131": {
+    "id": "E131",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E132": {
+    "id": "E132",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E133": {
+    "id": "E133",
+    "state": "yes",
+    "evidence": "timm models expose default_cfg with mean/std, and the code already uses ImageNet mean=[0.485, 0.456, 0.406] std=[0.229, 0.224, 0.225] which are the documented defaults for resnet200d in timm.",
+    "order": 3
+   },
+   "E134": {
+    "id": "E134",
+    "state": "no",
+    "evidence": "The pretraining normalization values for resnet200d are well-documented in timm's model.default_cfg; they are the standard ImageNet values currently used in the code.",
+    "order": 4
+   },
+   "E30": {
+    "id": "E30",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E364": {
+    "id": "E364",
+    "state": "yes",
+    "evidence": "Chest X-rays are inherently grayscale images; the code reads them with cv2.imread and converts BGR to RGB, replicating the single channel across 3 channels, yet uses different per-channel normalization values.",
+    "order": 5
+   },
+   "E365": {
+    "id": "E365",
+    "state": "yes",
+    "evidence": "The expert changed the prediction multiplier from 100 to 50 in v15 (not normalization per se), but the overall approach has been trial-and-error adjustments rather than using documented exact training statistics from the checkpoint provider.",
+    "order": 6
+   },
+   "E366": {
+    "id": "E366",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E367": {
+    "id": "E367",
+    "state": "yes",
+    "evidence": "The best scores so far (0.96062 at v13/v14) were achieved with ImageNet normalization values [0.485, 0.456, 0.406]/[0.229, 0.224, 0.225]; no other normalization variant has been tried.",
+    "order": 7
+   }
+  },
+  "usage": [
+   3881,
+   632
+  ],
+  "prompt_chars": 12781
+ },
+ {
+  "step_id": "15173072:16->17",
+  "node": "T.2.5.n16",
+  "expert": "15173072",
+  "child": "T.2.5.n16.n18",
+  "checks": {
+   "E31": {
+    "id": "E31",
+    "state": "yes",
+    "evidence": "The dataset is chest X-rays (medical images) while the backbone was pretrained on ImageNet (natural photos) — a substantial domain gap.",
+    "order": 1
+   },
+   "E130": {
+    "id": "E130",
+    "state": "no",
+    "evidence": "The target dataset is chest X-rays (medical imaging), not natural RGB imagery similar to ImageNet.",
+    "order": 2
+   },
+   "E131": {
+    "id": "E131",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E132": {
+    "id": "E132",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E133": {
+    "id": "E133",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E134": {
+    "id": "E134",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E30": {
+    "id": "E30",
+    "state": "yes",
+    "evidence": "In v16 the expert changed mean from [0.485, 0.456, 0.406] to [0.495, 0.446, 0.416], which likely differs from whatever the training checkpoint used. The score dropped from 0.96062 to 0.95220, suggesting a mismatch.",
+    "order": 3
+   },
+   "E364": {
+    "id": "E364",
+    "state": "no",
+    "evidence": "The code uses cv2.imread and converts BGR to RGB with 3 channels, and the normalization uses three different mean values — not identical per channel. However, chest X-rays are grayscale replicated to 3 channels, so identical values would be more appropriate, but the expert is not using identical values.",
+    "order": 4
+   },
+   "E365": {
+    "id": "E365",
+    "state": "yes",
+    "evidence": "In v16 the expert perturbed the mean from [0.485, 0.456, 0.406] to [0.495, 0.446, 0.416] — small arbitrary changes rather than using known documented training statistics.",
+    "order": 5
+   },
+   "E366": {
+    "id": "E366",
+    "state": "yes",
+    "evidence": "v16 changed normalization mean values and scored 0.95220, down from 0.96062 in v13/v14, a clear regression caused by the normalization change.",
+    "order": 6
+   },
+   "E367": {
+    "id": "E367",
+    "state": "yes",
+    "evidence": "The best scores (0.96062 in v13 and v14) used ImageNet normalization [0.485, 0.456, 0.406]; the custom values in v16 scored worse at 0.95220.",
+    "order": 7
+   }
+  },
+  "usage": [
+   3973,
+   638
+  ],
+  "prompt_chars": 13124
+ },
+ {
+  "step_id": "15173072:17->18",
+  "node": "T.2.5.n16",
+  "expert": "15173072",
+  "child": "T.2.5.n16.n18",
+  "checks": {
+   "E31": {
+    "id": "E31",
+    "state": "yes",
+    "evidence": "The dataset is chest X-rays (medical images) while the backbone was pretrained on ImageNet (natural photos) — a substantial domain gap.",
+    "order": 1
+   },
+   "E130": {
+    "id": "E130",
+    "state": "no",
+    "evidence": "Chest X-rays are medical grayscale-like images, not everyday object photos — clearly different from ImageNet.",
+    "order": 2
+   },
+   "E131": {
+    "id": "E131",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E132": {
+    "id": "E132",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E133": {
+    "id": "E133",
+    "state": "yes",
+    "evidence": "timm's resnet200d has default_cfg with documented ImageNet mean/std ([0.485, 0.456, 0.406] / [0.229, 0.224, 0.225]), and the checkpoint name 'resnet200d_fold4_cv954' suggests it was fine-tuned — but the exact training normalization used by that checkpoint author is not explicitly documented in the notebook.",
+    "order": 5
+   },
+   "E134": {
+    "id": "E134",
+    "state": "yes",
+    "evidence": "The expert doesn't have the exact training normalization from the checkpoint author; only generic ImageNet defaults are available, and the expert has been guessing/perturbing values (v15-v17).",
+    "order": 6
+   },
+   "E30": {
+    "id": "E30",
+    "state": "yes",
+    "evidence": "The expert has been changing normalization means across versions (v16: [0.495,0.446,0.416], v17: [0.475,0.436,0.406]) and these likely differ from whatever was used during training of the checkpoint.",
+    "order": 3
+   },
+   "E364": {
+    "id": "E364",
+    "state": "yes",
+    "evidence": "Chest X-rays are grayscale images read via cv2 and converted to RGB (3 identical channels), so per-channel normalization values should logically be identical — yet the expert is using different values per channel.",
+    "order": 7
+   },
+   "E365": {
+    "id": "E365",
+    "state": "yes",
+    "evidence": "Versions v15→v16→v17 show the expert perturbing normalization mean values by small amounts ([0.485,0.456,0.406]→[0.495,0.446,0.416]→[0.475,0.436,0.406]) in a trial-and-error fashion rather than using known exact training statistics.",
+    "order": 4
+   },
+   "E366": {
+    "id": "E366",
+    "state": "yes",
+    "evidence": "v16 changed means to [0.495,0.446,0.416] and scored 0.95220, down from v13's 0.96062. v17 moved closer back toward original values [0.475,0.436,0.406] and scored 0.95712 — still below the best, motivating reversal.",
+    "order": 8
+   },
+   "E367": {
+    "id": "E367",
+    "state": "yes",
+    "evidence": "The best scores (0.96062 at v13/v14) used ImageNet normalization [0.485,0.456,0.406]. All deviations from these values (v16: 0.95220, v17: 0.95712) produced worse scores.",
+    "order": 9
+   }
+  },
+  "usage": [
+   4062,
+   813
+  ],
+  "prompt_chars": 13428
+ },
+ {
+  "step_id": "15173072:18->19",
+  "node": "T.2.5.n16",
+  "expert": "15173072",
+  "child": "T.2.5.n16.n18",
+  "checks": {
+   "E31": {
+    "id": "E31",
+    "state": "yes",
+    "evidence": "The dataset is chest X-rays (medical images) while the backbone was pretrained on ImageNet (natural photos) — a substantial domain gap.",
+    "order": 1
+   },
+   "E130": {
+    "id": "E130",
+    "state": "no",
+    "evidence": "Chest X-rays are medical grayscale-like images, not everyday object photos — clearly different from ImageNet.",
+    "order": 2
+   },
+   "E131": {
+    "id": "E131",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E132": {
+    "id": "E132",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E133": {
+    "id": "E133",
+    "state": "yes",
+    "evidence": "timm models expose default_cfg with mean/std; the standard ImageNet values [0.485, 0.456, 0.406]/[0.229, 0.224, 0.225] are documented for resnet200d. The expert could retrieve them.",
+    "order": 3
+   },
+   "E134": {
+    "id": "E134",
+    "state": "no",
+    "evidence": "The resnet200d model in timm has documented default_cfg with explicit mean/std values; they are not unknown.",
+    "order": 4
+   },
+   "E30": {
+    "id": "E30",
+    "state": "yes",
+    "evidence": "The expert is using mean=[0.497, 0.458, 0.406] and std=[0.228, 0.225, 0.224] at inference, which differ from standard ImageNet values and likely differ from whatever the checkpoint's training used (the checkpoint name 'resnet200d_fold4_cv954' suggests specific training preprocessing).",
+    "order": 5
+   },
+   "E364": {
+    "id": "E364",
+    "state": "yes",
+    "evidence": "Chest X-rays are grayscale images read via cv2 and converted to RGB — all three channels are identical, so per-channel normalization values should logically be the same, yet the expert uses different values per channel.",
+    "order": 6
+   },
+   "E365": {
+    "id": "E365",
+    "state": "yes",
+    "evidence": "Versions v16, v17, v18 show small perturbations to normalization mean/std values (e.g., [0.495,0.446,0.416] → [0.475,0.436,0.406] → [0.497,0.458,0.406]) rather than using known exact training statistics.",
+    "order": 7
+   },
+   "E366": {
+    "id": "E366",
+    "state": "yes",
+    "evidence": "v16 changed normalization from ImageNet-like values and scored 0.95220, down from v13's 0.96062. v17 partially reverted and got 0.95712, still below the original. This pattern shows normalization changes caused regression.",
+    "order": 8
+   },
+   "E367": {
+    "id": "E367",
+    "state": "yes",
+    "evidence": "The best scores (v12: 0.95987, v13/v14: 0.96062) used values close to ImageNet defaults [0.485,0.456,0.406]/[0.229,0.224,0.225]. All subsequent normalization tweaks (v16: 0.95220, v17: 0.95712, v18: 0.95760) scored lower.",
+    "order": 9
+   }
+  },
+  "usage": [
+   4183,
+   795
+  ],
+  "prompt_chars": 13778
+ },
+ {
+  "step_id": "15173072:20->21",
+  "node": "T.2.5.n16",
+  "expert": "15173072",
+  "child": "T.2.5.n16.n18",
+  "checks": {
+   "E31": {
+    "id": "E31",
+    "state": "yes",
+    "evidence": "The dataset is chest X-rays (medical imaging) while the backbone was pretrained on ImageNet (natural photos) — a substantial domain gap.",
+    "order": 1
+   },
+   "E130": {
+    "id": "E130",
+    "state": "no",
+    "evidence": "Chest X-rays are medical grayscale-like images, not everyday object photos — clearly different from ImageNet.",
+    "order": 2
+   },
+   "E131": {
+    "id": "E131",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E132": {
+    "id": "E132",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E133": {
+    "id": "E133",
+    "state": "yes",
+    "evidence": "timm's resnet200d has default_cfg with documented mean/std (ImageNet defaults 0.485/0.456/0.406 and 0.229/0.224/0.225), and the checkpoint name 'resnet200d_fold4_cv954' suggests custom training whose exact normalization is not directly retrievable from timm's config.",
+    "order": 3
+   },
+   "E134": {
+    "id": "E134",
+    "state": "yes",
+    "evidence": "The expert doesn't have the exact training normalization from the checkpoint provider; they've been guessing/perturbing values across v16-v20, suggesting only generic ImageNet defaults are available.",
+    "order": 4
+   },
+   "E30": {
+    "id": "E30",
+    "state": "yes",
+    "evidence": "The current inference normalization (mean=[0.5, 0.458, 0.426], std=[0.3, 0.32, 0.3]) likely differs from whatever was used during training of the checkpoint, as evidenced by the expert's repeated trial-and-error adjustments.",
+    "order": 5
+   },
+   "E364": {
+    "id": "E364",
+    "state": "yes",
+    "evidence": "Chest X-rays are grayscale images read via cv2 and converted to RGB (3-channel replication), so per-channel means/stds should ideally be identical — yet the expert is using different values per channel.",
+    "order": 6
+   },
+   "E365": {
+    "id": "E365",
+    "state": "yes",
+    "evidence": "Versions v16 through v20 show the expert systematically perturbing normalization mean/std values by small amounts (e.g., 0.485→0.495→0.475→0.497→0.5) rather than using known exact training statistics.",
+    "order": 7
+   },
+   "E366": {
+    "id": "E366",
+    "state": "yes",
+    "evidence": "v19 (mean=[0.5,0.458,0.426]) scored 0.95672, worse than v18's 0.95760; v20 changed std to [0.3,0.32,0.3] and scored 0.95319, a further regression — motivating reversal toward earlier/standard values.",
+    "order": 8
+   },
+   "E367": {
+    "id": "E367",
+    "state": "yes",
+    "evidence": "The best scores were v12 (0.95987) and v13 (0.96062), both using ImageNet-standard mean=[0.485,0.456,0.406] and std=[0.229,0.224,0.225]. All subsequent normalization perturbations (v16-v20) produced lower scores.",
+    "order": 9
+   }
+  },
+  "usage": [
+   4369,
+   800
+  ],
+  "prompt_chars": 14396
+ },
+ {
+  "step_id": "15173072:21->22",
+  "node": "T.2.5.n16",
+  "expert": "15173072",
+  "child": "T.2.5.n16.n19",
+  "checks": {
+   "E31": {
+    "id": "E31",
+    "state": "yes",
+    "evidence": "The dataset is chest X-rays (medical images) while the backbone was pretrained on ImageNet (natural photos) — a substantial domain gap.",
+    "order": 1
+   },
+   "E130": {
+    "id": "E130",
+    "state": "no",
+    "evidence": "The target dataset is chest X-rays (medical imaging), not natural RGB imagery similar to ImageNet.",
+    "order": 2
+   },
+   "E131": {
+    "id": "E131",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E132": {
+    "id": "E132",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E133": {
+    "id": "E133",
+    "state": "yes",
+    "evidence": "timm models expose default_cfg with mean/std; the standard resnet200d config documents ImageNet mean=[0.485,0.456,0.406] std=[0.229,0.224,0.225]. However, the actual checkpoint's training normalization is not explicitly documented in the notebook.",
+    "order": 5
+   },
+   "E134": {
+    "id": "E134",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E30": {
+    "id": "E30",
+    "state": "yes",
+    "evidence": "The expert doesn't have access to the training code/config for the checkpoint 'resnet200d_fold4_cv954.pth', so the inference normalization may not match training. Current values [0.5,0.5,0.5]/[0.3,0.32,0.3] are non-standard and likely differ from whatever was used in training.",
+    "order": 3
+   },
+   "E364": {
+    "id": "E364",
+    "state": "yes",
+    "evidence": "Chest X-rays are grayscale images read via cv2 and converted to RGB (3-channel replication), so per-channel normalization values should logically be identical. The current mean [0.5,0.5,0.5] reflects this insight.",
+    "order": 4
+   },
+   "E365": {
+    "id": "E365",
+    "state": "yes",
+    "evidence": "Versions v16-v21 show a clear pattern of small perturbations to normalization values (e.g., [0.495,0.446,0.416] → [0.475,0.436,0.406] → [0.497,0.458,0.406] → [0.5,0.458,0.426] → [0.5,0.5,0.5]) rather than using known exact training statistics.",
+    "order": 6
+   },
+   "E366": {
+    "id": "E366",
+    "state": "yes",
+    "evidence": "v20 (0.95319) and v21 (0.95243) both regressed from v13's best of 0.96062. The recent normalization changes (non-standard std [0.3,0.32,0.3] and mean [0.5,0.5,0.5]) have caused score regressions.",
+    "order": 7
+   },
+   "E367": {
+    "id": "E367",
+    "state": "yes",
+    "evidence": "The best score (0.96062 at v13) used mean=[0.485,0.456,0.406] std=[0.229,0.224,0.225] — standard ImageNet normalization values. All deviations from these values in v16-v21 produced worse scores.",
+    "order": 8
+   }
+  },
+  "usage": [
+   4447,
+   805
+  ],
+  "prompt_chars": 14606
+ },
+ {
+  "step_id": "15173072:26->27",
+  "node": "T.2.5.n16",
+  "expert": "15173072",
+  "child": "T.2.5.n16.n19",
+  "checks": {
+   "E31": {
+    "id": "E31",
+    "state": "yes",
+    "evidence": "The target dataset is chest X-rays (medical images) while the backbone was pretrained on ImageNet (natural photos) — a substantial domain gap.",
+    "order": 1
+   },
+   "E130": {
+    "id": "E130",
+    "state": "no",
+    "evidence": "The dataset is chest X-rays (medical imaging), not natural RGB imagery similar to ImageNet.",
+    "order": 2
+   },
+   "E131": {
+    "id": "E131",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E132": {
+    "id": "E132",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E133": {
+    "id": "E133",
+    "state": "yes",
+    "evidence": "timm models expose default_cfg with mean/std; ImageNet defaults [0.485,0.456,0.406]/[0.229,0.224,0.225] are well-documented and the expert has used them.",
+    "order": 3
+   },
+   "E134": {
+    "id": "E134",
+    "state": "no",
+    "evidence": "The pretrained checkpoints come from timm's resnet200d which has well-documented ImageNet normalization values; they are not ambiguous.",
+    "order": 4
+   },
+   "E30": {
+    "id": "E30",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E364": {
+    "id": "E364",
+    "state": "yes",
+    "evidence": "Chest X-rays are grayscale images read via cv2 and converted to RGB (3-channel replication), so per-channel means/stds should logically be identical, yet ImageNet values differ per channel.",
+    "order": 5
+   },
+   "E365": {
+    "id": "E365",
+    "state": "yes",
+    "evidence": "Versions v16-v21 show the expert systematically perturbing normalization mean/std values by small amounts (e.g., [0.495,0.446,0.416], [0.475,0.436,0.406], [0.497,0.458,0.406], [0.5,0.458,0.426], [0.5,0.5,0.5]) rather than using known exact training statistics.",
+    "order": 6
+   },
+   "E366": {
+    "id": "E366",
+    "state": "yes",
+    "evidence": "Multiple normalization changes caused regressions: v16 (0.952), v17 (0.957), v18 (0.958), v19 (0.957), v20 (0.953), v21 (0.952) — several were worse than the v13 baseline of 0.9606, motivating the revert to ImageNet values in v22 which scored 0.9642.",
+    "order": 7
+   },
+   "E367": {
+    "id": "E367",
+    "state": "yes",
+    "evidence": "v22 used standard ImageNet normalization and achieved 0.96421, the best single-normalization score. The current v26 code also uses ImageNet values [0.485,0.456,0.406]/[0.229,0.224,0.225]. All custom normalization attempts scored lower.",
+    "order": 8
+   }
+  },
+  "usage": [
+   4629,
+   745
+  ],
+  "prompt_chars": 15021
+ },
+ {
+  "step_id": "15173072:27->28",
+  "node": "T.2.5.n16",
+  "expert": "15173072",
+  "child": "T.2.5.n16.n19",
+  "checks": {
+   "E31": {
+    "id": "E31",
+    "state": "yes",
+    "evidence": "The dataset is chest X-rays (medical imaging) while the backbone was pretrained on ImageNet (natural photos) — a substantial domain gap.",
+    "order": 1
+   },
+   "E130": {
+    "id": "E130",
+    "state": "no",
+    "evidence": "The target dataset is chest X-rays (medical images), not natural RGB imagery similar to ImageNet.",
+    "order": 2
+   },
+   "E131": {
+    "id": "E131",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E132": {
+    "id": "E132",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E133": {
+    "id": "E133",
+    "state": "yes",
+    "evidence": "timm models expose default_cfg with mean/std; ImageNet defaults (0.485, 0.456, 0.406 / 0.229, 0.224, 0.225) are well-documented for resnet200d.",
+    "order": 3
+   },
+   "E134": {
+    "id": "E134",
+    "state": "no",
+    "evidence": "The resnet200d model in timm has documented default_cfg with explicit ImageNet mean/std values; they are not ambiguous.",
+    "order": 4
+   },
+   "E30": {
+    "id": "E30",
+    "state": "not_checked",
+    "evidence": null,
+    "order": null
+   },
+   "E364": {
+    "id": "E364",
+    "state": "yes",
+    "evidence": "Chest X-rays are grayscale images read with cv2.imread and converted to RGB, so they are single-channel replicated to 3 channels — channel values should be identical, yet ImageNet normalization uses different per-channel values.",
+    "order": 5
+   },
+   "E365": {
+    "id": "E365",
+    "state": "yes",
+    "evidence": "Versions v16–v21 show the expert systematically perturbing mean/std values by small amounts (e.g., 0.485→0.495→0.475→0.497→0.5) rather than using known exact training statistics.",
+    "order": 6
+   },
+   "E366": {
+    "id": "E366",
+    "state": "yes",
+    "evidence": "Multiple normalization tweaks (v16: 0.952, v17: 0.957, v18: 0.958, v19: 0.957, v20: 0.953, v21: 0.952) caused regressions relative to v13's 0.9606 with ImageNet defaults, motivating reversal in v22 back to ImageNet normalization which scored 0.9642.",
+    "order": 7
+   },
+   "E367": {
+    "id": "E367",
+    "state": "yes",
+    "evidence": "v22 used ImageNet normalization and achieved 0.96421, the highest single-normalization score; all custom normalization attempts (v16–v21) scored lower (0.952–0.958 range).",
+    "order": 8
+   }
+  },
+  "usage": [
+   4588,
+   687
+  ],
+  "prompt_chars": 14949
+ }
+]
