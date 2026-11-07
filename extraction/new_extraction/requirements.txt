@@ -1,0 +1,10 @@
+numpy
+pandas
+pyarrow
+scikit-learn
+scipy
+PyYAML
+python-dotenv
+requests
+litellm
+openai

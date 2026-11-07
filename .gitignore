@@ -38,3 +38,9 @@ cache/
 
 # labels shared by Yaqing (not ours to publish)
 pivot_labels.csv
+
+# Yaqing's extraction pipeline: code is tracked, its inputs and outputs are not
+extraction/new_extraction/out/
+extraction/new_extraction/archive_old_runs/
+# Files synced from Yaqing (zip of code + outputs)
+115yaqing/
