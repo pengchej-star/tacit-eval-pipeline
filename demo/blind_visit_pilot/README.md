@@ -92,3 +92,28 @@ LLM 自己和自己基本一致，所以原始记录和不给答案的记录之�
 | 不给答案的记录 | 56% |
 
 不给答案的证据对"会不会提分"有弱信号（+6 个百分点，约两个标准误），对"专家选哪个"则没有信号（36% 对 36%）。这支持"小抄应该学'什么情况下做什么会提分'，而不是'专家会怎么选'"这个方向，但信号很弱，需要在更多比赛上验证。
+
+## 给 Yaqing：这里的代码是什么、怎么跑
+
+**没有改动你的 `new_extraction` 代码。** 这里是两个独立的小脚本，只读取你 11 月 4 日 RANZCR 完整运行的结果。
+
+- **`blind_visits.py`**：第 5 步（visit record）的"遮住答案"版本。和你的 `visits.py` 相比：
+  - **去掉了三样**：这一步选了哪个选项（`Taken:`）、这一步本身的目的和改动摘要、episode item 的文字（回看整段写的，含后见之明）；
+  - **保留**：任务描述、这位专家之前每一步的目的、摘要和 LB 分数（只到 v_old）、节点的选项、他以前在这个节点选过什么、同一份检查单、同样的 yes/no/not_checked 规则、同一个模型（`wine-claude-opus-4-6`，温度 0）；
+  - **加了一样**：v_old 那一版的原始 notebook 代码（截取前 14,000 个字符）；
+  - **输出**：每个（步，节点）一条，格式和 `5_visits.json` 里的 `checks` 一样，可以直接喂给你 `scores.py` 的 `rank()`。同一步、同一节点如果有多条 item，只调用一次。
+- **`blind_eval.py`**：每次留出一位专家来评估。比较三种预测：永远猜最常见的选项、统计法（对 yes/no/not_checked 做朴素贝叶斯）、你 `6_scores.json` 里 LLM 猜的权重。原始记录和遮住答案的记录各算一遍。
+
+**怎么跑**（需要 `openai`、`pyyaml`，以及 `trajectories_human.tar.gz` 解压出来的原始 notebook）：
+
+```bash
+export LITELLM_API_KEY=...                                  # CMU 网关
+export EXTRACTION_ROOT=/path/to/new_extraction
+export RUN_DIR=$EXTRACTION_ROOT/archive_old_runs/_per_competition_attempt/ranzcr-clip-catheter-line-classification/episode
+export HUMAN_DIR=/path/to/human                             # 下面是 <key_id>/versions/vNNN.ipynb
+WORKERS=16 python blind_visits.py out.json T,T.7,T.1,T.6     # 节点 id 用逗号隔开；结果逐条缓存在 out.cache.jsonl
+SUBSET=rerun_subset.json python blind_visits.py rerun.json T,T.7,T.1,T.6   # 只跑列表里的（步，节点）
+python blind_eval.py out.json                                # 打印每个节点和合计的命中率
+```
+
+成本：用 Opus 4.6，每条约 $0.04；4 个上层节点的 479 条约 $20，48 个并发大约 15 分钟。

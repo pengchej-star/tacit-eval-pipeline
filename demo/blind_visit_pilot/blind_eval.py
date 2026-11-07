@@ -12,8 +12,10 @@ import sys
 
 import numpy as np
 
-RUN = ("/data/user_data/pengchej/yaqing_1105/new_extraction/archive_old_runs/_per_competition_attempt/"
-       "ranzcr-clip-catheter-line-classification/episode/")
+import os
+
+RUN = os.environ.get("RUN_DIR", "/data/user_data/pengchej/yaqing_1105/new_extraction/archive_old_runs/"
+                     "_per_competition_attempt/ranzcr-clip-catheter-line-classification/episode").rstrip("/") + "/"
 blind = [v for f in sys.argv[1:] for v in json.load(open(f))]
 orig = {(v["step_id"], v["node"]): v for v in json.load(open(RUN + "5_visits.json"))}
 scores = json.load(open(RUN + "6_scores.json"))

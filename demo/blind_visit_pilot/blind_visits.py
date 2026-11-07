@@ -15,12 +15,27 @@ from pathlib import Path
 import yaml
 from openai import OpenAI
 
-sys.path.insert(0, "/home/pengchej/tacit-eval-pipeline/src")
-from trajectory_demo import notebook_to_py  # noqa: E402
 
-ROOT = Path("/data/user_data/pengchej/yaqing_1105/new_extraction")
-RUN = ROOT / "archive_old_runs/_per_competition_attempt/ranzcr-clip-catheter-line-classification/episode"
-HUMAN = Path("/data/user_data/pengchej/traceml/extracted/human")
+
+def notebook_to_py(path):
+    """The notebook's cells in order; markdown cells as comments (same as src/trajectory_demo.py)."""
+    nb = json.loads(Path(path).read_text())
+    out = []
+    for i, cell in enumerate(nb.get("cells", []), 1):
+        src = "".join(cell.get("source", "")).rstrip()
+        if not src:
+            continue
+        if cell.get("cell_type") == "code":
+            out.append(f"# %% [{i}]\n{src}\n")
+        else:
+            out.append(f"# %% [{i}] markdown\n" + "\n".join("# " + line for line in src.splitlines()) + "\n")
+    return "\n".join(out)
+
+
+# Paths: override with environment variables when running elsewhere.
+ROOT = Path(os.environ.get("EXTRACTION_ROOT", "/data/user_data/pengchej/yaqing_1105/new_extraction"))   # new_extraction/
+RUN = Path(os.environ.get("RUN_DIR", ROOT / "archive_old_runs/_per_competition_attempt/ranzcr-clip-catheter-line-classification/episode"))
+HUMAN = Path(os.environ.get("HUMAN_DIR", "/data/user_data/pengchej/traceml/extracted/human"))   # <key_id>/versions/vNNN.ipynb from trajectories_human.tar.gz
 OUT = Path(sys.argv[1])
 NODES = sys.argv[2].split(",")
 CODE_CHARS = 14000
