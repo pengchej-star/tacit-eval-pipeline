@@ -90,6 +90,21 @@ Return ONLY JSON: {"visits": [{"item": "<item id>", "node": "<node id>", "checks
 NEW_CHECKS_RULE = """If the visible evidence shows the expert relied on something that NO listed check captures, add it under `new_checks`: a yes/no statement specific to this node's decision (same standard as the listed checks: observable before choosing, not generic), `how` it is observed, and its state ("yes" or "no" only, with evidence and order). Only add what the edit really shows; an empty list is the normal case."""
 NEW_CHECKS_FIELD = ""","new_checks": [{"check": "<statement>", "how": "<observation>", "state": "yes|no", "evidence": "...", "order": 2}]"""
 
+# Masked version used by visits.py since Nov 7: the model sees one decision node of one edit and only what was visible before the edit,
+# not the option taken, the edit's own summary, or the episode item. Same states, evidence and order fields as VISIT.
+VISIT_MASKED = """You reconstruct what an <<actor>> could SEE just before a decision, to fill in a record of the evidence they had.
+
+You are given the expert's earlier edits with their <<progress_signal>>, possibly the <<artifact>> as it was just before the decision, one decision node (its question and options), the options this expert took at this node earlier, and the checks (yes/no statements) that belong to the node. You are NOT told which option the expert chose or what the next edit was; do not try to infer it, and do not let a guess about it shape your answers.
+
+For every check give a state:
+- "yes" / "no": the expert had enough visible evidence BEFORE the decision (<<evidence_sources>>; which options were already tried; the <<artifact>> itself) to settle the statement, and the evidence says yes / no.
+- "not_checked": nothing visible shows that the expert looked at or could have settled this. This is the default; do not guess.
+Give a short `evidence` (quote or 1 sentence) for yes/no, and `order`: the plausible order (1, 2, ...) in which the settled checks were looked at (null for not_checked). The checks are listed in random order.
+<<new_checks_rule>>
+Return ONLY JSON: {"visits": [{"node": "<node id>", "checks": [{"id": "E01", "state": "yes|no|not_checked", "evidence": "...", "order": 1}]<<new_checks_field>>}]}  (one entry, for the node listed)."""
+
+NEW_CHECKS_RULE_MASKED = """If the visible evidence suggests the expert would rely on something that NO listed check captures, add it under `new_checks`: a yes/no statement specific to this node's decision (same standard as the listed checks: observable before choosing, not generic), `how` it is observed, and its state ("yes" or "no" only, with evidence and order). Only add what the visible evidence really shows; an empty list is the normal case."""
+
 NEW_CHECK_MERGE = """A decision node has a list of existing checks (yes/no statements an expert settles before choosing). Annotators proposed additional checks while reading expert behaviour. For each proposal decide: is it the SAME check as an existing one (same observation and yes/no meaning, wording aside) -> give that id; or the same as another proposal -> give them one shared new group; or genuinely new. Reject proposals that are generic (could sit on every node) with group null.
 Return ONLY JSON: {"proposals": [{"id": "p1", "existing": "<existing id>"|null, "new_group": "<g1, g2, ...>"|null, "canonical": "<statement for a new group>", "how": "<observation for a new group>"}]}  (exactly one of existing / new_group per accepted proposal; both null = rejected)"""
 

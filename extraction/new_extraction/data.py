@@ -1,4 +1,4 @@
-"""Load the experts (first N trajectories per competition in selection.csv) of every competition in scope, and their version transitions: TraceML's goal, change summary and action labels, and the leaderboard scores. No raw code or diff is read anywhere."""
+"""Load the experts (first N trajectories per competition in selection.csv) of every competition in scope, and their version transitions: TraceML's goal, change summary and action labels, and the leaderboard scores. Raw code is read in one place only: notebook_text(), the notebook at v_old shown in step 5, and only when paths.notebooks is set."""
 import functools, json
 from pathlib import Path
 
@@ -99,6 +99,25 @@ def by_expert(trans):
         d.setdefault(r["key_id"], []).append(r)
     return d
 
+
+
+def notebook_text(key_id, version, max_chars):
+    """The notebook at one version as text (cells in order, markdown cells as comments), cut to max_chars; "" when paths.notebooks is
+    not set or the file is missing. paths.notebooks is the `human/` folder of TraceML's trajectories_human.tar.gz (<key_id>/versions/vNNN.ipynb)."""
+    root = P.get("notebooks")
+    if not root:
+        return ""
+    root = Path(root) if Path(root).is_absolute() else ROOT / root
+    f = root / str(key_id) / "versions" / f"v{int(version):03d}.ipynb"
+    if not f.exists():
+        return ""
+    out = []
+    for i, cell in enumerate(json.loads(f.read_text(encoding="utf-8")).get("cells", []), 1):
+        src = "".join(cell.get("source", "")).rstrip()
+        if src:
+            out.append(f"# %% [{i}]\n{src}" if cell.get("cell_type") == "code" else f"# %% [{i}] markdown\n" + "\n".join("# " + l for l in src.splitlines()))
+    text = "\n\n".join(out)
+    return text if len(text) <= max_chars else text[:max_chars] + "\n# ... (truncated)"
 
 if __name__ == "__main__":
     t = load_transitions()

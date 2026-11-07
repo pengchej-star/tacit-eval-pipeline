@@ -6,7 +6,15 @@ settled from what was visible just before the edit (the one step where we infer,
 Round 1 also lets the LLM propose `new_checks` the node's desiderata lacked. Proposals are merged per node (same as an existing check /
 same as each other / rejected as generic), the accepted ones are added to the registry and to the node (origin "visits"), and every
 edit that passes through an extended node is annotated again in round 2 against the full list, so all visits of a node answer the same checks.
+
+Masked annotation (Nov 7): the LLM sees only what was visible before the edit. It is not told the option taken, the edit's own goal,
+labels and change summary, or the episode item (written looking back over the whole episode). Each decision node of an edit is asked
+on its own, because listing the walk would reveal the option taken at every node above the last. The checks come in a shuffled order,
+so `order` is not just the list order. When paths.notebooks is set, the notebook at v_old is shown too. The option taken is still
+recorded in every visit, by the program after the call.
 """
+import hashlib
+import random
 from collections import defaultdict
 
 import prompts
@@ -61,41 +69,55 @@ class Ctx:
         return [(a, b) for a, b in zip(p, p[1:]) if len(a["children"]) >= 2 and a["id"] in self.nodes_d]
 
     def prompt(self, job):
-        r, hist, its = job
-        parts = [f"# Task\n{data.task_desc(r['comp'])}\n\n# Earlier edits of this expert (with {CFG['task']['progress_signal']})\n{hist or '(first edit)'}\n\n"
-                 f"# The edit {r['step_id']} ({r['magnitude']}), {CFG['task']['progress_signal']} before: {data.fmt(r['score_old'])}\n"
-                 f"Labels: {', '.join(r['fine'] or r['coarse']) or '-'}\nGoal: {r['goal']}\nSummary of the change: {r['change'] or r['goal']}\n\n# Intents and decision nodes"]
-        for it in its:
-            parts.append(f"\n## Item {it['id']}: {it['what'][:600]}  (context: {it['why'][:400]})")
-            for a, b in self.walk_for(it):
-                kids = {y["id"] for y in a["children"]}
-                tried = sorted({x["id"] for r2 in self.ex[r["key_id"]] if r2["v_new"] <= r["v_old"] for i2 in self.by_step.get(r2["step_id"], [])
-                                if i2["id"] in self.term for x in self.paths[self.term[i2["id"]]] if x["id"] in kids})
-                parts.append(f"### Node {a['id']} \"{a['name']}\" — {a.get('decision', '')}\nOptions: " + "; ".join(f"{c['id']} {c['name']}" for c in a["children"]) +
-                             f"\nTaken: {b['id']} {b['name']}\nOptions this expert already took earlier at this node: {', '.join(tried) or 'none'}\nChecks:")
-                for e in self.nodes_d[a["id"]]["checks"]:
-                    parts.append(f"- {e}: {self.reg[e]['check']}  (how: {self.reg[e]['how']})")
+        """One decision node of one edit, with only what was visible before the edit (see the module docstring)."""
+        r, hist, a, uses = job
+        sig = CFG["task"]["progress_signal"]
+        parts = [f"# Task\n{data.task_desc(r['comp'])}\n\n# Earlier edits of this expert (with {sig})\n{hist or '(first edit)'}\n"]
+        code = data.notebook_text(r["key_id"], r["v_old"], CFG["context"].get("code_max", 14000))
+        if code:
+            parts.append(f"# The {CFG['task']['artifact']} at v{r['v_old']}, just before the decision\n```\n{code}\n```\n")
+        parts.append(f"# The decision, made at v{r['v_old']} ({sig}: {data.fmt(r['score_old'])})")
+        kids = {y["id"] for y in a["children"]}
+        tried = sorted({x["id"] for r2 in self.ex[r["key_id"]] if r2["v_new"] <= r["v_old"] for i2 in self.by_step.get(r2["step_id"], [])
+                        if i2["id"] in self.term for x in self.paths[self.term[i2["id"]]] if x["id"] in kids})
+        parts.append(f"### Node {a['id']} \"{a['name']}\" — {a.get('decision', '')}\nOptions: " + "; ".join(f"{c['id']} {c['name']}" for c in a["children"]) +
+                     f"\nOptions this expert already took earlier at this node: {', '.join(tried) or 'none'}\nChecks:")
+        checks = list(self.nodes_d[a["id"]]["checks"])
+        random.Random(int(hashlib.sha1(f"{r['step_id']}|{a['id']}".encode()).hexdigest()[:8], 16)).shuffle(checks)
+        for e in checks:
+            parts.append(f"- {e}: {self.reg[e]['check']}  (how: {self.reg[e]['how']})")
         return "\n".join(parts)
 
 
 def system(allow_new):
-    return fill(prompts.VISIT, new_checks_rule=prompts.NEW_CHECKS_RULE if allow_new else "",
+    return fill(prompts.VISIT_MASKED, new_checks_rule=prompts.NEW_CHECKS_RULE_MASKED if allow_new else "",
                 new_checks_field=prompts.NEW_CHECKS_FIELD if allow_new else "")
 
 
 def make_jobs(ctx, trans):
+    """One job per (edit, decision node): (transition, history, node, [(item, option taken)])."""
     jobs = []
     for k, rs in ctx.ex.items():
         for n, r in enumerate(rs):
             its = ctx.by_step.get(r["step_id"])
-            if its:
-                jobs.append((r, data.history_text(rs, n, CFG["context"]["history_max"]), its))
+            if not its:
+                continue
+            nodes = {}
+            for it in its:
+                for a, b in ctx.walk_for(it):
+                    nodes.setdefault(a["id"], (a, []))[1].append((it, b))
+            hist = data.history_text(rs, n, CFG["context"]["history_max"])
+            jobs += [(r, hist, a, uses) for a, uses in nodes.values()]
     return jobs
+
+
+def job_key(j):
+    return f"{j[0]['step_id']}|{j[2]['id']}"
 
 
 def annotate(ctx, jobs, cache, allow_new, desc):
     sysmsg = system(allow_new)
-    return cached_jsonl(OUT / cache, jobs, lambda j: ask(sysmsg, ctx.prompt(j), max_tokens=7000, temperature=0, model=stage_model("visits")), key=lambda j: j[0]["step_id"], desc=desc)
+    return cached_jsonl(OUT / cache, jobs, lambda j: ask(sysmsg, ctx.prompt(j), max_tokens=7000, temperature=0, model=stage_model("visits")), key=job_key, desc=desc)
 
 
 def merge_new_checks(ctx, res):
@@ -107,7 +129,7 @@ def merge_new_checks(ctx, res):
                 for c in v.get("new_checks") or []:
                     if isinstance(c, dict) and c.get("check"):
                         props[v["node"]].append(dict(check=str(c["check"]), how=str(c.get("how", "")), state=c.get("state"), evidence=c.get("evidence", ""),
-                                                     step_id=sid, item=v.get("item")))
+                                                     step_id=sid.split("|")[0], item=v.get("item")))
     nodes = sorted(props)
     idx = index(ctx.tree)
 
@@ -120,7 +142,7 @@ def merge_new_checks(ctx, res):
         r = ask(fill(prompts.NEW_CHECK_MERGE), f"Node {nid}: {n['name']} — {n.get('decision', '')}\nExisting checks:\n{existing}\n\nProposals:\n{lines}", max_tokens=3000, temperature=0, model=stage_model("visits"))
         r["uniq"] = uniq
         return r
-    mres = cached_jsonl(OUT / "4b_new_checks.jsonl", nodes, job, key=lambda n: n + "|" + str(len(props[n])), desc="merge new checks") if nodes else {}
+    mres = cached_jsonl(OUT / "4b_new_checks_masked.jsonl", nodes, job, key=lambda n: n + "|" + str(len(props[n])), desc="merge new checks") if nodes else {}
 
     log, gained = [], set()
     n_next = max(int(e[1:]) for e in ctx.reg) + 1
@@ -165,41 +187,43 @@ def run(trans, items):
     ctx = Ctx(trans, items, tree, dd)
     jobs = make_jobs(ctx, trans)
 
-    final = annotate(ctx, jobs, "5_visits_r1.jsonl", V["new_checks"], "visits r1")
+    # new cache names: the old 5_visits_r*.jsonl hold the unmasked answers and must not be reused
+    final = annotate(ctx, jobs, "5_visits_masked_r1.jsonl", V["new_checks"], "visits r1")
     log = []
     if V["new_checks"]:
         log, gained = merge_new_checks(ctx, final)
         jdump(log, OUT / "5_new_checks.json")
         jdump(ctx.dd, OUT / "4_desiderata.json")            # extended registry + node checklists (origin "visits" marks additions)
-        redo = [j for j in jobs if any(a["id"] in gained for it in j[2] for a, _ in ctx.walk_for(it))]
+        redo = [j for j in jobs if j[2]["id"] in gained]
         print(f"new checks: {sum(1 for x in log if x['outcome'] == 'added')} added, {sum(1 for x in log if x['outcome'] == 'existing')} matched an existing check, "
-              f"{sum(1 for x in log if x['outcome'] == 'rejected')} rejected; {len(gained)} nodes extended, {len(redo)} edits re-annotated")
+              f"{sum(1 for x in log if x['outcome'] == 'rejected')} rejected; {len(gained)} nodes extended, {len(redo)} (edit, node) pairs re-annotated")
         if redo:
-            r2 = annotate(ctx, redo, "5_visits_r2.jsonl", False, "visits r2")
+            r2 = annotate(ctx, redo, "5_visits_masked_r2.jsonl", False, "visits r2")
             final = {**final, **r2}
 
     visits = []
-    for r, hist, its in jobs:
-        rec = final.get(r["step_id"])
+    for j in jobs:
+        r, hist, a, uses = j
+        rec = final.get(job_key(j))
         if not rec:
             continue
-        got = {(v.get("item"), v.get("node")): v for v in rec.get("visits", []) if isinstance(v, dict)}
-        for it in its:
-            for a, b in ctx.walk_for(it):
-                v = got.get((it["id"], a["id"]))
-                if not v:
-                    continue
-                valid = set(ctx.nodes_d[a["id"]]["checks"])
-                cs = {c["id"]: dict(state=c["state"] if c.get("state") in ("yes", "no") else "not_checked", evidence=c.get("evidence") or "", order=c.get("order"))
-                      for c in v.get("checks", []) if isinstance(c, dict) and c.get("id") in valid}
-                for e in valid - set(cs):
-                    cs[e] = dict(state="not_checked", evidence="", order=None)
-                visits.append(dict(item=it["id"], step_id=r["step_id"], comp=r["comp"], expert=r["key_id"], tier=r["tier"], seq=r["v_old"], node=a["id"], child=b["id"],
-                                   checks=cs, score_old=r["score_old"], score_new=r["score_new"], delta=r["delta"], effect=effect(r["delta"]),
-                                   new_best=r["new_best"], n_intents=len(its)))
+        got = [v for v in rec.get("visits", []) if isinstance(v, dict)]
+        v = next((x for x in got if x.get("node") == a["id"]), got[0] if got else None)
+        if not v:
+            continue
+        valid = set(ctx.nodes_d[a["id"]]["checks"])
+        cs = {c["id"]: dict(state=c["state"] if c.get("state") in ("yes", "no") else "not_checked", evidence=c.get("evidence") or "", order=c.get("order"))
+              for c in v.get("checks", []) if isinstance(c, dict) and c.get("id") in valid}
+        for e in valid - set(cs):
+            cs[e] = dict(state="not_checked", evidence="", order=None)
+        n_its = len(ctx.by_step.get(r["step_id"], []))
+        for it, b in uses:     # the evidence state is the edit's, shared by every item of the edit that passes this node
+            visits.append(dict(item=it["id"], step_id=r["step_id"], comp=r["comp"], expert=r["key_id"], tier=r["tier"], seq=r["v_old"], node=a["id"], child=b["id"],
+                               checks=cs, score_old=r["score_old"], score_new=r["score_new"], delta=r["delta"], effect=effect(r["delta"]),
+                               new_best=r["new_best"], n_intents=n_its))
     jdump(visits, OUT / "5_visits.json")
     n_chk = sum(1 for v in visits for c in v["checks"].values() if c["state"] != "not_checked")
-    print(f"{len(visits)} visit records from {len(jobs)} edits; {n_chk} checked items (avg {n_chk / max(1, len(visits)):.1f} per visit)")
+    print(f"{len(visits)} visit records from {len({j[0]['step_id'] for j in jobs})} edits ({len(jobs)} edit-node calls); {n_chk} checked items (avg {n_chk / max(1, len(visits)):.1f} per visit)")
     return visits
 
 
