@@ -1,5 +1,7 @@
 # new_extraction — tacit-knowledge extraction from expert trajectories
 
+> **Changes on Nov 7 (Pengcheng)**: step 5 now annotates each (edit, decision node) with the answer masked, shuffles the checks, can show the notebook at v_old (`paths.notebooks`), and the level-0 merge cap is 0.38. See `../HANDOFF.md`, or `git diff cc38323 e3347ed -- extraction/new_extraction` for the exact changes.
+
 Implements "3a Extraction" of the *Tacit Knowledge Representation* proposal (Tacit_new.pdf, "Envisioned implementation"): from many experts' version histories it builds
 
 1. a **taxonomy** of what can be done (a decision tree: decision → options → … → actions), from two directions (LLM prior + observed expert actions), and
