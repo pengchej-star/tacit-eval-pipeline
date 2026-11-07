@@ -11,15 +11,15 @@ cp -r /你的/new_extraction/data .        # data/ 和 out/ 都不在 git 里，
 cp /你的/new_extraction/.env .
 ```
 
-**看具体改了什么**：一共两个提交。
+**看具体改了什么**：
 - `cc38323`：你 11 月 4 日的代码原样拷贝，只有代码，不含 `data/`、`out/`、`archive_old_runs/`。
-- `e3347ed`：我们的修改，4 个文件，+103/−43 行。
+- 之后的两个提交是我们的修改：`e3347ed` 是 4 处修复，`e308801` 加了选择器 `visits.masked`。代码只动了 4 个文件：`visits.py`、`prompts.py`、`data.py`、`config.yaml`。
 
 ```bash
-git diff cc38323 e3347ed -- extraction/new_extraction
+git diff cc38323 e308801 -- extraction/new_extraction
 ```
 
-网页版：<https://github.com/pengchej-star/tacit-eval-pipeline/compare/cc38323...e3347ed>。
+网页版：<https://github.com/pengchej-star/tacit-eval-pipeline/compare/cc38323...e308801>。
 
 如果你想继续用自己的文件夹，只要把这 4 个文件拷过去：`visits.py`、`prompts.py`、`data.py`、`config.yaml`。
 
