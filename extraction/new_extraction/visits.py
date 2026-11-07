@@ -12,6 +12,9 @@ labels and change summary, or the episode item (written looking back over the wh
 on its own, because listing the walk would reveal the option taken at every node above the last. The checks come in a shuffled order,
 so `order` is not just the list order. When paths.notebooks is set, the notebook at v_old is shown too. The option taken is still
 recorded in every visit, by the program after the call.
+
+config visits.masked selects the mode: true = the masked annotation above (default); false = the Nov 4 annotation, unchanged (one call
+per edit with the walk, the option taken, the edit summary and the items). The two modes use different cache files.
 """
 import hashlib
 import random
@@ -23,6 +26,9 @@ from merge import index
 import data
 
 V = CFG["visits"]
+MASKED = V.get("masked", True)
+CACHE = (dict(r1="5_visits_masked_r1.jsonl", r2="5_visits_masked_r2.jsonl", merge="4b_new_checks_masked.jsonl") if MASKED
+         else dict(r1="5_visits_r1.jsonl", r2="5_visits_r2.jsonl", merge="4b_new_checks.jsonl"))
 
 
 def tree_paths(tree):
@@ -69,6 +75,27 @@ class Ctx:
         return [(a, b) for a, b in zip(p, p[1:]) if len(a["children"]) >= 2 and a["id"] in self.nodes_d]
 
     def prompt(self, job):
+        return self.prompt_masked(job) if MASKED else self.prompt_original(job)
+
+    def prompt_original(self, job):
+        """Nov 4 version, unchanged: all items and decision nodes of one edit, with the edit summary and the option taken."""
+        r, hist, its = job
+        parts = [f"# Task\n{data.task_desc(r['comp'])}\n\n# Earlier edits of this expert (with {CFG['task']['progress_signal']})\n{hist or '(first edit)'}\n\n"
+                 f"# The edit {r['step_id']} ({r['magnitude']}), {CFG['task']['progress_signal']} before: {data.fmt(r['score_old'])}\n"
+                 f"Labels: {', '.join(r['fine'] or r['coarse']) or '-'}\nGoal: {r['goal']}\nSummary of the change: {r['change'] or r['goal']}\n\n# Intents and decision nodes"]
+        for it in its:
+            parts.append(f"\n## Item {it['id']}: {it['what'][:600]}  (context: {it['why'][:400]})")
+            for a, b in self.walk_for(it):
+                kids = {y["id"] for y in a["children"]}
+                tried = sorted({x["id"] for r2 in self.ex[r["key_id"]] if r2["v_new"] <= r["v_old"] for i2 in self.by_step.get(r2["step_id"], [])
+                                if i2["id"] in self.term for x in self.paths[self.term[i2["id"]]] if x["id"] in kids})
+                parts.append(f"### Node {a['id']} \"{a['name']}\" — {a.get('decision', '')}\nOptions: " + "; ".join(f"{c['id']} {c['name']}" for c in a["children"]) +
+                             f"\nTaken: {b['id']} {b['name']}\nOptions this expert already took earlier at this node: {', '.join(tried) or 'none'}\nChecks:")
+                for e in self.nodes_d[a["id"]]["checks"]:
+                    parts.append(f"- {e}: {self.reg[e]['check']}  (how: {self.reg[e]['how']})")
+        return "\n".join(parts)
+
+    def prompt_masked(self, job):
         """One decision node of one edit, with only what was visible before the edit (see the module docstring)."""
         r, hist, a, uses = job
         sig = CFG["task"]["progress_signal"]
@@ -90,17 +117,24 @@ class Ctx:
 
 
 def system(allow_new):
+    if not MASKED:
+        return fill(prompts.VISIT, new_checks_rule=prompts.NEW_CHECKS_RULE if allow_new else "",
+                    new_checks_field=prompts.NEW_CHECKS_FIELD if allow_new else "")
     return fill(prompts.VISIT_MASKED, new_checks_rule=prompts.NEW_CHECKS_RULE_MASKED if allow_new else "",
                 new_checks_field=prompts.NEW_CHECKS_FIELD if allow_new else "")
 
 
 def make_jobs(ctx, trans):
-    """One job per (edit, decision node): (transition, history, node, [(item, option taken)])."""
+    """masked: one job per (edit, decision node): (transition, history, node, [(item, option taken)]).
+    original: one job per edit: (transition, history, items)."""
     jobs = []
     for k, rs in ctx.ex.items():
         for n, r in enumerate(rs):
             its = ctx.by_step.get(r["step_id"])
             if not its:
+                continue
+            if not MASKED:
+                jobs.append((r, data.history_text(rs, n, CFG["context"]["history_max"]), its))
                 continue
             nodes = {}
             for it in its:
@@ -112,7 +146,7 @@ def make_jobs(ctx, trans):
 
 
 def job_key(j):
-    return f"{j[0]['step_id']}|{j[2]['id']}"
+    return f"{j[0]['step_id']}|{j[2]['id']}" if MASKED else j[0]["step_id"]
 
 
 def annotate(ctx, jobs, cache, allow_new, desc):
@@ -142,7 +176,7 @@ def merge_new_checks(ctx, res):
         r = ask(fill(prompts.NEW_CHECK_MERGE), f"Node {nid}: {n['name']} — {n.get('decision', '')}\nExisting checks:\n{existing}\n\nProposals:\n{lines}", max_tokens=3000, temperature=0, model=stage_model("visits"))
         r["uniq"] = uniq
         return r
-    mres = cached_jsonl(OUT / "4b_new_checks_masked.jsonl", nodes, job, key=lambda n: n + "|" + str(len(props[n])), desc="merge new checks") if nodes else {}
+    mres = cached_jsonl(OUT / CACHE["merge"], nodes, job, key=lambda n: n + "|" + str(len(props[n])), desc="merge new checks") if nodes else {}
 
     log, gained = [], set()
     n_next = max(int(e[1:]) for e in ctx.reg) + 1
@@ -178,29 +212,7 @@ def merge_new_checks(ctx, res):
     return log, gained
 
 
-def run(trans, items):
-    tree = jload(OUT / "3_merged_tree.json")
-    base = OUT / "4_desiderata_base.json"
-    if V["new_checks"] and not base.exists():
-        jdump(jload(OUT / "4_desiderata.json"), base)         # the checklist before visit-time additions
-    dd = jload(base) if (V["new_checks"] and base.exists()) else jload(OUT / "4_desiderata.json")
-    ctx = Ctx(trans, items, tree, dd)
-    jobs = make_jobs(ctx, trans)
-
-    # new cache names: the old 5_visits_r*.jsonl hold the unmasked answers and must not be reused
-    final = annotate(ctx, jobs, "5_visits_masked_r1.jsonl", V["new_checks"], "visits r1")
-    log = []
-    if V["new_checks"]:
-        log, gained = merge_new_checks(ctx, final)
-        jdump(log, OUT / "5_new_checks.json")
-        jdump(ctx.dd, OUT / "4_desiderata.json")            # extended registry + node checklists (origin "visits" marks additions)
-        redo = [j for j in jobs if j[2]["id"] in gained]
-        print(f"new checks: {sum(1 for x in log if x['outcome'] == 'added')} added, {sum(1 for x in log if x['outcome'] == 'existing')} matched an existing check, "
-              f"{sum(1 for x in log if x['outcome'] == 'rejected')} rejected; {len(gained)} nodes extended, {len(redo)} (edit, node) pairs re-annotated")
-        if redo:
-            r2 = annotate(ctx, redo, "5_visits_masked_r2.jsonl", False, "visits r2")
-            final = {**final, **r2}
-
+def records_masked(ctx, jobs, final):
     visits = []
     for j in jobs:
         r, hist, a, uses = j
@@ -221,9 +233,60 @@ def run(trans, items):
             visits.append(dict(item=it["id"], step_id=r["step_id"], comp=r["comp"], expert=r["key_id"], tier=r["tier"], seq=r["v_old"], node=a["id"], child=b["id"],
                                checks=cs, score_old=r["score_old"], score_new=r["score_new"], delta=r["delta"], effect=effect(r["delta"]),
                                new_best=r["new_best"], n_intents=n_its))
+    return visits
+
+
+def records_original(ctx, jobs, final):
+    """Nov 4 version, unchanged."""
+    visits = []
+    for r, hist, its in jobs:
+        rec = final.get(r["step_id"])
+        if not rec:
+            continue
+        got = {(v.get("item"), v.get("node")): v for v in rec.get("visits", []) if isinstance(v, dict)}
+        for it in its:
+            for a, b in ctx.walk_for(it):
+                v = got.get((it["id"], a["id"]))
+                if not v:
+                    continue
+                valid = set(ctx.nodes_d[a["id"]]["checks"])
+                cs = {c["id"]: dict(state=c["state"] if c.get("state") in ("yes", "no") else "not_checked", evidence=c.get("evidence") or "", order=c.get("order"))
+                      for c in v.get("checks", []) if isinstance(c, dict) and c.get("id") in valid}
+                for e in valid - set(cs):
+                    cs[e] = dict(state="not_checked", evidence="", order=None)
+                visits.append(dict(item=it["id"], step_id=r["step_id"], comp=r["comp"], expert=r["key_id"], tier=r["tier"], seq=r["v_old"], node=a["id"], child=b["id"],
+                                   checks=cs, score_old=r["score_old"], score_new=r["score_new"], delta=r["delta"], effect=effect(r["delta"]),
+                                   new_best=r["new_best"], n_intents=len(its)))
+    return visits
+
+
+def run(trans, items):
+    tree = jload(OUT / "3_merged_tree.json")
+    base = OUT / "4_desiderata_base.json"
+    if V["new_checks"] and not base.exists():
+        jdump(jload(OUT / "4_desiderata.json"), base)         # the checklist before visit-time additions
+    dd = jload(base) if (V["new_checks"] and base.exists()) else jload(OUT / "4_desiderata.json")
+    ctx = Ctx(trans, items, tree, dd)
+    jobs = make_jobs(ctx, trans)
+
+    final = annotate(ctx, jobs, CACHE["r1"], V["new_checks"], "visits r1")
+    log = []
+    if V["new_checks"]:
+        log, gained = merge_new_checks(ctx, final)
+        jdump(log, OUT / "5_new_checks.json")
+        jdump(ctx.dd, OUT / "4_desiderata.json")            # extended registry + node checklists (origin "visits" marks additions)
+        redo = ([j for j in jobs if j[2]["id"] in gained] if MASKED else
+                [j for j in jobs if any(a["id"] in gained for it in j[2] for a, _ in ctx.walk_for(it))])
+        print(f"new checks: {sum(1 for x in log if x['outcome'] == 'added')} added, {sum(1 for x in log if x['outcome'] == 'existing')} matched an existing check, "
+              f"{sum(1 for x in log if x['outcome'] == 'rejected')} rejected; {len(gained)} nodes extended, {len(redo)} (edit, node) pairs re-annotated")
+        if redo:
+            r2 = annotate(ctx, redo, CACHE["r2"], False, "visits r2")
+            final = {**final, **r2}
+
+    visits = records_masked(ctx, jobs, final) if MASKED else records_original(ctx, jobs, final)
     jdump(visits, OUT / "5_visits.json")
     n_chk = sum(1 for v in visits for c in v["checks"].values() if c["state"] != "not_checked")
-    print(f"{len(visits)} visit records from {len({j[0]['step_id'] for j in jobs})} edits ({len(jobs)} edit-node calls); {n_chk} checked items (avg {n_chk / max(1, len(visits)):.1f} per visit)")
+    print(f"{len(visits)} visit records from {len({j[0]['step_id'] for j in jobs})} edits ({len(jobs)} LLM jobs, {'one per (edit, node), masked' if MASKED else 'one per edit, original'}); {n_chk} checked items (avg {n_chk / max(1, len(visits)):.1f} per visit)")
     return visits
 
 

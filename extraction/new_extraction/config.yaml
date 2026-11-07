@@ -46,6 +46,11 @@ cluster:
 topdown:
   depth: 4
 visits:
+  masked: true                           # step 5 mode. true (Nov 7): one call per (edit, decision node); the LLM is NOT shown the option taken, the edit's own
+                                         #   goal/labels/summary, or the episode item; checks are shuffled; the notebook at v_old is added when paths.notebooks is set.
+                                         #   Caches: 5_visits_masked_r1/r2.jsonl, 4b_new_checks_masked.jsonl. About 4x the calls of false.
+                                         # false: the Nov 4 annotation, unchanged: one call per edit, with the walk, the option taken, the edit summary and the items.
+                                         #   Caches: 5_visits_r1/r2.jsonl, 4b_new_checks.jsonl. Cheaper, but the answers lean toward the option taken.
   new_checks: true                       # the LLM may propose checks missing from the node's desiderata; they are merged in and the affected edits re-annotated
 scores:
   temperature: 0.5                       # softmax temperature of ranking_now (hand-set)
