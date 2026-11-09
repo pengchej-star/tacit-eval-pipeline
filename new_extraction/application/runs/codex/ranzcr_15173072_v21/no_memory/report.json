@@ -1,0 +1,70 @@
+{
+  "observations": [
+    {
+      "observation": "Is the competition score macro-averaged ROC AUC over 11 labels?",
+      "result": "yes",
+      "evidence": "task.md Evaluation specifies the mean of the 11 individual label AUCs, with higher scores preferred."
+    },
+    {
+      "observation": "Does the required submission contain predicted probabilities?",
+      "result": "yes",
+      "evidence": "task.md Submission File requires one probability per target for each StudyInstanceUID and a submission.csv file."
+    },
+    {
+      "observation": "Does the recorded history contain a score above the current v21 score?",
+      "result": "yes",
+      "evidence": "history.md reports 0.96062 for v13 and v14, compared with 0.95243 for v21."
+    },
+    {
+      "observation": "Did the change from 640 to 512 pixels improve the recorded score?",
+      "result": "yes",
+      "evidence": "history.md v12 to v13 reports 0.95987 to 0.96062 after reducing resolution to 512 and increasing batch size; these changes were not evaluated independently."
+    },
+    {
+      "observation": "Did increasing batch size from 64 to 128 change the recorded score?",
+      "result": "no",
+      "evidence": "history.md v13 to v14 reports 0.96062 for both versions."
+    },
+    {
+      "observation": "Did the first departure from standard ImageNet normalization reduce the recorded score?",
+      "result": "yes",
+      "evidence": "history.md v15 to v16 changes mean from [0.485, 0.456, 0.406] to [0.495, 0.446, 0.416] and reports 0.95220, below v14 at 0.96062; v15 itself has no recorded score."
+    },
+    {
+      "observation": "Did any subsequent recorded normalization experiment recover the v14 score?",
+      "result": "no",
+      "evidence": "history.md v17 through v21 scores are 0.95712, 0.95760, 0.95672, 0.95319, and 0.95243, all below 0.96062."
+    },
+    {
+      "observation": "Does the current script use the preprocessing of the best recorded version?",
+      "result": "no",
+      "evidence": "current_code.py uses IMAGE_SIZE=640, mean=[0.5, 0.5, 0.5], std=[0.3, 0.32, 0.3]; history.md identifies 512 pixels and the original ImageNet normalization for v13/v14."
+    },
+    {
+      "observation": "Does the current script already average horizontal-flip predictions?",
+      "result": "yes",
+      "evidence": "current_code.py inference averages sigmoid(model(images)) with sigmoid(model(images.flip(-1)))."
+    },
+    {
+      "observation": "Does the current script put the checkpoint model into evaluation mode?",
+      "result": "yes",
+      "evidence": "current_code.py calls model.eval() before inference."
+    },
+    {
+      "observation": "Does the current script train a model?",
+      "result": "no",
+      "evidence": "current_code.py constructs ResNet200D, loads resnet200d_fold4_cv954.pth, and runs test inference without a training loop."
+    },
+    {
+      "observation": "Does the current submission multiply probabilities by 100?",
+      "result": "yes",
+      "evidence": "current_code.py writes test[target_cols] = predictions *100 even though inference has already applied sigmoid and probability averaging."
+    },
+    {
+      "observation": "Does the current script import unused augmentation classes?",
+      "result": "yes",
+      "evidence": "current_code.py imports RandomBrightness, RandomContrast, Cutout, IAAAdditiveGaussianNoise and other transforms, while get_transforms only uses Compose, Resize, Normalize and ToTensorV2."
+    }
+  ],
+  "action_summary": "Restore the 512-pixel input and standard ImageNet normalization used by the strongest recorded v13/v14 configuration (0.96062 versus current 0.95243). Retain the same checkpoint, architecture, evaluation mode and horizontal-flip probability averaging; lower batch size to 32 to reduce memory pressure. Write probabilities directly without the AUC-invariant factor of 100, check submission shape and finite probability values, detect missing images, and remove unused imports including legacy augmentation classes. This is an evidence-based rollback of degraded preprocessing, not a measured new score; no training or inference was run because competition data is unavailable."
+}

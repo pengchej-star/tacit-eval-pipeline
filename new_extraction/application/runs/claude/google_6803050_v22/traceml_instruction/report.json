@@ -1,0 +1,13 @@
+{
+  "observations": [
+    {"observation": "Is the metric rank based (mean column-wise Spearman correlation)?", "result": "yes", "evidence": "task.md Evaluation section: mean column-wise Spearman's correlation coefficient, higher is better."},
+    {"observation": "Did the score drop when v22 switched from the 5-fold ensemble to a single fold?", "result": "yes", "evidence": "history.md: v21 (5-fold average) scored 0.36763, v22 (fold4 only) scored 0.35115, a -0.01648 change."},
+    {"observation": "Does the current code use only the fold4 checkpoint for the submission?", "result": "yes", "evidence": "current_code.py lines 303-324: model1/2/3/5 loads and predictors are commented out; line 352 assigns result4 to the submission."},
+    {"observation": "Does the current code re-create the BertTokenizer for every test example?", "result": "yes", "evidence": "current_code.py line 156 instantiates BertTokenizer inside the per-example loop of create_features."},
+    {"observation": "Does the current code concatenate question_title and question_body without a separator?", "result": "yes", "evidence": "current_code.py line 58: test['question_title'] + test['question_body']."},
+    {"observation": "Was rank-space blending of fold predictions tried in any earlier version?", "result": "no", "evidence": "history.md: v19/v21 used a plain np.average over folds; no rank averaging is mentioned."},
+    {"observation": "Did the earlier quantile/discretization post-processing (v13) improve the score?", "result": "no", "evidence": "history.md: v13 scored -0.00372, unchanged from v12, and v17 removed it; the pipeline was broken at that time so it is inconclusive, and I did not re-add it."},
+    {"observation": "Does the current code free GPU memory between loading fold models?", "result": "no", "evidence": "current_code.py lines 303-324 load all models without del/gc/empty_cache between them."}
+  ],
+  "action_summary": "Restored the 5-fold BERT ensemble that scored 0.36763 in v21 (v22's single-fold run dropped to 0.35115), loading each fold checkpoint in a loop and freeing GPU memory between folds. Because the metric is Spearman, fold predictions are blended in rank space (average of per-fold column ranks mixed 50/50 with the rank of the plain mean), which is robust to calibration differences between folds. Added a cheap keyword/host based prior for the near-constant question_type_spelling column, blended with the BERT output as a tie-breaker. Minor hygiene: tokenizer built once instead of per example, and a space inserted between question title and body."
+}

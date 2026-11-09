@@ -1,0 +1,105 @@
+{
+  "observations": [
+    {
+      "observation": "The memory taxonomy includes inference-time averaging as an improvement option.",
+      "result": "yes",
+      "evidence": "memory/taxonomy.md, T.7.6, lists deterministic symmetry views for inputs currently evaluated once."
+    },
+    {
+      "observation": "The competition metric is macro-averaged ROC AUC.",
+      "result": "yes",
+      "evidence": "task.md Evaluation specifies computing AUC separately for 11 labels then averaging; higher is better."
+    },
+    {
+      "observation": "The latest recorded change improved the leaderboard score.",
+      "result": "yes",
+      "evidence": "history.md reports v2 = 0.94363, an increase of 0.00226 over v1."
+    },
+    {
+      "observation": "The history records an evaluated test-time augmentation experiment.",
+      "result": "no",
+      "evidence": "history.md only describes the v1-to-v2 inference refactor and input-size/batch-size changes; no scored TTA comparison is supplied."
+    },
+    {
+      "observation": "The current pipeline uses a single pretrained checkpoint.",
+      "result": "yes",
+      "evidence": "current_code.py loads only ../input/ranzcr-xception-tpu-baseline/Xception_750_TPU.h5."
+    },
+    {
+      "observation": "The current submission averages multiple image views.",
+      "result": "no",
+      "evidence": "current_code.py assigns model.predict(test_df) directly to ss[label_cols]."
+    },
+    {
+      "observation": "The current test decoder scales images to the interval [0, 1].",
+      "result": "yes",
+      "evidence": "current_code.py build_decoder casts to float32 and divides by 255.0 before resizing."
+    },
+    {
+      "observation": "The current input resolution is 750 pixels per side.",
+      "result": "yes",
+      "evidence": "current_code.py sets TARGET_SIZE = 750 and uses the default square decoder target size."
+    },
+    {
+      "observation": "The supplied augmentation function includes horizontal reflection.",
+      "result": "yes",
+      "evidence": "current_code.py build_augmenter calls tf.image.random_flip_left_right; this documents an available augmentation, not verified checkpoint training provenance."
+    },
+    {
+      "observation": "Random augmentation is active in the test dataset.",
+      "result": "no",
+      "evidence": "current_code.py builds test_df with augment=False, shuffle=False, repeat=False."
+    },
+    {
+      "observation": "The current code provides an active held-out evaluation for the loaded checkpoint.",
+      "result": "no",
+      "evidence": "current_code.py comments out train_test_split and valid_df; no held-out prediction scores or checkpoint membership are supplied."
+    },
+    {
+      "observation": "The submission rows follow the sample-submission order.",
+      "result": "yes",
+      "evidence": "current_code.py derives test_images from ss.StudyInstanceUID and disables test shuffling."
+    },
+    {
+      "observation": "The current notebook executes exploratory plots before writing the submission.",
+      "result": "yes",
+      "evidence": "current_code.py executes label-count plots, nine sample-image plots, and all_activations_vis(img_tensor, 3)."
+    },
+    {
+      "observation": "The hidden test set is larger than the public example set.",
+      "result": "yes",
+      "evidence": "task.md Dataset Description states the hidden test set is approximately four times larger, about 14k images."
+    },
+    {
+      "observation": "The inference-averaging memory entry prioritizes checking label-preserving views.",
+      "result": "yes",
+      "evidence": "memory/attention/t-7-6-choose-inference-time-averaging.md lists deterministic flip label preservation as its first check."
+    },
+    {
+      "observation": "The target column names encode left-versus-right laterality.",
+      "result": "no",
+      "evidence": "task.md lists tube position categories and Swan Ganz presence, with no laterality-specific target. This supports a horizontal-flip trial but does not establish its measured benefit."
+    },
+    {
+      "observation": "A verified training-time normalization mismatch is documented in the supplied files.",
+      "result": "no",
+      "evidence": "current_code.py shows the working [0, 1] decoder and commented model definition, but no separate checkpoint training configuration; memory/attention/t-2-1-restore-model-and-input-compatibility.md motivates preserving the known pipeline contract."
+    },
+    {
+      "observation": "The current test dataset caches all decoded images.",
+      "result": "no",
+      "evidence": "current_code.py passes cache=False for test_df; memory/attention/t-8-1-control-peak-resource-use.md motivates retaining streamed batches for the large hidden test set."
+    },
+    {
+      "observation": "The revised script passes Python syntax validation.",
+      "result": "yes",
+      "evidence": "Parsed output/revised_code.py with ast.parse and compiled it with compile(..., exec) without executing it; both succeeded."
+    },
+    {
+      "observation": "The output report satisfies the required JSON schema.",
+      "result": "yes",
+      "evidence": "Parsed output/report.json with json.loads; checked the top-level keys, observation fields, string values, and yes/no results."
+    }
+  ],
+  "action_summary": "Add deterministic original/horizontal-flip probability averaging using the existing Xception checkpoint. This is an untested but credible variance-reduction experiment; preserve the original resolution, normalization, label order, and Kaggle paths rather than assume different checkpoint preprocessing. Stream each view sequentially with training=False, preserve batch size, bound preprocessing/prefetch memory, load the model with compile=False, and make exploratory plots optional. Validate prediction count/range/finiteness, save aligned per-view predictions for subsequent ablation, and write submission.csv. No training or inference was run locally; leaderboard improvement remains unverified."
+}

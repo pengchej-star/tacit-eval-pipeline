@@ -1,0 +1,85 @@
+{
+  "observations": [
+    {
+      "observation": "Does the competition reward higher mean column-wise Spearman correlation?",
+      "result": "yes",
+      "evidence": "task.md, Evaluation and metric direction: compute Spearman separately for each target and average; higher is better."
+    },
+    {
+      "observation": "Must submitted target predictions lie in the interval [0, 1]?",
+      "result": "yes",
+      "evidence": "task.md, Evaluation: predictions should be in [0,1], with qa_id and the target headers in submission.csv."
+    },
+    {
+      "observation": "Are the target values aggregated ratings rather than binary labels?",
+      "result": "yes",
+      "evidence": "task.md, Dataset Description: labels are aggregates from multiple raters; the notes describe a few discrete values."
+    },
+    {
+      "observation": "Did v46 score below v45?",
+      "result": "yes",
+      "evidence": "history.md: v45 scored 0.42580; v46 scored 0.38762, a decrease of 0.03819."
+    },
+    {
+      "observation": "Was removing discretization the only change in v46?",
+      "result": "no",
+      "evidence": "history.md, v45 -> v46: checkpoint source changed and packaged evaluators replaced local implementations as well as removing discretization; the score difference is confounded."
+    },
+    {
+      "observation": "Does an earlier removal of custom postprocessing coincide with a large score decrease?",
+      "result": "yes",
+      "evidence": "history.md, v39 -> v40: quantized per-column postprocessing was disabled; score dropped from 0.42442 to 0.38139. The checkpoint also changed in this comparison."
+    },
+    {
+      "observation": "Was a guard against constant adjusted predictions used in a stronger historical version?",
+      "result": "yes",
+      "evidence": "history.md: v38 retained continuous predictions when adjusted columns were constant and scored 0.42704; v45 also used an explicit constant-column fallback."
+    },
+    {
+      "observation": "Has switching fold blending to rank averaging already been tried?",
+      "result": "yes",
+      "evidence": "history.md: v33 switched to rank blending and scored 0.38345, versus the preceding scored version at 0.38356; this gives no strong reason to replace the current mean blend."
+    },
+    {
+      "observation": "Does the history specify the complete v45 binning configuration?",
+      "result": "no",
+      "evidence": "history.md mentions KBinsDiscretizer, constant-column fallback and min-max scaling, but gives neither the bin count nor the binning strategy."
+    },
+    {
+      "observation": "Does the current script use a pretrained bi-encoder ensemble with mean blending?",
+      "result": "yes",
+      "evidence": "current_code.py constructs BiEncoderEvaluator with blend_strategy='mean', models_dir_name='fold_models', experiment 2020_02_01__19_10_50__329."
+    },
+    {
+      "observation": "Does the current script enable NER preprocessing?",
+      "result": "yes",
+      "evidence": "current_code.py instantiates NERDetector.from_model_dir and passes ner_model to the evaluator."
+    },
+    {
+      "observation": "Does the current script enable mathematical text preprocessing?",
+      "result": "yes",
+      "evidence": "current_code.py sets process_math = True and passes it to the evaluator."
+    },
+    {
+      "observation": "Does the current script discretize the predictions before submission?",
+      "result": "no",
+      "evidence": "current_code.py assigns evaluator.run(test_df) directly to the submission target columns with no active postprocessor."
+    },
+    {
+      "observation": "Are the imported evaluator implementation files present in the current directory?",
+      "result": "no",
+      "evidence": "The current-directory listing contains current_code.py, history.md, task.md and prompt.txt, with no evaluator package; the script copies that package from a Kaggle input at runtime."
+    },
+    {
+      "observation": "Does the revised script pass Python syntax validation after excluding notebook shell escapes?",
+      "result": "yes",
+      "evidence": "ast.parse and compile succeeded for output/revised_code.py with its four original !cp lines replaced by pass only in the validation string; no script execution occurred."
+    },
+    {
+      "observation": "Does the output report satisfy the required JSON structure?",
+      "result": "yes",
+      "evidence": "Parsed output/report.json with json.loads and checked its keys, observation field names, string values and yes/no result values."
+    }
+  ],
+  "action_summary": "Preserved the checkpoint, Kaggle input paths, NER/math preprocessing and mean fold ensemble. Restored target-wise ordinal discretization using five equal-width bins fitted to each prediction column, normalized to [0,1], with continuous fallbacks for collapsed or effectively constant columns. This is an explicit new binning configuration, motivated by the stronger discretized historical versions; the history does not establish a causal gain or reveal their exact parameters. Added prediction shape/finite checks and a separate raw submission for comparison; submission.csv contains the discretized predictions. No training or inference was run, so a leaderboard improvement remains unverified."
+}

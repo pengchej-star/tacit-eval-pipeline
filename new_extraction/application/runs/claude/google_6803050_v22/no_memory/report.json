@@ -1,0 +1,13 @@
+{
+  "observations": [
+    {"observation": "The metric is mean column-wise Spearman correlation, which depends only on ranks.", "result": "yes", "evidence": "task.md Evaluation section."},
+    {"observation": "The current version v22 scored lower than the previous version v21.", "result": "yes", "evidence": "history.md: v21 0.36763, v22 0.35115 (-0.01648)."},
+    {"observation": "The only change from v21 to v22 was disabling the five-fold ensemble and using fold4 alone.", "result": "yes", "evidence": "history.md v21 -> v22 entry; current_code.py lines 303-326 show folds 1,2,3,5 commented out."},
+    {"observation": "The current code averages predictions from several models.", "result": "no", "evidence": "current_code.py line 352 assigns result4 directly to the submission."},
+    {"observation": "The quantile-discretization post-processing was ever evaluated on a working pipeline.", "result": "no", "evidence": "history.md: v13 added it while scores were stuck at -0.00372 (broken pipeline), and v17 removed it before the pipeline was fixed in v21."},
+    {"observation": "The current code recreates the BertTokenizer inside the per-example feature loop.", "result": "yes", "evidence": "current_code.py line 156 constructs BertTokenizer inside the for loop in create_features."},
+    {"observation": "The test set contains duplicated questions that could be exploited for question-level averaging.", "result": "no", "evidence": "task.md Dataset Description: 'The test data does not contain any duplicated questions.'"},
+    {"observation": "Predictions are already bounded in [0,1] before writing the submission.", "result": "yes", "evidence": "current_code.py line 295-297 applies torch.sigmoid to the logits."}
+  ],
+  "action_summary": "Restored the five-fold BERT ensemble that scored 0.36763 in v21 (v22 dropped to 0.35115 by using fold4 alone). Folds are now loaded in a loop, run one at a time and freed to limit GPU memory, with missing checkpoint directories skipped gracefully. Because the metric is Spearman (rank-based), the fold predictions are combined as a 50/50 blend of the mean sigmoid probability and the mean per-column normalized rank, so no fold with a different output scale dominates; the result is clipped to [0,1]. Also moved tokenizer construction out of the per-example loop for speed. Submission format and Kaggle paths are unchanged."
+}

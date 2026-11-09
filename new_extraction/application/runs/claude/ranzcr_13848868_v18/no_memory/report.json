@@ -1,0 +1,16 @@
+{
+  "observations": [
+    {"observation": "Is the current v18 score (0.93941) below the best historical score (v15, 0.94396)?", "result": "yes", "evidence": "history.md: v15 scored 0.94396; v18 scored 0.93941."},
+    {"observation": "Did switching to SingleHeadModel in v17 lower the score?", "result": "yes", "evidence": "history.md: v16 0.94293 -> v17 0.93993 (-0.00300) when SingleHeadModel replaced MultiHeadResNeXt and folds went 4 -> 5."},
+    {"observation": "Does enabling CONVERT_TO_RANK consistently improve the score?", "result": "no", "evidence": "history.md: rank on gave -0.00019 (v4), -0.00004 (v6), -0.00103 (v16), -0.00052 (v18); only small gains in v2, v8, v10, v12."},
+    {"observation": "Does the current code use CONVERT_TO_RANK = True?", "result": "yes", "evidence": "current_code.py line 82: CONVERT_TO_RANK = True."},
+    {"observation": "Did using 4 folds instead of 5 coincide with the best score?", "result": "yes", "evidence": "history.md: v15 (4 folds, 448, multi-head, no rank) 0.94396 vs v9/v10 (5 folds, same otherwise) 0.94301/0.94330."},
+    {"observation": "Did increasing IMAGE_SIZE to 512 help?", "result": "no", "evidence": "history.md: v11 (512) scored 0.93722, -0.00608; v13 reverted to 448."},
+    {"observation": "Does the current code still contain the MultiHeadResNeXt class definition?", "result": "yes", "evidence": "current_code.py lines 261-300 define MultiHeadResNeXt with SSEBlock and intermediate Linear/ReLU/Dropout head."},
+    {"observation": "Does the current code instantiate SingleHeadModel for all folds?", "result": "yes", "evidence": "current_code.py line 510: model = SingleHeadModel(**stgs['model']['params']); MultiHeadResNeXt is commented out."},
+    {"observation": "Can I verify locally which architecture the checkpoint weights match?", "result": "no", "evidence": "Competition data and the weights dataset are not available here; both model classes loaded strictly in different versions, so the weights dataset may have changed."},
+    {"observation": "Does the fold loop index test_preds_arr by fold_id in a way that breaks if FOLDS is not contiguous from 0?", "result": "yes", "evidence": "current_code.py line 503/516: array sized N_FOLD=len(FOLDS) but indexed by fold_id."},
+    {"observation": "Does the code apply any test-time augmentation?", "result": "no", "evidence": "run_inference_loop (lines 470-482) does a single forward pass with Normalize + ToTensor only."}
+  ],
+  "action_summary": "Reverted the configuration to the one that produced the best leaderboard score (v15, 0.94396): FOLDS = [0,1,2,3] and CONVERT_TO_RANK = False (rank-averaging has been net negative across the history, and fold 4 lowered the score). Replaced the hard-coded SingleHeadModel instantiation (introduced in v17, which cost ~0.003) with checkpoint-driven model selection: the state dict is loaded first and MultiHeadResNeXt is used unless the checkpoint contains head_fc keys, so the pipeline cannot crash on either weight layout while preferring the better multi-head architecture. Also indexed the prediction array by enumeration position instead of fold_id so non-contiguous fold lists work. Kept image size 448 (512 hurt in v11), no flip TTA because catheter laterality is anatomically asymmetric."
+}

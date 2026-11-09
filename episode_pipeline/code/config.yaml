@@ -1,0 +1,46 @@
+litellm:
+  api_base: https://ai-gateway.andrew.cmu.edu/
+  prefix: openai/
+model:                      # defaults used by llm.call_model
+  generator: wine-claude-opus-4-6
+  max_tokens: 2000
+  temperature: 0.7
+  timeout_s: 600
+  max_retries: 3
+paths:
+  steps: data/steps.jsonl                        # one record per key step (labels, history, diff, outcome)
+  notebooks: data/notebooks                      # <kernel_id>/v<version>.ipynb, the code before each step
+  task_descriptions: data/task_descriptions.yaml
+context:                    # limits on what the prompt shows
+  history_max_chars: 30000  # prior-step summaries; the oldest are dropped first
+  code_max_chars: 8000      # code at the version before the step
+extract:
+  models:                   # one independent sample per entry
+    - wine-claude-opus-4-6
+    - wine-claude-opus-4-6
+  consensus_model: wine-claude-opus-4-6
+  temperature: 0.7
+  max_tokens: 6000
+  workers: 8
+cluster:
+  model: wine-claude-opus-4-6
+  workers: 8
+episodes:                   # episodes.py: one call per trajectory
+  model: wine-claude-opus-4-6
+  max_tokens: 8000
+  change_max_chars: 220
+  workers: 4
+episode_extract:            # episode_extract.py: one call per episode
+  model: wine-claude-opus-4-6
+  max_tokens: 5000
+  code_max_chars: 6000      # same limits as the 2026-10-23 pilot (134 episodes), kept for consistency
+  diff_lines_per_step: 60
+  diff_chars_total: 14000
+  history_max_chars: 12000
+  skip_patterns: []        # 2026-10-28: full run includes build episodes
+  workers: 6
+knowledge:                  # knowledge.py: vocabulary + per-cell induction + consolidation
+  model: wine-claude-opus-4-6
+  max_categories: 40
+  cell_max_items: 45
+  workers: 6

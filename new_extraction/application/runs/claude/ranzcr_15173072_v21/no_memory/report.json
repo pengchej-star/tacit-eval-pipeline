@@ -1,0 +1,14 @@
+{
+  "observations": [
+    {"observation": "Is the metric mean column-wise AUC, so monotone rescaling of predictions (e.g. *100) has no effect on the score?", "result": "yes", "evidence": "task.md evaluation section: AUC per label, averaged; AUC is rank based."},
+    {"observation": "Was the best leaderboard score (0.96062) reached with ImageNet normalization mean [0.485,0.456,0.406] / std [0.229,0.224,0.225]?", "result": "yes", "evidence": "history.md: v13/v14 scored 0.96062; normalization changes only started in v16."},
+    {"observation": "Did every normalization change after v14 score below 0.96062?", "result": "yes", "evidence": "history.md: v16 0.95220, v17 0.95712, v18 0.95760, v19 0.95672, v20 0.95319, v21 0.95243."},
+    {"observation": "Does the current code use non-ImageNet normalization (mean 0.5, std [0.3,0.32,0.3])?", "result": "yes", "evidence": "current_code.py lines 75-76."},
+    {"observation": "Did IMAGE_SIZE 512 score slightly better than 640 under identical normalization?", "result": "yes", "evidence": "history.md: v12 (640) 0.95987 vs v13 (512) 0.96062."},
+    {"observation": "Does the current code use only a single fold checkpoint (fold4) although the inference function already supports a list of models?", "result": "yes", "evidence": "current_code.py line 118 MODEL_PATH single file; inference() loops over models list (lines 100-115)."},
+    {"observation": "Has multi-scale TTA or multi-fold ensembling been tried in any earlier version?", "result": "no", "evidence": "history.md lists only checkpoint swaps, batch size, image size, normalization and output scaling changes."},
+    {"observation": "Does the current code already apply horizontal-flip TTA?", "result": "yes", "evidence": "current_code.py line 109: model(images.flip(-1))."},
+    {"observation": "Does the model use pretrained=False so weights come solely from the loaded checkpoint?", "result": "yes", "evidence": "current_code.py line 85."}
+  ],
+  "action_summary": "Reverted the image normalization to ImageNet statistics (mean [0.485,0.456,0.406], std [0.229,0.224,0.225]), which produced the best historical score (0.96062) and which the public resnet200d checkpoints were trained with; all later normalization tweaks lost score. Added an ensemble over every .pth checkpoint found in the resnet200d-baseline-benchmark-public dataset (falling back to the single fold4 file), with a robust state-dict loader (handles 'module.' prefixes and wrapped dicts). Added multi-scale TTA averaging predictions at 512 and 640 on top of the existing horizontal-flip TTA, and reduced batch size to 64 for memory headroom at 640. Removed the irrelevant *100 output scaling; the submission format is unchanged."
+}

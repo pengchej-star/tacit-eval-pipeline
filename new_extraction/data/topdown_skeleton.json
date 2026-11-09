@@ -1,0 +1,1161 @@
+{
+ "name": "Get a better score",
+ "decision": "Which broad area should I focus on to improve my score?",
+ "children": [
+  {
+   "name": "Measurement & Validation",
+   "decision": "How should I improve my evaluation strategy?",
+   "children": [
+    {
+     "name": "Choose validation scheme",
+     "decision": "Which splitting strategy best reflects the test set?",
+     "children": [
+      {
+       "name": "Stratified K-Fold",
+       "description": "Preserve target distribution across folds",
+       "id": "T.1.1.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Group K-Fold",
+       "description": "Prevent leakage by splitting on group identifiers",
+       "id": "T.1.1.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Time-based split",
+       "description": "Respect temporal ordering for time-dependent data",
+       "id": "T.1.1.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Repeated K-Fold",
+       "description": "Reduce variance of CV estimate with multiple repeats",
+       "id": "T.1.1.4",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Adversarial validation split",
+       "description": "Select validation data most similar to test set",
+       "id": "T.1.1.5",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.1.1",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Align metric with competition",
+     "decision": "How to ensure local metric matches leaderboard?",
+     "children": [
+      {
+       "name": "Implement exact competition metric",
+       "description": "Code the official metric to avoid proxy mismatch",
+       "id": "T.1.2.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Optimize threshold or cutoff",
+       "description": "Tune decision threshold to maximize the metric",
+       "id": "T.1.2.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Use metric-specific loss surrogate",
+       "description": "Choose a differentiable proxy closely aligned to metric",
+       "id": "T.1.2.3",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.1.2",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Detect and fix leakage",
+     "decision": "Where might data leakage occur?",
+     "children": [
+      {
+       "name": "Check feature computation leakage",
+       "description": "Ensure features are computed only on training fold",
+       "id": "T.1.3.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Check target encoding leakage",
+       "description": "Use proper in-fold encoding to avoid information leak",
+       "id": "T.1.3.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Check temporal leakage",
+       "description": "Verify no future information used in feature creation",
+       "id": "T.1.3.3",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.1.3",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Monitor overfitting to LB",
+     "decision": "How to avoid leaderboard overfitting?",
+     "children": [
+      {
+       "name": "Trust local CV over LB",
+       "description": "Prioritize stable local CV when LB is noisy",
+       "id": "T.1.4.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Track CV-LB correlation",
+       "description": "Submit periodically to verify local and public scores agree",
+       "id": "T.1.4.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Limit number of submissions",
+       "description": "Reduce submission frequency to avoid fitting public LB",
+       "id": "T.1.4.3",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.1.4",
+     "depth": 2,
+     "source": "top_down"
+    }
+   ],
+   "id": "T.1",
+   "depth": 1,
+   "source": "top_down"
+  },
+  {
+   "name": "Data & Input Pipeline",
+   "decision": "How should I improve the data fed to models?",
+   "children": [
+    {
+     "name": "Feature engineering",
+     "decision": "What type of features should I create?",
+     "children": [
+      {
+       "name": "Interaction and polynomial features",
+       "description": "Create products, ratios, and polynomial terms of existing features",
+       "id": "T.2.1.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Aggregation and statistical features",
+       "description": "Group-level means, counts, std, min, max over categorical groups",
+       "id": "T.2.1.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Time and date features",
+       "description": "Extract cyclical, lag, rolling, and difference features from timestamps",
+       "id": "T.2.1.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Text or NLP features",
+       "description": "TF-IDF, embeddings, sentiment, or token-level features from text",
+       "id": "T.2.1.4",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Domain-specific features",
+       "description": "Leverage domain knowledge to craft meaningful signals",
+       "id": "T.2.1.5",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Frequency and target encoding",
+       "description": "Encode categoricals with frequency counts or smoothed target means",
+       "id": "T.2.1.6",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.2.1",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Feature selection",
+     "decision": "How should I reduce or select features?",
+     "children": [
+      {
+       "name": "Remove low-importance features",
+       "description": "Drop features with near-zero importance from a baseline model",
+       "id": "T.2.2.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Correlation-based removal",
+       "description": "Remove highly correlated redundant features",
+       "id": "T.2.2.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Recursive feature elimination",
+       "description": "Iteratively remove least important features and re-evaluate",
+       "id": "T.2.2.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Use feature selection models",
+       "description": "Apply L1 regularization or Boruta for automatic selection",
+       "id": "T.2.2.4",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.2.2",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Data cleaning",
+     "decision": "What data quality issues should I address?",
+     "children": [
+      {
+       "name": "Handle missing values",
+       "description": "Impute with median, mode, KNN, or use missingness indicators",
+       "id": "T.2.3.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Remove or correct outliers",
+       "description": "Clip, winsorize, or remove extreme values",
+       "id": "T.2.3.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Fix label noise",
+       "description": "Identify and correct mislabeled training samples",
+       "id": "T.2.3.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Deduplicate samples",
+       "description": "Remove exact or near-duplicate rows",
+       "id": "T.2.3.4",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.2.3",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Data augmentation",
+     "decision": "How should I augment the training data?",
+     "children": [
+      {
+       "name": "Image augmentations",
+       "description": "Apply flips, rotations, color jitter, cutout, mixup",
+       "id": "T.2.4.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Text augmentations",
+       "description": "Synonym replacement, back-translation, random insertion",
+       "id": "T.2.4.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Tabular augmentations",
+       "description": "SMOTE, noise injection, or generative oversampling",
+       "id": "T.2.4.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Use external data",
+       "description": "Incorporate additional public datasets or pretrained embeddings",
+       "id": "T.2.4.4",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.2.4",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Preprocessing and scaling",
+     "decision": "How should I transform raw features?",
+     "children": [
+      {
+       "name": "Normalize or standardize",
+       "description": "Apply standard scaling, min-max, or robust scaling",
+       "id": "T.2.5.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Log or power transforms",
+       "description": "Apply log1p, Box-Cox, or Yeo-Johnson to skewed features",
+       "id": "T.2.5.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Categorical encoding schemes",
+       "description": "One-hot, ordinal, binary, or hash encoding for categoricals",
+       "id": "T.2.5.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Dimensionality reduction",
+       "description": "Apply PCA, UMAP, or autoencoders to reduce feature space",
+       "id": "T.2.5.4",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.2.5",
+     "depth": 2,
+     "source": "top_down"
+    }
+   ],
+   "id": "T.2",
+   "depth": 1,
+   "source": "top_down"
+  },
+  {
+   "name": "Model Architecture",
+   "decision": "Which model family or structure should I use or modify?",
+   "children": [
+    {
+     "name": "Choose model family",
+     "decision": "Which base algorithm to try?",
+     "children": [
+      {
+       "name": "Gradient boosted trees",
+       "description": "XGBoost, LightGBM, CatBoost for tabular data",
+       "id": "T.3.1.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Neural networks",
+       "description": "MLP, TabNet, or deep learning architectures",
+       "id": "T.3.1.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Linear models",
+       "description": "Logistic regression, Ridge, Lasso, ElasticNet",
+       "id": "T.3.1.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Tree-based ensembles",
+       "description": "Random Forest, Extra Trees",
+       "id": "T.3.1.4",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Pretrained transformers",
+       "description": "BERT, GPT, ViT, or domain-specific pretrained models",
+       "id": "T.3.1.5",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "KNN or SVM",
+       "description": "Instance-based or kernel methods for smaller datasets",
+       "id": "T.3.1.6",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.3.1",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Modify network architecture",
+     "decision": "What structural change to the neural network?",
+     "children": [
+      {
+       "name": "Change depth or width",
+       "description": "Add or remove layers, change hidden dimensions",
+       "id": "T.3.2.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Add skip or residual connections",
+       "description": "Enable gradient flow with shortcut connections",
+       "id": "T.3.2.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Change attention mechanism",
+       "description": "Use multi-head, cross, or efficient attention variants",
+       "id": "T.3.2.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Add regularization layers",
+       "description": "Insert dropout, batch norm, or layer norm",
+       "id": "T.3.2.4",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Change backbone or pretrained model",
+       "description": "Swap to a larger or more suitable pretrained backbone",
+       "id": "T.3.2.5",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.3.2",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Task-specific head design",
+     "decision": "How to design the output head?",
+     "children": [
+      {
+       "name": "Multi-task output heads",
+       "description": "Add auxiliary tasks to improve representation learning",
+       "id": "T.3.3.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Ordinal or regression head",
+       "description": "Use appropriate output structure for ordinal or continuous targets",
+       "id": "T.3.3.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Classification head tuning",
+       "description": "Adjust number of layers and activation in classification head",
+       "id": "T.3.3.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Pooling strategy",
+       "description": "Choose CLS token, mean pooling, or attention pooling for sequences",
+       "id": "T.3.3.4",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.3.3",
+     "depth": 2,
+     "source": "top_down"
+    }
+   ],
+   "id": "T.3",
+   "depth": 1,
+   "source": "top_down"
+  },
+  {
+   "name": "Training Process",
+   "decision": "How should I change the training procedure?",
+   "children": [
+    {
+     "name": "Hyperparameter tuning",
+     "decision": "Which hyperparameters to tune and how?",
+     "children": [
+      {
+       "name": "Learning rate and schedule",
+       "description": "Tune base LR; use cosine, step, or warmup schedules",
+       "id": "T.4.1.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Regularization strength",
+       "description": "Tune weight decay, dropout rate, L1/L2 penalties",
+       "id": "T.4.1.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Tree-specific parameters",
+       "description": "Tune max depth, num leaves, min child samples, subsample",
+       "id": "T.4.1.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Batch size and epochs",
+       "description": "Adjust batch size and total training duration",
+       "id": "T.4.1.4",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Use automated search",
+       "description": "Apply Optuna, Bayesian optimization, or random search",
+       "id": "T.4.1.5",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.4.1",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Optimization strategy",
+     "decision": "Which optimizer or training technique to use?",
+     "children": [
+      {
+       "name": "Change optimizer",
+       "description": "Switch between Adam, AdamW, SGD with momentum, LAMB",
+       "id": "T.4.2.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Gradient clipping",
+       "description": "Clip gradients by norm or value to stabilize training",
+       "id": "T.4.2.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Mixed precision training",
+       "description": "Use FP16/BF16 to speed up and sometimes regularize",
+       "id": "T.4.2.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Gradient accumulation",
+       "description": "Simulate larger batch sizes with accumulated gradients",
+       "id": "T.4.2.4",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.4.2",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Regularization techniques",
+     "decision": "Which regularization method to apply?",
+     "children": [
+      {
+       "name": "Early stopping",
+       "description": "Stop training when validation metric stops improving",
+       "id": "T.4.3.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Data-level regularization",
+       "description": "Mixup, CutMix, label smoothing during training",
+       "id": "T.4.3.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Weight decay tuning",
+       "description": "Adjust L2 penalty on model parameters",
+       "id": "T.4.3.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Stochastic depth or dropout",
+       "description": "Randomly drop layers or units during training",
+       "id": "T.4.3.4",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Adversarial training",
+       "description": "Add adversarial perturbations for robustness and generalization",
+       "id": "T.4.3.5",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.4.3",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Transfer learning strategy",
+     "decision": "How to leverage pretrained knowledge?",
+     "children": [
+      {
+       "name": "Fine-tune entire model",
+       "description": "Unfreeze all layers and train end-to-end with small LR",
+       "id": "T.4.4.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Freeze and train head only",
+       "description": "Keep backbone frozen, train only the output layers",
+       "id": "T.4.4.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Gradual unfreezing",
+       "description": "Progressively unfreeze layers from top to bottom",
+       "id": "T.4.4.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Use larger pretrained model",
+       "description": "Start from a bigger or better pretrained checkpoint",
+       "id": "T.4.4.4",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.4.4",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Handle class imbalance",
+     "decision": "How to address imbalanced target distribution?",
+     "children": [
+      {
+       "name": "Class weights in loss",
+       "description": "Weight loss inversely proportional to class frequency",
+       "id": "T.4.5.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Oversampling minority class",
+       "description": "Duplicate or synthetically generate minority samples",
+       "id": "T.4.5.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Undersampling majority class",
+       "description": "Reduce majority class samples to balance distribution",
+       "id": "T.4.5.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Focal loss or similar",
+       "description": "Use loss functions that down-weight easy examples",
+       "id": "T.4.5.4",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.4.5",
+     "depth": 2,
+     "source": "top_down"
+    }
+   ],
+   "id": "T.4",
+   "depth": 1,
+   "source": "top_down"
+  },
+  {
+   "name": "Loss & Objective Function",
+   "decision": "How should I change what the model optimizes?",
+   "children": [
+    {
+     "name": "Choose primary loss",
+     "decision": "Which loss function best suits the task?",
+     "children": [
+      {
+       "name": "Cross-entropy variants",
+       "description": "Binary, categorical, sparse, or weighted cross-entropy",
+       "id": "T.5.1.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Regression losses",
+       "description": "MSE, MAE, Huber, log-cosh, or quantile loss",
+       "id": "T.5.1.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Ranking losses",
+       "description": "Pairwise, listwise, or LambdaRank for ranking tasks",
+       "id": "T.5.1.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Custom competition-aligned loss",
+       "description": "Design a differentiable surrogate matching the competition metric",
+       "id": "T.5.1.4",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.5.1",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Add auxiliary losses",
+     "decision": "Which auxiliary objective to add?",
+     "children": [
+      {
+       "name": "Multi-task auxiliary loss",
+       "description": "Add related prediction tasks to improve shared representations",
+       "id": "T.5.2.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Contrastive or self-supervised loss",
+       "description": "Add SimCLR, triplet, or masked prediction objectives",
+       "id": "T.5.2.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Knowledge distillation loss",
+       "description": "Train student model to match teacher soft predictions",
+       "id": "T.5.2.3",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.5.2",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Loss function modifications",
+     "decision": "How to modify the existing loss?",
+     "children": [
+      {
+       "name": "Label smoothing",
+       "description": "Soften hard labels to prevent overconfident predictions",
+       "id": "T.5.3.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Sample reweighting",
+       "description": "Weight samples by difficulty, noise level, or importance",
+       "id": "T.5.3.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Temperature scaling in loss",
+       "description": "Adjust softmax temperature during training",
+       "id": "T.5.3.3",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.5.3",
+     "depth": 2,
+     "source": "top_down"
+    }
+   ],
+   "id": "T.5",
+   "depth": 1,
+   "source": "top_down"
+  },
+  {
+   "name": "Inference & Post-processing",
+   "decision": "How should I improve predictions after training?",
+   "children": [
+    {
+     "name": "Test-time augmentation",
+     "decision": "Which TTA strategy to use?",
+     "children": [
+      {
+       "name": "Geometric TTA",
+       "description": "Average predictions over flipped, rotated, or scaled inputs",
+       "id": "T.6.1.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Crop-based TTA",
+       "description": "Average predictions over multiple crops of the input",
+       "id": "T.6.1.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Stochastic TTA",
+       "description": "Average predictions with dropout enabled at inference",
+       "id": "T.6.1.3",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.6.1",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Threshold optimization",
+     "decision": "How to optimize decision boundaries?",
+     "children": [
+      {
+       "name": "Global threshold search",
+       "description": "Search for optimal single threshold on validation set",
+       "id": "T.6.2.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Per-class threshold tuning",
+       "description": "Optimize separate thresholds for each class",
+       "id": "T.6.2.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Probability calibration",
+       "description": "Apply Platt scaling or isotonic regression to calibrate outputs",
+       "id": "T.6.2.3",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.6.2",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Post-processing rules",
+     "decision": "Which rule-based corrections to apply?",
+     "children": [
+      {
+       "name": "Clip or bound predictions",
+       "description": "Enforce known min/max constraints on predictions",
+       "id": "T.6.3.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Apply domain constraints",
+       "description": "Enforce business rules or physical constraints on outputs",
+       "id": "T.6.3.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Rank-based adjustments",
+       "description": "Adjust predictions based on rank or distribution matching",
+       "id": "T.6.3.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Leak exploitation",
+       "description": "Use any public LB probing or test set patterns ethically",
+       "id": "T.6.3.4",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.6.3",
+     "depth": 2,
+     "source": "top_down"
+    }
+   ],
+   "id": "T.6",
+   "depth": 1,
+   "source": "top_down"
+  },
+  {
+   "name": "Ensembling & Stacking",
+   "decision": "How should I combine multiple models?",
+   "children": [
+    {
+     "name": "Ensemble strategy",
+     "decision": "Which combination method to use?",
+     "children": [
+      {
+       "name": "Simple averaging or voting",
+       "description": "Average predictions or take majority vote across models",
+       "id": "T.7.1.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Weighted averaging",
+       "description": "Assign optimized weights to each model's predictions",
+       "id": "T.7.1.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Stacking with meta-learner",
+       "description": "Train a second-level model on base model out-of-fold predictions",
+       "id": "T.7.1.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Blending",
+       "description": "Use a holdout set to learn combination weights",
+       "id": "T.7.1.4",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Rank averaging",
+       "description": "Average ranks instead of raw predictions for robustness",
+       "id": "T.7.1.5",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.7.1",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Diversity of base models",
+     "decision": "How to ensure model diversity?",
+     "children": [
+      {
+       "name": "Different algorithms",
+       "description": "Combine GBMs, NNs, linear models for algorithmic diversity",
+       "id": "T.7.2.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Different feature sets",
+       "description": "Train models on different subsets or versions of features",
+       "id": "T.7.2.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Different hyperparameters",
+       "description": "Vary hyperparameters within same algorithm family",
+       "id": "T.7.2.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Different random seeds",
+       "description": "Train same model with multiple seeds to reduce variance",
+       "id": "T.7.2.4",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Different data splits or folds",
+       "description": "Train on different subsets or bootstrap samples",
+       "id": "T.7.2.5",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.7.2",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Multi-level stacking",
+     "decision": "How many stacking levels to use?",
+     "children": [
+      {
+       "name": "Single-level stack",
+       "description": "One meta-learner on top of base models",
+       "id": "T.7.3.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Two-level stack",
+       "description": "Stack of stacks for additional performance",
+       "id": "T.7.3.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Feature-augmented stacking",
+       "description": "Include original features alongside meta-features in stacker",
+       "id": "T.7.3.3",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.7.3",
+     "depth": 2,
+     "source": "top_down"
+    }
+   ],
+   "id": "T.7",
+   "depth": 1,
+   "source": "top_down"
+  },
+  {
+   "name": "Compute & Efficiency",
+   "decision": "How should I use computational resources more effectively?",
+   "children": [
+    {
+     "name": "Scale up model or data",
+     "decision": "What to scale up with more compute?",
+     "children": [
+      {
+       "name": "Train larger models",
+       "description": "Use bigger architectures that may generalize better",
+       "id": "T.8.1.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Train on more data",
+       "description": "Use full dataset or add pseudo-labeled test data",
+       "id": "T.8.1.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Train longer",
+       "description": "Increase epochs or iterations with proper regularization",
+       "id": "T.8.1.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Larger input resolution",
+       "description": "Use higher resolution images or longer sequence lengths",
+       "id": "T.8.1.4",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.8.1",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Speed up experimentation",
+     "decision": "How to iterate faster?",
+     "children": [
+      {
+       "name": "Use smaller proxy dataset",
+       "description": "Develop on a subsample then scale to full data",
+       "id": "T.8.2.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Use faster model for exploration",
+       "description": "Prototype with lightweight model before scaling up",
+       "id": "T.8.2.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Parallelize hyperparameter search",
+       "description": "Run multiple trials concurrently across GPUs or machines",
+       "id": "T.8.2.3",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Cache preprocessed data",
+       "description": "Save intermediate features to avoid recomputation",
+       "id": "T.8.2.4",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.8.2",
+     "depth": 2,
+     "source": "top_down"
+    },
+    {
+     "name": "Pseudo-labeling and self-training",
+     "decision": "How to leverage unlabeled test data?",
+     "children": [
+      {
+       "name": "Standard pseudo-labeling",
+       "description": "Add high-confidence test predictions as training data",
+       "id": "T.8.3.1",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Iterative self-training",
+       "description": "Repeatedly retrain with progressively more pseudo-labels",
+       "id": "T.8.3.2",
+       "depth": 3,
+       "source": "top_down"
+      },
+      {
+       "name": "Noisy student training",
+       "description": "Train student on pseudo-labels with added noise and augmentation",
+       "id": "T.8.3.3",
+       "depth": 3,
+       "source": "top_down"
+      }
+     ],
+     "id": "T.8.3",
+     "depth": 2,
+     "source": "top_down"
+    }
+   ],
+   "id": "T.8",
+   "depth": 1,
+   "source": "top_down"
+  }
+ ],
+ "id": "T",
+ "depth": 0,
+ "source": "top_down"
+}

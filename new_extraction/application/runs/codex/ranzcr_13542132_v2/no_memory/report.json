@@ -1,0 +1,75 @@
+{
+  "observations": [
+    {
+      "observation": "Is the competition metric the mean of eleven label-wise ROC AUC values?",
+      "result": "yes",
+      "evidence": "task.md, Evaluation: AUC is calculated for each of the 11 labels, then averaged; higher is better."
+    },
+    {
+      "observation": "Does the competition require a file named submission.csv?",
+      "result": "yes",
+      "evidence": "task.md, Code Requirements specifies submission.csv; Submission File specifies StudyInstanceUID followed by eleven probability columns."
+    },
+    {
+      "observation": "Is the hidden test set substantially larger than the public test set?",
+      "result": "yes",
+      "evidence": "task.md, Dataset Description describes an approximately four-times-larger hidden test set with roughly 14,000 images."
+    },
+    {
+      "observation": "Did the recorded v1-to-v2 change improve the leaderboard score?",
+      "result": "yes",
+      "evidence": "history.md reports v2 at 0.94363 with a gain of 0.00226 from inference-pipeline refactoring."
+    },
+    {
+      "observation": "Does the supplied history record a previous test-time augmentation experiment?",
+      "result": "no",
+      "evidence": "history.md contains only the v1-to-v2 refactor summary; no test-time augmentation experiment is reported."
+    },
+    {
+      "observation": "Does the current pipeline train a model?",
+      "result": "no",
+      "evidence": "current_code.py comments out the training split, training datasets, and create_model; it loads Xception_750_TPU.h5 for inference."
+    },
+    {
+      "observation": "Does the current decoder normalize images to the zero-to-one range?",
+      "result": "yes",
+      "evidence": "current_code.py, build_decoder: casts pixels to float32 and divides by 255.0 before tf.image.resize."
+    },
+    {
+      "observation": "Does the current pipeline use 750-by-750 images?",
+      "result": "yes",
+      "evidence": "current_code.py sets TARGET_SIZE = 750 and uses (TARGET_SIZE, TARGET_SIZE) as the decoder resize dimensions."
+    },
+    {
+      "observation": "Does the current test dataset apply the defined random flips?",
+      "result": "no",
+      "evidence": "current_code.py defines left-right and up-down random flips in build_augmenter, but test_df explicitly passes augment=False."
+    },
+    {
+      "observation": "Does the current submission average predictions from multiple image views?",
+      "result": "no",
+      "evidence": "current_code.py assigns the single result of model.predict(test_df, verbose=1) directly to the submission labels."
+    },
+    {
+      "observation": "Does the current test pipeline disable shuffling?",
+      "result": "yes",
+      "evidence": "current_code.py constructs test_images from sample_submission order and calls build_dataset with shuffle=False."
+    },
+    {
+      "observation": "Does the current script execute intermediate-activation visualization before submission prediction?",
+      "result": "yes",
+      "evidence": "current_code.py builds img_tensor for the first test image and executes all_activations_vis(img_tensor, 3) before the Prediction cell."
+    },
+    {
+      "observation": "Does the current model-loading call explicitly disable compilation?",
+      "result": "no",
+      "evidence": "current_code.py uses models.load_model('../input/ranzcr-xception-tpu-baseline/Xception_750_TPU.h5') without compile=False."
+    },
+    {
+      "observation": "Is an AGENTS.md file present in the current directory?",
+      "result": "no",
+      "evidence": "The current-directory listing contains current_code.py, history.md, prompt.txt, and task.md; no AGENTS.md is present."
+    }
+  ],
+  "action_summary": "Added deterministic two-view test-time augmentation: average the saved Xception checkpoint's probabilities for each original image and its horizontal reflection with equal weights. This is a low-cost path to reducing orientation-sensitive prediction noise without retraining; it preserves full-image content, the existing 750px resolution, zero-to-one normalization, checkpoint path, and submission column order. Views run sequentially at batch size eight, with each image decoded once and only one batch prefetched. Removed exploratory plots and activation visualization, loaded the checkpoint with compile=False, and added prediction shape, probability, finiteness, and row-count checks. No training or inference was run, so an AUC improvement is not measured; horizontal-reflection averaging remains an unvalidated modeling assumption."
+}

@@ -1,0 +1,7 @@
+episodes: 1 done, 70 to run, 4 workers
+  20/70  134s
+  40/70  245s
+  60/70  459s
+  70/70  498s
+71 trajectories (0 errors), 3419 transitions -> 812 episodes (1 repaired) -> out/episodes.md
+exit=0

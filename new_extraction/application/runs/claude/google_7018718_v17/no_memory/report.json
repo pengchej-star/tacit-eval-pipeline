@@ -1,0 +1,14 @@
+{
+  "observations": [
+    {"observation": "The metric is mean column-wise Spearman correlation, so only within-column ranks matter.", "result": "yes", "evidence": "task.md Evaluation section: 'mean column-wise Spearman's correlation coefficient'."},
+    {"observation": "The v16 -> v17 change caused the largest drop in the history.", "result": "yes", "evidence": "history.md: v17 score 0.37427 vs v16 0.38513 (-0.01086), the only change being uncommenting rm -rf of fold_models/model_0..model_5."},
+    {"observation": "The current code deletes fold model directories before inference.", "result": "yes", "evidence": "current_code.py lines 8-13: six '!rm -rf ./2019_12_15__12_28_32__384/fold_models/model_N/' commands."},
+    {"observation": "Removing models from the ensemble had already hurt the score once before.", "result": "yes", "evidence": "history.md v11 -> v12: deleting model_5..model_9 dropped score 0.38408 -> 0.37988; restoring them in v13 recovered to 0.38367."},
+    {"observation": "Sigmoid blending scored higher than rank blending for the BiEncoder fold ensemble.", "result": "yes", "evidence": "history.md: v15 (rank) 0.38484 vs v16 (sigmoid) 0.38513."},
+    {"observation": "The current code applies any Spearman-aware post-processing (discretization / tie handling) to predictions.", "result": "no", "evidence": "current_code.py lines 41-47 write y_pred directly into out_df with no transformation."},
+    {"observation": "The targets take a few discrete values and are heavily tied.", "result": "yes", "evidence": "task.md summary notes: labels are averages of crowd ratings and 'take a few discrete values'; notes that solutions round predictions because Spearman depends on ranks."},
+    {"observation": "The current code reads train.csv to exploit the target distribution.", "result": "no", "evidence": "current_code.py line 33-34 only reads test.csv and sample_submission.csv."},
+    {"observation": "The current code explicitly clips predictions to the required [0,1] range.", "result": "no", "evidence": "current_code.py has no np.clip; task.md requires predictions in [0,1]."}
+  ],
+  "action_summary": "Reverted the v17 regression by removing the six rm -rf commands that deleted fold_models/model_0..model_5, so the full BiEncoder fold ensemble is blended again with blend_strategy='sigmoid' (the best configuration, v16 = 0.38513). Added Spearman-oriented post-processing: train.csv is loaded and, for each target column with at most 12 distinct train values, test predictions are quantile-mapped by rank onto the empirical train level distribution. This preserves the model ranking while reproducing the heavy tie structure of the discrete targets (reducing noise ordering within tied groups), with guards that fall back to raw predictions if a column would become constant. Predictions are nan-sanitized and clipped to [0,1] and the submission is cast to float before writing submission.csv."
+}

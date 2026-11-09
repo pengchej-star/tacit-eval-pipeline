@@ -1,0 +1,14 @@
+{
+ "agent": "claude",
+ "model": "claude-fable-5-1",
+ "effort": "medium",
+ "case": "hms_50496431_v113",
+ "condition": "memory",
+ "minutes": 10,
+ "elapsed_s": 87,
+ "timed_out": false,
+ "rc": 0,
+ "has_code": true,
+ "has_report": true,
+ "workdir": "/var/folders/6x/cr9vzp9n4zqfy_x5jcy_1h3h0000gq/T/app_claude_hms_50496431_v113_memory__g0b1yq9"
+}

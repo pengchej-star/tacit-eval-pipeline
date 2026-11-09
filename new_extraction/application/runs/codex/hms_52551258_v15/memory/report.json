@@ -1,0 +1,130 @@
+{
+  "observations": [
+    {
+      "observation": "Does the decision taxonomy include restoring missing model contributions?",
+      "result": "yes",
+      "evidence": "memory/taxonomy.md, T.2.2.2, explicitly lists Restore missing model contributions."
+    },
+    {
+      "observation": "Is lower KL divergence the competition objective?",
+      "result": "yes",
+      "evidence": "task.md identifies KL divergence as the metric and states lower is better."
+    },
+    {
+      "observation": "Does the submission require six probabilities summing to one per eeg_id?",
+      "result": "yes",
+      "evidence": "task.md Evaluation lists the six vote columns and requires each row to sum to one."
+    },
+    {
+      "observation": "Is v15 worse than v14 on the recorded leaderboard?",
+      "result": "yes",
+      "evidence": "history.md gives v15=0.43907 and v14=0.31017."
+    },
+    {
+      "observation": "Is v13 the best recorded version?",
+      "result": "yes",
+      "evidence": "The lowest score listed in history.md is v13=0.30219; v11 is 0.30250."
+    },
+    {
+      "observation": "Did adding the second EEG family improve the v12 result?",
+      "result": "yes",
+      "evidence": "history.md records 0.32099 for v12 and 0.30219 for v13 after restoring baseline_eeg_diff."
+    },
+    {
+      "observation": "Did flip TTA improve the recorded v13 result?",
+      "result": "no",
+      "evidence": "history.md records the flip-TTA change at v14 with score 0.31017, worse than v13=0.30219."
+    },
+    {
+      "observation": "Does v15 actively load the two raw EEG model families?",
+      "result": "no",
+      "evidence": "current_code.py encloses the models_0 and models_1 loading loops in a triple-quoted string."
+    },
+    {
+      "observation": "Does v15 actively include raw EEG predictions in the ensemble?",
+      "result": "no",
+      "evidence": "current_code.py gen_ensemble_pred encloses all models_0 and models_1 forward passes in a triple-quoted string."
+    },
+    {
+      "observation": "Is the active v15 predictor spectrogram-only?",
+      "result": "yes",
+      "evidence": "Only models_2 is actively loaded and only model(spec) contributes to preds in current_code.py."
+    },
+    {
+      "observation": "Are the original EEG checkpoint paths retained in the supplied code?",
+      "result": "yes",
+      "evidence": "current_code.py retains new_distil/send_kaggle/*, new_fold/send_kaggle/* and baseline_eeg_diff/*/model_best_val_g10.pt."
+    },
+    {
+      "observation": "Do the retained EEG families require different preprocessing?",
+      "result": "yes",
+      "evidence": "proc_0 uses mean channel standard deviation with shape (4,4,2500); proc_1 uses per-channel standard deviation with shape (16,1,2500)."
+    },
+    {
+      "observation": "Does the retained EEG pipeline downsample filtered bipolar channels?",
+      "result": "yes",
+      "evidence": "compute_eeg applies a 0.25-50 Hz Butterworth bandpass then averages bins of four; compute_eeg_chain constructs 16 bipolar channels."
+    },
+    {
+      "observation": "Does flip TTA preserve the proc_0 tensor shape for every view?",
+      "result": "no",
+      "evidence": "tta returns x unchanged but reshapes the other three views to (16,1,-1), whereas proc_0 returns (4,4,2500)."
+    },
+    {
+      "observation": "Does the original input pipeline replace NaN values before filtering?",
+      "result": "no",
+      "evidence": "compute_eeg_from_file uses fill_null(0), not NaN/Inf replacement; the inactive EEG inference block sanitizes x only after compute_eeg_from_file."
+    },
+    {
+      "observation": "Does the original loader reject an empty checkpoint discovery?",
+      "result": "no",
+      "evidence": "The glob loops in current_code.py have no nonempty assertions before averaging predictions."
+    },
+    {
+      "observation": "Does the existing pipeline average probabilities?",
+      "result": "yes",
+      "evidence": "current_code.py uses model(...).exp() followed by np.mean(preds, axis=0) and normalization."
+    },
+    {
+      "observation": "Does the original submission explicitly align to sample-submission identifiers?",
+      "result": "no",
+      "evidence": "current_code.py writes df_test eeg_id order directly; sample_submission is loaded but unused."
+    },
+    {
+      "observation": "Do the relevant memory entries support checking restoration after regressions?",
+      "result": "yes",
+      "evidence": "Read attention/t-1-3-choose-a-response-to-an-unsuccessful-searc.md and t-6-2-choose-ensemble-membership.md: compare prior configurations and restore complementary members when warranted. The observed history supports restoration, though repeated-run variance is unavailable."
+    },
+    {
+      "observation": "Do the relevant memory entries prioritize tracing absent predictions?",
+      "result": "yes",
+      "evidence": "Read attention/t-2-2-locate-a-data-flow-defect.md: check missing model contributions. The inactive EEG loading and inference blocks directly match that situation."
+    },
+    {
+      "observation": "Do the relevant memory entries recommend checking input compatibility?",
+      "result": "yes",
+      "evidence": "Read attention/t-2-1-restore-model-and-input-compatibility.md and t-7-6-choose-inference-time-averaging.md: check preprocessing contracts and validity of alternate views; the retained proc_0/proc_1 contracts and TTA reshape issue are relevant."
+    },
+    {
+      "observation": "Are competition artifacts available locally for validation?",
+      "result": "no",
+      "evidence": "The current directory listing contains task.md, current_code.py, history.md, prompt.txt and memory/, but no competition data or model checkpoints; the task also explicitly states data are unavailable."
+    },
+    {
+      "observation": "Does the revised script pass Python syntax validation?",
+      "result": "yes",
+      "evidence": "Parsed output/revised_code.py with ast.parse and compiled it with compile(..., mode=\"exec\") without executing the pipeline."
+    },
+    {
+      "observation": "Does the output report have the required JSON structure?",
+      "result": "yes",
+      "evidence": "Loaded output/report.json with json.loads and checked the top-level keys, observation keys, nonempty string values, and action_summary type."
+    },
+    {
+      "observation": "Are all recorded observation results valid yes/no values?",
+      "result": "yes",
+      "evidence": "Validated every observation result against the set {\"yes\", \"no\"}."
+    }
+  ],
+  "action_summary": "Restore the two complementary raw-EEG model families using the retained checkpoint paths and their separate normalization/shape contracts, replacing the spectrogram-only execution that coincided with the v15 regression. Remove flip TTA, which worsened the recorded score and changes the w1 input shape, while retaining equal checkpoint probability averaging to approximate the best recorded v13 configuration (0.30219). Sanitize nonfinite electrode values before filtering, use stable normalized exponentiation, fail explicitly for missing checkpoints, and align and validate submission probabilities. This is a history-supported recovery, not a measured new score; no training or inference was run."
+}

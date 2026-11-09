@@ -1,0 +1,3839 @@
+# Hierarchical clusters (embedding-based)
+
+1892 items; clusters per level: goal=112, lever_context=160, lever=710, action_context=927, action=963
+
+- **[goal]** What do I do when I have a new best score from an ensemble and want to squeeze out more improvement without changing models?  *(328 items, 48 kernels)*
+  - **[lever_context]** The author had already found a good two-model blend (v7, 0.45658) and tried checkpoint swaps (v8, v9) without improvement. Ensemble weights are the remaining low-cost lever.  *(319 items, 47 kernels)*
+    - **[lever]** ensemble member selection  *(78 items, 28 kernels)*
+      - **[action_context]** When a newly added model degrades the ensemble and you have per-model performance estimates.  *(52 items, 26 kernels)*
+        - **[action]** First test the new model in isolation to gauge its standalone quality. If it regresses badly alone, immediately combine it with existing members rather than discarding it—weak standalone models can still improve ensembles. Re-enable all members and submit to confirm the combined effect.  *(52 items, 26 kernels)*
+          - items: `18550705:e5#1`, `18523075:e6#1`, `18423958:e5#1`, `18350823:e4#1`, `77276039:e4#1`, `7548275:e5#1`, `7573212:e7#2`, `60264017:e4#1`, `17616127:e17#1`, `17616127:e29#1`, `18426209:e5#1`, `18837555:e4#1`, `18851026:e3#2`, `18851026:e5#2`, `18851026:e7#1`, `18423958:e9#1`, `18350823:e15#2`, `75924487:e3#2`, `75145694:e6#1`, `73937748:e10#1`, `73937748:e21#1`, `7018718:e4#2`, `7018718:e5#2`, `7548275:e7#1`, `53747598:e3#1`, `53424936:e7#2`, `53424936:e13#1`, `50376011:e4#2`, `50376011:e7#1`, `50376011:e15#2`, `50376011:e33#1`, `49524919:e19#1`, `49524919:e29#1`, `49524919:e32#1`, `52860091:e9#2`, `52551258:e8#1`, `52551258:e9#1`, `52551258:e12#1`, `53762022:e1#2`, `52200959:e2#2`, `15203842:e2#1`, `50496431:e4#1`, `50496431:e9#2`, `50496431:e22#1`, `50496431:e22#2`, `50496431:e26#1`, `50496431:e28#2`, `50496431:e33#1`, `50496431:e38#1`, `50496431:e41#3`, `50496431:e42#2`, `50496431:e47#1`
+      - **[action_context]** When the number of candidate groups is small (≤5) and each submission is cheap relative to the competition budget.  *(11 items, 8 kernels)*
+        - **[action]** Add candidate members one at a time to the current best ensemble and submit. If every addition degrades the score after 2-3 trials, stop and keep the original set. Do not persist with further combinations once a clear pattern of degradation is established.  *(11 items, 8 kernels)*
+          - items: `18550705:e2#1`, `73671444:e1#1`, `52860091:e5#1`, `60264017:e2#1`, `18837555:e3#1`, `75145694:e7#2`, `50376011:e3#1`, `50376011:e8#1`, `50376011:e30#1`, `50496431:e8#1`, `50496431:e40#1`
+      - **[action_context]** When you have access to multiple fine-tuned checkpoints of different architectures and the dataset is small/noisy.  *(8 items, 7 kernels)*
+        - **[action]** First evaluate each checkpoint individually to rank them (sweep indices one at a time). Then combine the top 2-3 into an ensemble and compare against the best single. If the ensemble of top-K beats the best single, try adding more members incrementally. If a single model beats the ensemble, the mode  *(8 items, 7 kernels)*
+          - items: `7606235:e3#1`, `17616127:e4#1`, `75145694:e9#2`, `7018718:e13#2`, `53747598:e7#1`, `50376011:e7#2`, `50376011:e25#2`, `50496431:e43#2`
+      - **[action_context]** When weight tuning within a fixed set of components plateaus, the bottleneck is component diversity, not weight precision.  *(2 items, 1 kernels)*
+        - **[action]** When reweighting a fixed set of ensemble members yields no improvement, introduce a new diverse component (e.g., predictions from a different model family or a new blend of existing models) before resuming weight tuning. Only after the new component is validated should you fine-tune weights.  *(2 items, 1 kernels)*
+          - items: `17616127:e30#1`, `17616127:e35#1`
+      - **[action_context]** When you have a clear record of which components were active during your best score and subsequent removals consistently hurt performance.  *(2 items, 2 kernels)*
+        - **[action]** Revert to the full ensemble membership that produced your best score, re-enable all model/fold predictions that were active at that time, then make one targeted swap of a blend component to test if a slight variation improves on the restored baseline. Do the restoration as a preparatory step without  *(2 items, 2 kernels)*
+          - items: `17616127:e33#1`, `50496431:e15#1`
+      - **[action_context]** A large batch of new members was added at once, making it hard to isolate which additions helped or hurt.  *(1 items, 1 kernels)*
+        - **[action]** When expanding an ensemble, add members in small batches and check CV after each batch. If a large batch causes regression, bisect to find harmful members rather than assuming all new members are bad. Ensure all artifact paths are consistent before interpreting the score change as a signal about mem  *(1 items, 1 kernels)*
+          - items: `75924487:e7#2`
+      - **[action_context]** When the swap is low-cost (just changing a file path) and the rest of the pipeline is stable.  *(1 items, 1 kernels)*
+        - **[action]** Swap the component model artifact in a single submission, keeping everything else fixed. If the gain is negligible (< ~0.001 on the leaderboard), do not iterate further on this lever and move to a different one.  *(1 items, 1 kernels)*
+          - items: `73937748:e25#1`
+      - **[action_context]** When a new model uses a different feature pipeline (e.g., wavelet spectrograms vs standard spectrograms), it may require installing additional dependencies before it can be loaded.  *(1 items, 1 kernels)*
+        - **[action]** When adding a checkpoint that uses a different feature extraction method to an ensemble, first install its dependencies in the inference environment, then add it to the ensemble list. Test the expanded ensemble on the leaderboard. If it improves, keep it; then test subsets and the new member solo to  *(1 items, 1 kernels)*
+          - items: `50376011:e29#1`
+    - **[lever]** adding a diverse model family to an ensemble  *(32 items, 17 kernels)*
+      - **[action_context]** When existing ensemble weight tuning has plateaued and you have access to a new model variant (different architecture, training objective, or scale).  *(28 items, 15 kernels)*
+        - **[action]** Build new components across 2-3 versions without expecting score improvement at each step. First add the new model code and weights, then restructure fusion/preprocessing, then enable all members and tune blend weights. Tolerate intermediate regressions and evaluate only after the full integration i  *(26 items, 15 kernels)*
+          - items: `18350823:e9#1`, `52200959:e5#1`, `17616127:e21#1`, `17616127:e40#2`, `18523075:e4#1`, `18837555:e3#2`, `18350823:e5#1`, `18350823:e10#1`, `77450317:e13#2`, `73671444:e6#1`, `73671444:e7#1`, `75924487:e2#1`, `75924487:e3#1`, `75145694:e11#1`, `75145694:e15#1`, `75145694:e17#1`, `73937748:e6#1`, `73937748:e9#1`, `73937748:e12#1`, `73937748:e20#1`, `53424936:e8#1`, `49524919:e27#1`, `52860091:e7#1`, `52200959:e7#1`, `55621328:e49#1`, `50496431:e30#1`
+        - **[action]** Reshape tabular features into a multi-channel 2D representation grouped by domain meaning (e.g., demographics, disease, comorbidities, treatment), train a CNN on this representation offline, then include its pretrained predictions in the ensemble with a small weight. Verify the new member improves t  *(2 items, 2 kernels)*
+          - items: `75145694:e20#1`, `50496431:e18#2`
+      - **[action_context]** When the best score hasn't improved for several blend-tuning iterations and recent changes regress.  *(2 items, 2 kernels)*
+        - **[action]** Stop tuning blend weights after observing a regression that erases recent gains. Instead, invest effort in adding new or stronger component predictions (e.g., more folds, new architectures, TTA variants) to expand the ensemble's diversity before resuming weight optimization.  *(2 items, 2 kernels)*
+          - items: `60264017:e6#1`, `15164527:e8#1`
+      - **[action_context]** When new model artifacts are available and their standalone quality is unknown.  *(1 items, 1 kernels)*
+        - **[action]** Before integrating new model artifacts into a complex ensemble, first test a single fold or single model alone to establish a standalone baseline. If the standalone score is far worse than existing components, averaging all folds of that model family is unlikely to close the gap enough to help the e  *(1 items, 1 kernels)*
+          - items: `17616127:e12#1`
+      - **[action_context]** When raw signal data exists and current models use only one transformation of it, an alternative spectrogram (e.g., mel-spectrogram with different parameters) creates a complementary view.  *(1 items, 1 kernels)*
+        - **[action]** Generate a new input representation from the same raw data using a different transform (e.g., mel-spectrogram vs. standard spectrogram), train models on it offline, then add those models' predictions to the ensemble average. Validate on the leaderboard that the expanded ensemble improves over the pr  *(1 items, 1 kernels)*
+          - items: `50496431:e7#1`
+    - **[lever]** ensemble blend weights  *(31 items, 18 kernels)*
+      - **[action_context]** When a small number of models are being blended and the best configuration is already known.  *(14 items, 11 kernels)*
+        - **[action]** Make small perturbations to blend weights first (e.g., shift 5-10% between members) and submit. If this doesn't improve, do not compound it with simultaneous changes to preprocessing or model architecture in the same submission—those should be tested independently. If a multi-change submission regre  *(14 items, 11 kernels)*
+          - items: `27502740:e4#1`, `18426209:e7#1`, `73937748:e16#1`, `17616127:e30#2`, `18350823:e7#1`, `77450317:e10#2`, `75145694:e4#2`, `50376011:e43#1`, `52200959:e8#1`, `55591012:e4#1`, `55591012:e5#1`, `50496431:e28#1`, `50496431:e36#1`, `50496431:e52#1`
+      - **[action_context]** When a regression occurs after adding ensemble components, the issue is likely that weak or misaligned members are diluting strong ones.  *(5 items, 5 kernels)*
+        - **[action]** After a regression from ensemble changes, re-enable previously disabled strong models, disable suspected weak contributors one at a time, and adjust blend weights between raw averaging and stacked predictions. Use OOF RMSE to identify which members to keep. Submit after each change to confirm improv  *(5 items, 5 kernels)*
+          - items: `18757376:e4#1`, `17616127:e29#2`, `75145694:e19#1`, `55987255:e11#1`, `50496431:e44#1`
+      - **[action_context]** When the number of ensemble members is small (≤5) and each submission is cheap (inference-only notebook).  *(5 items, 5 kernels)*
+        - **[action]** Try modest weight adjustments (e.g., doubling weight of 1-2 members). If the score regresses, stop—equal weighting is often near-optimal for diverse models, and fine-grained weight tuning on the public leaderboard is noisy and unreliable.  *(5 items, 5 kernels)*
+          - items: `53747598:e8#1`, `50496431:e56#1`, `17616127:e22#1`, `18350823:e12#1`, `53424936:e13#2`
+      - **[action_context]** When new model families are available but their standalone LB quality relative to existing members is unknown.  *(4 items, 4 kernels)*
+        - **[action]** Assign the new models a smaller blend weight (e.g., 10-15% each) compared to the proven models (15-20% each). Re-enable all models and submit the full blend. If the score improves, the diversity benefit is confirmed. The weight should be proportional to the model's solo quality relative to the best   *(4 items, 4 kernels)*
+          - items: `18426209:e1#1`, `75145694:e9#1`, `49524919:e35#3`, `52860091:e9#1`
+      - **[action_context]** When small adjustments have plateaued and you suspect certain components are weak.  *(3 items, 3 kernels)*
+        - **[action]** Do not make large jumps in multiple blend weights simultaneously. Change one weight at a time by a small amount, submit, and observe. Large simultaneous changes confound which component caused the regression and waste submissions.  *(3 items, 3 kernels)*
+          - items: `29588171:e7#1`, `18426209:e2#2`, `77450317:e1#1`
+    - **[lever]** checkpoint selection for ensemble  *(29 items, 14 kernels)*
+      - **[action_context]** When you have multiple fold checkpoints available and each addition is expected to reduce variance.  *(22 items, 12 kernels)*
+        - **[action]** Start by adding a subset of fold checkpoints (e.g., 2 of 5) to verify the new branch works and improves the score. Once confirmed, add all remaining folds in one step. Equal-weight averaging is the default; only tune weights if marginal gains plateau.  *(20 items, 10 kernels)*
+          - items: `7573212:e7#1`, `17616127:e13#2`, `18350823:e6#1`, `18350823:e13#1`, `7613444:e5#2`, `6803050:e15#2`, `53424936:e2#1`, `53424936:e10#1`, `50376011:e5#2`, `50376011:e16#2`, `50376011:e24#2`, `50376011:e26#2`, `50376011:e28#1`, `50376011:e38#2`, `49524919:e29#2`, `55621328:e19#1`, `55621328:e27#1`, `55621328:e32#1`, `55621328:e45#2`, `50496431:e2#2`
+        - **[action]** Before reverting an architectural change that regressed, try at least one alternative checkpoint with the same architecture. A regression may be due to the specific checkpoint rather than the architecture itself. Only revert the architecture if multiple checkpoints consistently underperform.  *(2 items, 2 kernels)*
+          - items: `7018718:e8#1`, `75145694:e10#1`
+      - **[action_context]** When adding multiple new model families to an ensemble, each with its own preprocessing and checkpoints.  *(6 items, 5 kernels)*
+        - **[action]** First add the new models and test them individually (one at a time) by submitting single-model predictions. Once each is verified to produce reasonable scores, enable all models together with blended output. If the full blend regresses, check for bugs (skipped loops, wrong output columns) before con  *(5 items, 4 kernels)*
+          - items: `75145694:e12#2`, `75145694:e15#2`, `53747598:e1#2`, `49524919:e26#1`, `50496431:e54#2`
+        - **[action]** Replace exactly one ensemble member while holding all others fixed. Update all downstream references (CSV names, column names, fallback logic) consistently. Submit to get a clean A/B comparison. If it improves, lock it in and move to the next component.  *(1 items, 1 kernels)*
+          - items: `60264017:e1#2`
+      - **[action_context]** When you have a working baseline and want to test an alternative artifact.  *(1 items, 1 kernels)*
+        - **[action]** Change only the checkpoint path (one variable) and submit. If the score regresses, immediately revert to the original checkpoint. Avoid changing multiple things (e.g., dropout AND checkpoint) simultaneously, as it confounds attribution of any regression.  *(1 items, 1 kernels)*
+          - items: `18350823:e2#1`
+    - **[lever]** ablation of ensemble components  *(18 items, 13 kernels)*
+      - **[action_context]** When an ensemble has a small number of heterogeneous components and you want to test each one's marginal contribution.  *(15 items, 10 kernels)*
+        - **[action]** Test each ensemble member in isolation by commenting out the others. If every individual member scores worse than the full ensemble, keep all members. If one member alone matches or beats the ensemble, drop the weaker member. Submit each ablation to get signal before adding complexity.  *(15 items, 10 kernels)*
+          - items: `75145694:e5#1`, `49524919:e33#1`, `60197293:e5#1`, `17616127:e16#2`, `17371717:e7#1`, `50376011:e4#1`, `50376011:e17#1`, `50376011:e21#2`, `50376011:e40#2`, `49524919:e28#1`, `52551258:e3#1`, `52200959:e2#1`, `58130512:e17#1`, `50496431:e5#2`, `50496431:e37#1`
+      - **[action_context]** When validation metrics are unavailable or unreliable and the only signal is the public leaderboard.  *(3 items, 3 kernels)*
+        - **[action]** Use a single submission to ablate one component (submit it solo). If the score degrades clearly, treat the ensemble as validated and shift effort to weight tuning rather than further ablation. Budget exactly one submission for this test.  *(3 items, 3 kernels)*
+          - items: `18523075:e3#2`, `18350823:e7#2`, `73671444:e8#1`
+    - **[lever]** incremental integration with debug instrumentation  *(10 items, 7 kernels)*
+      - **[action_context]** When a large structural change causes catastrophic regression, the bug is almost always in preprocessing or data flow rather than model weights.  *(6 items, 4 kernels)*
+        - **[action]** Do not revert entirely. Instead, debug incrementally: first fix the new model's pipeline in isolation, then re-enable the previously working models alongside it. Check for syntax/logic bugs in blending code before concluding the new model is unhelpful. Submit only after the ensemble is at least clos  *(6 items, 4 kernels)*
+          - items: `18423958:e8#1`, `75145694:e3#2`, `75145694:e8#2`, `49524919:e21#1`, `50496431:e12#1`, `50496431:e46#1`
+      - **[action_context]** When the codebase needs cleanup and you have multiple improvement ideas (new model, new features, pipeline refactor), bundle the refactor with one major addition (e.g., new model) in one step, then do pure feature engineering in the next step. This lets you attribute gains: if the bundled step helps  *(2 items, 2 kernels)*
+        - **[action]** First, refactor infrastructure and add one new model variant simultaneously—submit to confirm no regression. Then, holding the model stack fixed, add a batch of engineered features and tune ensemble weights—submit to measure feature contribution. If both steps improve, move to hyperparameter tuning   *(2 items, 2 kernels)*
+          - items: `73937748:e4#2`, `50496431:e3#1`
+      - **[action_context]** When you have reason to believe both the backbone and the training recipe can be improved simultaneously, and individual ablation is too expensive.  *(1 items, 1 kernels)*
+        - **[action]** When adding a new ensemble member after prior failures, simultaneously upgrade the training recipe (optimizer, scheduler, precision) to ensure the new member is as strong as possible. This reduces the number of experiments needed but sacrifices ability to attribute gains. If the combined change work  *(1 items, 1 kernels)*
+          - items: `18550705:e3#2`
+      - **[action_context]** When integrating a new prediction source into a stacking/blending pipeline and the notebook fails or produces suspicious outputs.  *(1 items, 1 kernels)*
+        - **[action]** Do not submit until the pipeline runs cleanly. Fix data alignment issues first (filter mismatched rows, verify shapes), then fix formula bugs. Run validation RMSE prints after each fix. Only submit once all components are confirmed working. Expect 2-3 debug iterations for a single new component.  *(1 items, 1 kernels)*
+          - items: `18851026:e5#1`
+    - **[lever]** isolation testing of new components  *(9 items, 5 kernels)*
+      - **[action_context]** When a new model variant exists and the ensemble is complex enough that adding it would obscure its individual quality.  *(9 items, 5 kernels)*
+        - **[action]** First, disable all other models and submit the new checkpoint alone to get its standalone score. If it scores much worse than the ensemble, blend it with the single strongest existing component at a conservative weight (e.g., 30-40% new). If the blend still underperforms the full ensemble, fold the   *(9 items, 5 kernels)*
+          - items: `17616127:e32#1`, `75145694:e7#1`, `49524919:e21#2`, `49524919:e30#1`, `49524919:e31#1`, `49524919:e35#1`, `55591012:e6#1`, `50496431:e13#1`, `50496431:e31#1`
+    - **[lever]** fold-weighted ensemble averaging  *(8 items, 6 kernels)*
+      - **[action_context]** When individual fold models have meaningfully different validation scores (spread > 0.02) and simple averaging is the current baseline.  *(8 items, 6 kernels)*
+        - **[action]** Use each fold's validation metric as its weight in a weighted average of fold predictions instead of a simple mean. This upweights folds whose models generalized better. Verify on LB that the weighted blend outperforms the unweighted one.  *(8 items, 6 kernels)*
+          - items: `55621328:e16#2`, `50496431:e56#2`, `17616127:e5#3`, `7573212:e6#2`, `58130512:e26#2`, `58130512:e27#1`, `58130512:e32#2`, `15164527:e3#1`
+    - **[lever]** checkpoint variant selection  *(7 items, 5 kernels)*
+      - **[action_context]** When the current best uses a multi-checkpoint ensemble and you want to test a new training variant that only has single-fold outputs available.  *(5 items, 3 kernels)*
+        - **[action]** First test each checkpoint family as a homogeneous ensemble (all folds from one family). If none beats the baseline, try mixing families. Also try varying ensemble size (more folds vs. selected subset). Submit sparingly — inspect raw outputs first and only submit configurations that look promising.   *(5 items, 3 kernels)*
+          - items: `6803050:e7#1`, `6803050:e10#1`, `73937748:e24#1`, `55621328:e17#1`, `55621328:e28#1`
+      - **[action_context]** When a blanket swap of all fold checkpoints to a new source causes a regression on the leaderboard.  *(1 items, 1 kernels)*
+        - **[action]** First test the new checkpoint source by swapping all folds at once. If the score regresses, use per-fold CV scores to identify which folds improved and which worsened, then construct a mixed checkpoint list keeping the best fold from whichever source has the lower fold-level error. Hard-code the pat  *(1 items, 1 kernels)*
+          - items: `18426209:e6#1`
+      - **[action_context]** When combining heterogeneous input modalities (spectrograms vs raw signals) where each modality's generalization gap differs.  *(1 items, 1 kernels)*
+        - **[action]** Do not trust CV rankings alone for multi-input model variants — the generalization gap can vary across input types. Evaluate each variant on LB before deciding ensemble composition or weights. Expect that the variant with best CV may not win on LB.  *(1 items, 1 kernels)*
+          - items: `52200959:e4#2`
+    - **[lever]** fold prediction averaging at inference  *(6 items, 6 kernels)*
+      - **[action_context]** When individual model predictions are of similar quality and you lack a reliable validation set to optimize weights.  *(6 items, 6 kernels)*
+        - **[action]** Apply a square-root (or other concave power < 1) transform to each model's sigmoid predictions before blending. Submit once to check for improvement. If the gain is small, be aware it may not survive when the ensemble pipeline changes (e.g., adding folds), so re-test after major pipeline changes.  *(6 items, 6 kernels)*
+          - items: `75584724:e6#1`, `18837555:e4#2`, `7573212:e2#2`, `49576186:e18#3`, `52200959:e8#2`, `15164527:e2#1`
+    - **[lever]** bug diagnosis before reverting  *(6 items, 4 kernels)*
+      - **[action_context]** When a removal + tweak causes regression relative to the combined ensemble.  *(6 items, 4 kernels)*
+        - **[action]** Do not revert on a small regression from adding ensemble members. Instead, swap the newly added members for alternatives (different model family or target) and reweight. Only revert if two consecutive substitution attempts also regress.  *(6 items, 4 kernels)*
+          - items: `17616127:e17#2`, `17616127:e23#1`, `73671444:e10#2`, `53424936:e5#1`, `50496431:e33#3`, `50496431:e46#3`
+    - **[lever]** new model/feature probing via leaderboard submission  *(5 items, 4 kernels)*
+      - **[action_context]** When the number of variants is small (≤5) and each submission is cheap, and you plan to use LB scores as ensemble weights.  *(5 items, 4 kernels)*
+        - **[action]** Start from the current best subset. Add one candidate member at a time and submit. If the score improves, keep it in the ensemble. Then try removing each existing member one at a time. Because LB noise is significant, resubmit the same config 2–3 times to distinguish signal from noise before conclud  *(5 items, 4 kernels)*
+          - items: `52200959:e4#1`, `15164527:e7#1`, `50496431:e55#1`, `50376011:e29#2`, `50376011:e34#1`
+    - **[lever]** multi-model stacking across modalities  *(5 items, 5 kernels)*
+      - **[action_context]** When multiple external models are available and the main pipeline is already strong.  *(4 items, 4 kernels)*
+        - **[action]** Try different external models one at a time (swap, don't accumulate). Start with a low weight for the external model (e.g., 0.2) rather than 50/50, since your pipeline is already optimized. If the first external model regresses, try a different one before concluding blending is unhelpful. Adjust reg  *(4 items, 4 kernels)*
+          - items: `17616127:e26#1`, `49524919:e14#1`, `52551258:e11#1`, `55591012:e10#2`
+      - **[action_context]** When the ensemble is GBDT-dominated and the metric rewards both accuracy and fairness across subgroups.  *(1 items, 1 kernels)*
+        - **[action]** Add one new model family per iteration (e.g., survival transforms, then neural Cox model, then deep tabular model). Submit after each addition to confirm monotonic improvement. If each addition improves the score, continue adding; once gains plateau or regress, switch to ensemble weight tuning.  *(1 items, 1 kernels)*
+          - items: `75145694:e2#1`
+    - **[lever]** CV fold count tuning  *(4 items, 4 kernels)*
+      - **[action_context]** When the dataset is small (~6K rows) and the model is simple (Ridge on BoW), so each fold's training set size matters more than ensemble diversity.  *(3 items, 3 kernels)*
+        - **[action]** Try a small number of folds (3-5) to maximize per-fold training set size when the model is simple and data is limited. Compare against higher fold counts (10-20). With simple models on small data, fewer folds often win because the training set size gain outweighs ensemble diversity loss.  *(3 items, 3 kernels)*
+          - items: `7676170:e6#3`, `75584724:e3#1`, `7573212:e4#1`
+      - **[action_context]** When the model architecture and hyperparameters are stable and the main remaining gain is from better averaging/blending.  *(1 items, 1 kernels)*
+        - **[action]** Before changing the model, try expanding the number of cross-validation folds used in the ensemble. Switch from inference mode back to training mode, produce additional fold models, then re-ensemble. Only submit after all new folds are trained and blended together.  *(1 items, 1 kernels)*
+          - items: `7613444:e6#2`
+    - **[lever]** Test-time augmentation and ensemble weighting  *(4 items, 4 kernels)*
+      - **[action_context]** When one data augmentation approach has been given multiple attempts and consistently underperforms  *(3 items, 3 kernels)*
+        - **[action]** First test each stage individually to establish baselines. Then try equal-weight averaging of stages. If a single later stage consistently beats the ensemble, prefer it—averaging can dilute a well-calibrated later stage with a noisier earlier one. Confirm by submitting both configurations.  *(3 items, 3 kernels)*
+          - items: `17616127:e13#1`, `53424936:e8#2`, `49576186:e27#2`
+      - **[action_context]** The model inputs have spatial structure (left/right hemisphere channels) that admits meaningful geometric flips.  *(1 items, 1 kernels)*
+        - **[action]** Probe TTA as a single experiment: implement spatial flips of the input, average predictions across original and augmented versions alongside the model ensemble, and submit. If the score regresses, abandon TTA rather than tuning it—the overhead of averaging over augmentations is only justified if the  *(1 items, 1 kernels)*
+          - items: `52551258:e7#1`
+    - **[lever]** inference pipeline architecture and model composition  *(4 items, 4 kernels)*
+      - **[action_context]** When a shared feature-generation function serves multiple model types and at least one model family cannot handle NaN (e.g., sklearn RF).  *(2 items, 2 kernels)*
+        - **[action]** First remove the heavy model and scaffold the new pipeline structure with data loading and feature engineering (one commit). Then add each new model type incrementally, verifying each runs before enabling the next. Finally re-enable all models in the ensemble list only after each component is indivi  *(2 items, 2 kernels)*
+          - items: `75145694:e12#1`, `7548275:e2#1`
+      - **[action_context]** When the new pipeline is complex (custom model class, dataset, dataloader, tokenizer), there are many integration points that can fail.  *(1 items, 1 kernels)*
+        - **[action]** Scaffold the entire new inference pipeline in one large commit, then immediately test a submission using existing predictions (not the new pipeline) to confirm nothing else broke. Only after that baseline holds, enable the new pipeline's predictions incrementally. If the first submission regresses,   *(1 items, 1 kernels)*
+          - items: `17616127:e14#1`
+      - **[action_context]** When you have a complex ensemble/fusion model at a known score and want to test a simpler alternative.  *(1 items, 1 kernels)*
+        - **[action]** Disable the complex model and run the simple alternative as a probe submission. If the score regresses, immediately re-enable the complex model and submit to confirm recovery. Treat the probe as a one-step experiment: if it fails, revert and move to a different lever rather than iterating on the sim  *(1 items, 1 kernels)*
+          - items: `53424936:e11#1`
+    - **[lever]** target transformation diversity  *(4 items, 4 kernels)*
+      - **[action_context]** When a probe with fewer models regresses significantly and a partial blend only partially recovers.  *(2 items, 2 kernels)*
+        - **[action]** If removing most ensemble members causes a large regression and blending two variants of the same architecture only partially recovers, stop exploring that architecture pair in isolation. Return to the full diverse ensemble and incorporate the new model as an additional member rather than a replacem  *(2 items, 2 kernels)*
+          - items: `17616127:e32#2`, `52860091:e6#2`
+      - **[action_context]** When the ensemble infrastructure (weight search, OOF evaluation) is already built and adding a new target variant requires only registering it in configuration lists.  *(2 items, 2 kernels)*
+        - **[action]** Add a new target transformation to the existing list so all model families train an additional variant. Keep the rest of the pipeline fixed. Submit to check if the added diversity improves the ensemble. If a previously included transform underperforms, remove it simultaneously to keep the ensemble l  *(2 items, 2 kernels)*
+          - items: `75584724:e1#2`, `73937748:e17#1`
+    - **[lever]** feature selection / pruning  *(4 items, 4 kernels)*
+      - **[action_context]** When swapping pre-computed meta-learner checkpoints into an existing stacking pipeline where each swap is cheap (just changing file paths).  *(2 items, 2 kernels)*
+        - **[action]** When iterating on which data subset feeds a fine-tuning stage, test: (1) the broader set without class filtering, (2) filtering to high-confidence non-ambiguous classes, (3) the narrower deduplicated set. Submit each to leaderboard. If class-specific filtering hurts, prefer the unfiltered version. T  *(2 items, 2 kernels)*
+          - items: `17616127:e38#1`, `49576186:e15#2`
+      - **[action_context]** When a set of added features correlates with a score regression and you cannot easily identify which ones hurt via CV alone.  *(1 items, 1 kernels)*
+        - **[action]** Comment out a small subset of suspect features at a time and submit to measure impact. Start with features that have low expected signal (e.g., rare linguistic markers, binary indicators with low variance). If the score improves, keep them removed and try removing more. If it worsens, restore them.  *(1 items, 1 kernels)*
+          - items: `18757376:e6#1`
+      - **[action_context]** When two consecutive additions both degrade the leaderboard score relative to a known-good baseline.  *(1 items, 1 kernels)*
+        - **[action]** Reverse direction: instead of adding more components, aggressively prune recently-added models, features, and utility code. Remove the weakest ensemble members and heaviest feature extractors first. Replace removed complexity with lightweight dimensionality reduction (e.g., PCA/SVD on existing featu  *(1 items, 1 kernels)*
+          - items: `55987255:e16#1`
+    - **[lever]** single-variable isolation via sequential submissions  *(4 items, 4 kernels)*
+      - **[action_context]** When you have trained new model variants offline and want to verify ensemble-level improvement on the leaderboard.  *(3 items, 3 kernels)*
+        - **[action]** Before submitting any variant, compute CV scores for all candidates locally using the same fold structure as training. Record each score in a comparison table. Use CV to eliminate clearly inferior variants, then submit only the most promising ones or their ensemble. Do not trust that more complex in  *(2 items, 2 kernels)*
+          - items: `18550705:e1#2`, `52200959:e3#1`
+        - **[action]** Before concluding that a configuration change helped or hurt, re-run the exact same code 3-5 times to estimate the noise floor. If the variance across identical runs is comparable to the difference between configurations, the apparent improvement is not reliable. Only trust differences that exceed 2  *(1 items, 1 kernels)*
+          - items: `50376011:e40#1`
+      - **[action_context]** Two changes were bundled: a preprocessing crop and an ensemble member swap. The next submission reverted only the crop.  *(1 items, 1 kernels)*
+        - **[action]** When two changes are bundled in one submission and the result is ambiguous, revert exactly one of the two changes in the next submission. Compare the three scores to attribute the effect of each change independently.  *(1 items, 1 kernels)*
+          - items: `50496431:e27#2`
+    - **[lever]** component quality improvement  *(4 items, 4 kernels)*
+      - **[action_context]** When the ensemble contains components at different levels of optimization maturity.  *(4 items, 4 kernels)*
+        - **[action]** Prioritize improving the least-optimized component in the ensemble rather than further tuning already-strong ones. Clean up dead experimental code simultaneously to reduce cognitive overhead. After achieving a small positive gain, move on to ensemble-level improvements (weighting, normalization) rat  *(4 items, 4 kernels)*
+          - items: `18350823:e6#2`, `75584724:e3#2`, `75924487:e5#2`, `50496431:e39#2`
+    - **[lever]** experiment continuation decision  *(3 items, 3 kernels)*
+      - **[action_context]** When the new component's contribution is clearly negative after two submissions with different configurations, and the score gap to the best is large relative to incremental gains.  *(3 items, 3 kernels)*
+        - **[action]** Continue adding models one at a time as long as each submission shows a non-negative delta. The cost per attempt is low (just wiring + weight tuning), so even marginal gains are worth pursuing. Stop or switch strategy only when a new member causes a regression or no models remain.  *(3 items, 3 kernels)*
+          - items: `18523075:e6#2`, `28984551:e5#3`, `75145694:e17#3`
+    - **[lever]** model family change / new model integration  *(3 items, 3 kernels)*
+      - **[action_context]** When the new model family is high-risk (generative LLM for a regression/classification task) and the existing baseline is well-tuned.  *(2 items, 2 kernels)*
+        - **[action]** Stop reweighting and instead invest in building or training a structurally different model (different inductive bias). Train it offline, validate it independently, then add it to the ensemble. A single well-chosen new model family can break through a plateau that dozens of weight adjustments cannot.  *(2 items, 2 kernels)*
+          - items: `75145694:e20#2`, `55987255:e8#1`
+      - **[action_context]** When toggling ensemble members reveals unexpectedly poor performance from a component that should be strong.  *(1 items, 1 kernels)*
+        - **[action]** When a model that should be strong performs poorly in the ensemble, inspect its data pipeline for shape mismatches or preprocessing inconsistencies before continuing the weight search. Fix the bug, then re-run the best-known ensemble configuration to get a clean baseline before further tuning.  *(1 items, 1 kernels)*
+          - items: `50496431:e56#3`
+    - **[lever]** experiment scheduling and stopping  *(3 items, 3 kernels)*
+      - **[action_context]** When the project plan involves ensembling multiple model families and the first model already scores reasonably well.  *(3 items, 3 kernels)*
+        - **[action]** Spend at most one or two iterations making the primary model fast and competitive (e.g., adjusting learning rate to cut training time), then move on to adding diverse model families rather than deeply tuning one model. Return to fine-tuning only after the ensemble structure is in place.  *(3 items, 3 kernels)*
+          - items: `28984551:e1#2`, `17371717:e9#2`, `75145694:e2#3`
+    - **[lever]** inference infrastructure refactor  *(3 items, 3 kernels)*
+      - **[action_context]** When a model's contribution to the ensemble is inconsistent across submissions despite unchanged weights.  *(2 items, 2 kernels)*
+        - **[action]** Inspect the inference loop for conditional blocks (e.g., fold-specific guards) that may accidentally scope prediction calls. If model.predict is inside an 'if fold == 0' block, it only generates predictions for one fold, corrupting the ensemble. After fixing, submit to confirm a small positive delta  *(2 items, 2 kernels)*
+          - items: `75145694:e10#3`, `50376011:e38#1`
+      - **[action_context]** When a technique previously showed a regression and you are making other changes to the pipeline.  *(1 items, 1 kernels)*
+        - **[action]** When restructuring an ensemble (adding/removing members), simultaneously remove techniques that previously showed regressions. This reduces confounding variables and simplifies debugging. If the combined change improves, keep the simpler setup.  *(1 items, 1 kernels)*
+          - items: `52551258:e8#2`
+    - **[lever]** joint configuration sweep  *(3 items, 2 kernels)*
+      - **[action_context]** When you have 4+ interacting dimensions and limited submission budget  *(2 items, 2 kernels)*
+        - **[action]** Change one configuration at a time, submit, and compare to the established baseline. If a change regresses, revert it before trying the next option. If all options score below baseline after a full sweep, abandon the lever and move to a different one (e.g., different model architecture or checkpoint  *(2 items, 2 kernels)*
+          - items: `7018718:e4#1`, `58130512:e23#1`
+      - **[action_context]** When multiple settings are coupled (e.g., feature-selection file must correspond to the model ensemble generating embeddings), changing them independently gives misleading signal.  *(1 items, 1 kernels)*
+        - **[action]** When feature-selection artifacts depend on the model ensemble, always update them together in one submission. If a multi-lever change regresses, first revert the component most likely to hurt (e.g., loss constants) in isolation to diagnose which lever caused the regression. If after 3-4 joint attemp  *(1 items, 1 kernels)*
+          - items: `58130512:e37#1`
+    - **[lever]** ensemble size  *(3 items, 2 kernels)*
+      - **[action_context]** When ensemble members come from the same architecture trained on different folds, they are correlated; beyond 2-3 members, diversity gains diminish and noise or systematic bias from weaker folds can hurt.  *(3 items, 2 kernels)*
+        - **[action]** For same-architecture fold ensembles, start with 2-3 members rather than all folds. If the full set scores worse than a subset, systematically drop the weakest member (swap each out one at a time) rather than adding more. Prefer 3 members as a default for fold-based ensembles of a single architectur  *(3 items, 2 kernels)*
+          - items: `7573212:e4#2`, `50376011:e3#2`, `50376011:e30#2`
+    - **[lever]** checkpoint selection and pipeline simplification  *(3 items, 3 kernels)*
+      - **[action_context]** When an ensemble or blending wrapper has been added incrementally and scores are stagnant or inconsistent across submissions.  *(2 items, 2 kernels)*
+        - **[action]** Instead of tuning blend weights, fold the best checkpoints from the second group directly into the primary ensemble, removing the blending layer entirely. This reduces degrees of freedom and avoids suboptimal weight allocation. Test the simplified version before adding more complexity.  *(2 items, 2 kernels)*
+          - items: `6803050:e11#1`, `55987255:e12#1`
+      - **[action_context]** Dead code loading unavailable checkpoints adds confusion and potential errors. The author needs a clean single-model pipeline before iterating on which checkpoint to use.  *(1 items, 1 kernels)*
+        - **[action]** First remove all dead/commented ensemble loading code to isolate a single-model pipeline. Confirm it runs. Then swap checkpoint paths one at a time. Only after each individual checkpoint is verified should you re-add the ensemble loop. This avoids conflating path errors across multiple models.  *(1 items, 1 kernels)*
+          - items: `7606235:e1#2`
+    - **[lever]** checkpoint loading method  *(2 items, 2 kernels)*
+      - **[action_context]** When you need to mix checkpoints from multiple directories or exclude specific folds based on validation performance.  *(1 items, 1 kernels)*
+        - **[action]** Replace glob-based checkpoint discovery with a hard-coded list of file paths. Annotate each path with its fold index and validation score so that future edits can reason about which to keep or drop.  *(1 items, 1 kernels)*
+          - items: `18426209:e6#2`
+      - **[action_context]** When a newly added model causes a massive score regression and the checkpoint was loaded with strict=False  *(1 items, 1 kernels)*
+        - **[action]** Switch to strict=True loading to surface weight mismatches immediately. Then align the model architecture config (layer sizes, input dimensions) to exactly match the checkpoint that was trained. A catastrophic regression from adding one ensemble member almost always means that member outputs garbage  *(1 items, 1 kernels)*
+          - items: `50496431:e20#1`
+    - **[lever]** full pipeline re-activation and ensemble consolidation  *(2 items, 2 kernels)*
+      - **[action_context]** When a new component has been debugged to the point where individual fold/model outputs look correct (no crashes, reasonable single-model scores), but the overall score is low because the ensemble is disabled.  *(2 items, 2 kernels)*
+        - **[action]** After sweeping individual model groups and finding none matches the ensemble best, re-enable all groups and submit the full blend. Expect the blend to exceed the prior best if you improved individual components during the sweep (e.g., better checkpoints).  *(2 items, 2 kernels)*
+          - items: `49524919:e33#3`, `15164527:e10#1`
+    - **[lever]** single-backbone ablation probe  *(2 items, 2 kernels)*
+      - **[action_context]** When a new backbone's standalone quality is unknown and the existing ensemble is complex.  *(2 items, 2 kernels)*
+        - **[action]** Submit one version with a meaningfully larger weight for the candidate model. If the score improves, proceed to invest in improving that model's quality. If it degrades, deprioritize the model. Limit the probe to one or two submissions to conserve budget.  *(2 items, 2 kernels)*
+          - items: `17616127:e24#1`, `77450317:e1#2`
+    - **[lever]** confidence-based postprocessing using auxiliary classifier  *(2 items, 2 kernels)*
+      - **[action_context]** When you have a binned/discretized auxiliary model alongside a regression ensemble  *(1 items, 1 kernels)*
+        - **[action]** Use softmax outputs from the bin classifier to identify high-confidence disagreements with the regression ensemble, then nudge predictions toward the bin average. Start with a strict confidence threshold (e.g., 0.85) and relax it if too few corrections are made. Validate locally before submitting.  *(1 items, 1 kernels)*
+          - items: `17616127:e31#2`
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** When adding a new model that produces both continuous and binary predictions to an ensemble with post-processing rules gated by model-name checks, always verify that the new model's name is included in every relevant conditional branch (e.g., binary prediction accumulation, sign inversion, special o  *(1 items, 1 kernels)*
+          - items: `75145694:e16#2`
+    - **[lever]** staged two-step integration (weights then inference code)  *(2 items, 2 kernels)*
+      - **[action_context]** When adding a model requires both pipeline code changes and weight adjustments, and you want to minimize debugging risk.  *(1 items, 1 kernels)*
+        - **[action]** Split the integration into two commits: first add the model to the weight/config dictionary and adjust surrounding weights (validate locally, do not submit). Second, implement the inference code path and submit. This isolates weight-tuning errors from inference bugs and lets you verify each independ  *(1 items, 1 kernels)*
+          - items: `75145694:e18#2`
+      - **[action_context]** GPU memory is limited and models are large, so all checkpoints cannot be loaded simultaneously.  *(1 items, 1 kernels)*
+        - **[action]** For each checkpoint: restore config, load weights, run prediction, save outputs, then explicitly free GPU memory (gc.collect + torch.cuda.empty_cache) before loading the next model. Accumulate predictions in CPU memory and average after all models have run. This avoids OOM while enabling arbitrary e  *(1 items, 1 kernels)*
+          - items: `50376011:e2#2`
+    - **[lever]** running the same model architecture with and without feature engineering  *(2 items, 2 kernels)*
+      - **[action_context]** When a model architecture accepts raw features and also benefits from engineered features, and both variants can be produced cheaply  *(1 items, 1 kernels)*
+        - **[action]** Run the model twice—once on raw features and once on engineered features—and include both sets of OOF/test predictions as separate members in the stacking ensemble. Ensure determinism (fixed seeds in transforms) so OOF predictions are reproducible. Use a linear stacker (Ridge) to let the meta-learne  *(1 items, 1 kernels)*
+          - items: `73937748:e21#2`
+      - **[action_context]** When using pretrained checkpoints at inference time and considering changes to the feature extraction pipeline.  *(1 items, 1 kernels)*
+        - **[action]** Never change spectrogram parameters (hop_length, normalization, frequency range) or model architecture variant at inference unless you have a matching retrained checkpoint. If you must experiment, change only one parameter per submission. If a regression occurs after changing preprocessing, revert p  *(1 items, 1 kernels)*
+          - items: `50496431:e36#2`
+    - **[lever]** experiment/backbone configuration swap  *(2 items, 2 kernels)*
+      - **[action_context]** When you have a mature inference pipeline and pre-trained checkpoints for an alternative architecture available.  *(1 items, 1 kernels)*
+        - **[action]** Keep the entire inference and ensembling pipeline identical and change only the model config flag. Submit the single-architecture result first to get its standalone score. If the gain is marginal or comparable, treat the new architecture as an ensemble component rather than a replacement, and next t  *(1 items, 1 kernels)*
+          - items: `52860091:e4#1`
+      - **[action_context]** When changing a component that interacts with ensemble composition, a single submission conflates two effects.  *(1 items, 1 kernels)*
+        - **[action]** When modifying one model in an ensemble, first make the change without submitting, then test with the full intended ensemble composition in a single submission. If the score regresses, toggle ensemble members back before concluding the component change failed. Attribute regressions to composition be  *(1 items, 1 kernels)*
+          - items: `50496431:e24#1`
+    - **[lever]** weight search bounds and normalization  *(1 items, 1 kernels)*
+      - **[action_context]** When a weighted blend with positive normalized weights underperforms a Ridge meta-learner that can assign negative/unnormalized coefficients.  *(1 items, 1 kernels)*
+        - **[action]** Expand the Optuna weight search range to include negative values (e.g., [-1, 1]) and remove the sum-to-one normalization constraint. This makes the weighted blend more expressive, approaching what a linear meta-learner can do. If this still underperforms Ridge, the meta-learner's regularization is l  *(1 items, 1 kernels)*
+          - items: `73937748:e16#2`
+    - **[lever]** model formulation (regressor vs classifier)  *(1 items, 1 kernels)*
+      - **[action_context]** When the target is binary and the evaluation metric rewards probability ranking or calibrated probabilities.  *(1 items, 1 kernels)*
+        - **[action]** Start with a classifier formulation rather than a regressor when the task is binary classification. If you try a regressor first and see worse leaderboard performance than expected, switch to the classifier variant and use predict_proba outputs. The classifier's probability outputs integrate more na  *(1 items, 1 kernels)*
+          - items: `28984551:e5#1`
+    - **[lever]** switching to a different improvement axis  *(1 items, 1 kernels)*
+      - **[action_context]** When ensembling gains become negligible (less than 1/10th of the previous step's gain), the ensembling lever is likely exhausted.  *(1 items, 1 kernels)*
+        - **[action]** When adding more seeds or folds to an ensemble yields diminishing returns (gain drops below ~10% of the previous improvement), stop ensembling and switch to a fundamentally different lever such as input representation, architecture change, or data augmentation.  *(1 items, 1 kernels)*
+          - items: `17371717:e9#3`
+    - **[lever]** ensemble repeat count  *(1 items, 1 kernels)*
+      - **[action_context]** The current value (5) was inherited from earlier tuning; the pipeline has changed substantially since then.  *(1 items, 1 kernels)*
+        - **[action]** Test one step above and one step below the current repeat count. If both are worse (on LB or validation), keep the current value and stop. Do not submit runs that validation already shows are inferior. This brackets the optimum in 2-3 runs.  *(1 items, 1 kernels)*
+          - items: `77129691:e13#1`
+    - **[lever]** Offline training with pretrained model loading  *(1 items, 1 kernels)*
+      - **[action_context]** When the model training exceeds the submission notebook's compute budget but inference is fast.  *(1 items, 1 kernels)*
+        - **[action]** Train the expensive model in a separate notebook, save the fitted predictor to a Kaggle dataset. In the submission notebook, install dependencies, load the predictor, run inference only, and feed predictions into the existing blend. This separates training cost from submission cost and allows iterat  *(1 items, 1 kernels)*
+          - items: `73937748:e9#2`
+    - **[lever]** Engineering rigor of the strongest component  *(1 items, 1 kernels)*
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** When ensemble score improvements from adding models or tuning blending have plateaued, invest in engineering rigor of the single most impactful component—proper cross-validation, deterministic saving/loading, and consistent train/test pipelines. Small implementation fixes in the best component often  *(1 items, 1 kernels)*
+          - items: `73937748:e22#2`
+    - **[lever]** scoring infrastructure acceleration  *(1 items, 1 kernels)*
+      - **[action_context]** When the scoring function is called O(n_trials × n_folds × n_groups) times and is pure Python / library overhead, and the computation is pairwise-comparison based (concordance).  *(1 items, 1 kernels)*
+        - **[action]** Replace the Python-level scoring function with a numba-JIT compiled equivalent. Accept a tiny score regression if the numerical output is equivalent (differences come from other refactoring). Verify the score is in the same ballpark, then keep the faster version and move on to model/ensemble improve  *(1 items, 1 kernels)*
+          - items: `73937748:e23#1`
+    - **[lever]** diagnostic single-model evaluation  *(1 items, 1 kernels)*
+      - **[action_context]** When you have added new checkpoints that haven't been individually validated and want to confirm they aren't hurting the blend.  *(1 items, 1 kernels)*
+        - **[action]** Briefly test a new checkpoint in isolation to get its standalone score. If it scores reasonably (within ~1.5x of the ensemble score), include it in the blend. Do not keep the single-model configuration — always return to the full ensemble afterward. Expect the single-model score to be substantially   *(1 items, 1 kernels)*
+          - items: `50376011:e39#2`
+    - **[lever]** submission strategy under noisy evaluation  *(1 items, 1 kernels)*
+      - **[action_context]** When the evaluation metric has high variance across identical runs due to test-time augmentation or random preprocessing.  *(1 items, 1 kernels)*
+        - **[action]** When gains between versions are smaller than the observed run-to-run variance (here ~0.005), treat marginal improvements cautiously. Make structural changes (like switching from uniform to optimized weights) that yield gains larger than the noise floor, rather than fine-tuning individual model inclu  *(1 items, 1 kernels)*
+          - items: `50376011:e43#2`
+    - **[lever]** Sequential single-variable changes with LB feedback  *(1 items, 1 kernels)*
+      - **[action_context]** When each experiment is costly and you have multiple knobs (model choice, training variant, blend weight) to tune simultaneously.  *(1 items, 1 kernels)*
+        - **[action]** Change exactly one variable per submission: first swap the model, confirm improvement, then upgrade the training recipe (e.g., pseudo-labeling), confirm again, then adjust blend weights. If every step improves, keep pushing in the same direction. If a step regresses, revert it immediately. This isol  *(1 items, 1 kernels)*
+          - items: `52860091:e7#2`
+    - **[lever]** Handcrafted text features for the GBDT component  *(1 items, 1 kernels)*
+      - **[action_context]** When the essay task has structural elements (intro, body, conclusion) and the current features are mostly surface-level (word counts, TF-IDF), splitting essays into structural parts and computing per-part statistics adds orthogonal signal.  *(1 items, 1 kernels)*
+        - **[action]** Split each document into structural segments (e.g., introduction, body, conclusion by paragraph position), compute the same feature set on each segment independently, and add segment-level aggregations (mean, std, min, max) as new features. Also add stopword-removal variants of existing text statist  *(1 items, 1 kernels)*
+          - items: `59253662:e3#1`
+    - **[lever]** weight adjustment magnitude and direction  *(1 items, 1 kernels)*
+      - **[action_context]** When a weight change of ~0.10-0.20 causes a regression in a rank-based ensemble.  *(1 items, 1 kernels)*
+        - **[action]** Partially revert the change rather than fully reverting: split the difference between the failed configuration and the previous best. Then probe nearby configurations with smaller steps (~0.05). Favor keeping the strongest individual model's weight high and distribute remaining weight among others.  *(1 items, 1 kernels)*
+          - items: `15164527:e6#2`
+  - **[lever_context]** Author made multiple code changes (v22, v23, v26) without submitting, reserving submissions for configurations they were more confident about (v21, v24, v25, v27).  *(4 items, 4 kernels)*
+    - **[lever]** external model version selection and blend coefficient co-tuning  *(1 items, 1 kernels)*
+      - **[action_context]** When upgrading from one external model version to a nearby one (e.g., inc10→inc15), the existing blend coefficients may still be near-optimal.  *(1 items, 1 kernels)*
+        - **[action]** When swapping to a substantially different model version, retune blend coefficients jointly. When upgrading to a nearby incremental version, try keeping blend coefficients fixed first—if the score improves, the coefficients are still adequate. Only retune if the score doesn't improve.  *(1 items, 1 kernels)*
+          - items: `77450317:e11#3`
+    - **[lever]** submission budget management  *(1 items, 1 kernels)*
+      - **[action_context]** When the public leaderboard is noisy (few rows) and daily submissions are limited.  *(1 items, 1 kernels)*
+        - **[action]** Batch multiple incremental changes (weight adjustments, architecture swaps) without submitting, then submit only when the configuration represents a qualitatively different hypothesis. Use non-submitted versions to set up code structure and prepare the next meaningful experiment. This preserves subm  *(1 items, 1 kernels)*
+          - items: `17616127:e7#3`
+    - **[lever]** incremental fix-then-submit workflow  *(1 items, 1 kernels)*
+      - **[action_context]** When changing ensemble composition involves toggling multiple code paths (continue statements, column assignments, checkpoint lists) that are error-prone.  *(1 items, 1 kernels)*
+        - **[action]** After making a compositional change to an ensemble, verify the submission column assignment matches the intended prediction source before submitting. When a version is not submitted due to a bug, make the minimal fix in the next version and submit immediately rather than combining the fix with addit  *(1 items, 1 kernels)*
+          - items: `49524919:e28#3`
+    - **[lever]** inline score annotation  *(1 items, 1 kernels)*
+      - **[action_context]** When iterating rapidly on ensemble composition with leaderboard feedback.  *(1 items, 1 kernels)*
+        - **[action]** Add comments next to each ensemble member's code line recording its associated LB score and version number. This creates a local log that survives across versions and helps decide which members to keep or drop without consulting external records.  *(1 items, 1 kernels)*
+          - items: `50496431:e22#3`
+  - **[lever_context]** Horizontal-flip TTA is a near-universal improvement for medical imaging classification that costs only 2× inference time and requires no retraining. The model uses spatial attention modules, making it likely to benefit from geometric TTA.  *(3 items, 2 kernels)*
+    - **[lever]** test-time augmentation (horizontal flip)  *(3 items, 2 kernels)*
+      - **[action_context]** When the base images have approximate horizontal symmetry (e.g., chest X-rays) and the model was trained with horizontal flip augmentation.  *(3 items, 2 kernels)*
+        - **[action]** Add horizontal-flip TTA by running a second forward pass on x.flip(-1), apply sigmoid to both outputs independently, then average. This is the minimal TTA to try first; verify it helps before adding more augmentations. If memory is tight, reduce batch size or remove TTA later.  *(3 items, 2 kernels)*
+          - items: `15372370:e1#2`, `15372370:e4#2`, `50496431:e2#1`
+  - **[lever_context]** The ensemble has two model families and the author wants to know if both are needed or if a newer/better single family suffices.  *(1 items, 1 kernels)*
+    - **[lever]** ablation testing via submission  *(1 items, 1 kernels)*
+      - **[action_context]** When you have a multi-component system and a new variant that might replace an existing component.  *(1 items, 1 kernels)*
+        - **[action]** Test removing a component (or replacing the ensemble with a single variant) by submitting the ablated version. If the score regresses, restore the removed component. Then try expanding the surviving components' pool. This takes one extra submission but gives a definitive signal about component value  *(1 items, 1 kernels)*
+          - items: `52551258:e6#2`
+  - **[lever_context]** The competition training set mixes Persuade corpus data (different distribution) with non-Persuade data that matches the test set. A model trained on 'cleaned' (filtered/reweighted) data may generalize better to the test distribution.  *(1 items, 1 kernels)*
+    - **[lever]** checkpoint selection based on training data cleaning  *(1 items, 1 kernels)*
+      - **[action_context]** When you have both variants already trained and the ensemble infrastructure supports hot-swapping one member.  *(1 items, 1 kernels)*
+        - **[action]** Swap the noisy-data checkpoint for the clean-data checkpoint in the ensemble, keeping all other members fixed. Submit and compare LB scores. If the clean variant wins, keep it; if not, revert. Only change one member at a time to isolate the effect.  *(1 items, 1 kernels)*
+          - items: `60264017:e1#1`
+- **[goal]** What do I do when an experimental change causes a large score regression?  *(154 items, 50 kernels)*
+  - **[lever_context]** v106 added multiple changes (new model, visualization, preprocessing rename) and score regressed from 0.248 to 0.324. The regression magnitude suggests a bug rather than a fundamentally bad idea, since the new model's CV scores in checkpoint filenames (~0.24-0.26) are competitive.  *(153 items, 50 kernels)*
+    - **[lever]** revert and isolate changes  *(53 items, 27 kernels)*
+      - **[action_context]** When a single change causes a score regression of more than ~10-15% relative to the previous best, and the change involved multiple coupled modifications.  *(51 items, 26 kernels)*
+        - **[action]** When a sequence of small changes has caused cumulative regression, identify all changes made since the last best score, revert the ones most likely responsible (especially architecture changes that caused the largest single regression), and simultaneously re-optimize the remaining parameters. Bundle  *(51 items, 26 kernels)*
+          - items: `27389424:e9#1`, `28093671:e9#1`, `77129691:e11#1`, `73937748:e11#2`, `7823861:e7#1`, `7606235:e3#2`, `49576186:e24#2`, `60264017:e4#2`, `60197293:e18#2`, `55987255:e24#2`, `15372370:e5#1`, `15173072:e5#2`, `13577502:e3#2`, `7676170:e3#3`, `27799930:e8#2`, `28093671:e10#2`, `17616127:e39#1`, `18423958:e3#1`, `18423958:e6#2`, `77129691:e2#2`, `73937748:e15#2`, `73937748:e18#2`, `73937748:e23#2`, `7823861:e3#1`, `7018718:e13#3`, `50376011:e13#2`, `49524919:e17#2`, `49524919:e25#1`, `49576186:e2#3`, `49576186:e9#2`, `49576186:e10#1`, `49576186:e12#1`, `49576186:e17#2`, `53762022:e6#1`, `59253662:e9#1`, `58130512:e13#1`, `58130512:e16#1`, `58130512:e26#1`, `60197293:e19#2`, `55591012:e8#1`, `13848868:e4#1`, `50496431:e14#1`, `50496431:e16#1`, `50496431:e27#1`, `50496431:e29#1`, `50496431:e34#2`, `50496431:e35#1`, `50496431:e36#3`, `50496431:e50#1`, `50496431:e52#3`, `50496431:e53#1`
+      - **[action_context]** When a model replacement breaks the pipeline but the new model architecture has merit  *(2 items, 2 kernels)*
+        - **[action]** Revert the broken in-place swap to restore the working baseline. Then add the new model as a separate ensemble member with its own properly matched checkpoints and config, so the working pipeline is never disrupted. Validate the combined ensemble before submitting.  *(2 items, 2 kernels)*
+          - items: `18426209:e3#1`, `49524919:e8#1`
+    - **[lever]** experiment prioritization  *(14 items, 10 kernels)*
+      - **[action_context]** When a single-parameter change causes a regression much larger than recent gains, and there is a closely related alternative parameter to try.  *(12 items, 10 kernels)*
+        - **[action]** If a refinement causes a regression several times larger than recent incremental gains, do not continue iterating on that lever. Revert to the best configuration and pivot to a qualitatively different lever (e.g., new input modality, architecture change) rather than making smaller adjustments to the  *(11 items, 9 kernels)*
+          - items: `27836972:e9#2`, `73671444:e5#2`, `27836972:e6#2`, `28093671:e11#2`, `49576186:e16#3`, `49576186:e22#2`, `52551258:e4#2`, `58130512:e9#2`, `55591012:e3#2`, `13521245:e3#2`, `50496431:e19#1`
+        - **[action]** Bundle multiple small changes across several unsubmitted versions, using local validation to filter. Only submit when the accumulated changes show a clear validation improvement over the last submitted best. This conserves submission budget and avoids noisy leaderboard signal from individual micro-c  *(1 items, 1 kernels)*
+          - items: `27799930:e7#2`
+      - **[action_context]** When a lever's full range of plausible settings produces score variation smaller than leaderboard noise.  *(1 items, 1 kernels)*
+        - **[action]** Stop working the current lever after exhausting its natural variants if the score range is negligible. Pivot to a qualitatively different lever (different model family, different feature set) that has higher potential variance in outcomes.  *(1 items, 1 kernels)*
+          - items: `73671444:e1#2`
+      - **[action_context]** When a removal ablation causes a clear regression, the removed component is valuable.  *(1 items, 1 kernels)*
+        - **[action]** Accept the negative result, do not continue pruning along the same axis, and pivot to a different improvement lever (e.g., adding a new model type or stacking method) rather than trying further removals from the same ensemble.  *(1 items, 1 kernels)*
+          - items: `58130512:e17#2`
+    - **[lever]** debugging before submitting  *(8 items, 7 kernels)*
+      - **[action_context]** When a score drops dramatically after a change that should be neutral or mildly positive (e.g., sorting for efficiency), suspect a data alignment bug rather than a modeling problem.  *(7 items, 6 kernels)*
+        - **[action]** When a large change regresses, inspect whether all intended model loops actually execute and whether the submission uses the intended blended columns. Add debug prints and display intermediate predictions. Fix stray continue statements and column name mismatches before concluding the new models are   *(7 items, 6 kernels)*
+          - items: `7670859:e7#2`, `6803050:e2#2`, `6803050:e3#1`, `49524919:e26#2`, `52200959:e7#2`, `55621328:e26#1`, `50496431:e12#2`
+      - **[action_context]** When a new blending step is added but the variable wiring may be incorrect.  *(1 items, 1 kernels)*
+        - **[action]** Before submitting a complex ensemble change, add print statements to inspect intermediate prediction arrays. If two supposedly different ensemblers produce identical outputs, check that each uses its own model files. Fix the bug and only then submit.  *(1 items, 1 kernels)*
+          - items: `17616127:e28#3`
+    - **[lever]** inference pipeline debugging  *(7 items, 7 kernels)*
+      - **[action_context]** When the score is near random despite a strong checkpoint, the bug is in how predictions reach the submission file, not in model quality.  *(4 items, 4 kernels)*
+        - **[action]** When the leaderboard score does not respond to any modeling change across multiple attempts, stop tuning the model. Instead, add assertions or guards at each pipeline stage (data reading, prediction shape, submission writing) to verify data flows correctly end-to-end. Fix the earliest broken stage b  *(4 items, 4 kernels)*
+          - items: `15173072:e2#1`, `7823861:e2#1`, `6803050:e5#1`, `55621328:e41#2`
+      - **[action_context]** When a refactor regresses because it mixed structural changes with a backbone swap that wasn't fully integrated  *(2 items, 2 kernels)*
+        - **[action]** Rather than reverting, isolate the backbone swap as the primary change: clean up the old code that was half-commented, fully commit to the new checkpoints, and revise preprocessing to match the new model's expectations. Submit to verify the new backbone alone recovers and exceeds the previous best.  *(2 items, 2 kernels)*
+          - items: `7670859:e6#2`, `53424936:e6#1`
+      - **[action_context]** When external inference scripts are called but may fail silently (no output files or corrupt files), and you cannot easily debug them in the submission environment.  *(1 items, 1 kernels)*
+        - **[action]** Add a try/except block that attempts to read each model's expected output files. On failure, fall back to precomputed valid predictions stored in a separate input dataset. This ensures the submission always contains reasonable predictions even if some inference steps fail. Diagnose which components   *(1 items, 1 kernels)*
+          - items: `7548275:e4#1`
+    - **[lever]** ensemble composition  *(6 items, 5 kernels)*
+      - **[action_context]** When multiple changes are bundled and the score regresses significantly  *(6 items, 5 kernels)*
+        - **[action]** Revert the structural change by restoring the original ensemble members. Then make only a single minimal component swap in the blend formula and submit. Do not attempt to debug the failed approach further if the original pipeline is available and working.  *(5 items, 5 kernels)*
+          - items: `17616127:e34#1`, `77129691:e14#1`, `77276039:e6#1`, `58130512:e36#1`, `50496431:e41#1`
+        - **[action]** Do not discard the probed backbone. Instead, add its predictions as an additional input to the existing weighted blend. Assign it a minority weight initially and tune from there. On small noisy datasets, diversity across backbones (RoBERTa, ALBERT, DeBERTa) consistently outperforms any single backbo  *(1 items, 1 kernels)*
+          - items: `17616127:e24#2`
+    - **[lever]** experimental isolation of factors  *(5 items, 4 kernels)*
+      - **[action_context]** When a multi-factor change causes regression and you suspect one specific factor (e.g., checkpoint compatibility) rather than the core technique.  *(5 items, 4 kernels)*
+        - **[action]** Instead of reverting all changes, identify the most likely infrastructure-level cause of regression (e.g., batch size, data loading, dtype) and fix only that. If the score recovers or improves, the modeling changes were beneficial. This avoids discarding good ideas bundled with a bug.  *(5 items, 4 kernels)*
+          - items: `15372370:e3#2`, `17371717:e8#1`, `77129691:e4#1`, `50496431:e32#1`, `50496431:e54#1`
+    - **[lever]** experiment rollback decision  *(4 items, 4 kernels)*
+      - **[action_context]** When multiple parameters were changed at once and the score regressed.  *(4 items, 4 kernels)*
+        - **[action]** Revert most of the changes back toward the previous best configuration while keeping one or two modifications you believe are promising. Submit to check recovery. If score partially recovers, continue adjusting the remaining changed parameters individually or in small groups.  *(4 items, 4 kernels)*
+          - items: `60759531:e3#1`, `13521245:e4#3`, `49576186:e8#1`, `60197293:e15#1`
+    - **[lever]** pipeline simplification / consolidation  *(4 items, 4 kernels)*
+      - **[action_context]** When multiple untested changes have accumulated and the score has regressed from a known-good baseline.  *(4 items, 4 kernels)*
+        - **[action]** Strip out the most suspect additions in one batch (especially newly added model components and complex caching), while simultaneously adding theoretically motivated improvements (metric-aligned objective, stratified CV). Submit once to check if the simplified pipeline recovers. If partial recovery,   *(4 items, 4 kernels)*
+          - items: `27836972:e3#1`, `73671444:e3#1`, `55431616:e3#1`, `58130512:e32#1`
+    - **[lever]** re-submission of identical code  *(4 items, 2 kernels)*
+      - **[action_context]** When a refactoring changes where computation happens but should be logically equivalent.  *(2 items, 2 kernels)*
+        - **[action]** After editing string literals or function arguments, visually verify syntax (matching quotes, parentheses) before committing a submission. If you notice a bug, fix it in the same version or the next without wasting a submission. Do not submit code you haven't verified runs cleanly.  *(2 items, 2 kernels)*
+          - items: `77276039:e6#2`, `50496431:e6#2`
+      - **[action_context]** When a Kaggle inference notebook produces an unexpectedly poor score and you suspect a runtime issue rather than a code bug.  *(2 items, 1 kernels)*
+        - **[action]** Re-run and resubmit identical code 1-2 times to measure submission variance. If scores vary by more than ~0.01, treat the leaderboard signal as noisy and do not over-interpret small differences. If scores are consistently worse than baseline, inspect which ensemble components are actually running.  *(2 items, 1 kernels)*
+          - items: `50496431:e10#2`, `50496431:e14#2`
+    - **[lever]** ablation of ensemble components  *(3 items, 3 kernels)*
+      - **[action_context]** When multiple changes were made simultaneously (new features, new targets, new ensemble member) and the score regressed.  *(3 items, 3 kernels)*
+        - **[action]** Before reverting entirely, try removing the suspected weak component while keeping the new addition. If this second variant also regresses, accept that the original configuration was better and stop. Do not spend more than one additional submission on the ablation.  *(3 items, 3 kernels)*
+          - items: `77276039:e4#2`, `18851026:e9#2`, `6803050:e15#1`
+    - **[lever]** ensemble aggregation strategy  *(3 items, 3 kernels)*
+      - **[action_context]** When a complex preprocessing pipeline (one-hot encoding, scaling all features) yields a weak score on tabular GBDT tasks.  *(2 items, 2 kernels)*
+        - **[action]** Inspect feature importances from the existing model, select a small curated feature subset, replace complex encoding with simpler imputation and aggregation (e.g., median fill + groupby mean), retrain from scratch, and submit only after the full pipeline runs end-to-end. Expect large gains from simp  *(1 items, 1 kernels)*
+          - items: `28093671:e6#1`
+        - **[action]** Keep inverse-score or quality-based weighting rather than switching to uniform averaging. If you want to simplify, first verify that all remaining members have similar standalone quality before switching to equal weights. Changing both the member set and the weighting scheme simultaneously confounds  *(1 items, 1 kernels)*
+          - items: `50496431:e37#3`
+      - **[action_context]** When multiple checkpoints come from the same architecture trained on different CV folds, and ad-hoc weighting regresses.  *(1 items, 1 kernels)*
+        - **[action]** Replace ad-hoc multi-model blending with simple equal-weight averaging across all K folds. Load one model per fold, predict independently, and average. This is more principled than cherry-picking subsets of folds with manual weights, and scales naturally to all folds.  *(1 items, 1 kernels)*
+          - items: `15372370:e4#1`
+    - **[lever]** checkpoint/model variant swap  *(2 items, 2 kernels)*
+      - **[action_context]** When the current model variant regresses and hyperparameter tuning within that variant seems unlikely to recover the gap.  *(2 items, 2 kernels)*
+        - **[action]** Try a different model family (e.g., CatBoost vs LightGBM) with comparable regularization settings. If the alternative partially recovers but doesn't beat the original baseline, revert to the original family with a small hyperparameter adjustment. If neither recovers the baseline after 2-3 attempts,   *(2 items, 2 kernels)*
+          - items: `28984551:e3#1`, `55621328:e37#1`
+    - **[lever]** re-run confirmation  *(2 items, 2 kernels)*
+      - **[action_context]** When the improvement from a change is smaller than expected run-to-run variance and the pipeline includes stochastic components (e.g., AutoGluon ensembling, neural networks).  *(1 items, 1 kernels)*
+        - **[action]** Re-submit the identical code without changes. If the second run also shows improvement (or a larger one), accept the change as beneficial. If it regresses, treat the original gain as noise and consider reverting.  *(1 items, 1 kernels)*
+          - items: `75924487:e1#2`
+      - **[action_context]** When a notebook-based submission pipeline involves shell commands, checkpoint loading, and file renaming, silent failures (missing files, wrong configs) can produce bad submissions without obvious errors.  *(1 items, 1 kernels)*
+        - **[action]** After any regression, before changing your modeling approach, re-run the exact same configuration at least once and inspect all intermediate outputs (file existence, shapes, values). Only after confirming the pipeline executed correctly should you interpret the LB score as a signal about model quali  *(1 items, 1 kernels)*
+          - items: `52860091:e8#3`
+    - **[lever]** submission budget management  *(2 items, 2 kernels)*
+      - **[action_context]** When exploring a continuous parameter and getting negative feedback from the leaderboard.  *(1 items, 1 kernels)*
+        - **[action]** After a score drop, reverse direction and try multiple candidate values without submitting (saving versions). Only submit when you have converged on a promising region or want to verify. Use unsubmitted runs to narrow the search space cheaply before spending a submission.  *(1 items, 1 kernels)*
+          - items: `77386286:e2#2`
+      - **[action_context]** When a structural fix (not a hyperparameter change) causes a small regression and the platform has submission noise (e.g., TPU non-determinism), reverting based on one score is premature.  *(1 items, 1 kernels)*
+        - **[action]** After a structural fix that you believe is correct but shows a small regression, re-submit 2–3 times with no code changes to estimate score variance. If the variance band overlaps with the previous best, keep the fix and move to the next optimization lever. If consistently worse, investigate whether  *(1 items, 1 kernels)*
+          - items: `13702907:e5#2`
+    - **[lever]** feature/column selection for post-processing  *(2 items, 2 kernels)*
+      - **[action_context]** A regression from applying a transformation universally indicates the need for column-level selection.  *(1 items, 1 kernels)*
+        - **[action]** When a transformation applied to all features/columns regresses versus a subset, revert to selective application. Use per-column validation metrics to identify which columns benefit. Then expand the selected set incrementally, submitting after each addition, and stop when gains plateau or turn negat  *(1 items, 1 kernels)*
+          - items: `7548275:e6#2`
+      - **[action_context]** A larger model's raw prediction distribution differs from the smaller model's, so thresholds optimized for the old model are mismatched.  *(1 items, 1 kernels)*
+        - **[action]** When swapping model size and seeing a regression, first re-tune the rounding/binning thresholds on validation data and submit. If still below baseline, try alternative checkpoints of the same model size (e.g., different learning rates or folds) with re-tuned thresholds. If after 2-3 attempts the lar  *(1 items, 1 kernels)*
+          - items: `55621328:e12#1`
+    - **[lever]** refactoring with leaderboard verification  *(2 items, 2 kernels)*
+      - **[action_context]** The current score is at the known best and the changes are structural (renaming, reorganizing, fixing typos) rather than algorithmic.  *(1 items, 1 kernels)*
+        - **[action]** After recovering a target score, submit refactoring changes to verify they don't regress. Only proceed to new experiments (new architectures, new data) once the refactored pipeline reproduces the baseline score exactly. Keep refactoring and experimentation in separate submissions.  *(1 items, 1 kernels)*
+          - items: `52200959:e5#2`
+      - **[action_context]** When you have two candidate configurations and limited compute, and one regresses on the leaderboard  *(1 items, 1 kernels)*
+        - **[action]** Alternate between the two configurations, submitting each to the leaderboard. After each regression, revert to the other config and add incremental improvements. Continue until one config clearly wins. Do not persist with a config that regresses twice without modification.  *(1 items, 1 kernels)*
+          - items: `49576186:e3#1`
+    - **[lever]** incremental restoration after controlled ablation  *(2 items, 2 kernels)*
+      - **[action_context]** When you intentionally disable components for debugging and get a bad score, and you have a known-good checkpoint to restore to.  *(1 items, 1 kernels)*
+        - **[action]** Do not panic-revert after a catastrophic drop caused by intentional ablation. Complete the diagnostic sweep, then restore the full pipeline in one step. Keep the pre-ablation code intact (commented out) so restoration is trivial.  *(1 items, 1 kernels)*
+          - items: `15164527:e7#2`
+      - **[action_context]** When a regression is caused by removing features, and you have CV available to evaluate without submitting.  *(1 items, 1 kernels)*
+        - **[action]** First restore the specific features that were removed in the regressing change. Then re-enable previously successful feature types that may have been disabled. Expand interaction features cautiously: try a broad set, then prune back to the subset that improves CV. Evaluate all variants via local CV   *(1 items, 1 kernels)*
+          - items: `27836972:e12#1`
+    - **[lever]** Expanding fold coverage of a different model instead of iterating on checkpoint versions  *(2 items, 2 kernels)*
+      - **[action_context]** When a checkpoint swap regresses slightly and you have untapped folds from another strong model family.  *(1 items, 1 kernels)*
+        - **[action]** Rather than reverting the checkpoint swap or fine-tuning weights, expand coverage of the other model family (add more folds) to compensate. This is more likely to recover the loss through diversity than reverting a marginal checkpoint change.  *(1 items, 1 kernels)*
+          - items: `17616127:e21#2`
+      - **[action_context]** When restoring previously beneficial code that was removed or broken in a cleanup step.  *(1 items, 1 kernels)*
+        - **[action]** Before restoring removed logic, carefully diff against the exact version that achieved the best score. Verify column names and placement match exactly. Submit and compare; if the restored version doesn't recover the original score, suspect that other changes between versions also contributed, and co  *(1 items, 1 kernels)*
+          - items: `58130512:e9#1`
+    - **[lever]** restore prior ensemble pipeline  *(2 items, 2 kernels)*
+      - **[action_context]** When a new single-model experiment degrades score significantly and the prior ensemble code is still in the notebook but disabled.  *(1 items, 1 kernels)*
+        - **[action]** Revert to the known-good ensemble by uncommenting the relevant model definitions, tokenizers, data loaders, and blend logic. Fix any variables that were overwritten or removed during the failed experiment. Submit only after verifying all components are active. Then use the restored baseline as a pla  *(1 items, 1 kernels)*
+          - items: `18423958:e7#1`
+      - **[action_context]** When a modality ablation shows clear regression, the removed modalities are confirmed valuable.  *(1 items, 1 kernels)*
+        - **[action]** Immediately restore the dropped modalities. Then iteratively refine their preprocessing (frequency range, windowing, colormap, normalization) one or two changes at a time, submitting after each to confirm direction. If a preprocessing change regresses, revert that specific change rather than the who  *(1 items, 1 kernels)*
+          - items: `49576186:e20#1`
+    - **[lever]** inference code correctness (indentation/scope fix)  *(2 items, 1 kernels)*
+      - **[action_context]** When a model's predictions depend on a conditional setup step (e.g., feature computation only on fold 0) but the prediction call's scope is ambiguous.  *(2 items, 1 kernels)*
+        - **[action]** After any large code addition that modifies fold-loop inference, review indentation of predict calls to ensure they execute inside the same conditional block as feature generation. Submit the fix immediately even if the score doesn't change, to establish correctness before further modifications.  *(2 items, 1 kernels)*
+          - items: `75145694:e4#1`, `75145694:e11#3`
+    - **[lever]** diagnostic probe via toggling preprocessing  *(2 items, 2 kernels)*
+      - **[action_context]** When a new inference pipeline has multiple differences from a known-good one and produces a large regression.  *(2 items, 2 kernels)*
+        - **[action]** Before reverting a large change, try toggling one small orthogonal setting (e.g., disable/enable scaling, change a single preprocessing step) to see if it recovers the score. If the probe shows minimal effect, the regression is elsewhere—look for bugs in the new pipeline. Only revert the large chang  *(2 items, 2 kernels)*
+          - items: `73937748:e6#2`, `55621328:e10#1`
+    - **[lever]** switching back to a proven lever after failed exploration  *(2 items, 1 kernels)*
+      - **[action_context]** When an exploratory direction has produced 3+ consecutive regressions relative to the best known score.  *(2 items, 1 kernels)*
+        - **[action]** Stop the current exploration after ~4-5 failed attempts. Return to the last best configuration and try a qualitatively different lever (e.g., blending weights, batch size, or a different training strategy) rather than continuing to tweak the same preprocessing or model family.  *(2 items, 1 kernels)*
+          - items: `50496431:e51#3`, `50496431:e53#3`
+    - **[lever]** reverting and expanding in the opposite direction  *(1 items, 1 kernels)*
+      - **[action_context]** When two consecutive ablation probes both regress, especially with increasing magnitude.  *(1 items, 1 kernels)*
+        - **[action]** Stop ablating after at most two consecutive regressions. Revert to the best-known configuration and pivot to the opposite direction (adding components or complexity). Do not spend more submissions confirming what two data points already show.  *(1 items, 1 kernels)*
+          - items: `75145694:e5#2`
+    - **[lever]** averaging formula correctness  *(1 items, 1 kernels)*
+      - **[action_context]** When changing the number of ensemble members in a weighted average formula.  *(1 items, 1 kernels)*
+        - **[action]** After every change to ensemble membership, immediately verify the denominator in any averaging expression matches the actual count of terms. Do not submit until the formula is verified. If a score regresses after adding a member, first check for denominator mismatches before concluding the member is  *(1 items, 1 kernels)*
+          - items: `18851026:e7#2`
+    - **[lever]** upgrade external component model quality  *(1 items, 1 kernels)*
+      - **[action_context]** When you maintain external training scripts separately and have improved versions available (validated offline), and the current ensemble underperforms.  *(1 items, 1 kernels)*
+        - **[action]** When an ensemble regresses after infrastructure changes, first check whether improved versions of component models are available from offline work. Swap them in as a single atomic change and submit to isolate the effect. Keep unchanged components fixed (here, 'zeroes' scripts) to maintain a partial   *(1 items, 1 kernels)*
+          - items: `77450317:e3#1`
+    - **[lever]** prediction sign or rank order  *(1 items, 1 kernels)*
+      - **[action_context]** When a rank-based metric (C-index, AUC) yields a score that is approximately 1 minus the expected score  *(1 items, 1 kernels)*
+        - **[action]** Before tuning anything else, check whether your predictions need to be negated. Negate them and resubmit. If the score jumps to roughly 1 minus the original score, the fix is confirmed. Always verify the sign convention of your target transformation against the metric's expected direction before any  *(1 items, 1 kernels)*
+          - items: `77129691:e1#1`
+    - **[lever]** rank-transform placement in blending pipeline  *(1 items, 1 kernels)*
+      - **[action_context]** When component models produce predictions on comparable scales (all trained on the same survival target transform) and the evaluation metric is rank-based (concordance index).  *(1 items, 1 kernels)*
+        - **[action]** Blend component model raw predictions with weights first, then apply a single rank transform at the very end before submission. Do not rank-transform each component independently before blending, as this discards useful scale information and can hurt the combined ranking.  *(1 items, 1 kernels)*
+          - items: `75145694:e8#1`
+    - **[lever]** sign/polarity and post-processing correctness  *(1 items, 1 kernels)*
+      - **[action_context]** When a new model's predictions are survival-time-like (higher = longer survival) but the ensemble expects risk scores (higher = higher risk), or vice versa.  *(1 items, 1 kernels)*
+        - **[action]** When adding a new model causes a score drop exceeding what its blend weight could explain, first check prediction sign/polarity by printing raw predictions and verifying their correlation with the target. Negate predictions if the model's output convention is opposite to the ensemble's. Fix and resu  *(1 items, 1 kernels)*
+          - items: `75145694:e13#1`
+    - **[lever]** pivot strategy  *(1 items, 1 kernels)*
+      - **[action_context]** When incremental fixes to a complex pipeline show diminishing returns and the codebase is hard to debug further.  *(1 items, 1 kernels)*
+        - **[action]** Rather than continuing to debug and patch the existing pipeline, consider pivoting to a cleaner architecture (e.g., pretrained pipelines, standardized preprocessing). The cost of finding and fixing all bugs in a complex pipeline can exceed the cost of rebuilding with a cleaner design.  *(1 items, 1 kernels)*
+          - items: `73937748:e7#2`
+    - **[lever]** checkpoint path verification  *(1 items, 1 kernels)*
+      - **[action_context]** When an ensemble loads multiple external model files and scores are unexpectedly low  *(1 items, 1 kernels)*
+        - **[action]** Before tuning post-processing or hyperparameters, verify that all model checkpoint paths resolve correctly and that the intended weights are actually loaded. Check for typos (underscores vs hyphens, trailing slashes, directory naming conventions). A path that silently falls back to random weights wi  *(1 items, 1 kernels)*
+          - items: `6803050:e9#1`
+    - **[lever]** re-running unchanged code to separate signal from noise  *(1 items, 1 kernels)*
+      - **[action_context]** When a change yields a small regression (within observed noise range) and the change is theoretically sound.  *(1 items, 1 kernels)*
+        - **[action]** When a principled change produces a small regression within the observed noise band, re-submit the identical code once. If the re-run improves past the previous best, accept the change. If both runs regress, revert. Do not make further changes between verification runs.  *(1 items, 1 kernels)*
+          - items: `50376011:e11#2`
+    - **[lever]** continue investing in the new approach despite marginal initial results  *(1 items, 1 kernels)*
+      - **[action_context]** When the new infrastructure enables a capability (e.g., on-the-fly feature computation) that the old pipeline lacked, and the initial scores are within ~2% of the old best.  *(1 items, 1 kernels)*
+        - **[action]** If a pipeline rewrite matches the old pipeline's score range on quick single-model tests, commit to it and proceed to optimize (add more ensemble members, tune new features). The payoff comes from capabilities the old pipeline couldn't support. Abandon only if scores are substantially worse across a  *(1 items, 1 kernels)*
+          - items: `50376011:e32#3`
+    - **[lever]** data filtering condition  *(1 items, 1 kernels)*
+      - **[action_context]** A single discrete change (filter direction or subset) caused a large regression, suggesting a bug rather than a bad idea.  *(1 items, 1 kernels)*
+        - **[action]** When a small change causes a disproportionately large regression, first check whether the change has a sign/logic error (e.g., == vs !=, include vs exclude). Fix the suspected bug and resubmit before abandoning the idea entirely. If the corrected version still underperforms, then remove the filter a  *(1 items, 1 kernels)*
+          - items: `49576186:e15#1`
+    - **[lever]** input modality selection  *(1 items, 1 kernels)*
+      - **[action_context]** When a single-modality ablation regresses substantially (>15% relative) from a multimodal baseline  *(1 items, 1 kernels)*
+        - **[action]** Immediately restore the multimodal configuration rather than trying to fix the single-modality branch. Use the regression as evidence that the dropped modalities carry complementary signal, and redirect effort to improving the multimodal pipeline (e.g., adding new modalities or fixing preprocessing)  *(1 items, 1 kernels)*
+          - items: `49576186:e23#1`
+    - **[lever]** abstract base class extraction and API hardening  *(1 items, 1 kernels)*
+      - **[action_context]** When the same data pipeline serves multiple model configurations that differ only in input composition.  *(1 items, 1 kernels)*
+        - **[action]** Extract shared logic (iteration, augmentation, filtering) into an abstract base class with an abstract data_generation method. Make concrete subclasses implement only the data-type-specific logic. Remove default arguments that reference outer scope variables to make dependencies explicit. Verify eac  *(1 items, 1 kernels)*
+          - items: `52200959:e1#2`
+    - **[lever]** custom loss function correctness  *(1 items, 1 kernels)*
+      - **[action_context]** When a regression occurs after multiple simultaneous changes, and the custom objective has known approximations (e.g., constant Hessian, missing weights).  *(1 items, 1 kernels)*
+        - **[action]** Isolate the custom objective as a suspect. First try a targeted modification (e.g., adding class weights) without submitting—check CV only. If that doesn't help, revert to the simplest correct form and fix mathematical errors (e.g., derive the proper Hessian analytically). Submit only after the fix   *(1 items, 1 kernels)*
+          - items: `58130512:e3#1`
+    - **[lever]** feature alignment between training and inference  *(1 items, 1 kernels)*
+      - **[action_context]** When training uses a subset of features (via a saved selection list) but inference indexes with a different variable or the full feature set.  *(1 items, 1 kernels)*
+        - **[action]** First disable the feature selection entirely and run a quick debug iteration to isolate the issue. Then fix the prediction call to use the same column set the model was trained on (check model.feature_name() or the selection list). Finally re-enable the full selection, restore production hyperparame  *(1 items, 1 kernels)*
+          - items: `58130512:e22#1`
+    - **[lever]** CV scheme and threshold optimization subset  *(1 items, 1 kernels)*
+      - **[action_context]** Multiple interacting choices (CV type, fold augmentation, threshold subset) need to be explored but their interactions are unclear.  *(1 items, 1 kernels)*
+        - **[action]** When exploring coupled CV/postprocessing choices, change at most one axis per submission. If a change causes a large regression (>0.005), immediately revert it in the next version. Keep a known-good configuration as the anchor and return to it after each failed experiment. Do not change numeric hype  *(1 items, 1 kernels)*
+          - items: `58130512:e25#1`
+    - **[lever]** configuration flag toggle / bisecting recent changes  *(1 items, 1 kernels)*
+      - **[action_context]** When a pipeline has accumulated many changes and performance has regressed, and you can identify a discrete on/off toggle that was changed during the accumulation period.  *(1 items, 1 kernels)*
+        - **[action]** When performance drops after a sequence of changes, check whether any previously-beneficial pipeline flags were inadvertently disabled. Re-enable them one at a time and submit to confirm recovery before pursuing further improvements.  *(1 items, 1 kernels)*
+          - items: `60197293:e7#1`
+    - **[lever]** data join/merge logic  *(1 items, 1 kernels)*
+      - **[action_context]** When external predictions (OOF or submission files) are being appended to a feature matrix and a catastrophic regression occurs.  *(1 items, 1 kernels)*
+        - **[action]** Suspect row misalignment first. Replace any pd.concat (positional) joins with explicit key-based pd.merge on a shared ID column. Disable the new features to confirm the base pipeline still works, then re-enable with the corrected merge. Do not submit until you have verified shapes and alignment loca  *(1 items, 1 kernels)*
+          - items: `60197293:e12#1`
+    - **[lever]** distinguish infrastructure bugs from bad ideas  *(1 items, 1 kernels)*
+      - **[action_context]** When a new feature degrades the score but the pipeline has known bugs (wrong merge keys, empty word lists, incorrect variable references)  *(1 items, 1 kernels)*
+        - **[action]** Before concluding a feature idea is harmful, verify the pipeline is bug-free by checking data shapes, column counts, and sample values with debug prints. If bugs are found, fix them and resubmit. Only abandon the idea after a clean run still underperforms. Track whether each submission had known bug  *(1 items, 1 kernels)*
+          - items: `60197293:e17#2`
+    - **[lever]** approach pivot: extract features from failed model  *(1 items, 1 kernels)*
+      - **[action_context]** When a large pretrained model fails as a direct predictor but the existing pipeline accepts additional features  *(1 items, 1 kernels)*
+        - **[action]** Rather than abandoning the large model entirely, repurpose it as a feature extractor (embeddings) feeding into the proven pipeline. Strip the generation/prediction head, add pooling, and produce dense vectors as additional columns for the tree-based model. Start with the full set of candidate models  *(1 items, 1 kernels)*
+          - items: `55987255:e9#1`
+  - **[lever_context]** The code dispatches model class imports based on experiment name strings. A new experiment name will silently skip the import, causing a runtime error.  *(1 items, 1 kernels)*
+    - **[lever]** conditional routing fix  *(1 items, 1 kernels)*
+      - **[action_context]** When the first run of a new config fails or produces no model class, check all conditionals that gate on experiment name and extend them to include the new identifier.  *(1 items, 1 kernels)*
+        - **[action]** After swapping to a new experiment config, immediately verify that all name-based dispatch branches (model class selection, preprocessing, etc.) cover the new experiment name. If not, extend the condition before re-running. Do not submit until the pipeline runs cleanly.  *(1 items, 1 kernels)*
+          - items: `55621328:e3#2`
+- **[goal]** What do I do when I have a multi-model ensemble and want to find the best blend weights?  *(118 items, 39 kernels)*
+  - **[lever_context]** The author had ~5 diverse prediction sources (ridge ensembles, bi-encoder, bootstrap models, ALBERT). LB has only ~7 rows, making it very noisy. Earlier versions showed that member selection matters more than fine weight tuning.  *(117 items, 39 kernels)*
+    - **[lever]** ensemble blend weights  *(61 items, 27 kernels)*
+      - **[action_context]** When you have 3+ models and no validation set to optimize weights analytically (or want LB confirmation).  *(42 items, 24 kernels)*
+        - **[action]** Start with the 2-3 strongest individual models using score-proportional weights (give ~80-90% weight to the best two). Add weaker members with small weights (0.1) and submit to check for marginal gain. If adding a member doesn't help, remove it. Prefer weighted blending over simple mean when member   *(41 items, 24 kernels)*
+          - items: `29588171:e1#1`, `17616127:e10#1`, `18523075:e1#2`, `18837555:e5#1`, `18423958:e4#1`, `75584724:e5#2`, `73671444:e5#1`, `75145694:e14#1`, `77386286:e2#1`, `7823861:e7#2`, `53747598:e8#2`, `55591012:e12#2`, `15164527:e4#1`, `15203842:e3#1`, `29588171:e2#1`, `27502740:e5#2`, `17616127:e7#1`, `17616127:e23#2`, `17616127:e40#1`, `18523075:e3#1`, `18523075:e4#2`, `18837555:e2#2`, `18350823:e8#1`, `77450317:e6#3`, `75584724:e1#1`, `73671444:e10#1`, `77347591:e7#1`, `7018718:e5#1`, `53747598:e5#2`, `49524919:e15#1`, `49524919:e24#2`, `52860091:e6#1`, `53762022:e1#1`, `55431616:e2#3`, `55431616:e5#2`, `15164527:e11#1`, `50496431:e30#2`, `50496431:e35#2`, `50496431:e46#2`, `50496431:e50#2`, `50496431:e51#1`
+        - **[action]** Extract raw logits from each component model, then compute a weighted average in logit space before applying softmax to produce final probabilities. This preserves relative confidence magnitudes that softmax compression destroys. Build the infrastructure incrementally: first verify logit extraction   *(1 items, 1 kernels)*
+          - items: `53747598:e4#1`
+      - **[action_context]** When the current blend weight is small (e.g., 0.15 for the weaker component) and you suspect the weaker component has improved.  *(14 items, 11 kernels)*
+        - **[action]** After confirming a new component improves the score, resist over-tuning blend weights on a tiny public leaderboard. If redistributing weight away from the best-performing component causes regression, revert to the previous weights and instead invest effort in improving or adding base models. One rou  *(14 items, 11 kernels)*
+          - items: `18851026:e4#2`, `77347591:e3#1`, `55987255:e29#1`, `55591012:e7#1`, `15203842:e1#1`, `29588171:e3#1`, `17616127:e34#2`, `17616127:e35#3`, `18851026:e6#1`, `18423958:e9#3`, `77450317:e5#2`, `53762022:e5#1`, `60197293:e9#1`, `55591012:e10#1`
+      - **[action_context]** When a new component is weaker individually but architecturally different from existing ensemble members.  *(3 items, 2 kernels)*
+        - **[action]** When expanding one component's model set, slightly reduce its blend weight relative to others (here from 0.50 to 0.44) to avoid over-relying on a single pipeline. Keep weights roughly balanced (no component below ~0.25) since prior evidence showed extreme skew hurts. Use before-softmax averaging of   *(3 items, 2 kernels)*
+          - items: `17616127:e37#1`, `53747598:e6#2`, `53747598:e7#2`
+      - **[action_context]** When changing one knob at a time yields no signal on the leaderboard.  *(1 items, 1 kernels)*
+        - **[action]** Vary only one knob per submission so you can attribute any score change. If single-knob sweeps show no signal after a few steps, do not combine changes—the joint space is also flat. Instead, validate locally with a reliable CV metric before spending submissions.  *(1 items, 1 kernels)*
+          - items: `77347591:e9#2`
+      - **[action_context]** The last weight increase was beneficial, so the natural next step is to push further in the same direction.  *(1 items, 1 kernels)*
+        - **[action]** After a successful weight increase for one ensemble member, probe one more step in the same direction with a similar increment (~0.1). If the leaderboard score regresses, conclude the previous weight was near-optimal and stop tuning weights; switch to a different lever such as adding new models or c  *(1 items, 1 kernels)*
+          - items: `53747598:e5#1`
+    - **[lever]** ensemble member selection and weights  *(13 items, 11 kernels)*
+      - **[action_context]** When a small ensemble already shows improvement over single models, and many candidate checkpoints are available.  *(11 items, 10 kernels)*
+        - **[action]** First isolate individual members or small subsets to verify each contributes positively on local validation. Then restore the full ensemble and submit only the configuration that improves local CV. If the LB result regresses despite good local CV, suspect a code bug in the blending/inference pipelin  *(10 items, 9 kernels)*
+          - items: `75145694:e14#2`, `18523075:e7#1`, `18426209:e5#2`, `75145694:e3#1`, `53424936:e7#1`, `50376011:e16#1`, `49524919:e24#1`, `52860091:e8#2`, `55431616:e3#2`, `50496431:e43#1`
+        - **[action]** Start with all available sources in the blend, then selectively remove members one at a time while inspecting outputs (distributions, shapes, sanity checks). Use debug prints to verify alignment before committing to a blend ratio. Only submit once the blend composition is stable.  *(1 items, 1 kernels)*
+          - items: `7670859:e3#2`
+      - **[action_context]** When a blend achieves a new best and contains recently-added or updated components whose standalone quality is unknown.  *(1 items, 1 kernels)*
+        - **[action]** Submit each major model group in isolation (disabling all others) to measure its standalone score. If every component scores worse than the blend, the blend is validated. Then re-enable all components — the blend with any checkpoint updates discovered during probing often yields a further improvemen  *(1 items, 1 kernels)*
+          - items: `49524919:e34#1`
+      - **[action_context]** Multiple recent additions have hurt; the ensemble may contain redundant or harmful members.  *(1 items, 1 kernels)*
+        - **[action]** Test a substantially pruned ensemble (removing multiple members at once) as a single probe. If the score drops significantly, the removed members are net-positive contributors — revert and stop pruning. If it improves, adopt the simpler blend. Do not continue iterating on composition if both adding   *(1 items, 1 kernels)*
+          - items: `60264017:e5#1`
+    - **[lever]** learned stacking meta-model  *(7 items, 5 kernels)*
+      - **[action_context]** When the dataset is very small (~2800 train, ~7 public LB rows) and the number of base models is moderate.  *(7 items, 5 kernels)*
+        - **[action]** Try a two-level stack: first train separate meta-learners per logical group of base models (e.g., by target transform), then blend the group-level predictions with a weight search. Compare this against a single flat meta-learner with feature selection. If neither beats the flat baseline after two ro  *(6 items, 4 kernels)*
+          - items: `73937748:e11#1`, `27502740:e5#1`, `17616127:e6#1`, `17616127:e11#1`, `18757376:e1#1`, `73937748:e14#1`
+        - **[action]** Introduce a configuration flag with integer values representing feature-source combinations. Test each combination by toggling the flag, checking CV first, then submitting the most promising. If adding a source degrades the score, drop it. Keep the minimal set that improves over baseline.  *(1 items, 1 kernels)*
+          - items: `60197293:e13#1`
+    - **[lever]** controlled A/B testing of ensemble changes  *(5 items, 5 kernels)*
+      - **[action_context]** When you have checkpoints with known validation scores and the ensemble score is disappointing.  *(3 items, 3 kernels)*
+        - **[action]** Stop tuning ensemble membership and instead invest in improving individual model predictions — e.g., build a cleaner inference pipeline, apply post-processing (scaling with OOF statistics), or retrain models. The next version after this episode did exactly this by creating a standalone inference scr  *(3 items, 3 kernels)*
+          - items: `17616127:e4#2`, `49524919:e14#2`, `60264017:e5#2`
+      - **[action_context]** When you have two changes to test (component swap and coefficient update) and limited submissions.  *(1 items, 1 kernels)*
+        - **[action]** First combine both changes and submit. If the result is ambiguous, isolate one change by reverting the other and submit again. If neither configuration beats the baseline, abandon both changes. This uses at most two submissions to attribute the effect.  *(1 items, 1 kernels)*
+          - items: `77450317:e10#1`
+      - **[action_context]** When pretrained fold checkpoints exist but are not all being loaded due to a loop bound or filename mismatch.  *(1 items, 1 kernels)*
+        - **[action]** Verify that all trained fold checkpoints are referenced with correct filenames and that the inference loop iterates over all of them. Fix both the loop range and any filename pattern mismatches in a single edit, then submit to confirm the expected small but reliable gain.  *(1 items, 1 kernels)*
+          - items: `7613444:e5#1`
+    - **[lever]** prediction scaling method before ensemble blending  *(4 items, 3 kernels)*
+      - **[action_context]** When models have different architectures and training procedures, their probability outputs may be on different scales. Rank averaging eliminates this issue.  *(3 items, 3 kernels)*
+        - **[action]** After optimizing probability-based blend weights, try converting each model's predictions to ranks (argsort of argsort) before weighted averaging. Keep the same weights initially to isolate the effect of the method change. If it matches or beats probability averaging, re-tune weights under the new m  *(3 items, 3 kernels)*
+          - items: `15164527:e4#2`, `75584724:e7#2`, `77347591:e8#2`
+      - **[action_context]** When the number of ensemble components is large relative to the signal available for tuning (small test set or noisy metric).  *(1 items, 1 kernels)*
+        - **[action]** Prefer coarse, grouped weights (same weight for all folds of one model) over individually optimized per-fold weights. Fine-grained CV-optimized weights tend to overfit the validation split and hurt on the leaderboard. If fine-grained weights regress, immediately try uniform groupings before explorin  *(1 items, 1 kernels)*
+          - items: `15164527:e11#2`
+    - **[lever]** Add a structurally different model to the ensemble  *(4 items, 4 kernels)*
+      - **[action_context]** When all current members are neural regressors of the same family and weight tuning is stalling.  *(2 items, 2 kernels)*
+        - **[action]** If two or more blend-weight settings produce identical public LB scores on a very small test set, stop tuning weights and instead add a genuinely different model family to the ensemble. The new model's diversity is more likely to produce a measurable improvement than re-weighting existing components  *(2 items, 2 kernels)*
+          - items: `17616127:e20#1`, `18350823:e14#1`
+      - **[action_context]** When all existing ensemble members share the same pooling strategy (e.g., last-layer attention), and you have access to checkpoints trained with a different head architecture.  *(2 items, 2 kernels)*
+        - **[action]** Add a model variant that differs in its pooling mechanism (e.g., multi-layer concatenation + attention head vs. single-layer attention). Load its checkpoints, generate predictions, and include them in a simple uniform average. Submit to check for improvement; if the score is flat or slightly worse,   *(2 items, 2 kernels)*
+          - items: `18837555:e2#1`, `53762022:e3#2`
+    - **[lever]** CV fold count and averaging alignment  *(2 items, 2 kernels)*
+      - **[action_context]** When swapping model families in a multi-seed CV stacking pipeline, the number of folds and the prediction averaging logic must be updated consistently.  *(2 items, 2 kernels)*
+        - **[action]** When changing CV folds (e.g., 5→4), update all downstream averaging code to match the new fold count. Use a non-submitted run to verify local validation before submitting, to avoid wasting submission quota on infrastructure bugs.  *(2 items, 2 kernels)*
+          - items: `28984551:e3#2`, `17616127:e20#2`
+    - **[lever]** post-processing class probability calibration  *(2 items, 2 kernels)*
+      - **[action_context]** When the test set is very small (7 public LB rows) and the bias correction magnitude is uncertain.  *(2 items, 2 kernels)*
+        - **[action]** Scale down the mean-offset correction by dividing by the number of ensemble components or another dampening factor, rather than applying the full correction. Submit and compare against the uncorrected version. If no improvement, revert the calibration.  *(2 items, 2 kernels)*
+          - items: `18523075:e7#2`, `49524919:e4#1`
+    - **[lever]** isolate-then-integrate testing pattern  *(2 items, 1 kernels)*
+      - **[action_context]** When adding a new model family to a multi-model ensemble where bugs in loading/transforms could silently corrupt predictions  *(2 items, 1 kernels)*
+        - **[action]** Temporarily remove blending and submit only the component being optimized. This gives a cleaner signal for checkpoint selection. Re-introduce blending after identifying the best component version.  *(2 items, 1 kernels)*
+          - items: `49524919:e16#2`, `49524919:e25#2`
+    - **[lever]** rank vs raw post-processing toggle  *(2 items, 1 kernels)*
+      - **[action_context]** The effect of rank conversion is checkpoint-dependent and cannot be predicted from architecture alone.  *(2 items, 1 kernels)*
+        - **[action]** For every new model or checkpoint, always test both rank-averaged and raw-averaged submissions. Do not assume the result from a previous model carries over. Budget two submissions per checkpoint for this toggle. If the gap is small (<0.002), prefer raw scores to preserve probability calibration for   *(2 items, 1 kernels)*
+          - items: `13848868:e4#2`, `13848868:e9#2`
+    - **[lever]** sequential isolation of changes  *(1 items, 1 kernels)*
+      - **[action_context]** When a multi-change submission regresses, you cannot attribute the cause without isolating variables.  *(1 items, 1 kernels)*
+        - **[action]** After a regression from bundled changes, revert one variable at a time while keeping others fixed. Submit after each single change to isolate which factor caused the regression. Once the beneficial change is identified, re-apply the other change on top of it to check for interaction.  *(1 items, 1 kernels)*
+          - items: `75584724:e6#2`
+    - **[lever]** checkpoint selection during ablation  *(1 items, 1 kernels)*
+      - **[action_context]** When testing individual model groups against the blend, you can simultaneously try updated checkpoints for each group. Even if the standalone score is worse than the blend, the updated checkpoints remain in the codebase.  *(1 items, 1 kernels)*
+        - **[action]** When isolating a model group for standalone evaluation, also swap in candidate checkpoint files. After probing all groups, re-enable the full blend — it will incorporate any checkpoint improvements discovered during probing, potentially exceeding the pre-probe best.  *(1 items, 1 kernels)*
+          - items: `49524919:e34#2`
+    - **[lever]** LightGBM training loop configuration  *(1 items, 1 kernels)*
+      - **[action_context]** When the existing model is a basic sklearn-API classifier with no early stopping or hyperparameter tuning.  *(1 items, 1 kernels)*
+        - **[action]** Switch to the native lgb.train API with a validation set and early stopping. Use optuna integration for automatic hyperparameter search. Verify the new model improves the blend before investing in further tuning. If the new training setup doesn't improve the blend score after a few weight trials, ch  *(1 items, 1 kernels)*
+          - items: `29588171:e2#2`
+    - **[lever]** experiment direction and revert policy  *(1 items, 1 kernels)*
+      - **[action_context]** When two consecutive blend modifications both worsen the score relative to the pre-episode best.  *(1 items, 1 kernels)*
+        - **[action]** After two consecutive regressions from blend changes, stop the current line of experimentation and revert to the last best configuration. Do not escalate complexity (e.g., switching from cross-fold averaging to per-fold weighting) after a regression—simplify or revert first. Use the pre-episode best  *(1 items, 1 kernels)*
+          - items: `17616127:e22#2`
+    - **[lever]** per-fold ridge ensembler over diverse transformer predictions  *(1 items, 1 kernels)*
+      - **[action_context]** Small regression dataset with 6-fold CV, multiple transformer backbones (RoBERTa, DeBERTa, ALBERT variants), and pre-computed OOF predictions available.  *(1 items, 1 kernels)*
+        - **[action]** For each CV fold, train a ridge regressor that takes all base model predictions as features and predicts the target. At test time, generate predictions from all base models, stack them per fold, and average the ridge outputs across folds. This outperforms manual weighting when you have 4+ diverse ba  *(1 items, 1 kernels)*
+          - items: `17616127:e26#2`
+    - **[lever]** single-variable substitution in blend  *(1 items, 1 kernels)*
+      - **[action_context]** When you have a working weighted blend and want to compare two prediction sources for one slot without confounding weight changes.  *(1 items, 1 kernels)*
+        - **[action]** Hold all blend weights and other components constant, swap exactly one prediction source, and submit. This isolates the effect of that single component. If it improves, keep it; the improvement is attributable solely to the swapped component's quality.  *(1 items, 1 kernels)*
+          - items: `17616127:e33#2`
+    - **[lever]** weight normalization  *(1 items, 1 kernels)*
+      - **[action_context]** Members have been added/removed iteratively and weights are stale or incorrect.  *(1 items, 1 kernels)*
+        - **[action]** After any change to ensemble membership, add a guard that checks whether weights sum to 1.0; if not, automatically assign equal weights (1/N). Fix any assertion bugs at the same time. This prevents silent score degradation from unnormalized blends.  *(1 items, 1 kernels)*
+          - items: `18523075:e5#2`
+    - **[lever]** training pipeline infrastructure (CV and model persistence)  *(1 items, 1 kernels)*
+      - **[action_context]** When a model component's training loop is ad-hoc while the rest of the ensemble uses proper K-Fold CV with saved fold models.  *(1 items, 1 kernels)*
+        - **[action]** Refactor the component to use the same K-Fold CV scheme as other ensemble members: iterate over folds, preprocess per fold, train, save each fold's model state, and generate aligned OOF predictions. This ensures the component's OOF predictions are unbiased and compatible with the stacking layer, eve  *(1 items, 1 kernels)*
+          - items: `75924487:e5#1`
+    - **[lever]** ensemble aggregation method  *(1 items, 1 kernels)*
+      - **[action_context]** When you have 10+ diverse GBDT/AutoGluon models with varying individual quality  *(1 items, 1 kernels)*
+        - **[action]** Prefer learned weighted blending (e.g., Optuna-tuned or Ridge stacking) over simple rank averaging when ensemble members vary substantially in quality. Simple averaging gives equal voice to weak models. Test both, but if weighted blend was previously better, reverting to unweighted averaging is unli  *(1 items, 1 kernels)*
+          - items: `73937748:e10#2`
+    - **[lever]** ensemble size expansion  *(1 items, 1 kernels)*
+      - **[action_context]** When individual fold checkpoints are available and inference time/memory scales linearly with ensemble size, first establish a single-model variance baseline, then expand the ensemble in one large step rather than adding members one at a time.  *(1 items, 1 kernels)*
+        - **[action]** Measure single-model variance via repeated runs. Then jump to a substantially larger ensemble (e.g., 6× the baseline) in one step rather than incrementally adding members. Adjust batch-processing parameters (batch size, item count) proportionally downward to fit within resource constraints. If the l  *(1 items, 1 kernels)*
+          - items: `50376011:e42#2`
+    - **[lever]** single-model submission probing  *(1 items, 1 kernels)*
+      - **[action_context]** When you have multiple models loaded but no local validation, you can cheaply test each by pointing the submission to that model's predictions alone.  *(1 items, 1 kernels)*
+        - **[action]** Before blending multiple new models, submit each model's predictions individually (one-line change per submission) to establish per-model LB baselines. Use these to inform blend weights and identify any broken models. This is especially useful when local validation is unavailable or unreliable.  *(1 items, 1 kernels)*
+          - items: `49524919:e21#3`
+    - **[lever]** centralize variant configuration into a lookup table  *(1 items, 1 kernels)*
+      - **[action_context]** When model variants differ only in a small number of parameters (version ID, input shape, model builder) but share the same evaluation pipeline  *(1 items, 1 kernels)*
+        - **[action]** Create a single dictionary mapping variant keys to their configuration (version numbers, input specs). Refactor prediction and dataset functions to accept only the variant key and resolve all parameters internally. This reduces per-variant code to a single function call and prevents copy-paste bugs   *(1 items, 1 kernels)*
+          - items: `52200959:e3#2`
+    - **[lever]** pipeline architecture integration  *(1 items, 1 kernels)*
+      - **[action_context]** When two approaches have conflicting data-loading, import, and inference requirements in a single notebook.  *(1 items, 1 kernels)*
+        - **[action]** Build and validate each pipeline branch independently in separate cells/notebooks before merging. Submit intermediate versions of each branch alone to confirm they work. Only combine after both branches produce valid outputs independently. Do not toggle back and forth between architectures without s  *(1 items, 1 kernels)*
+          - items: `55987255:e23#1`
+    - **[lever]** Switch from hyperparameter tuning to a qualitatively different improvement lever  *(1 items, 1 kernels)*
+      - **[action_context]** When repeated micro-adjustments to ensemble weights show diminishing or oscillating returns on the leaderboard.  *(1 items, 1 kernels)*
+        - **[action]** Pause weight tuning and look for an orthogonal improvement (e.g., TTA, new model, post-processing). Apply it as a single probe. If it yields a new best, lock it in and optionally resume weight tuning on the improved baseline.  *(1 items, 1 kernels)*
+          - items: `15164527:e5#2`
+    - **[lever]** manual weight perturbation with leaderboard feedback  *(1 items, 1 kernels)*
+      - **[action_context]** When you have many blend components and can only evaluate via leaderboard submissions  *(1 items, 1 kernels)*
+        - **[action]** Adjust 2–4 weights per submission by ±0.01–0.05, keeping the total roughly constant. Favor redistributing weight among components of similar quality rather than large shifts. If a change regresses, do not simply revert—consider that the weight space is saturated and pivot to improving component pred  *(1 items, 1 kernels)*
+          - items: `15164527:e8#2`
+  - **[lever_context]** Python list + numpy array arithmetic can silently produce wrong results (broadcasting issues or list concatenation instead of element-wise ops). The author had encountered this before (v72, v83).  *(1 items, 1 kernels)*
+    - **[lever]** type casting in prediction blending  *(1 items, 1 kernels)*
+      - **[action_context]** Predictions from different sources may be Python lists or numpy arrays; mixing types in arithmetic expressions causes bugs.  *(1 items, 1 kernels)*
+        - **[action]** Always wrap each prediction component in np.array() before performing weighted arithmetic blending. After any change to the blend formula, submit immediately to verify the result is numerically correct before tuning weights further.  *(1 items, 1 kernels)*
+          - items: `17616127:e25#2`
+- **[goal]** What do I do when a single experimental change produces a small regression on the leaderboard?  *(104 items, 44 kernels)*
+  - **[lever_context]** v10 scored 0.45891 vs the v7 best of 0.45658—a clear regression from shifting ensemble weights. The public LB has very few rows (~7), making scores noisy.  *(101 items, 42 kernels)*
+    - **[lever]** revert the regressing change  *(18 items, 14 kernels)*
+      - **[action_context]** When a single isolated change causes a clear regression and the previous setting was performing well.  *(18 items, 14 kernels)*
+        - **[action]** Immediately revert the regressing change. Optionally bundle the revert with a small orthogonal improvement (e.g., widening hyperparameter search ranges) so the submission is not wasted on merely restoring the old score. Do not spend additional iterations trying to salvage the regressing variant.  *(18 items, 14 kernels)*
+          - items: `29588171:e1#2`, `17371717:e3#1`, `7670859:e5#3`, `60264017:e2#3`, `27836972:e5#2`, `17616127:e35#2`, `17616127:e38#2`, `18350823:e2#2`, `75145694:e16#1`, `73937748:e19#1`, `7670859:e7#1`, `53747598:e6#1`, `49524919:e12#1`, `49576186:e11#1`, `49576186:e21#1`, `55621328:e25#1`, `58130512:e20#3`, `58130512:e38#3`
+    - **[lever]** experiment prioritization / revert strategy  *(14 items, 13 kernels)*
+      - **[action_context]** When a probe yields a small regression and the changes are confounded, and there are other promising ideas to try.  *(10 items, 9 kernels)*
+        - **[action]** If a bundled change produces even a small regression and you have alternative ideas, move on rather than debugging which component caused the drop. Time is better spent on orthogonal improvements. Only revisit if you run out of other levers.  *(10 items, 9 kernels)*
+          - items: `53762022:e2#2`, `55621328:e44#2`, `59253662:e6#2`, `27389424:e13#2`, `18423958:e2#2`, `17371717:e11#2`, `77450317:e2#2`, `77347591:e1#2`, `50376011:e12#2`, `59253662:e10#2`
+      - **[action_context]** When leaderboard submissions are limited and you change multiple things per submission.  *(3 items, 3 kernels)*
+        - **[action]** If three successive escalations of the same lever produce identical public LB scores, stop working that lever. Switch to a qualitatively different lever (architecture, loss, blending weights). On tiny public leaderboards, prefer CV as the primary signal and limit LB-only experiments to at most 2-3 p  *(3 items, 3 kernels)*
+          - items: `18350823:e3#2`, `60759531:e4#1`, `55591012:e10#3`
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** After two submitted regressions from the same lever, limit further exploration to at most two more unsubmitted CV checks. If no CV improvement is found, abandon the lever and switch to a diagnostic or entirely different approach rather than continuing to permute the same options.  *(1 items, 1 kernels)*
+          - items: `27825577:e5#2`
+    - **[lever]** repeated identical submissions to estimate variance  *(13 items, 3 kernels)*
+      - **[action_context]** When the leaderboard metric has high run-to-run variance (due to test subset sampling, non-deterministic inference, or platform randomness) and the gap between candidate configurations is small.  *(11 items, 1 kernels)*
+        - **[action]** Before drawing conclusions from config changes, submit the same unchanged code multiple times (5-10) to measure the run-to-run variance. Only treat score differences larger than the observed variance as signal. When variance is high, prefer ensembles or averaged submissions over single-model runs, a  *(11 items, 1 kernels)*
+          - items: `50376011:e10#1`, `50376011:e31#1`, `50376011:e19#1`, `50376011:e21#1`, `50376011:e22#2`, `50376011:e25#1`, `50376011:e26#1`, `50376011:e27#1`, `50376011:e34#2`, `50376011:e35#1`, `50376011:e42#1`
+      - **[action_context]** When building scaffolding code (feature selection, new feature columns) that requires multiple iterations to get right.  *(1 items, 1 kernels)*
+        - **[action]** Develop and debug new infrastructure over several unsubmitted versions, using local CV to validate. Only submit once the full pipeline (feature computation on both train and test, selection logic, model training) is complete and internally consistent. Group related changes into a coherent batch befo  *(1 items, 1 kernels)*
+          - items: `60197293:e2#2`
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** When building or porting an inference script, make one infrastructure fix per version and verify it runs locally (check notebook output) before submitting. Do not submit until the full pipeline produces a valid submission file. Keep each fix minimal (one path, one import, one command) to isolate fai  *(1 items, 1 kernels)*
+          - items: `55621328:e8#2`
+    - **[lever]** exhaustive enumeration then transition to ensembling  *(5 items, 4 kernels)*
+      - **[action_context]** When repeated identical submissions show >1% score variance on the leaderboard  *(2 items, 2 kernels)*
+        - **[action]** Run 2-3 identical re-submissions to estimate variance. If variance is large relative to incremental gains, prioritize ensembling multiple models/checkpoints to stabilize predictions rather than continuing single-model tuning. Move to ensembling once single-model scores plateau.  *(2 items, 2 kernels)*
+          - items: `18757376:e1#2`, `50376011:e1#2`
+      - **[action_context]** When the option space is small enough to enumerate completely and individual options show small, noisy differences.  *(1 items, 1 kernels)*
+        - **[action]** Enumerate all options once to get a rough ranking. If score differences between options are small relative to noise, stop trying to pick a single winner and instead ensemble the top candidates. Do not re-test options expecting different results unless you've changed something else.  *(1 items, 1 kernels)*
+          - items: `7606235:e2#2`
+      - **[action_context]** When you are loading frozen pretrained weights and only modifying the untrained head, the head's random initialization is overwritten by the loaded weights, so architectural changes to the head have no effect on inference.  *(1 items, 1 kernels)*
+        - **[action]** If you load full model weights (including the head) from a checkpoint, modifying the head architecture before loading will either fail or be overwritten. To improve beyond the pretrained baseline, either fine-tune the full model on your data or train independent models on extracted features and ense  *(1 items, 1 kernels)*
+          - items: `7670859:e1#2`
+      - **[action_context]** When raw model outputs are logits rather than probabilities, and the metric (KL divergence) expects probability distributions, applying softmax can materially change scores.  *(1 items, 1 kernels)*
+        - **[action]** When you detect that upstream model quality has improved (e.g., re-runs yield large score drops), first lock in the gain with re-runs, then try applying softmax/normalization to raw predictions if not already done. Test applying it per-fold before ensembling vs. after ensembling. Measure both and ke  *(1 items, 1 kernels)*
+          - items: `50376011:e22#1`
+    - **[lever]** stopping criterion for hyperparameter sweep  *(4 items, 4 kernels)*
+      - **[action_context]** When consecutive identical submissions return the same score (within rounding).  *(2 items, 2 kernels)*
+        - **[action]** Stop re-submitting once you see 3+ consecutive identical scores. Treat the converged value as your baseline and the full observed range as your noise estimate. Then proceed to actual experimentation.  *(2 items, 2 kernels)*
+          - items: `28834369:e1#2`, `53762022:e7#2`
+      - **[action_context]** The parameter is a scalar on a bounded interval and each evaluation is cheap enough to submit many times.  *(1 items, 1 kernels)*
+        - **[action]** Sweep the full plausible range at a fixed step size rather than greedily hill-climbing, because noisy feedback can mislead greedy search. After the sweep, return to the best-performing value and re-confirm it (possibly with a secondary change like more trees). If the confirmation score is close to t  *(1 items, 1 kernels)*
+          - items: `55987255:e29#2`
+      - **[action_context]** When each step in the sweep costs significant compute and the last two gains are shrinking by roughly half each time.  *(1 items, 1 kernels)*
+        - **[action]** Try at most one more step beyond the point where marginal gain drops below a threshold (~0.0002 or halves twice). If that step shows no improvement on validation, revert to the best-scoring value and move to a different lever. Do not keep pushing in the same direction.  *(1 items, 1 kernels)*
+          - items: `27389424:e16#2`
+    - **[lever]** Interpreting noisy leaderboard feedback  *(4 items, 4 kernels)*
+      - **[action_context]** When the evaluation metric is computed on very few public samples, making single-submission comparisons unreliable.  *(4 items, 4 kernels)*
+        - **[action]** Make a small number of structurally distinct attempts (2-3) rather than fine-grained sweeps. After finding a configuration that improves, try one refinement. If the refinement regresses, accept the previous best and stop. Do not chase small score differences on a noisy leaderboard.  *(4 items, 4 kernels)*
+          - items: `18426209:e7#2`, `18837555:e5#2`, `17616127:e21#3`, `50376011:e9#3`
+    - **[lever]** submission discipline  *(4 items, 4 kernels)*
+      - **[action_context]** When making non-functional or infrastructure changes (memory fixes, code reorganization, feature-file swaps) that haven't been validated end-to-end.  *(2 items, 2 kernels)*
+        - **[action]** Withhold leaderboard submissions during pure infrastructure/refactoring episodes. Run the notebook to verify correctness via local output, and only submit once the full pipeline is stable and a meaningful modeling change has been made on top of the new infrastructure.  *(2 items, 2 kernels)*
+          - items: `55431616:e6#2`, `58130512:e19#2`
+      - **[action_context]** When leaderboard submissions are the only feedback mechanism and each costs a submission slot  *(2 items, 2 kernels)*
+        - **[action]** Make only one substantive change per submission. If you must bundle changes, ensure you can revert each independently. Never combine a new model addition with structural code refactoring and hyperparameter changes in a single submission.  *(1 items, 1 kernels)*
+          - items: `55591012:e6#3`
+        - **[action]** Run all candidates locally but only submit those whose proxy metric (CV score, local output inspection) exceeds the current best or represents a meaningfully different configuration. Skip submission for candidates that are clearly inferior by proxy. Reserve submissions for the most promising candida  *(1 items, 1 kernels)*
+          - items: `15082684:e7#2`
+    - **[lever]** reproducibility verification via re-submission  *(4 items, 3 kernels)*
+      - **[action_context]** When no-code reruns show large score variance, indicating the pipeline may have hidden state dependencies or non-determinism.  *(3 items, 3 kernels)*
+        - **[action]** When a new-best score is achieved, re-run at least twice with no code changes to estimate the noise floor. Only count an improvement as real if it exceeds 2× the observed run-to-run variance. Do not chase small regressions from cosmetic or no-op changes.  *(3 items, 3 kernels)*
+          - items: `13702907:e8#2`, `18426209:e4#1`, `50496431:e35#3`
+      - **[action_context]** When toggling a setting back to its original value produces a score far from the original baseline.  *(1 items, 1 kernels)*
+        - **[action]** Do not trust small differences from single-submission A/B tests. When the round-trip (A→B→A) does not reproduce the original score, flag the pipeline as non-deterministic and either fix seeds/ordering or require multiple submissions per setting before drawing conclusions. Move on to higher-impact ch  *(1 items, 1 kernels)*
+          - items: `50496431:e23#2`
+    - **[lever]** search direction reversal  *(3 items, 3 kernels)*
+      - **[action_context]** When a single submitted result shows regression from a directional change (e.g., lowering a parameter too much).  *(2 items, 2 kernels)*
+        - **[action]** When a parameter change worsens the LB score, reverse direction and try a value between the current best and the failed attempt. Halve the step size when reversing. If two consecutive reversals fail to beat the best, stop the sweep and keep the best value found.  *(2 items, 2 kernels)*
+          - items: `27825577:e3#2`, `55591012:e5#2`
+      - **[action_context]** When each probe costs a submission and you have no offline proxy.  *(1 items, 1 kernels)*
+        - **[action]** Make minimal, single-variable changes per submission so each leaderboard score is informative about one decision. Track the best-known configuration and revert to it before trying the next change. Avoid changing two or more weights at once.  *(1 items, 1 kernels)*
+          - items: `29588171:e7#2`
+    - **[lever]** submission timing strategy  *(3 items, 3 kernels)*
+      - **[action_context]** When a new approach requires coordinated changes across multiple pipeline components and intermediate states are not meaningful to evaluate.  *(2 items, 2 kernels)*
+        - **[action]** Do not revert or submit partial builds. Continue building the full planned ensemble, skip submission on incomplete intermediate versions, and only evaluate on the leaderboard once all components are integrated and the blend is tuned. Use offline validation to maintain confidence during the build pha  *(2 items, 2 kernels)*
+          - items: `53747598:e4#2`, `73671444:e6#2`
+      - **[action_context]** Multiple checkpoint versions exist with similar validation metrics but different LB outcomes, and the search space of checkpoints is large.  *(1 items, 1 kernels)*
+        - **[action]** When iterating checkpoint versions for the same architecture yields diminishing or inconsistent returns (3+ attempts without improvement), stop checkpoint-shopping and instead change the architecture variant or add a new diverse model to the ensemble. The marginal gain from checkpoint selection with  *(1 items, 1 kernels)*
+          - items: `49524919:e17#3`
+    - **[lever]** postprocessing simplification  *(3 items, 1 kernels)*
+      - **[action_context]** When multiple recent changes produce scores that oscillate around a best rather than consistently improving, and the changes involve data augmentation or feature selection that could introduce variance.  *(3 items, 1 kernels)*
+        - **[action]** Strip out the volatile components (e.g., oversampling, in-notebook feature selection wrappers) and replace them with a fixed, precomputed artifact from the best-performing configuration. Fit models on the original unmodified data. This reduces run-to-run variance and often recovers or slightly excee  *(3 items, 1 kernels)*
+          - items: `58130512:e14#1`, `58130512:e31#1`, `58130512:e35#1`
+    - **[lever]** ablation and bug isolation  *(2 items, 2 kernels)*
+      - **[action_context]** When a multi-change commit causes a large regression, revert the most likely culprit first (the novel architectural addition rather than the hyperparameter change) and re-test.  *(2 items, 2 kernels)*
+        - **[action]** When combining a new layer/component with a hyperparameter change causes a regression, comment out or remove the new component first while keeping other changes. If performance recovers, the component was harmful. Do not re-introduce it. Submit only after confirming recovery.  *(2 items, 2 kernels)*
+          - items: `7240226:e3#2`, `52860091:e5#2`
+    - **[lever]** feature set composition  *(2 items, 2 kernels)*
+      - **[action_context]** When a stacked feature from external models degrades performance after multiple integration attempts  *(2 items, 2 kernels)*
+        - **[action]** If integrating pre-trained model predictions as stacked features causes regression after 2-3 attempts at fixing the pipeline, abandon that feature source entirely and replace it with simpler, more controllable features (e.g., handcrafted NLP features). Don't keep iterating on a broken stacking appro  *(2 items, 2 kernels)*
+          - items: `58130512:e34#1`, `55987255:e26#1`
+    - **[lever]** batch multiple orthogonal improvements before submitting  *(2 items, 2 kernels)*
+      - **[action_context]** When a conceptually motivated change (matching pretrained model expectations) regresses, and there is an obvious missing piece (normalization mismatch).  *(2 items, 2 kernels)*
+        - **[action]** Give a new preprocessing idea at most one refinement iteration (fix the most obvious gap, e.g., add proper normalization). If the second submission still regresses, pivot to a different lever (e.g., change the backbone) rather than continuing to tune the same preprocessing parameters.  *(2 items, 2 kernels)*
+          - items: `27799930:e6#1`, `49576186:e4#2`
+    - **[lever]** backbone swap and member pruning  *(2 items, 2 kernels)*
+      - **[action_context]** A newly added member regressed the score, indicating it is weaker than the members it dilutes.  *(2 items, 2 kernels)*
+        - **[action]** When a new ensemble member regresses the score, immediately remove it and try a different backbone in the same slot. If the replacement improves, also audit remaining members: disable any suspected weak contributor and re-normalize weights. Submit after each atomic change to isolate effects.  *(1 items, 1 kernels)*
+          - items: `18523075:e5#1`
+        - **[action]** After 2-3 pruning attempts that fail to improve, stop pruning and instead add qualitatively different feature types (e.g., topic models, sentiment, readability). Diminishing returns from subset selection signal that the feature space needs expansion, not contraction.  *(1 items, 1 kernels)*
+          - items: `55987255:e5#3`
+    - **[lever]** incremental pipeline construction and validation  *(2 items, 2 kernels)*
+      - **[action_context]** When the evaluation metric is noisy due to small public test set size  *(1 items, 1 kernels)*
+        - **[action]** Never fully replace a working model with an untested one in a single step. Instead, add the new model to the ensemble at low weight first. If the score improves or holds, gradually increase its weight. This bounds the downside risk from noisy evaluation.  *(1 items, 1 kernels)*
+          - items: `18423958:e3#3`
+      - **[action_context]** When no submission has been made yet and the pipeline has never produced output.  *(1 items, 1 kernels)*
+        - **[action]** Build the pipeline in small incremental steps: first wire data I/O and submission formatting, then run and inspect outputs at each stage. Fix dtype, shape, and range issues one at a time using notebook cell outputs before submitting. Do not submit until the full pipeline runs without errors and outp  *(1 items, 1 kernels)*
+          - items: `6803050:e1#1`
+    - **[lever]** multi-seed averaging to reduce prediction variance  *(2 items, 2 kernels)*
+      - **[action_context]** When repeated submissions of the same code show high score variance (suggesting stochastic inference or test-set noise), and multiple model checkpoints are available.  *(2 items, 2 kernels)*
+        - **[action]** Before tuning blend weights, first add more seed/fold replicates to each ensemble member to stabilize its predictions. This reduces noise in the LB signal, making subsequent weight tuning more reliable. Add seeds one at a time and verify the score does not degrade.  *(2 items, 2 kernels)*
+          - items: `18350823:e12#3`, `50376011:e23#2`
+    - **[lever]** debugging and refactoring new code  *(2 items, 2 kernels)*
+      - **[action_context]** When a large code addition causes regression and the new component is architecturally sound but hastily integrated.  *(2 items, 2 kernels)*
+        - **[action]** Do not revert. Instead, systematically audit the integration points: check variable references match the new context, remove duplicate code paths, verify input/output shapes and naming conventions, and resubmit. A large addition's first submission is a diagnostic baseline, not a final result.  *(2 items, 2 kernels)*
+          - items: `77450317:e13#1`, `55621328:e24#2`
+    - **[lever]** diagnose infra vs model quality before abandoning a candidate  *(2 items, 2 kernels)*
+      - **[action_context]** When a new ensemble member causes an unexpectedly large regression (much worse than the member's expected standalone performance), suspect an infrastructure or configuration error rather than immediately concluding the model is harmful.  *(2 items, 2 kernels)*
+        - **[action]** When adding a new model to an ensemble causes a surprising regression, first revert to the known-good baseline to confirm it still works. Then re-enable the new member after checking for config/data issues (re-runs, log inspection). Only after confirming the new member runs correctly should you eval  *(2 items, 2 kernels)*
+          - items: `49524919:e20#1`, `52860091:e8#1`
+    - **[lever]** hyperparameter tuning vs reverting  *(2 items, 2 kernels)*
+      - **[action_context]** When a feature addition causes a small but clear regression on the leaderboard.  *(2 items, 2 kernels)*
+        - **[action]** First revert to the last known good configuration and confirm the baseline score is reproducible. Only then re-add features one at a time. Do not attempt to rescue a regression by tuning hyperparameters on top of the new features — this compounds confounders and risks further regression.  *(2 items, 2 kernels)*
+          - items: `58130512:e2#2`, `60197293:e4#1`
+    - **[lever]** swap in improved component model versions  *(1 items, 1 kernels)*
+      - **[action_context]** When blend-weight tuning alone causes regression, the component predictions themselves may be suboptimal.  *(1 items, 1 kernels)*
+        - **[action]** When ensemble blend tuning regresses, upgrade the underlying component model predictions (retrained or improved versions) rather than continuing to tune weights on stale predictions. Retune blend weights jointly with the new components. Verify with a submission before iterating further.  *(1 items, 1 kernels)*
+          - items: `77450317:e11#1`
+    - **[lever]** external data inclusion and filtering  *(1 items, 1 kernels)*
+      - **[action_context]** When the external data has different labeling quality or distribution than the competition data, and initial experiments show regression.  *(1 items, 1 kernels)*
+        - **[action]** Test external data inclusion with aggressive filtering (remove ambiguous classes, deduplicate, keep only high-confidence labels). If two successive submissions show no improvement over baseline, revert the external data changes and move to a different lever rather than continuing to tune the filteri  *(1 items, 1 kernels)*
+          - items: `49576186:e24#1`
+    - **[lever]** trust CV over public leaderboard  *(1 items, 1 kernels)*
+      - **[action_context]** When the public test set is known to be very small and score movements are within noise range  *(1 items, 1 kernels)*
+        - **[action]** Do not revert changes based on tiny public LB regressions. Continue iterating based on local CV results. Treat public LB movements below ~0.01 as noise when the public test has fewer than ~50 rows. Only use LB to confirm large directional changes.  *(1 items, 1 kernels)*
+          - items: `17371717:e1#1`
+    - **[lever]** Local holdout toggle for rapid iteration  *(1 items, 1 kernels)*
+      - **[action_context]** When iterating on features and you need fast local feedback but must eventually train on full data for submission  *(1 items, 1 kernels)*
+        - **[action]** Add a togglable train_test_split near the top of the notebook (comment/uncomment one line). Enable it during development to get fast local validation scores. Before final submission, disable it so the model trains on all data. This avoids creating separate notebooks for validation vs. submission.  *(1 items, 1 kernels)*
+          - items: `7670859:e4#3`
+    - **[lever]** identify the binding constraint  *(1 items, 1 kernels)*
+      - **[action_context]** When postprocessing and configuration changes have no effect on score, the model outputs themselves are likely degenerate (constant, random, or wrong shape).  *(1 items, 1 kernels)*
+        - **[action]** If the score is invariant to postprocessing changes, stop experimenting with postprocessing. Print raw model outputs to check for degeneracy (all same value, NaN, wrong dimensions). Focus on whether the model weights are valid and whether inputs are correctly constructed. A score that doesn't change  *(1 items, 1 kernels)*
+          - items: `6803050:e3#2`
+    - **[lever]** ensemble member count  *(1 items, 1 kernels)*
+      - **[action_context]** When you have remaining fold checkpoints and each addition yields monotonic improvement.  *(1 items, 1 kernels)*
+        - **[action]** Continue adding all available fold checkpoints until exhausted. If improvement is monotonic and you have a fixed set of trained models, there is no reason to stop early—add them all. Only stop or change strategy when you run out of models or improvement plateaus.  *(1 items, 1 kernels)*
+          - items: `53424936:e2#3`
+    - **[lever]** single-variable experiment design  *(1 items, 1 kernels)*
+      - **[action_context]** When prior multi-factor changes produced ambiguous or negative results.  *(1 items, 1 kernels)*
+        - **[action]** Change exactly one factor per submission (e.g., only checkpoint paths, only TTA strategy, only ensemble members). If a multi-factor change regresses, decompose it into single-factor probes. This prevents confounding and lets you attribute score changes to specific decisions.  *(1 items, 1 kernels)*
+          - items: `53424936:e10#2`
+    - **[lever]** CV structure simplification  *(1 items, 1 kernels)*
+      - **[action_context]** When a complex CV or augmentation scheme produces scores at or below the simpler baseline after 3+ attempts and bug fixes.  *(1 items, 1 kernels)*
+        - **[action]** Revert to the simplest CV configuration that previously achieved the best score. If a complex scheme (nested CV, augmentation) doesn't beat the simple baseline after fixing bugs and tuning, abandon it entirely rather than continuing to debug. The overhead of complexity introduces more failure modes   *(1 items, 1 kernels)*
+          - items: `58130512:e29#1`
+  - **[lever_context]** Changing inference-time dropout on pretrained weights is unlikely to help because the weights were trained with a specific dropout setting; mismatching at inference adds noise rather than regularization.  *(1 items, 1 kernels)*
+    - **[lever]** Inference-time dropout magnitude  *(1 items, 1 kernels)*
+      - **[action_context]** When two successive probe values (e.g., 0→0.25→0.5) both yield identical leaderboard scores.  *(1 items, 1 kernels)*
+        - **[action]** After two null results from increasing a parameter in the same direction, revert to the original value and move on to a different lever. Do not continue escalating; the signal indicates the lever has no effect or the effect is below measurement noise.  *(1 items, 1 kernels)*
+          - items: `18350823:e9#2`
+  - **[lever_context]** The submission format may expect values in a different scale (e.g., 0-100) than what sigmoid outputs (0-1). AUC is rank-based so scaling shouldn't matter — unless the submission platform clips or processes values unexpectedly, or the format specification requires a specific range.  *(1 items, 1 kernels)*
+    - **[lever]** prediction value scaling  *(1 items, 1 kernels)*
+      - **[action_context]** When all other pipeline components appear correct but score remains near chance, inspect the sample submission file's value ranges and match your output range to it.  *(1 items, 1 kernels)*
+        - **[action]** Before submitting, compare your raw prediction statistics (min, max, mean) against the sample submission's value ranges. If the sample submission has values in [0,100] and your predictions are in [0,1], scale accordingly. Always print prediction summaries as a sanity check.  *(1 items, 1 kernels)*
+          - items: `15173072:e2#3`
+  - **[lever_context]** Previous additions of Funnel-large and BART-large (v6) hurt or didn't help and were removed (v7-v9). DeBERTa is architecturally distinct (disentangled attention) from existing RoBERTa/XLNet/ELECTRA members, suggesting it would add diversity.  *(1 items, 1 kernels)*
+    - **[lever]** Add architecturally distinct backbone to ensemble  *(1 items, 1 kernels)*
+      - **[action_context]** When prior backbone additions from the same architectural family failed to improve the ensemble.  *(1 items, 1 kernels)*
+        - **[action]** Prefer adding backbones with fundamentally different attention mechanisms (e.g., DeBERTa's disentangled attention vs. standard transformers) rather than variants of existing architectures. Pair the new backbone with a proven model head design (attention pooling, multisample dropout) already validate  *(1 items, 1 kernels)*
+          - items: `18550705:e3#1`
+- **[goal]** What do I do when incremental tuning of the same hyperparameter has plateaued but I still want score gains?  *(98 items, 39 kernels)*
+  - **[lever_context]** From v37 onward, the author spent ~35 versions iterating on checkpoints, ensemble weights, and rounding thresholds, with diminishing returns (0.81536→0.82319 over many tries). The v72 regression suggests this lever is exhausted.  *(98 items, 39 kernels)*
+    - **[lever]** Add a second diverse model architecture to the ensemble  *(10 items, 9 kernels)*
+      - **[action_context]** When 3+ attempts at recombining existing ensemble members and tuning preprocessing each regress or plateau well above the best known score.  *(7 items, 6 kernels)*
+        - **[action]** Switch from parameter tuning to structural changes: add more diverse pretrained checkpoints to the transformer ensemble, average their softmax outputs, and blend with the existing pipeline. This provides orthogonal signal that tuning alone cannot achieve. Make the large change in one commit, then fi  *(6 items, 5 kernels)*
+          - items: `73937748:e15#1`, `7670859:e2#1`, `49524919:e13#1`, `55591012:e13#1`, `50496431:e29#3`, `50496431:e37#2`
+        - **[action]** After identifying the top 2-3 individual checkpoints via a sweep, average their predicted probability distributions and re-normalize. This typically yields a larger gain than further single-checkpoint search.  *(1 items, 1 kernels)*
+          - items: `52860091:e2#3`
+      - **[action_context]** When the existing model is tree-based (ODST) and the data has both numeric and categorical features amenable to learned embeddings.  *(2 items, 2 kernels)*
+        - **[action]** Load each model family separately with its own preprocessing pipeline. Average predictions across all models from all families. When adding a new family, first verify it helps by comparing the combined ensemble against each family alone. If removing a family causes regression, keep it. Expand the po  *(2 items, 2 kernels)*
+          - items: `77129691:e5#1`, `52551258:e6#1`
+      - **[action_context]** Multiple independently trained checkpoints are available and the metric (KL divergence) is convex, so averaging predictions reduces variance without introducing bias.  *(1 items, 1 kernels)*
+        - **[action]** When single-model inference has plateaued, build an ensemble infrastructure that loads multiple checkpoints, runs inference with each, and averages their predictions. Start with all available checkpoints in a simple mean ensemble. Expect a meaningful improvement (often 5-10% relative) from the first  *(1 items, 1 kernels)*
+          - items: `50376011:e2#1`
+    - **[lever]** hyperparameter search strategy  *(9 items, 6 kernels)*
+      - **[action_context]** When the meta-learner HP search space is small and the tuning budget is expensive relative to submission turnaround.  *(7 items, 6 kernels)*
+        - **[action]** If a single-step sweep of a discrete hyperparameter (e.g., tree depth ±1) yields only marginal improvement (<0.1% of metric), stop the sweep after testing both directions and move to a different lever (e.g., number of estimators, blend weights) rather than continuing to explore intermediate or wider  *(7 items, 6 kernels)*
+          - items: `29588171:e5#1`, `60759531:e3#2`, `27389424:e2#1`, `27836972:e7#2`, `73937748:e19#2`, `73937748:e26#1`, `55987255:e28#2`
+      - **[action_context]** When using shallow trees (depth 4) with a moderate learning rate on a large feature set (1000+ columns) built from extensive aggregation engineering.  *(1 items, 1 kernels)*
+        - **[action]** Increase tree depth substantially (e.g., 4→7), lower learning rate (0.05→0.03), add strong regularization (high lambda, gamma, min_child_weight), and reduce column sampling to compensate for depth increase. Submit once and evaluate before further tuning.  *(1 items, 1 kernels)*
+          - items: `27836972:e13#1`
+      - **[action_context]** When a single change causes a clear regression and you lack a systematic search framework  *(1 items, 1 kernels)*
+        - **[action]** Before tuning, snapshot the exact baseline configuration. If the first change regresses, fully revert to baseline before trying the next change. Never stack untested changes on top of a regression. Test one parameter at a time against the known-good baseline to isolate effects.  *(1 items, 1 kernels)*
+          - items: `60759531:e2#1`
+    - **[lever]** experiment scheduling and stopping  *(9 items, 9 kernels)*
+      - **[action_context]** When working a single model's hyperparameters and 4-5 submissions all land within a narrow band around the previous best.  *(7 items, 7 kernels)*
+        - **[action]** After 4-5 submissions that stay within ~0.002 of each other on the leaderboard, treat the lever as exhausted. Revert to the best-scoring configuration and switch to a qualitatively different lever (e.g., adding new models to the ensemble, changing features, or blending external predictions). Do not   *(7 items, 7 kernels)*
+          - items: `27836972:e13#2`, `17371717:e13#2`, `29588171:e4#2`, `77129691:e6#2`, `7018718:e5#3`, `55621328:e4#2`, `55591012:e11#2`
+      - **[action_context]** When a sweep of a post-processing parameter yields no gain over the default, the lever has low remaining headroom.  *(1 items, 1 kernels)*
+        - **[action]** If sweeping a single knob across a reasonable range (both directions from baseline) fails to improve the metric, stop tuning that knob. Submit the best configuration as a checkpoint, then pivot to a higher-impact lever such as target transformation, feature engineering, or model architecture changes  *(1 items, 1 kernels)*
+          - items: `77276039:e2#2`
+      - **[action_context]** When you have tested values on both sides of the current setting and the current setting is best or tied for best.  *(1 items, 1 kernels)*
+        - **[action]** Declare the parameter sufficiently tuned and switch to a qualitatively different lever (e.g., feature engineering) rather than continuing to fine-tune the same parameter with smaller step sizes.  *(1 items, 1 kernels)*
+          - items: `27825577:e4#2`
+    - **[lever]** switching to a different lever entirely  *(6 items, 4 kernels)*
+      - **[action_context]** When a hyperparameter sweep shows diminishing returns over 2-3 steps, pivot to a structurally different change (e.g., output calibration, loss modification, architecture tweak) rather than continuing to micro-tune the same parameter.  *(5 items, 4 kernels)*
+        - **[action]** After 2-3 consecutive tuning steps on one hyperparameter yield progressively smaller gains, stop that sweep and probe a qualitatively different lever. Pick a single reasonable value for the new lever; if it yields a new best, keep it and optionally refine later. This avoids over-investing in one dim  *(5 items, 4 kernels)*
+          - items: `13542132:e3#1`, `27389424:e2#3`, `27389424:e17#3`, `77129691:e9#2`, `77347591:e5#1`
+      - **[action_context]** When switching from hyperparameter tuning to data preprocessing, and you have a precomputed artifact ready to test.  *(1 items, 1 kernels)*
+        - **[action]** Introduce the new lever as a single controlled change with all other settings frozen. If the leaderboard confirms improvement, accept it and return to fine-tuning other levers. Do not sweep the new lever immediately—first confirm the direction is positive, then optionally refine later.  *(1 items, 1 kernels)*
+          - items: `77129691:e12#2`
+    - **[lever]** experiment design (single-variable vs. multi-variable changes)  *(4 items, 4 kernels)*
+      - **[action_context]** When the search space is small (2-3 values per variable) and submissions are cheap but noisy.  *(2 items, 2 kernels)*
+        - **[action]** When two variables are coupled, test 2-3 combinations. If the first combination is best and subsequent ones regress, stop after 2-3 trials rather than exhaustively searching—especially when the leaderboard is noisy (few public rows). Avoid changing both variables simultaneously if possible; isolate   *(2 items, 2 kernels)*
+          - items: `77129691:e3#2`, `17371717:e14#2`
+      - **[action_context]** When a multi-parameter change causes a regression and you cannot tell which parameter is responsible.  *(1 items, 1 kernels)*
+        - **[action]** Revert to the last known good configuration, then vary only one parameter per submission. After recovering the baseline, sweep the second parameter independently. This avoids confounded results and wasted submissions.  *(1 items, 1 kernels)*
+          - items: `7676170:e6#1`
+      - **[action_context]** When each step in a sequence yields positive improvement, indicating the search direction is productive.  *(1 items, 1 kernels)*
+        - **[action]** When exploring a new model variant, make one change per submission and submit after each. If every step improves, continue refining along the same axis (checkpoint selection → training stage → preprocessing alignment). Stop and switch levers when the obvious refinements within that axis are exhauste  *(1 items, 1 kernels)*
+          - items: `55621328:e35#2`
+    - **[lever]** partial revert of coupled changes  *(4 items, 4 kernels)*
+      - **[action_context]** When a batch of changes causes a score drop larger than recent gains, and the changes touched many parameters simultaneously.  *(4 items, 4 kernels)*
+        - **[action]** When a multi-parameter change causes a large regression, revert entirely to the last known-good version rather than attempting to fix individual parameters. Then re-apply changes one at a time or in small groups, submitting after each, to isolate which change caused the regression. Never change more  *(4 items, 4 kernels)*
+          - items: `7823861:e5#2`, `7253130:e5#1`, `55621328:e45#1`, `55591012:e11#3`
+    - **[lever]** pivot to a qualitatively different approach  *(4 items, 4 kernels)*
+      - **[action_context]** When a feature engineering direction has consumed many iterations without surpassing the baseline, and there exist qualitatively different feature sources not yet tried.  *(4 items, 4 kernels)*
+        - **[action]** After 3-5 unsuccessful modifications to the same component, stop and submit to confirm no improvement. If confirmed, abandon that lever and switch to a fundamentally different approach (e.g., from head tuning to ensemble with new model families). Do not continue micro-adjusting the same component.  *(4 items, 4 kernels)*
+          - items: `58527792:e2#1`, `7670859:e1#3`, `55621328:e23#2`, `55987255:e14#2`
+    - **[lever]** data preprocessing / denoising  *(3 items, 3 kernels)*
+      - **[action_context]** When model-level changes stall, check whether the input data has known artifacts (noise, precision issues) documented by the community or discoverable via EDA.  *(2 items, 2 kernels)*
+        - **[action]** When model hyperparameter or loss function experiments plateau, pivot to data-level fixes. Revert unsuccessful model changes to a clean baseline, then apply the data fix to isolate its effect. Submit to confirm the gain before layering further changes.  *(2 items, 2 kernels)*
+          - items: `27502740:e3#1`, `55621328:e7#2`
+      - **[action_context]** When using KL-divergence loss with expert vote distributions as soft labels, and one class ('Other') has inherently noisier/less confident labels  *(1 items, 1 kernels)*
+        - **[action]** Filter out low-confidence examples from the ambiguous class (keep only those with high vote fraction, e.g., ≥0.8), add label smoothing, and use simple deduplication (one sample per unique ID) rather than complex class-balanced oversampling. Complex temporal deduplication with per-class balancing ten  *(1 items, 1 kernels)*
+          - items: `49576186:e21#2`
+    - **[lever]** regularization strength and feature count  *(3 items, 3 kernels)*
+      - **[action_context]** When early stopping is already active and you have multiple regularization knobs set to arbitrary values.  *(3 items, 3 kernels)*
+        - **[action]** Comment out or reset all manual regularization parameters to defaults in one step, then compare validation performance. Early stopping often provides sufficient regularization for GBDT, making explicit regularization params less critical. Re-add individual params only if validation degrades.  *(3 items, 3 kernels)*
+          - items: `27799930:e2#2`, `60197293:e8#1`, `55591012:e11#1`
+    - **[lever]** model architecture change  *(3 items, 3 kernels)*
+      - **[action_context]** When score improvements from hyperparameter/post-processing tuning have stalled and a different or larger model can be trained offline.  *(3 items, 3 kernels)*
+        - **[action]** Stop checkpoint sweeping after scores plateau or regress over several attempts. Switch to a structurally different architecture that better matches the task (e.g., multi-head for multi-output problems). Deploy the new architecture with its best-CV checkpoint, then tune inference-time settings (resol  *(3 items, 3 kernels)*
+          - items: `49524919:e11#2`, `53762022:e4#1`, `15082684:e3#1`
+    - **[lever]** deciding when to stop tuning a weak ensemble component  *(2 items, 2 kernels)*
+      - **[action_context]** When a component model has been tuned across multiple axes for many iterations without beating the baseline ensemble  *(2 items, 2 kernels)*
+        - **[action]** Stop tuning the stacking meta-learner and instead add new diverse base models to the ensemble. The marginal value of meta-learner hyperparameters is small compared to adding an uncorrelated base prediction. Submit only after the new base models are integrated.  *(2 items, 2 kernels)*
+          - items: `73937748:e11#3`, `29588171:e6#1`
+    - **[lever]** loss function and learning rate  *(2 items, 2 kernels)*
+      - **[action_context]** When the search space is small (2 hyperparameters, few candidate values) and submissions are cheap.  *(1 items, 1 kernels)*
+        - **[action]** First move both dropout and learning rate together in the conservative direction (lower dropout, lower lr) to establish a working baseline. Then isolate each variable by reverting one at a time and submitting, to determine which change actually helped. Keep the configuration that scores best.  *(1 items, 1 kernels)*
+          - items: `7253130:e2#1`
+      - **[action_context]** When 4+ consecutive iterations of one lever type show no improvement or regression, the search is stuck in a local region.  *(1 items, 1 kernels)*
+        - **[action]** After 4+ failed iterations tuning one lever, abandon that lever entirely and switch to a fundamentally different one (e.g., from augmentation to loss function). Bundle the new lever with complementary changes (learning rate, regularization) in a single probe to maximize the chance of escaping the pl  *(1 items, 1 kernels)*
+          - items: `13542132:e4#1`
+    - **[lever]** controlling for randomness during manual sweeps  *(2 items, 2 kernels)*
+      - **[action_context]** When using manual (non-automated) hyperparameter search with stochastic training.  *(2 items, 2 kernels)*
+        - **[action]** Hold the random seed fixed while varying hyperparameters so that score changes can be attributed to the hyperparameter, not seed variance. Only change the seed deliberately to test robustness after finding a promising configuration.  *(2 items, 2 kernels)*
+          - items: `60759531:e3#3`, `27389424:e3#2`
+    - **[lever]** repeated submissions of identical code  *(2 items, 2 kernels)*
+      - **[action_context]** When the effect size of a change is similar to or smaller than the observed run-to-run variance.  *(2 items, 2 kernels)*
+        - **[action]** Before concluding a change helped or hurt, re-run the identical notebook at least once to estimate submission noise. If the variance across identical runs exceeds the observed delta from the change, do not trust a single regression as evidence the change is harmful. Only accept a change if it consis  *(2 items, 2 kernels)*
+          - items: `13542132:e2#1`, `7573212:e3#2`
+    - **[lever]** search direction reversal  *(2 items, 1 kernels)*
+      - **[action_context]** When 2–3 steps in one direction on a regularization parameter show no validation gain.  *(2 items, 1 kernels)*
+        - **[action]** After 2–3 monotonic steps without improvement, do not continue in the same direction. Instead, reset the parameter to a previously reasonable value and simultaneously change a complementary parameter (e.g., min_child_samples, n_estimators) to explore a qualitatively different model complexity regime  *(2 items, 1 kernels)*
+          - items: `27389424:e4#2`, `27389424:e5#2`
+    - **[lever]** full pipeline consolidation  *(2 items, 2 kernels)*
+      - **[action_context]** When a long tuning sweep has plateaued or you want to change modeling strategy (e.g., switch objective or boosting type).  *(1 items, 1 kernels)*
+        - **[action]** Before changing modeling strategy, pause to add fold-level artifact saving (indices, predictions, scores) to disk. Use a debug run first to verify the instrumentation works, fix any bugs, then turn debug off. This gives you diagnostic data to guide the next round of experiments.  *(1 items, 1 kernels)*
+          - items: `27389424:e12#1`
+      - **[action_context]** When many small experiments have been tried without submission and the best ideas are known from CV but haven't been combined cleanly.  *(1 items, 1 kernels)*
+        - **[action]** After a series of exploratory unsubmitted runs, consolidate all winning components into a single clean rewrite. Replace expensive runtime computation with precomputed artifacts, combine the best model types and training procedures discovered, and submit the consolidated version. This avoids compound  *(1 items, 1 kernels)*
+          - items: `55431616:e8#1`
+    - **[lever]** discrete structural model change  *(2 items, 2 kernels)*
+      - **[action_context]** When continuous tuning of the same model configuration shows diminishing returns across many iterations.  *(2 items, 2 kernels)*
+        - **[action]** After exhausting continuous hyperparameter sweeps, probe discrete structural alternatives (e.g., algorithm variant, loss function, ensemble method) one at a time with all else held fixed. Submit the probe to get leaderboard signal. If it improves, accept and move to the next orthogonal lever.  *(2 items, 2 kernels)*
+          - items: `27389424:e14#2`, `18350823:e10#2`
+    - **[lever]** pivot to higher-impact lever  *(2 items, 2 kernels)*
+      - **[action_context]** When a hyperparameter probe shows the parameter matters but further tuning is unlikely to surpass the best known score, and there are untried architectural or ensembling options available.  *(2 items, 2 kernels)*
+        - **[action]** After one or two probes on a continuous hyperparameter that show partial but insufficient improvement, stop the sweep and invest effort in a qualitatively different lever (e.g., adding a new model to the ensemble) that has higher expected upside.  *(2 items, 2 kernels)*
+          - items: `77129691:e4#2`, `50496431:e11#1`
+    - **[lever]** meta-learner HPO budget  *(2 items, 2 kernels)*
+      - **[action_context]** When doing a rapid sweep of a single hyperparameter and each run is expensive but submissions are limited.  *(2 items, 2 kernels)*
+        - **[action]** When making a low-risk component swap, simultaneously increase the HPO budget for the meta-learner so both improvements can be captured in one submission. If the combined gain is marginal, do not further increase the budget—move to a structurally different lever instead.  *(1 items, 1 kernels)*
+          - items: `73937748:e25#2`
+        - **[action]** Use validation scores to guide a multi-step sweep without submitting intermediate results. Only submit once you find a configuration where validation clearly improves. If the sweep direction stops helping on validation, revert and try a different lever before submitting.  *(1 items, 1 kernels)*
+          - items: `7253130:e3#2`
+    - **[lever]** feature enrichment  *(2 items, 2 kernels)*
+      - **[action_context]** When blend-weight sweeps show oscillation without improvement over many attempts.  *(2 items, 2 kernels)*
+        - **[action]** After 2-3 failed incremental tweaks to augmentation or preprocessing, pivot to changing the fundamental feature representation (e.g., switching spectrogram type, adding a new modality, or changing the backbone). Bundle the representation change with compatible training adjustments. This is more like  *(2 items, 2 kernels)*
+          - items: `49576186:e25#3`, `55987255:e30#1`
+    - **[lever]** Tree depth per model config  *(2 items, 2 kernels)*
+      - **[action_context]** When a uniform hyperparameter change across multiple models shows mixed CV results  *(2 items, 2 kernels)*
+        - **[action]** When tuning a structural hyperparameter across multiple model configs in an ensemble, apply the change consistently to all configs rather than just one. If changing only one config yields a regression, try making all configs consistent before concluding the new value is worse.  *(2 items, 2 kernels)*
+          - items: `55987255:e28#1`, `55591012:e14#1`
+    - **[lever]** inference resolution increase  *(2 items, 2 kernels)*
+      - **[action_context]** When checkpoint selection is exhausted and the model architecture supports variable input size  *(2 items, 2 kernels)*
+        - **[action]** Increase inference resolution in moderate steps (e.g., +128 pixels). Pair the resolution change with a checkpoint that was trained at or near that resolution (check CV). Enable multi-GPU if the larger resolution causes OOM. Verify the pipeline runs before submitting.  *(1 items, 1 kernels)*
+          - items: `15082684:e8#2`
+        - **[action]** Do NOT sweep normalization mean/std away from the values used during training. If you don't know the training config, keep ImageNet defaults. Deviating from training-time normalization almost always hurts. If the first perturbation degrades the score, revert immediately rather than continuing the sw  *(1 items, 1 kernels)*
+          - items: `15173072:e4#1`
+    - **[lever]** confirmation via extreme values and co-parameter variation  *(1 items, 1 kernels)*
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** After bracketing a hyperparameter optimum, test an extreme value far from the optimum (e.g., 5× larger) to confirm the direction of effect. If it confirms, return to the bracketed optimum but vary a co-parameter (e.g., regularization strength range) to check for interaction effects. If the combined   *(1 items, 1 kernels)*
+          - items: `7676170:e1#2`
+    - **[lever]** groupby aggregation function selection  *(1 items, 1 kernels)*
+      - **[action_context]** When the baseline aggregation set already includes mean, std, min, max, last and the model is tree-based (XGBoost).  *(1 items, 1 kernels)*
+        - **[action]** Try adding one aggregation at a time (sum, var) and toggling existing ones (removing 'last' for categoricals). Submit only after checking CV. If the new aggregation degrades both CV and LB, revert it before trying the next. Do not stack multiple untested aggregations simultaneously.  *(1 items, 1 kernels)*
+          - items: `27825577:e5#1`
+    - **[lever]** ablation of joint changes  *(1 items, 1 kernels)*
+      - **[action_context]** When each submission is cheap and the search space is small enough to test individual reversions.  *(1 items, 1 kernels)*
+        - **[action]** After a joint change improves the score, revert one variable back to its previous value while keeping the other fixed. If the score stays the same or improves, the reverted variable's new value was unnecessary or harmful. Repeat for the other variable if needed. This isolates contributions with mini  *(1 items, 1 kernels)*
+          - items: `7253130:e2#2`
+    - **[lever]** number of cross-validation folds  *(1 items, 1 kernels)*
+      - **[action_context]** When the dataset is small and you are already ensembling fold predictions, increasing the number of folds gives each model more training data and a larger ensemble.  *(1 items, 1 kernels)*
+        - **[action]** After exhausting easy gains from dropout and learning rate, increase the number of CV folds (e.g., from 10 to 15). This simultaneously increases per-fold training set size and ensemble diversity. Expect meaningful gains on small datasets where the marginal training examples matter.  *(1 items, 1 kernels)*
+          - items: `7253130:e5#2`
+    - **[lever]** train/val split ratio and color augmentation diversity  *(1 items, 1 kernels)*
+      - **[action_context]** When the model is already reasonably strong (AUC > 0.94) and you suspect slight underfitting or distribution mismatch rather than a fundamental architecture problem.  *(1 items, 1 kernels)*
+        - **[action]** Try one change at a time: first adjust the train/val ratio (e.g., 80/20 → 85/15), then revert if no improvement and try adding mild color augmentations (contrast, saturation with narrow ranges like 0.9–1.1). Keep augmentation ranges conservative for medical images where color carries diagnostic info  *(1 items, 1 kernels)*
+          - items: `13542132:e2#2`
+    - **[lever]** boosting algorithm type  *(1 items, 1 kernels)*
+      - **[action_context]** When using LightGBM with GBDT and the model is well-tuned but plateauing, and the training budget allows slower DART training.  *(1 items, 1 kernels)*
+        - **[action]** Try switching from GBDT to DART as a single probe while keeping all other hyperparameters fixed. If it improves, accept it and move on to other levers; DART is a discrete choice with no further sub-parameters to sweep initially.  *(1 items, 1 kernels)*
+          - items: `27389424:e14#1`
+    - **[lever]** fast local proxy evaluation mode  *(1 items, 1 kernels)*
+      - **[action_context]** When each full run takes too long for a sweep of 30+ configurations.  *(1 items, 1 kernels)*
+        - **[action]** Create a TEST/DEBUG mode that runs 1 fold and 1 seed to get a fast (but noisy) validation signal. Use it for coarse sweeps, then submit only the most promising configurations on the full pipeline. Be aware the reduced-fold signal may not match the leaderboard (as seen when v116 regressed).  *(1 items, 1 kernels)*
+          - items: `27389424:e17#1`
+    - **[lever]** continuation past small regression  *(1 items, 1 kernels)*
+      - **[action_context]** When a single-step change produces a regression smaller than ~0.1% of the metric range and the direction of change is theoretically motivated (reducing overfitting).  *(1 items, 1 kernels)*
+        - **[action]** Continue one more step in the same direction rather than immediately reverting. If the next step also regresses, revert both changes. If it improves past the original baseline, adopt the new setting. This avoids premature abandonment due to noise while limiting downside to two experiments.  *(1 items, 1 kernels)*
+          - items: `27825577:e1#2`
+    - **[lever]** training infrastructure and custom evaluation metric  *(1 items, 1 kernels)*
+      - **[action_context]** When the competition metric differs from standard loss functions and fold quality varies  *(1 items, 1 kernels)*
+        - **[action]** Before continuing hyperparameter tuning, pause submissions and build infrastructure: (1) implement the competition metric as a custom eval function in the training loop, (2) add per-fold quality weighting for test predictions, (3) add debug prints to verify correctness, (4) increase early stopping p  *(1 items, 1 kernels)*
+          - items: `27825577:e2#1`
+    - **[lever]** Infrastructure and post-processing overhaul combined with ensemble refinement  *(1 items, 1 kernels)*
+      - **[action_context]** When model-level tuning plateaus, bundle an infrastructure improvement (faster ranking, cleaner code) with an ensemble component audit in a single submission to test whether the combination yields a gain.  *(1 items, 1 kernels)*
+        - **[action]** When incremental model tuning stalls, invest one iteration in refactoring the post-processing and ensemble selection together. Clean up unused code, introduce optimized implementations of metric-critical operations, and simultaneously prune or add ensemble members. Submit the combined change; if it   *(1 items, 1 kernels)*
+          - items: `75924487:e6#2`
+    - **[lever]** Search space expansion for diminishing returns  *(1 items, 1 kernels)*
+      - **[action_context]** When the current score is near the best and the new dimensions are binary/categorical (cheap to explore).  *(1 items, 1 kernels)*
+        - **[action]** Add the new categorical dimensions to the search, run the optimizer offline, and only commit the new values if the OOF score is at least as good. Submit once to confirm on the leaderboard. If the gain is negligible, stop tuning and move on to other levers.  *(1 items, 1 kernels)*
+          - items: `73937748:e26#2`
+    - **[lever]** training duration (epochs)  *(1 items, 1 kernels)*
+      - **[action_context]** When a small increase in epochs shows signs of overfitting on validation metrics for a fine-tuned pretrained model on a small dataset.  *(1 items, 1 kernels)*
+        - **[action]** If increasing epochs by 1 shows overfitting on validation, immediately revert rather than trying intermediate values or other mitigations. For BERT fine-tuning on small datasets, the optimal epoch count is typically very low (2-4), so single-step search is sufficient.  *(1 items, 1 kernels)*
+          - items: `7613444:e2#2`
+    - **[lever]** ensemble member count  *(1 items, 1 kernels)*
+      - **[action_context]** When single-model scores have stabilized and multiple diverse checkpoints exist from different folds or seeds.  *(1 items, 1 kernels)*
+        - **[action]** Progressively increase ensemble size by adding fold checkpoints one batch at a time (2→4→5 members). After each expansion, verify the gain is real by reverting to single-model and comparing. Stop expanding when GPU memory is near capacity or marginal gain diminishes. Use equal weights as the default  *(1 items, 1 kernels)*
+          - items: `50376011:e23#1`
+    - **[lever]** approach selection / abandonment  *(1 items, 1 kernels)*
+      - **[action_context]** When sweeping checkpoint versions of a new approach and every version is substantially worse than the established baseline, with no improving trend.  *(1 items, 1 kernels)*
+        - **[action]** If 3+ checkpoint versions of a new approach all score much worse than baseline with no improving trend, abandon the approach and pivot to a qualitatively different idea (e.g., different modality or model family) rather than continuing to iterate on the same failing concept.  *(1 items, 1 kernels)*
+          - items: `49524919:e9#2`
+    - **[lever]** custom loss function constants  *(1 items, 1 kernels)*
+      - **[action_context]** When multiple probes of a continuous parameter yield oscillating scores around a peak with no clear gradient.  *(1 items, 1 kernels)*
+        - **[action]** After 4-5 probes of a continuous parameter that oscillate without improving the best, stop tuning that parameter and move to a different lever. The search space is likely exhausted or the parameter's effect is dominated by noise at this resolution.  *(1 items, 1 kernels)*
+          - items: `58130512:e27#2`
+    - **[lever]** Resource management and conservative first step  *(1 items, 1 kernels)*
+      - **[action_context]** When the pipeline has a GPU-heavy inference stage followed by a tree-based training stage, and you suspect resource contention.  *(1 items, 1 kernels)*
+        - **[action]** Before tuning hyperparameters, first force CPU mode and add explicit memory cleanup (clear backend sessions, gc.collect). Make this a separate submission to establish a clean baseline. Only then tune model hyperparameters in the next step, so you can attribute score changes to the tuning rather than  *(1 items, 1 kernels)*
+          - items: `55987255:e3#2`
+    - **[lever]** Debugging the inference/submission path  *(1 items, 1 kernels)*
+      - **[action_context]** When a long sequence of reasonable changes fails to improve the leaderboard score despite expected gains from validation.  *(1 items, 1 kernels)*
+        - **[action]** If multiple plausible improvements fail to move the leaderboard score, suspect a bug in the prediction or submission pipeline rather than continuing to tune inputs. Trace the full path from model output to submission file, checking for typos, wrong variable references, and shape mismatches. Fix the   *(1 items, 1 kernels)*
+          - items: `55987255:e12#2`
+    - **[lever]** persisting through noisy feedback  *(1 items, 1 kernels)*
+      - **[action_context]** When a small regression is within the noise margin and the change was only partially applied.  *(1 items, 1 kernels)*
+        - **[action]** When a change produces a small regression that is within leaderboard noise, check whether the change was fully and consistently applied before reverting. Complete the intended modification and submit again rather than immediately abandoning the direction.  *(1 items, 1 kernels)*
+          - items: `55591012:e14#2`
+    - **[lever]** model head complexity (attention blocks, hidden layers, dropout)  *(1 items, 1 kernels)*
+      - **[action_context]** Each head currently uses only pooling + linear. The backbone feature maps are spatial (h×w×c), so spatial attention can help before pooling, and a hidden layer with dropout can add nonlinearity and regularization after pooling.  *(1 items, 1 kernels)*
+        - **[action]** Add a lightweight spatial attention module (e.g., spatial squeeze-excitation) before adaptive pooling to let each head focus on relevant spatial regions, then add one hidden linear layer with ReLU and moderate dropout (0.3–0.5) between pooling and the output layer. Train with the same schedule and v  *(1 items, 1 kernels)*
+          - items: `13848868:e2#2`
+- **[goal]** What do I do when I've hit a new best score and want to explore whether alternative configurations can beat it?  *(71 items, 35 kernels)*
+  - **[lever_context]** Three submissions in this episode (v42: 0.36986, v48: 0.37184, v49: 0.36824) all fell short of the v39 baseline (0.38287). The author had been trying single-axis changes (checkpoint variant, ensemble size, postprocessing on/off).  *(70 items, 34 kernels)*
+    - **[lever]** experiment scheduling  *(12 items, 9 kernels)*
+      - **[action_context]** When 2-3 attempts on the same lever all fail to beat the baseline, especially if the best recovery is still >2% worse.  *(11 items, 9 kernels)*
+        - **[action]** After three consecutive regressions on the same type of lever, stop that line of exploration, revert to the best-scoring configuration, and switch to a qualitatively different lever (e.g., from preprocessing tuning to ensemble composition or architecture changes).  *(11 items, 9 kernels)*
+          - items: `27836972:e13#3`, `18423958:e4#2`, `6803050:e10#2`, `27656049:e3#2`, `77347591:e6#2`, `50376011:e36#2`, `49576186:e8#3`, `55621328:e30#2`, `55621328:e38#2`, `50496431:e25#2`, `50496431:e45#3`
+      - **[action_context]** When you have confirmed one change helps (v45 showed spec model helps) and want to test a second change  *(1 items, 1 kernels)*
+        - **[action]** Keep the confirmed-beneficial change active and add only the new change in the next submission. If you instead revert the beneficial change while adding the new one, a regression tells you nothing about which change caused it. Always change one variable per submission when probing.  *(1 items, 1 kernels)*
+          - items: `50496431:e15#2`
+    - **[lever]** verification re-runs  *(11 items, 8 kernels)*
+      - **[action_context]** After a large improvement or after a small incremental change, re-run the identical code and submit again to see if the score is stable before making further changes.  *(10 items, 7 kernels)*
+        - **[action]** Re-submit the identical code 1-2 times without changes. If scores vary by more than the improvement margin, the gain may be noise. If variance is high (as seen here: 0.95131 → 0.95073 → 0.94510), do not trust the single best; instead investigate and eliminate sources of randomness before drawing con  *(10 items, 7 kernels)*
+          - items: `13521245:e2#2`, `13702907:e6#2`, `27389424:e10#1`, `73671444:e3#3`, `49576186:e13#2`, `59253662:e4#2`, `13702907:e3#2`, `50496431:e17#3`, `50496431:e21#2`, `50496431:e41#2`
+      - **[action_context]** When a change affects all predictions and you have limited submissions.  *(1 items, 1 kernels)*
+        - **[action]** Add per-sample debug prints for the new inference path, run without submitting to inspect outputs, then re-run (possibly unchanged) to submit only after confirming outputs look reasonable. This avoids wasting submissions on broken inference.  *(1 items, 1 kernels)*
+          - items: `53424936:e3#2`
+    - **[lever]** ensemble blend weights  *(4 items, 4 kernels)*
+      - **[action_context]** When the current best was found with a particular weight configuration and you want to explore nearby configurations.  *(2 items, 2 kernels)*
+        - **[action]** After 3–4 submissions that return effectively the same score (within noise), stop sweeping that lever. The leaderboard resolution cannot distinguish the variants, so further submissions waste budget without information gain. Move to a structurally different lever (new model, new features, new loss)   *(2 items, 2 kernels)*
+          - items: `77347591:e9#1`, `53762022:e7#1`
+      - **[action_context]** A single continuous parameter controls the blend ratio between two models.  *(2 items, 2 kernels)*
+        - **[action]** After achieving a new best, test 2-3 blend weight values in a narrow range (±0.05) around the current value. If the first step causes a large regression, try a smaller step in the same direction. If no improvement is found within 2-3 trials, stop and accept the original weight as near-optimal.  *(2 items, 2 kernels)*
+          - items: `60197293:e19#1`, `15164527:e6#1`
+    - **[lever]** single-variable A/B test with revert  *(4 items, 4 kernels)*
+      - **[action_context]** When the leaderboard metric has visible run-to-run noise and you want to test a binary flag.  *(2 items, 2 kernels)*
+        - **[action]** First establish a clean baseline by running the flag-off version. Then toggle only the flag on and submit. If the score regresses by more than the observed noise band, immediately revert. Run several no-change re-submissions to estimate the noise floor before concluding the experiment.  *(2 items, 2 kernels)*
+          - items: `50376011:e14#1`, `15173072:e4#2`
+      - **[action_context]** A discrete toggle that has failed multiple times produces another regression.  *(1 items, 1 kernels)*
+        - **[action]** When a binary or small-set configuration option has been tested three or more times across different model states and always regresses, permanently mark it as inferior and do not revisit it. Immediately move to a different, orthogonal lever (e.g., new features, architecture changes).  *(1 items, 1 kernels)*
+          - items: `49576186:e28#2`
+      - **[action_context]** When a new architectural component has been tuned across 5+ versions without matching the prior best, and an older component had produced better results in the same pipeline.  *(1 items, 1 kernels)*
+        - **[action]** Run a quick A/B probe: swap back to the old component with minimal other changes, test with and without your standard post-processing toggle. If both variants underperform the old best by a clear margin, abandon the revert and instead try scaling up the newer component (e.g., increase capacity/resol  *(1 items, 1 kernels)*
+          - items: `13848868:e7#1`
+    - **[lever]** stopping criterion for a sweep of worsening variants  *(4 items, 4 kernels)*
+      - **[action_context]** When the current best was achieved by a specific combination (model size + fold selection + seed averaging), nearby variants exist that differ on one axis each.  *(2 items, 2 kernels)*
+        - **[action]** After establishing a new best, sweep one axis at a time (checkpoint selection, model size, ensemble composition) submitting each. If 3+ consecutive variants all score below the current best, stop the sweep and either return to the best configuration or invest in training new checkpoints rather than   *(2 items, 2 kernels)*
+          - items: `49524919:e5#2`, `55621328:e17#2`
+      - **[action_context]** When 3-4 attempts at a lever all underperform the baseline by a consistent margin, the lever is likely exhausted or the search space is wrong.  *(1 items, 1 kernels)*
+        - **[action]** After 3-4 submitted variants of the same lever type all fail to match the best score, stop the sweep and switch to a qualitatively different approach (e.g., a new model family or a new data augmentation strategy) rather than continuing incremental adjustments.  *(1 items, 1 kernels)*
+          - items: `58130512:e37#3`
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** When a probe improves over the last run but not over the global best, check whether the experimental setup is internally consistent (e.g., all dependent parameters updated) before concluding the lever is ineffective. Fix configuration mismatches first, then re-evaluate whether to continue the sweep   *(1 items, 1 kernels)*
+          - items: `13702907:e4#2`
+    - **[lever]** ensemble repeat count  *(3 items, 2 kernels)*
+      - **[action_context]** When the new best came from a model-quality change rather than from adding repeats, and repeats have already been tuned to a plateau earlier.  *(2 items, 1 kernels)*
+        - **[action]** After adding a new model to an ensemble, re-probe the previously optimal repeat count with a single test at the old optimum. If the score regresses, revert and move to a different lever—the new model may have changed the variance profile, making more repeats unnecessary or harmful.  *(2 items, 1 kernels)*
+          - items: `77129691:e6#1`, `77129691:e10#1`
+      - **[action_context]** When multi-seed averaging is in use and you want to verify its contribution before investing in other changes.  *(1 items, 1 kernels)*
+        - **[action]** Ablate the ensemble by temporarily reducing to a single seed and comparing validation scores. If the single-seed result is worse, revert immediately and keep multi-seed. This is a one-line change that isolates the ensembling effect without confounding other variables. Do not submit ablation runs to   *(1 items, 1 kernels)*
+          - items: `27799930:e11#1`
+    - **[lever]** Isolating individual hyperparameters after a successful multi-change step  *(3 items, 3 kernels)*
+      - **[action_context]** After a multi-parameter change yields improvement, isolate individual parameters by changing one at a time in subsequent submissions to verify each contributes positively.  *(3 items, 3 kernels)*
+        - **[action]** After a successful multi-lever change, probe individual hyperparameters one at a time. If a single-parameter change shows zero effect on the leaderboard, deprioritize that parameter and move on to other levers or a different objective. Don't spend multiple iterations tuning an insensitive parameter.  *(2 items, 2 kernels)*
+          - items: `27656049:e8#2`, `18851026:e2#2`
+        - **[action]** After making a substantive code change, submit first with reduced compute (debug mode) to verify the change helps. Then submit with full compute as a separate step. The difference between the two submissions quantifies the gain from additional ensembling/averaging.  *(1 items, 1 kernels)*
+          - items: `27389424:e1#3`
+    - **[lever]** feature preprocessing parameter  *(3 items, 3 kernels)*
+      - **[action_context]** When the current best score was achieved through ensemble tuning and a new preprocessing parameter is untested.  *(3 items, 3 kernels)*
+        - **[action]** When tuning preprocessing near a personal best, change only one parameter per submission to isolate its effect. If two consecutive submissions regress, revert to the best configuration before trying a different lever. Changing multiple parameters together (crop size, window bounds, filter order, ens  *(3 items, 3 kernels)*
+          - items: `7018718:e9#1`, `50376011:e12#1`, `50496431:e25#1`
+    - **[lever]** Deciding when to abandon incremental tuning  *(3 items, 3 kernels)*
+      - **[action_context]** When 2-3 consecutive small variations on the same lever produce no improvement or regressions.  *(3 items, 3 kernels)*
+        - **[action]** After 2-3 failed probes on the same lever (e.g., blend weights, seed count, dropout), stop and switch to a qualitatively different lever such as adding a new model family or architecture. Continuing to micro-tune the same knob yields diminishing returns.  *(3 items, 3 kernels)*
+          - items: `18350823:e13#3`, `7018718:e10#2`, `49576186:e29#2`
+    - **[lever]** post-processing logic and ensemble membership  *(3 items, 3 kernels)*
+      - **[action_context]** When the search space includes both preprocessing and ensemble toggles, and only LB feedback is available.  *(2 items, 2 kernels)*
+        - **[action]** Change at most one conceptual dimension per submission (either preprocessing OR ensemble composition, not both). When a change causes a large regression, immediately revert it in the next step rather than compounding more changes. This episode shows that changing 2-3 things simultaneously (spectrogr  *(2 items, 2 kernels)*
+          - items: `73671444:e9#1`, `50496431:e45#1`
+      - **[action_context]** Multiple fold checkpoints are available for the best-performing model variant but only one fold is currently used.  *(1 items, 1 kernels)*
+        - **[action]** When swapping to alternative single checkpoints yields diminishing or negative returns, pivot to ensembling multiple folds of the best-performing checkpoint. This reduces prediction variance without requiring new model training or architecture changes.  *(1 items, 1 kernels)*
+          - items: `55621328:e6#2`
+    - **[lever]** ensemble diversity via additional pretrained models  *(3 items, 3 kernels)*
+      - **[action_context]** When fine-tuning one model family (checkpoints, TTA, preprocessing) yields <1% relative improvement over multiple iterations, the marginal return of that lever is exhausted.  *(3 items, 3 kernels)*
+        - **[action]** After a new best from simplification, probe adding diversity cautiously with a single submission. If the score regresses, abandon the direction immediately rather than trying subsets—the regression signals that the added models introduce more noise than signal. Pivot to a different lever (e.g., feat  *(3 items, 3 kernels)*
+          - items: `49524919:e12#3`, `55621328:e18#1`, `55987255:e13#1`
+    - **[lever]** quick single-parameter probe  *(2 items, 2 kernels)*
+      - **[action_context]** When a new best is achieved and there are obvious single-parameter variations to test.  *(2 items, 2 kernels)*
+        - **[action]** After a new best, run one cheap probe on an obvious regularization knob. If it yields no improvement, immediately move to a different lever (e.g., ensemble weights) rather than sweeping the same parameter. Reserve multi-step sweeps for levers that show directional signal.  *(2 items, 2 kernels)*
+          - items: `18350823:e11#2`, `15372370:e2#1`
+    - **[lever]** inference hyperparameters (token length, seed)  *(1 items, 1 kernels)*
+      - **[action_context]** When a single checkpoint is being evaluated and you suspect the tokenization or randomness settings may matter.  *(1 items, 1 kernels)*
+        - **[action]** Change at most two lightweight inference hyperparameters (e.g., max token length, random seed) in one submission to test whether the inference config is a bottleneck. If the score does not improve, revert and return to the primary lever (model selection or ensembling) rather than sweeping further.  *(1 items, 1 kernels)*
+          - items: `17616127:e2#1`
+    - **[lever]** ablation via sequential simplify-then-restore  *(1 items, 1 kernels)*
+      - **[action_context]** When multiple changes are entangled (checkpoint version, ensembling strategy, inference settings), and you need to isolate the contribution of each.  *(1 items, 1 kernels)*
+        - **[action]** First strip the technique in question (e.g., multi-seed averaging) and submit with the simplest configuration to establish a clean baseline. Then re-add the technique with the best available artifacts and submit again. Compare the two scores to attribute the gain. Hold the model architecture fixed t  *(1 items, 1 kernels)*
+          - items: `17371717:e6#1`
+    - **[lever]** pipeline restructuring  *(1 items, 1 kernels)*
+      - **[action_context]** When the notebook contains both training and inference code and you want to experiment with new model components.  *(1 items, 1 kernels)*
+        - **[action]** After reaching a stable best score, refactor the notebook into an inference-only script: strip training code, call external precomputed prediction scripts, and hardcode the best-known blend coefficients as named constants. Use placeholder values first to get the structure right, then fill in numeric  *(1 items, 1 kernels)*
+          - items: `77450317:e12#1`
+    - **[lever]** target transform scaling parameter  *(1 items, 1 kernels)*
+      - **[action_context]** The parameter was previously tuned to a known good region, and the structural change likely shifted the optimum slightly.  *(1 items, 1 kernels)*
+        - **[action]** After a structural change to the target pipeline, re-sweep the target-transform parameter in small uniform steps (e.g., ~2% of the current value) from the current best. Submit each step. Continue in the same direction as long as each step yields a new best. Stop when the marginal gain drops below ro  *(1 items, 1 kernels)*
+          - items: `77129691:e8#1`
+    - **[lever]** submission strategy and selection  *(1 items, 1 kernels)*
+      - **[action_context]** When the competition allows selecting final submissions and LB scores are noisy, submitting many slight variants increases the chance of a lucky high score that also reflects genuine quality.  *(1 items, 1 kernels)*
+        - **[action]** Alternate between your two or three best configurations (e.g., best single model vs best small ensemble), submitting each multiple times. Track the best-ever score for each config. Your final selected submissions should be the config with the best median score (robust) and the config with the best s  *(1 items, 1 kernels)*
+          - items: `50376011:e25#3`
+    - **[lever]** deciding when to abandon a search direction  *(1 items, 1 kernels)*
+      - **[action_context]** When 3+ submissions on the same lever all fail to improve, and the best attempt is still worse than baseline  *(1 items, 1 kernels)*
+        - **[action]** After three failed submissions exploring the same lever (backbone/LR/sampling), abandon that direction and switch to an orthogonal lever such as data augmentation or preprocessing changes. The signal that the lever is exhausted is that even partial reversions toward the baseline config don't recover  *(1 items, 1 kernels)*
+          - items: `49576186:e5#3`
+    - **[lever]** enable deterministic execution via fixed seeds  *(1 items, 1 kernels)*
+      - **[action_context]** When the pipeline involves random operations (data shuffling, weight initialization, GPU non-determinism) and score differences between versions are small relative to run-to-run variance.  *(1 items, 1 kernels)*
+        - **[action]** Set all random seeds (numpy, python hash, TF, keras) and enable framework-level deterministic operations before making further changes. This ensures that score differences between versions reflect code changes rather than stochastic variation.  *(1 items, 1 kernels)*
+          - items: `49576186:e12#3`
+    - **[lever]** rounding threshold co-optimization  *(1 items, 1 kernels)*
+      - **[action_context]** When switching DeBERTa regression checkpoints, the optimal rounding cutpoints change because the raw prediction distribution shifts.  *(1 items, 1 kernels)*
+        - **[action]** Always re-optimize rounding thresholds on local validation when swapping checkpoints. If only leaderboard feedback is available, try a second related variant before concluding the direction is bad, since threshold mismatch can mask checkpoint quality.  *(1 items, 1 kernels)*
+          - items: `55621328:e28#2`
+    - **[lever]** adding precomputed features to an existing pipeline  *(1 items, 1 kernels)*
+      - **[action_context]** When adding new features to a pipeline that already has a best score, the risk of regression is high if features add noise or interact poorly with existing hyperparameters.  *(1 items, 1 kernels)*
+        - **[action]** Submit the feature-addition change alone before also changing hyperparameters. If you bundle feature additions with hyperparameter changes in one submission, you cannot diagnose which caused a regression. Always isolate one variable per submission when probing near a personal best.  *(1 items, 1 kernels)*
+          - items: `59253662:e12#1`
+    - **[lever]** feature set addition/removal  *(1 items, 1 kernels)*
+      - **[action_context]** A feature set was previously unhelpful but the training pipeline has changed materially since then.  *(1 items, 1 kernels)*
+        - **[action]** Re-probe the feature set on the new baseline in a single isolated change. Submit and compare to the baseline. If it regresses, revert only that change — do not bundle other modifications into the revert commit, as this confounds the signal and risks introducing new regressions.  *(1 items, 1 kernels)*
+          - items: `58130512:e8#1`
+    - **[lever]** fine-grained parameter sweep on a secondary knob  *(1 items, 1 kernels)*
+      - **[action_context]** When major levers are exhausted and a new best was just achieved, fine-tuning secondary knobs (loss shape, thresholds) is tempting but has diminishing returns.  *(1 items, 1 kernels)*
+        - **[action]** Limit fine-grained sweeps of secondary parameters to 3–4 submissions. If none beats the baseline after that budget, abandon the lever and move to a qualitatively different approach. Do not continue perturbing in the same narrow range.  *(1 items, 1 kernels)*
+          - items: `58130512:e24#2`
+    - **[lever]** notebook finalization and IP protection  *(1 items, 1 kernels)*
+      - **[action_context]** When the competition deadline is near and the best score has been achieved, further tuning yields negligible gains.  *(1 items, 1 kernels)*
+        - **[action]** Stop submitting. Make one last minor tweak (e.g., fold count) without submitting to preserve optionality. Then insert a blocking statement (raise Exception with upvote request) before the scoring pipeline so public forks cannot replicate your inference without reading the code. This protects your so  *(1 items, 1 kernels)*
+          - items: `55591012:e15#1`
+    - **[lever]** diagnose architecture mismatch before adding more checkpoints  *(1 items, 1 kernels)*
+      - **[action_context]** When an ensemble regresses relative to a single model, the issue is more likely model quality or config mismatch than ensembling being harmful.  *(1 items, 1 kernels)*
+        - **[action]** When a multi-checkpoint ensemble scores worse than a single checkpoint, add debug logging to verify checkpoints load correctly and the model config matches. Then try ensembling checkpoints of the same architecture as the best single model before concluding ensembling doesn't help.  *(1 items, 1 kernels)*
+          - items: `15082684:e5#2`
+    - **[lever]** Toggle a single component on/off  *(1 items, 1 kernels)*
+      - **[action_context]** When you have recently changed multiple things and achieved a new best, and you want to verify whether a specific component contributes positively.  *(1 items, 1 kernels)*
+        - **[action]** Remove the component (submit), then re-add it (submit). If re-adding improves over removal, keep it. Do this immediately after stabilizing other changes so the A/B comparison is clean. Accept that leaderboard noise of ~0.003 exists and only trust differences larger than that.  *(1 items, 1 kernels)*
+          - items: `50496431:e17#2`
+    - **[lever]** search termination  *(1 items, 1 kernels)*
+      - **[action_context]** When 3-4 consecutive attempts along a particular axis of variation all regress from baseline with no improving trend, the axis is unlikely to yield gains.  *(1 items, 1 kernels)*
+        - **[action]** After 3-4 consecutive submissions that all score worse than your baseline along a particular lever (e.g., preprocessing parameters or model swaps), abandon that lever and either revert to baseline or try a fundamentally different approach. Do not continue fine-tuning within the same failing directio  *(1 items, 1 kernels)*
+          - items: `50496431:e42#3`
+  - **[lever_context]** v27 was not submitted despite containing the code change, suggesting a runtime issue. v28 with identical code was submitted successfully.  *(1 items, 1 kernels)*
+    - **[lever]** re-run and resubmit  *(1 items, 1 kernels)*
+      - **[action_context]** When a notebook version with a meaningful change is not submitted (possibly due to runtime error or timeout), and the code looks correct.  *(1 items, 1 kernels)*
+        - **[action]** Re-run the identical notebook without code changes to confirm the pipeline completes successfully, then submit. Do not assume a failed or unsubmitted run means the change was bad — verify by re-execution before drawing conclusions.  *(1 items, 1 kernels)*
+          - items: `7548275:e7#2`
+- **[goal]** What do I do when I want to make multiple interdependent changes (model architecture, checkpoints, and post-processing) to improve a pipeline?  *(71 items, 36 kernels)*
+  - **[lever_context]** The author had a working pipeline scoring ~0.822 and wanted to improve it by enabling GPU, fixing CV splits, and tuning hyperparameters simultaneously. Multiple unsubmitted versions suggest runtime issues.  *(61 items, 34 kernels)*
+    - **[lever]** incremental pipeline refactoring  *(9 items, 8 kernels)*
+      - **[action_context]** When a major change adds new data loading, feature extraction, and inference steps that may fail at runtime.  *(7 items, 6 kernels)*
+        - **[action]** Do not submit until the full pipeline runs without errors. Fix bugs incrementally—one component per edit—starting from data loading through feature engineering to prediction. Address variable naming collisions, duplicated code, and type mismatches first. Only submit once you get a clean end-to-end r  *(6 items, 5 kernels)*
+          - items: `28093671:e5#2`, `18423958:e9#2`, `73937748:e13#1`, `49576186:e2#1`, `59253662:e1#1`, `59253662:e2#3`
+        - **[action]** Wrap each model's contribution to the ensemble in a try/except that silently skips failures, so you always produce a submission file. But verify the score is reasonable before trusting this approach—silent skipping can mask the fact that most or all models failed, producing degenerate predictions.  *(1 items, 1 kernels)*
+          - items: `7548275:e3#1`
+      - **[action_context]** After a major refactor that changes data flow but should preserve model quality.  *(1 items, 1 kernels)*
+        - **[action]** After a large refactor, make one small conservative adjustment (e.g., slightly increase ensemble diversity via folds/seeds), then do a no-change re-run to verify stability. Only submit after confirming validation metrics are at least as good as before the refactor.  *(1 items, 1 kernels)*
+          - items: `27799930:e12#2`
+      - **[action_context]** Starting from scratch with no prior working code.  *(1 items, 1 kernels)*
+        - **[action]** Build the pipeline in stages: first data loading and exploration, then minimal training, then inference and submission generation. Fix bugs and add instrumentation (timing, memory) before scaling up model complexity. Only submit to the leaderboard once the full pipeline runs end-to-end and produces   *(1 items, 1 kernels)*
+          - items: `27656049:e1#2`
+    - **[lever]** batching multiple changes per submission cycle  *(9 items, 8 kernels)*
+      - **[action_context]** When refactoring a pipeline through multiple intermediate states that may not individually be correct or competitive.  *(7 items, 6 kernels)*
+        - **[action]** When making multiple changes to a pipeline (architecture, model weights, post-processing), submit after each independent change to isolate which changes help and which hurt. Bundling architecture changes, checkpoint swaps, and post-processing rewrites into one submission makes it impossible to diagn  *(7 items, 6 kernels)*
+          - items: `27825577:e2#2`, `28093671:e6#3`, `28093671:e7#2`, `18851026:e8#2`, `7823861:e6#1`, `7018718:e11#3`, `53747598:e2#1`
+      - **[action_context]** When introducing multiple new components at once in a notebook-based workflow with limited submission budget.  *(1 items, 1 kernels)*
+        - **[action]** Build the full pipeline in one version without submitting, then refine and simplify in a second unsubmitted version based on local validation or error feedback, and only submit once the pipeline is stable. Batch 2–3 development iterations before a single leaderboard check.  *(1 items, 1 kernels)*
+          - items: `7670859:e2#2`
+      - **[action_context]** When you can train offline and only need the leaderboard to confirm direction, not isolate individual effects.  *(1 items, 1 kernels)*
+        - **[action]** Bundle multiple related changes (preprocessing, architecture, normalization) into a single code version, train offline, then submit. If the score improves, keep all changes and continue refining. If it regresses, bisect. This maximizes information per submission during early pipeline development whe  *(1 items, 1 kernels)*
+          - items: `49576186:e1#1`
+    - **[lever]** pipeline architecture restructuring  *(5 items, 5 kernels)*
+      - **[action_context]** When the pipeline is stable and all model files are confirmed to exist, debug/fallback paths that override the final output should be removed.  *(2 items, 2 kernels)*
+        - **[action]** Before making a large architectural pivot (e.g., disabling many proven components simultaneously), first revert the specific change that caused the regression to re-establish the baseline. Only then make one structural change at a time. Disabling multiple working components in a single step makes it  *(2 items, 2 kernels)*
+          - items: `7548275:e5#2`, `59253662:e8#1`
+      - **[action_context]** When the training code runs but no submission has been produced yet.  *(1 items, 1 kernels)*
+        - **[action]** Prioritize getting a complete train→predict→submit pipeline working and submitted before tuning the model. Fix infrastructure issues (memory, I/O) first, accept whatever baseline score results, then iterate on the modeling objective (loss, metric, features).  *(1 items, 1 kernels)*
+          - items: `27502740:e1#2`
+      - **[action_context]** When the model is already reasonably tuned and the dataset has heterogeneous label quality (varying expert vote counts).  *(1 items, 1 kernels)*
+        - **[action]** Introduce a stage variable controlling which training phases run. First build the full pipeline with all stages enabled and verify end-to-end (submit). Then selectively disable earlier stages (using saved checkpoints) to iterate faster on later-stage hyperparameters. Confirm each change with a submi  *(1 items, 1 kernels)*
+          - items: `49576186:e14#1`
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** After assembling a new multi-component pipeline, run it immediately and fix functional bugs first (API errors, shape mismatches) before tuning hyperparameters or cleaning up verbosity. Keep verbose logging on during debugging; suppress it only after the pipeline runs end-to-end without errors. Expec  *(1 items, 1 kernels)*
+          - items: `28093671:e4#2`
+    - **[lever]** single-submission probe of new pipeline  *(4 items, 3 kernels)*
+      - **[action_context]** When testing a change that affects model loading or infrastructure rather than model quality, and the current pipeline is known to work.  *(4 items, 3 kernels)*
+        - **[action]** Submit one representative configuration of the new pipeline quickly. If it scores substantially below your best (e.g., >0.5% regression), abandon that variant rather than tuning weights or hyperparameters within it. Reserve tuning effort for variants that are already close to your best.  *(4 items, 3 kernels)*
+          - items: `13577502:e1#1`, `55621328:e47#2`, `13702907:e2#2`, `13702907:e7#2`
+    - **[lever]** debug mode / early exit flag  *(3 items, 3 kernels)*
+      - **[action_context]** When adding a new model type that touches multiple parts of the pipeline (training, prediction, stacking, inference).  *(3 items, 3 kernels)*
+        - **[action]** Add a conditional early-exit after the first CV fold (or detect small test set size) and reduce n_estimators to speed up iteration. Do not submit these debug runs. Once the fix is confirmed working, remove the early exit, restore full hyperparameters, and submit the production run.  *(3 items, 3 kernels)*
+          - items: `27389424:e1#1`, `28984551:e5#2`, `58130512:e22#2`
+    - **[lever]** targeted bug fixes before re-submitting  *(3 items, 3 kernels)*
+      - **[action_context]** When a multi-part edit causes a runtime error visible in notebook output.  *(1 items, 1 kernels)*
+        - **[action]** Fix the bug in the very next version with a minimal edit, then verify the pipeline runs. Do not attempt further experimental changes until the pipeline is confirmed working. Keep bug-fix commits separate from experimental changes.  *(1 items, 1 kernels)*
+          - items: `27389424:e12#2`
+      - **[action_context]** When you have multiple small issues (wrong file paths, uncertain hyperparameters) and zero submissions  *(1 items, 1 kernels)*
+        - **[action]** Bundle a known infrastructure fix (e.g., corrected data path) with a safe hyperparameter choice and submit immediately to establish a baseline score. Do not tune further until you have at least one leaderboard number to anchor against.  *(1 items, 1 kernels)*
+          - items: `7240226:e2#1`
+      - **[action_context]** After a major refactor that changes data generator signatures, column names, or mode-dependent logic.  *(1 items, 1 kernels)*
+        - **[action]** Before submitting a refactored pipeline, run inference end-to-end in test mode locally. Fix all runtime errors (missing attributes, wrong column names, shape mismatches) in small separate commits. Only submit once the pipeline runs cleanly, to avoid wasting submission slots on crashes.  *(1 items, 1 kernels)*
+          - items: `49576186:e11#3`
+    - **[lever]** Selective disabling of non-essential pipeline stages  *(3 items, 3 kernels)*
+      - **[action_context]** When the training pipeline is not yet validated and test-set preprocessing/inference adds runtime without aiding debugging.  *(3 items, 3 kernels)*
+        - **[action]** Temporarily reduce the number of boosting rounds (e.g., from 1000 to 100) to get fast end-to-end runs while building the pipeline. Once the pipeline is confirmed working, increase capacity back to a reasonable level (but not necessarily the original) before submitting. Do not optimize hyperparameter  *(3 items, 3 kernels)*
+          - items: `27799930:e3#2`, `28093671:e3#2`, `55987255:e11#3`
+    - **[lever]** ablation testing via component toggle  *(3 items, 3 kernels)*
+      - **[action_context]** When a pipeline has feature flags controlling optional components and a regression has occurred.  *(2 items, 2 kernels)*
+        - **[action]** Comment out the component in a single submission to measure the LB delta. If the score drops substantially, keep the component; if it is neutral or negative, remove it. Do this as a one-shot probe rather than a sweep, and revert immediately after observing the result.  *(2 items, 2 kernels)*
+          - items: `7548275:e8#1`, `60197293:e12#2`
+      - **[action_context]** When you have a working submission with multiple stacked improvements and limited submission budget.  *(1 items, 1 kernels)*
+        - **[action]** Disable all but one component (e.g., single fold, no postprocessing) and submit to get a degraded baseline. Then re-enable all components together and submit. If the full pipeline beats both the ablated version and the previous best, you've confirmed both components help. This costs only 2 submissio  *(1 items, 1 kernels)*
+          - items: `6803050:e6#1`
+    - **[lever]** sequential single-variable changes  *(2 items, 2 kernels)*
+      - **[action_context]** When bundling infrastructure changes (GPU enablement) with hyperparameter tuning and CV logic changes  *(2 items, 2 kernels)*
+        - **[action]** Make one structural change per submission (e.g., swap one model, then add one model). If the first change improves the score, proceed with the next addition. If it regresses, revert before trying the next change. This isolates the effect of each component despite noisy feedback.  *(2 items, 2 kernels)*
+          - items: `18523075:e2#2`, `58130512:e20#1`
+    - **[lever]** output file naming discipline  *(2 items, 2 kernels)*
+      - **[action_context]** When a pipeline has multiple model stages each producing predictions that feed into a final blend.  *(1 items, 1 kernels)*
+        - **[action]** Give each intermediate model's output a distinct filename (e.g., 'submission_nn.csv', 'submission_gbm.csv') and reserve 'submission.csv' exclusively for the final blended output. Before submitting, verify the final file is the blended version, not an intermediate overwrite.  *(1 items, 1 kernels)*
+          - items: `77450317:e6#2`
+      - **[action_context]** Kaggle auto-detects 'submission.csv' in the output directory; a non-standard name may require manual selection or cause errors.  *(1 items, 1 kernels)*
+        - **[action]** Before your first submission, ensure the output file is named exactly 'submission.csv' (or whatever the platform expects). Use a fixed name rather than embedding run metadata in the filename, so re-runs and auto-submit work reliably.  *(1 items, 1 kernels)*
+          - items: `73937748:e1#1`
+    - **[lever]** RNG seed infrastructure  *(2 items, 2 kernels)*
+      - **[action_context]** When adding new components to an ensemble pipeline that will be evaluated by OOF scores, and stochastic elements exist in preprocessing or training.  *(2 items, 2 kernels)*
+        - **[action]** Before tuning or scaling ensembles, add a global seed-setting utility that covers all RNG sources (Python, NumPy, PyTorch, CUDA, cuDNN deterministic flags). Increment and apply it at every stochastic entry point (each epoch, each repeat). Accept a small transient LB regression from determinism overh  *(2 items, 2 kernels)*
+          - items: `77129691:e2#1`, `75924487:e2#2`
+    - **[lever]** model backbone size matching  *(2 items, 2 kernels)*
+      - **[action_context]** When checkpoints were trained with a specific model size (e.g., 'small-kd') but you attempt inference with a different backbone size.  *(2 items, 2 kernels)*
+        - **[action]** If a checkpoint set was trained with a particular backbone size and inference fails or is not submitted with a mismatched backbone, immediately retry with the backbone size matching the training configuration before exploring other changes.  *(2 items, 2 kernels)*
+          - items: `55621328:e47#1`, `13848868:e10#1`
+    - **[lever]** experiment isolation  *(2 items, 2 kernels)*
+      - **[action_context]** When a pipeline exists but hasn't been submitted yet and you want to iterate quickly.  *(1 items, 1 kernels)*
+        - **[action]** First wire up data I/O and verify persistence (save/load features). Then apply pre-computed hyperparameters and adjust feature counts. Then clean up temporary scaffolding (debug saves, external dependencies) and submit a clean version. This ensures the first submission is a working baseline you unde  *(1 items, 1 kernels)*
+          - items: `58130512:e1#1`
+      - **[action_context]** When multiple changes are made simultaneously and the result regresses, it is impossible to know which change caused the regression.  *(1 items, 1 kernels)*
+        - **[action]** When testing a preprocessing change against a strong baseline, change only one thing at a time. If you must bundle changes, and the result regresses, systematically revert each change individually to identify which one helped or hurt, rather than trying new combinations on top of the failed bundle.  *(1 items, 1 kernels)*
+          - items: `50496431:e42#1`
+    - **[lever]** text preprocessing / input normalization  *(1 items, 1 kernels)*
+      - **[action_context]** When the model uses pretrained contextual embeddings that were trained on raw web text  *(1 items, 1 kernels)*
+        - **[action]** Treat heavy text cleaning as a single probe experiment. If the leaderboard score regresses, revert immediately rather than tuning the cleaning further—pretrained encoders already handle noise, and aggressive normalization can destroy useful signal (casing, punctuation, numbers). Do not invest multip  *(1 items, 1 kernels)*
+          - items: `7670859:e6#1`
+    - **[lever]** Input image resolution and matching checkpoint  *(1 items, 1 kernels)*
+      - **[action_context]** A higher-resolution checkpoint exists and the current resolution is below the model's native capacity.  *(1 items, 1 kernels)*
+        - **[action]** Increase input resolution to the next available checkpoint size, update both the decoder target size and the model weights path simultaneously, then submit. If the score improves, re-run once to confirm it is not noise. If confirmed, lock in that resolution.  *(1 items, 1 kernels)*
+          - items: `13702907:e8#1`
+    - **[lever]** cross-validation scheme and prediction averaging  *(1 items, 1 kernels)*
+      - **[action_context]** When you have a working pipeline that has never been submitted and you want your first submission to be robust.  *(1 items, 1 kernels)*
+        - **[action]** Before submitting for the first time, switch from single holdout to k-fold stratified CV (k=5–10) with prediction averaging. Simultaneously reduce per-fold training cost (fewer boosting rounds, smaller model) to keep total runtime manageable. This gives both a more reliable validation signal and an   *(1 items, 1 kernels)*
+          - items: `27656049:e2#1`
+    - **[lever]** revert the regressing change  *(1 items, 1 kernels)*
+      - **[action_context]** When you changed one conceptual component (e.g., feature selection method) and scores dropped across consecutive submissions while other changes were minor.  *(1 items, 1 kernels)*
+        - **[action]** Revert the suspected regressing change first, submit to confirm recovery, then layer additional improvements on top. Do not keep a regressing change while trying to compensate with other levers, as this confounds diagnosis.  *(1 items, 1 kernels)*
+          - items: `27656049:e6#1`
+    - **[lever]** hard-coded ensemble weights and deterministic inference  *(1 items, 1 kernels)*
+      - **[action_context]** When the ensemble weight search has converged and you need reproducibility for final submission.  *(1 items, 1 kernels)*
+        - **[action]** Save the best weights found by the optimizer into a fixed dictionary, add a flag to bypass runtime search, and verify the frozen configuration reproduces the same OOF score before submitting. If the frozen version regresses, the runtime search may have been overfitting to OOF noise—revert to the dyn  *(1 items, 1 kernels)*
+          - items: `75584724:e7#1`
+    - **[lever]** infrastructure cleanup passes  *(1 items, 1 kernels)*
+      - **[action_context]** When building a complex multi-component inference pipeline incrementally  *(1 items, 1 kernels)*
+        - **[action]** Interleave small cleanup commits (silencing logs, removing temp dirs, fixing sort keys, consolidating installs) between substantive model changes. Address alignment issues (e.g., row ordering for blending) as soon as the blending step is added, not later. Remove debug/evaluation code before the fina  *(1 items, 1 kernels)*
+          - items: `53747598:e1#3`
+    - **[lever]** sample filtering criteria (AND vs OR on quality thresholds)  *(1 items, 1 kernels)*
+      - **[action_context]** When the current filtering uses a union (OR) of quality criteria and you suspect noisy samples are hurting fine-tuning.  *(1 items, 1 kernels)*
+        - **[action]** When tightening sample selection from OR to AND on multiple quality filters, expect a significant data reduction. If the resulting score regresses substantially (e.g., >2× the recent improvement), revert immediately—the data volume loss likely outweighs the noise reduction benefit. Do not combine th  *(1 items, 1 kernels)*
+          - items: `49576186:e16#2`
+    - **[lever]** minimal viable inference pipeline  *(1 items, 1 kernels)*
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** Build the simplest end-to-end pipeline that loads data, preprocesses it to match training conditions, runs a single pretrained model, and produces a valid submission. Submit once to get a baseline score. Do not iterate on this pipeline; instead use the baseline to decide whether to tune the current   *(1 items, 1 kernels)*
+          - items: `52551258:e1#1`
+    - **[lever]** offline training with artifact caching  *(1 items, 1 kernels)*
+      - **[action_context]** When the pipeline has expensive components (transformer fine-tuning) and cheaper components (gradient boosting), train expensive components offline, save as dataset artifacts, and only retrain cheap components or load everything for submission.  *(1 items, 1 kernels)*
+        - **[action]** Train expensive model components (e.g., transformers) offline and upload as dataset artifacts. Structure the notebook so it can either retrain or load each component. Use the submission notebook primarily in load mode to minimize runtime and quota usage. Document each experiment's LB score in the no  *(1 items, 1 kernels)*
+          - items: `55431616:e1#2`
+    - **[lever]** post-processing optimization layer  *(1 items, 1 kernels)*
+      - **[action_context]** When a regression is small and the pipeline produces continuous predictions that get discretized into integer labels.  *(1 items, 1 kernels)*
+        - **[action]** When a structural pipeline change causes a small regression, do not revert immediately. Instead, check for bugs in the new code and add threshold optimization (e.g., Nelder-Mead minimizing negative QWK) to convert continuous outputs to discrete labels. This can recover lost performance and often exc  *(1 items, 1 kernels)*
+          - items: `58130512:e11#1`
+    - **[lever]** submission cadence  *(1 items, 1 kernels)*
+      - **[action_context]** When making structural changes to the feature set that could interact unpredictably.  *(1 items, 1 kernels)*
+        - **[action]** Submit after each major feature addition (not just at the end of a long build sequence) so you can attribute score changes to specific feature groups. If you batch many changes and the result regresses, you cannot tell which addition helped or hurt.  *(1 items, 1 kernels)*
+          - items: `55987255:e30#3`
+    - **[lever]** submission output wiring  *(1 items, 1 kernels)*
+      - **[action_context]** When ensemble or post-processing code stores results in a temporary variable before writing the submission file.  *(1 items, 1 kernels)*
+        - **[action]** After computing final predictions, verify that the exact variable written to the submission dataframe is the one containing the intended output. Search for any mismatch between the variable holding processed results and the variable assigned to the output columns. A no-op re-run that inspects output  *(1 items, 1 kernels)*
+          - items: `13702907:e1#1`
+  - **[lever_context]** The author had a working parquet+cudf aggregation pipeline at 0.79361. A precomputed .npy dataset (from another Kaggle notebook) offered potentially faster loading and different feature representations.  *(3 items, 3 kernels)*
+    - **[lever]** data loading and feature pipeline swap  *(1 items, 1 kernels)*
+      - **[action_context]** When an alternative data source provides a fundamentally different representation (e.g., raw sequences vs. groupby aggregations) and you already have a strong baseline.  *(1 items, 1 kernels)*
+        - **[action]** Submit the alternative pipeline quickly to get a leaderboard signal. If it regresses, immediately revert to the proven pipeline rather than debugging the new one. When reverting, restore the exact feature engineering that produced the best score before layering on new changes like hyperparameter tun  *(1 items, 1 kernels)*
+          - items: `28093671:e10#1`
+    - **[lever]** file path correction  *(1 items, 1 kernels)*
+      - **[action_context]** When loading precomputed artifacts (pickles, CSVs) in a Kaggle notebook that references both utility libraries and input datasets.  *(1 items, 1 kernels)*
+        - **[action]** Verify that precomputed artifact paths point to /kaggle/input/ (dataset mounts) rather than /kaggle/usr/lib/ (utility script mounts). After correcting, always submit or validate to confirm the loaded artifact produces expected results, since the artifact content may differ from what was used during   *(1 items, 1 kernels)*
+          - items: `60197293:e15#2`
+    - **[lever]** incremental pipeline repair after a structural change  *(1 items, 1 kernels)*
+      - **[action_context]** When you change the primary data source or its schema, expect cascading breakages in path references, cached artifacts, and column assumptions.  *(1 items, 1 kernels)*
+        - **[action]** After a major data source switch, run the notebook cell-by-cell and fix each failure before moving on: first remove stale debug/display code, then fix broken file paths, then remove or regenerate stale caches. Do not submit until the full pipeline executes cleanly. Budget 3-5 micro-fix iterations fo  *(1 items, 1 kernels)*
+          - items: `55987255:e21#2`
+  - **[lever_context]** The blend has ~14 coefficients across three prediction groups (zeroes, ones, clf). Filling them all in one step risks typos; leaving them as placeholders lets you verify the pipeline structure first.  *(3 items, 3 kernels)*
+    - **[lever]** ablation / component isolation  *(1 items, 1 kernels)*
+      - **[action_context]** When an ensemble combines a meta-learner (ridge stacking) with direct model predictions and you suspect the meta-learner is the key contributor.  *(1 items, 1 kernels)*
+        - **[action]** Disable the meta-learner, run the pipeline with only the single best base model, and submit. Compare the score to the full ensemble. If the gap is large (here ~0.025 RMSE), keep the meta-learner and resume improving it rather than simplifying.  *(1 items, 1 kernels)*
+          - items: `17616127:e8#1`
+    - **[lever]** staged constant specification  *(1 items, 1 kernels)*
+      - **[action_context]** When refactoring a pipeline that requires many numeric constants derived from prior experiments.  *(1 items, 1 kernels)*
+        - **[action]** First commit the structural refactor with placeholder values (e.g., '...') to verify the code skeleton is correct. Then in a separate commit, fill in all numeric constants from your records. This two-pass approach separates structural correctness from numeric correctness, making errors easier to loc  *(1 items, 1 kernels)*
+          - items: `77450317:e12#2`
+    - **[lever]** initial ensemble baseline  *(1 items, 1 kernels)*
+      - **[action_context]** When the competition metric rewards both accuracy and consistency across subgroups, and typical solutions use GBDT ensembles with survival target transformations.  *(1 items, 1 kernels)*
+        - **[action]** Build a complete multi-model ensemble pipeline as the first submission rather than a single-model baseline. Submit it to get a leaderboard anchor, then iterate on blend weights before changing model architectures. This front-loads complexity but gives a strong starting point for incremental tuning.  *(1 items, 1 kernels)*
+          - items: `77386286:e1#1`
+  - **[lever_context]** The embedding extraction required new utilities, data format compatibility, caching logic, and integration with existing feature tables — too many moving parts for one clean edit.  *(3 items, 2 kernels)*
+    - **[lever]** incremental bug-fix iteration  *(2 items, 1 kernels)*
+      - **[action_context]** When a new pipeline component involves data loading, model inference, and feature integration steps that can each fail independently  *(1 items, 1 kernels)*
+        - **[action]** Build the component in stages: first write the core extraction logic (one commit), then add integration/caching (next commit), then fix bugs revealed by execution (small commits), then run a no-op to verify, then simplify/prune if resource constraints appear. Do not submit until the full pipeline ru  *(1 items, 1 kernels)*
+          - items: `55987255:e9#2`
+      - **[action_context]** When a structural change creates a chain of dependent bugs that surface one at a time at runtime.  *(1 items, 1 kernels)*
+        - **[action]** Before committing to many small fix-and-rerun cycles, sketch all the places the change touches (imports, variable names, data sources, feature lists, target encoding) and make them all in one version. If you must iterate, do not submit to the leaderboard until a local validation run completes succes  *(1 items, 1 kernels)*
+          - items: `55987255:e20#1`
+    - **[lever]** precompute expensive features offline  *(1 items, 1 kernels)*
+      - **[action_context]** When the feature extraction step is deterministic and the downstream model (SVR/Ridge) is cheap to retrain, and you need to iterate on the stacking/blending layer.  *(1 items, 1 kernels)*
+        - **[action]** Precompute and save embeddings/features from heavy models as files. Load them as arrays in the stacking notebook. This decouples slow extraction from fast blending iteration. Build the full pipeline first to verify correctness, then replace extraction with file loads before submitting.  *(1 items, 1 kernels)*
+          - items: `18851026:e8#1`
+  - **[lever_context]** The Cox PH target creation function was receiving the ID column, which could cause leakage or fitting errors. This is a data integrity issue rather than a modeling or hyperparameter issue.  *(1 items, 1 kernels)*
+    - **[lever]** data cleaning / bug fix  *(1 items, 1 kernels)*
+      - **[action_context]** When a column that should be excluded is passed to a model or target-creation step.  *(1 items, 1 kernels)*
+        - **[action]** Drop the offending column explicitly before the transformation step. After making the fix, verify the downstream code actually references the cleaned variable (not the original). Re-run and check the score; if the improvement is negligible, the bug may have had limited impact or the fix may be incom  *(1 items, 1 kernels)*
+          - items: `73937748:e7#1`
+- **[goal]** What do I do when I want to integrate a completely new model framework into an existing inference pipeline?  *(70 items, 30 kernels)*
+  - **[lever_context]** The author had many existing inference scripts and a proven pipeline. The new multiscale model needed different imports, dataset classes, and collators. The existing best score was 0.82994.  *(63 items, 29 kernels)*
+    - **[lever]** incremental integration with early submission checks  *(18 items, 11 kernels)*
+      - **[action_context]** When a new pipeline has many interacting components (model architecture, data loading, transforms, TTA, post-processing) that can each harbor bugs.  *(18 items, 11 kernels)*
+        - **[action]** Build the full pipeline in stages without submitting: (1) add all new feature extraction and model code in one large commit, (2) fix data flow bugs in small follow-up edits, (3) tune dimensionality/hyperparameters, (4) add persistence and inference, (5) only submit once the pipeline runs end-to-end.  *(18 items, 11 kernels)*
+          - items: `28984551:e4#1`, `18837555:e1#1`, `73937748:e2#3`, `73937748:e8#1`, `49524919:e10#1`, `49524919:e18#2`, `49524919:e23#2`, `55621328:e11#1`, `55621328:e14#2`, `55621328:e46#1`, `59253662:e4#1`, `58527792:e3#1`, `60197293:e17#1`, `55987255:e2#1`, `55987255:e15#1`, `15164527:e9#1`, `50496431:e44#2`, `50496431:e48#2`
+    - **[lever]** model-specific inference routing in ensemble pipeline  *(13 items, 4 kernels)*
+      - **[action_context]** When the new model was trained with different preprocessing (e.g., KNN imputation + standard scaling) than existing models.  *(9 items, 3 kernels)*
+        - **[action]** Write a dedicated inference script that explicitly restores model configs, loads weights, constructs the model, and runs batched prediction. This gives full control over flags, preprocessing, and post-processing. Test it against the previous pipeline; if it yields a new best, keep it as the stable i  *(8 items, 3 kernels)*
+          - items: `75145694:e6#2`, `75145694:e17#2`, `75145694:e18#1`, `75145694:e19#2`, `50376011:e6#1`, `55621328:e30#1`, `55621328:e34#1`, `55621328:e38#1`
+        - **[action]** Explicitly disable dynamic configuration flags (e.g., dynamic input shapes, adaptive batch sizing) when running in non-standard inference modes. These features are designed for training flexibility but can introduce non-determinism or errors during constrained inference.  *(1 items, 1 kernels)*
+          - items: `50376011:e31#2`
+      - **[action_context]** When the new feature requires multiple interacting changes (flags, data loading, post-processing, file writing) that are likely to have bugs.  *(2 items, 2 kernels)*
+        - **[action]** Do not simplify and restructure a working complex pipeline in one large step. Instead, refactor incrementally while preserving the scoring components. If a major refactor causes regression, do not continue building on the regressed version—revert to the last known-good state and apply smaller change  *(2 items, 2 kernels)*
+          - items: `53424936:e4#1`, `50376011:e32#1`
+      - **[action_context]** When two inference scripts produce predictions in the same format and can be swapped by commenting/uncommenting a single cell.  *(1 items, 1 kernels)*
+        - **[action]** First get the new script running and submitted alone (fix bugs like device placement). Then submit the old pipeline with the same checkpoints/backbone as a controlled comparison. If the new pipeline matches or beats the old one, adopt it and fine-tune its post-processing. Keep the backbone and check  *(1 items, 1 kernels)*
+          - items: `55621328:e43#1`
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** Write the new script as a copy of the working one, swap the model class import and checkpoint paths, then test it runs before submitting. Fix infrastructure issues (import paths, execution commands) one at a time in separate commits so each failure is isolated. Only submit once the script executes w  *(1 items, 1 kernels)*
+          - items: `55621328:e8#1`
+    - **[lever]** ensemble membership and blending infrastructure  *(4 items, 3 kernels)*
+      - **[action_context]** When a more complex stacking/ensemble approach scores worse than a simpler blend on the leaderboard  *(3 items, 2 kernels)*
+        - **[action]** If a structurally more complex ensemble (e.g., adding a meta-learner layer over more base models) scores worse than a simpler blend, revert to the simpler approach rather than trying to tune the complex one. The added complexity may overfit the CV folds or introduce misalignment between train-time a  *(2 items, 1 kernels)*
+          - items: `17616127:e9#1`, `17616127:e18#1`
+        - **[action]** Before removing a sub-model from a rank-averaged ensemble, measure its marginal contribution by comparing ensemble scores with and without it on validation data. Removing a diverse model that contributes even modestly to the rank average typically hurts, especially when the ensemble metric rewards b  *(1 items, 1 kernels)*
+          - items: `77276039:e5#2`
+      - **[action_context]** When building from scratch with no LB signal yet available  *(1 items, 1 kernels)*
+        - **[action]** First integrate each contributor's pipeline independently and verify each produces a valid submission CSV. Then add a blending step with equal weights. Only after the full pipeline runs end-to-end, begin expanding ensemble membership by adding checkpoints. Do not submit to the leaderboard until the   *(1 items, 1 kernels)*
+          - items: `53747598:e1#1`
+    - **[lever]** pipeline refactoring before model addition  *(4 items, 4 kernels)*
+      - **[action_context]** When starting from scratch on an inference-only notebook that loads external checkpoints.  *(2 items, 2 kernels)*
+        - **[action]** First build and verify the full inference pipeline (data loading, preprocessing, model loading, prediction, submission writing) with any available checkpoint, submit to confirm it works end-to-end, then swap in better checkpoints or change resolution. Do not tune augmentation or hyperparameters unti  *(2 items, 2 kernels)*
+          - items: `13521245:e1#1`, `50496431:e10#1`
+      - **[action_context]** When some ensemble members are saved as dicts or multi-component objects while the inference loop expects a single .predict() interface.  *(1 items, 1 kernels)*
+        - **[action]** At load time, check if the deserialized object is a dict; if so, construct an sklearn make_pipeline from its components (imputer, scaler, model) so the rest of the inference loop can call .predict() uniformly. Add the model-path string to the appropriate conditional branch. Submit immediately to ver  *(1 items, 1 kernels)*
+          - items: `75145694:e11#2`
+      - **[action_context]** When you have multiple saved checkpoints and a new pipeline, and you need to quickly verify the pipeline is sound before investing in full optimization.  *(1 items, 1 kernels)*
+        - **[action]** After getting the new pipeline to run, cycle through 2-3 known-good individual checkpoints and a small ensemble. If scores are in the same ballpark as the old pipeline, the new infrastructure is validated. If all checkpoints regress substantially, debug the pipeline rather than the model selection.  *(1 items, 1 kernels)*
+          - items: `50376011:e32#2`
+    - **[lever]** baseline verification submission  *(2 items, 2 kernels)*
+      - **[action_context]** After a major code refactor or cleanup that doesn't intentionally change the prediction logic.  *(2 items, 2 kernels)*
+        - **[action]** After refactoring, submit with the same weights and model set as your previous best. If the score matches (within noise), proceed to tune. If not, debug the pipeline before exploring. Do not tune weights and refactor simultaneously.  *(2 items, 2 kernels)*
+          - items: `17616127:e16#1`, `75584724:e2#3`
+    - **[lever]** code cleanup and ensemble expansion  *(2 items, 2 kernels)*
+      - **[action_context]** When offline CV shows handcrafted features don't improve the transformer ensemble, and additional trained fold/seed checkpoints are available.  *(1 items, 1 kernels)*
+        - **[action]** Remove unused feature pipelines and dead code in a single consolidation commit. Simultaneously add new model checkpoints (extra seeds/folds) to the ensemble. Submit to verify no regression and confirm the new members help. This bundles housekeeping with a low-risk improvement so the cleanup commit i  *(1 items, 1 kernels)*
+          - items: `18550705:e4#1`
+      - **[action_context]** When the new model requires substantial infrastructure (GPU config, imports, caching) before it can even run  *(1 items, 1 kernels)*
+        - **[action]** Build all infrastructure incrementally with small commits, then submit once to get a single LB signal before investing in hyperparameter tuning. If the first submission shows regression, abandon the new member rather than tuning it — the marginal contribution is likely too small to recover through t  *(1 items, 1 kernels)*
+          - items: `55431616:e2#1`
+    - **[lever]** simultaneous multi-lever refactoring  *(2 items, 2 kernels)*
+      - **[action_context]** When a feature source has been tried multiple times with inconsistent implementation and results, and memory/runtime issues keep appearing.  *(2 items, 2 kernels)*
+        - **[action]** Avoid bundling multiple independent changes (optimizer swap, feature encoding, scheduler addition, sub-model removal, device changes) into a single evaluation cycle. Submit after each major change to isolate which changes help and which hurt. When a bundled change regresses, you cannot identify the   *(2 items, 2 kernels)*
+          - items: `77276039:e5#1`, `58130512:e19#1`
+    - **[lever]** Stacking ensemble with heterogeneous model families  *(2 items, 2 kernels)*
+      - **[action_context]** When integrating a complex new component (transformer inference + GBDT stacking) that requires multiple interdependent pieces to work correctly.  *(2 items, 2 kernels)*
+        - **[action]** Build the full pipeline across multiple unsubmitted iterations before testing on the leaderboard. First add the new model's inference, then integrate its outputs as features, then tune the downstream model, then fix correctness issues (checkpoint paths, tokenizer scoping), then clean up. Only submit  *(2 items, 2 kernels)*
+          - items: `55431616:e7#1`, `60197293:e6#1`
+    - **[lever]** new postprocessing module  *(1 items, 1 kernels)*
+      - **[action_context]** When building a new code module that involves multiple interacting functions and external model inference  *(1 items, 1 kernels)*
+        - **[action]** Write the full pipeline in one step (all functions, data paths, integration), then iterate with small fixes: first adjust hyperparameters (thresholds), then fix bugs found by running. Do not submit to the leaderboard until the code runs cleanly. Expect 1-3 bug-fix iterations after the initial implem  *(1 items, 1 kernels)*
+          - items: `17616127:e31#1`
+    - **[lever]** dependency management for offline packages  *(1 items, 1 kernels)*
+      - **[action_context]** When the required library is not pre-installed and must be loaded from an uploaded dataset directory.  *(1 items, 1 kernels)*
+        - **[action]** Before implementing the feature logic, verify the exact package path and version available in your uploaded datasets. Try importing in a minimal cell first. If the import fails, iterate on the sys.path entry—check directory names exactly. Only proceed to feature implementation after confirming the i  *(1 items, 1 kernels)*
+          - items: `17616127:e36#1`
+    - **[lever]** hidden dimension and checkpoint path alignment  *(1 items, 1 kernels)*
+      - **[action_context]** When changing transformer backbone size in an inference pipeline with custom head layers  *(1 items, 1 kernels)*
+        - **[action]** When swapping backbone size, update all three things simultaneously: (1) the pretrained model path, (2) the tokenizer path, and (3) every linear layer dimension in custom heads that depends on hidden size. Verify the checkpoint files actually exist at the specified path before running. If any mismat  *(1 items, 1 kernels)*
+          - items: `18423958:e1#2`
+    - **[lever]** ensemble member list and artifact paths  *(1 items, 1 kernels)*
+      - **[action_context]** Multiple artifacts (model weights, OOF predictions, NN checkpoints) from different sources need updating simultaneously.  *(1 items, 1 kernels)*
+        - **[action]** Stage the integration: first update the ensemble member selection list, then update the data artifact paths, then update pretrained model paths. Validate locally at each step before submitting. If a submission regresses, check whether all artifact paths are consistent before concluding the new membe  *(1 items, 1 kernels)*
+          - items: `75924487:e7#1`
+    - **[lever]** no-change re-runs to detect upstream artifact updates  *(1 items, 1 kernels)*
+      - **[action_context]** When model weights or data artifacts are stored externally and may be retrained/updated between runs.  *(1 items, 1 kernels)*
+        - **[action]** Periodically re-run the unchanged inference notebook and submit to detect score changes from upstream artifact updates. If a significant improvement appears, treat it as a new baseline and re-test previously suboptimal configurations (e.g., ensembles) that may now benefit from the improved component  *(1 items, 1 kernels)*
+          - items: `50376011:e15#1`
+    - **[lever]** systematic rename propagation  *(1 items, 1 kernels)*
+      - **[action_context]** When renaming variables in a long notebook pipeline where the same prefix appears in transforms, model loop, post-processing, and submission generation.  *(1 items, 1 kernels)*
+        - **[action]** After any variable rename, trace every occurrence from data loading through to the final submission file write. Fix all references in one pass rather than across multiple commits. Do not submit until you have verified the renamed variable appears consistently in: (1) transform assignment, (2) TTA fl  *(1 items, 1 kernels)*
+          - items: `49524919:e10#3`
+    - **[lever]** backbone architecture change  *(1 items, 1 kernels)*
+      - **[action_context]** When changing backbone family while using pre-trained fold weights for inference (not retraining)  *(1 items, 1 kernels)*
+        - **[action]** Never change the model architecture definition without retraining and saving new weights first. If NEEDTRAIN is False, the loaded weights must match the architecture exactly. Changing the backbone requires a training run to produce compatible checkpoints before submitting for inference.  *(1 items, 1 kernels)*
+          - items: `49576186:e9#3`
+    - **[lever]** Add a new model from a different framework  *(1 items, 1 kernels)*
+      - **[action_context]** When adding a model that requires a different framework and data pipeline from scratch  *(1 items, 1 kernels)*
+        - **[action]** Build the full pipeline (imports, dataset, model, inference) in one large commit without submitting. Then iterate 2-3 times on internal refinements (feature engineering, activations, code organization) still without submitting. Only submit once the pipeline produces valid output. After the first sub  *(1 items, 1 kernels)*
+          - items: `52200959:e6#1`
+    - **[lever]** tokenization and input preprocessing alignment  *(1 items, 1 kernels)*
+      - **[action_context]** When a new model scores far below expectations and the tokenizer configuration differs from training (e.g., special tokens added during training but not at inference).  *(1 items, 1 kernels)*
+        - **[action]** Before tuning thresholds on a new model, ensure the inference tokenizer exactly matches the training tokenizer (special tokens, added tokens, normalization). Mismatched tokenization can cause large prediction errors that no amount of threshold tuning can fix.  *(1 items, 1 kernels)*
+          - items: `55621328:e9#2`
+    - **[lever]** inference-time text preprocessing  *(1 items, 1 kernels)*
+      - **[action_context]** When switching to checkpoints trained with specific preprocessing (e.g., encoding normalization), the same preprocessing must be applied to test data.  *(1 items, 1 kernels)*
+        - **[action]** When using checkpoints trained on preprocessed text, always apply the identical preprocessing function to test data at inference time. Pair the preprocessing change with the corresponding checkpoint swap in a single submission to isolate the effect of the matched pair.  *(1 items, 1 kernels)*
+          - items: `55621328:e35#3`
+    - **[lever]** inference head type selection (ordinal vs regression)  *(1 items, 1 kernels)*
+      - **[action_context]** When an ordinal head worked well with a large backbone but you want to try it with a smaller backbone  *(1 items, 1 kernels)*
+        - **[action]** Do not assume ordinal-head benefits transfer across backbone sizes. The ordinal approach that scored 0.827 with large DeBERTa scored only 0.819 with small DeBERTa. Test each head type with each backbone size independently before committing.  *(1 items, 1 kernels)*
+          - items: `55621328:e48#2`
+    - **[lever]** Experiment scoping and sequencing  *(1 items, 1 kernels)*
+      - **[action_context]** When introducing multiple independent changes (new features + new model) that each could cause failures or regressions.  *(1 items, 1 kernels)*
+        - **[action]** Introduce one major change per version and verify it runs cleanly before adding the next. If you bundle them, expect multi-version debugging with no submittable result. Budget extra iterations for stabilization when bundling.  *(1 items, 1 kernels)*
+          - items: `58130512:e18#2`
+    - **[lever]** adding dense embedding features  *(1 items, 1 kernels)*
+      - **[action_context]** When the new feature source is high-dimensional relative to training set size and the existing pipeline is already well-tuned.  *(1 items, 1 kernels)*
+        - **[action]** When adding high-dimensional pretrained embeddings to a tree-based pipeline, submit a minimal probe first (embeddings only, no other changes) and check for score regression. If the score drops, abandon or apply dimensionality reduction before retrying. Do not bundle the new features with infrastruct  *(1 items, 1 kernels)*
+          - items: `55987255:e4#1`
+    - **[lever]** model class definition and conditional instantiation  *(1 items, 1 kernels)*
+      - **[action_context]** When the new architecture shares the same backbone family but adds custom heads/attention, and you want to keep the old code path available.  *(1 items, 1 kernels)*
+        - **[action]** Add the new model class alongside the old one. Use a config flag (e.g., CFG.multihead) to conditionally instantiate the correct class. Load pretrained backbone weights from a separate path (student/teacher) before loading the task-specific checkpoint. Keep the old model class intact for fallback.  *(1 items, 1 kernels)*
+          - items: `15082684:e3#2`
+    - **[lever]** inference image resolution  *(1 items, 1 kernels)*
+      - **[action_context]** When using a pretrained checkpoint where the training resolution is uncertain and the current resolution is relatively high.  *(1 items, 1 kernels)*
+        - **[action]** Try reducing inference resolution to a common training resolution (e.g., 512) and submit. If score holds or improves, keep the lower resolution for faster inference. Do not sweep many resolutions—one step down to a standard size is usually sufficient to detect a mismatch.  *(1 items, 1 kernels)*
+          - items: `15173072:e3#1`
+    - **[lever]** model serialization/loading method  *(1 items, 1 kernels)*
+      - **[action_context]** When the model uses custom layers from third-party packages (e.g., custom EfficientNet implementations) or runs on TPU with a distribution strategy.  *(1 items, 1 kernels)*
+        - **[action]** Prefer building the model architecture in code and loading weights separately (load_weights) rather than using load_model on the full saved file. load_model often fails with custom layers or TPU scopes. Test load_model locally before submitting; if it errors, revert immediately.  *(1 items, 1 kernels)*
+          - items: `13702907:e7#1`
+  - **[lever_context]** The author had multiple untested checkpoint sets and a fragile aggregation pipeline (path typos, weight-dimension mismatches). Submitting broken runs wastes quota.  *(3 items, 3 kernels)*
+    - **[lever]** staged development before submission  *(3 items, 3 kernels)*
+      - **[action_context]** When wiring new model checkpoints into an ensemble inference notebook with manual path strings and aggregation code.  *(2 items, 2 kernels)*
+        - **[action]** Run the notebook without submitting to verify paths load and aggregation code executes without error. Only submit once the notebook completes cleanly. Inspect printed predictions for sanity before committing a submission.  *(2 items, 2 kernels)*
+          - items: `17616127:e5#1`, `55621328:e31#2`
+      - **[action_context]** When a change is large and structural (new model branch, new data path), not just a parameter tweak.  *(1 items, 1 kernels)*
+        - **[action]** After making a large structural change, do a dry run without submitting to verify the pipeline executes correctly. Then make a minimal scoring change (e.g., add the new result to the ensemble average) and submit. This separates debugging from scoring and conserves submission budget.  *(1 items, 1 kernels)*
+          - items: `53424936:e2#2`
+  - **[lever_context]** The Net class with 4 ViT branches was commented out. Activating it required uncommenting, fixing input sizing (dynamic_img_pad), scaling from 1 to 5 folds, managing GPU memory, and fixing a label-offset bug. Each fix was a separate version.  *(3 items, 3 kernels)*
+    - **[lever]** batch size reduction for new model inference  *(2 items, 2 kernels)*
+      - **[action_context]** When switching to a heavier model (e.g., end-to-end BERT vs. frozen embeddings) on a fixed-resource environment like Kaggle.  *(2 items, 2 kernels)*
+        - **[action]** Start with a drastically reduced batch size (e.g., 1/8 of original) for the new model's inference pass to avoid OOM. Once inference succeeds and scores are validated, increase batch size back if runtime allows. Do not assume the same batch size works across architecturally different models.  *(2 items, 2 kernels)*
+          - items: `7670859:e3#3`, `50496431:e20#2`
+    - **[lever]** incremental activation of complex model components  *(1 items, 1 kernels)*
+      - **[action_context]** When a multi-input model has been developed offline and must be integrated into an inference notebook with limited debugging visibility.  *(1 items, 1 kernels)*
+        - **[action]** Activate complex models incrementally: first uncomment and wire up the architecture, then fix runtime shape/size errors, then test with minimal checkpoints (1-2 folds) and submit to get a baseline, then scale to full ensemble and fix data pipeline bugs. Submit after the minimal checkpoint test to ge  *(1 items, 1 kernels)*
+          - items: `53424936:e5#2`
+  - **[lever_context]** LightGBM and XGBoost have different callback signatures, eval function return formats, and device configuration APIs. Shared utility functions (like custom eval metrics) break silently when applied across frameworks.  *(1 items, 1 kernels)*
+    - **[lever]** incremental integration with per-component validation  *(1 items, 1 kernels)*
+      - **[action_context]** When combining models from different libraries (e.g., LightGBM + XGBoost) that share custom objective/eval functions.  *(1 items, 1 kernels)*
+        - **[action]** Add one model at a time. After adding each, run the notebook to verify no runtime errors before proceeding. Shared callback/eval functions must branch on input type (e.g., isinstance checks) because libraries pass arguments in different orders and formats. Do not submit until the full pipeline runs   *(1 items, 1 kernels)*
+          - items: `60197293:e1#1`
+- **[goal]** What do I do when I have multiple trained fold checkpoints and need to decide which single checkpoint to use for inference?  *(69 items, 21 kernels)*
+  - **[lever_context]** The author had dozens of checkpoints varying by fold, epoch, and training run date. The model architecture and preprocessing were already fixed and validated. The main remaining variance was checkpoint quality.  *(69 items, 21 kernels)*
+    - **[lever]** model checkpoint selection  *(35 items, 15 kernels)*
+      - **[action_context]** When you have a working inference pipeline and multiple candidate checkpoints from different training runs.  *(29 items, 15 kernels)*
+        - **[action]** Hold all inference settings fixed (batch size, post-processing, blending) and swap only the checkpoint directory. Submit each to the leaderboard. If each successive checkpoint improves, continue trying more. Order candidates by your offline validation metrics or training recency to prioritize the mo  *(29 items, 15 kernels)*
+          - items: `7606235:e2#1`, `50376011:e10#2`, `49524919:e33#2`, `52860091:e2#1`, `52551258:e13#1`, `55621328:e16#1`, `13521245:e2#3`, `13702907:e6#1`, `17616127:e3#1`, `17371717:e7#2`, `7018718:e3#1`, `7018718:e6#1`, `6803050:e8#1`, `6803050:e9#3`, `50376011:e19#2`, `49524919:e3#1`, `49524919:e13#2`, `49524919:e15#2`, `49524919:e16#1`, `49524919:e31#2`, `49576186:e16#1`, `52551258:e3#2`, `52551258:e4#1`, `53762022:e6#2`, `55621328:e22#1`, `55621328:e33#1`, `55621328:e42#2`, `15082684:e1#2`, `15082684:e7#1`
+      - **[action_context]** Multiple checkpoints are available but their relative LB performance is unknown; offline CV may not perfectly correlate with LB.  *(3 items, 3 kernels)*
+        - **[action]** Submit a handful of checkpoints spanning different training runs and epochs. If none beat the current best after ~5-6 tries and the CV-to-LB correlation appears weak (high CV doesn't yield high LB), stop the sweep and change approach rather than exhaustively testing all checkpoints. Track the best L  *(3 items, 3 kernels)*
+          - items: `15082684:e2#1`, `49524919:e1#1`, `55621328:e42#1`
+      - **[action_context]** When fold checkpoints have similar architectures and training but different random seeds/data splits, their individual quality varies. Testing a few indices (0, 4, 8, 16) quickly identifies the best one or two.  *(2 items, 1 kernels)*
+        - **[action]** Test 3–4 representative fold indices individually. For each, submit 2–3 times to account for variance. Identify the top 1–2 folds by their best or median score. Use those as the basis for further ensembling or as the final single-model submission. Discard folds that consistently score worse.  *(2 items, 1 kernels)*
+          - items: `50376011:e27#2`, `50376011:e41#2`
+      - **[action_context]** When there are only a small number of discrete options (e.g., 2-3 stages) to compare.  *(1 items, 1 kernels)*
+        - **[action]** Test each stage option by changing only the stage selector and submitting. If the alternative is worse, revert. If you change other variables (data, checkpoint), re-test the alternative again to rule out confounding. Stop after two consistent results in the same direction.  *(1 items, 1 kernels)*
+          - items: `49576186:e26#1`
+    - **[lever]** pretrained checkpoint swap combined with pipeline restructure  *(7 items, 7 kernels)*
+      - **[action_context]** When swapping a checkpoint that was trained with potentially different settings than the inference code assumes.  *(7 items, 7 kernels)*
+        - **[action]** When deploying a new checkpoint, change the model path, match the image size to training resolution, and start with raw scores (no rank conversion). Submit once. Then toggle rank conversion and submit again. Keep whichever is better. This two-submission protocol per checkpoint isolates the checkpoin  *(7 items, 7 kernels)*
+          - items: `17371717:e13#1`, `53762022:e2#1`, `49524919:e5#3`, `55621328:e15#2`, `55591012:e9#2`, `13848868:e9#1`, `13521245:e1#2`
+    - **[lever]** multi-fold prediction averaging  *(6 items, 5 kernels)*
+      - **[action_context]** When you have K-fold trained checkpoints stored in sequentially indexed directories and a single model architecture that can load any fold's weights.  *(6 items, 5 kernels)*
+        - **[action]** Start by averaging predictions from 3 diverse checkpoints and submit. If it improves, increase to all available folds (e.g., 5). If gains diminish, switch to higher-quality checkpoints (e.g., pseudo-labeled or second-stage fine-tuned) rather than adding more members. Re-normalize averaged probabilit  *(6 items, 5 kernels)*
+          - items: `17371717:e6#2`, `50376011:e9#1`, `50376011:e37#2`, `52860091:e3#1`, `55621328:e7#1`, `15082684:e5#1`
+    - **[lever]** model selection (single vs ensemble)  *(4 items, 4 kernels)*
+      - **[action_context]** When fold models were trained with limited data splits and a full-data or better-tuned single model is available.  *(3 items, 3 kernels)*
+        - **[action]** Before assuming ensembling always helps, test the single best-trained model against the ensemble. If fold models are undertrained or inconsistent, a single model trained on more data or with better convergence can outperform their average. Compare on the leaderboard with a single submission.  *(3 items, 3 kernels)*
+          - items: `60264017:e2#2`, `15372370:e3#1`, `13702907:e2#1`
+      - **[action_context]** When the public LB is extremely small and noisy, individual checkpoint scores are unreliable.  *(1 items, 1 kernels)*
+        - **[action]** When the public leaderboard has very few rows, prefer ensembling your best checkpoints over selecting a single one based on LB scores. A weighted average of diverse checkpoints is more robust to LB noise. If you find an ensemble that scores well, do not dismantle it to search for a better single mod  *(1 items, 1 kernels)*
+          - items: `17616127:e1#1`
+    - **[lever]** inference-time dropout configuration  *(3 items, 1 kernels)*
+      - **[action_context]** When models were trained with a fixed dropout rate, changing dropout at inference time is unlikely to help and may hurt.  *(3 items, 1 kernels)*
+        - **[action]** Keep inference-time dropout consistent with training-time settings. If you must experiment, test dropout=0 first (deterministic inference), and if it doesn't help, do not continue searching other dropout values at inference time — the lever is not productive.  *(3 items, 1 kernels)*
+          - items: `18350823:e4#3`, `18350823:e11#1`, `18350823:e13#2`
+    - **[lever]** preprocessing and model initialization alignment  *(3 items, 3 kernels)*
+      - **[action_context]** When you have a trained checkpoint and the inference pipeline uses generic defaults (e.g., ImageNet normalization, a different resolution than training).  *(1 items, 1 kernels)*
+        - **[action]** Before tuning model architecture or ensembling, verify that inference preprocessing exactly matches training: check input resolution, normalization mean/std, and any dataset-specific transforms. Fix all mismatches in one pass, as each alone may not fully explain the gap. This is especially important  *(1 items, 1 kernels)*
+          - items: `15082684:e4#1`
+      - **[action_context]** When a new model variant shows initial improvement over the previous best.  *(1 items, 1 kernels)*
+        - **[action]** First confirm the new model variant improves over baseline with default checkpoints. Then try last-stage (longer-trained) checkpoints. Then align preprocessing between training and inference (e.g., text normalization). Change one thing per submission. Continue as long as each step improves; stop whe  *(1 items, 1 kernels)*
+          - items: `55621328:e35#1`
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** When loading a custom checkpoint for inference, disable pretrained weight loading in the model constructor (set pretrained=False) so the architecture is randomly initialized before loading your weights. Add explicit resize transforms matching training dimensions. Keep commented-out alternative dimen  *(1 items, 1 kernels)*
+          - items: `52551258:e1#2`
+    - **[lever]** removing explicit parameter overrides to use restored defaults  *(2 items, 2 kernels)*
+      - **[action_context]** When the inference script loads saved training configs but command-line flags take precedence over them.  *(1 items, 1 kernels)*
+        - **[action]** Remove explicit command-line arguments that override values already stored in the model checkpoint config. Let the restore-config mechanism set those values. Submit to verify the effect, then re-run once to confirm the result is not noise before moving on.  *(1 items, 1 kernels)*
+          - items: `50376011:e11#1`
+      - **[action_context]** When a checkpoint ensemble fails to produce valid output or errors out after swapping config files  *(1 items, 1 kernels)*
+        - **[action]** Check that the inference config's architecture parameters (number of output labels, special positional encodings, head type) match what the checkpoints were actually trained with. Override mismatched parameters via command-line dotlist args rather than editing the config file. Verify with a single s  *(1 items, 1 kernels)*
+          - items: `55621328:e39#1`
+    - **[lever]** ensemble member count  *(2 items, 1 kernels)*
+      - **[action_context]** When each additional member still yields improvement and you haven't hit resource limits.  *(2 items, 1 kernels)*
+        - **[action]** Expand the ensemble aggressively in one step to include all available diverse checkpoints (e.g., from different folds or training runs). Use uniform weights and identical batch sizes. Verify the single-model baseline first, then submit the full ensemble. If the jump yields a large improvement, keep   *(2 items, 1 kernels)*
+          - items: `50376011:e20#1`, `50376011:e39#1`
+    - **[lever]** experiment isolation vs. bundling  *(2 items, 2 kernels)*
+      - **[action_context]** When you have a new checkpoint and need to decide TTA and post-processing settings before submitting.  *(1 items, 1 kernels)*
+        - **[action]** For each new checkpoint, first do a quick non-submitted run without TTA to verify it loads and produces reasonable outputs. Then submit the most promising TTA setting. Only after the checkpoint score is established, tune post-processing multipliers. Do not tune multipliers on a checkpoint that alrea  *(1 items, 1 kernels)*
+          - items: `49524919:e5#1`
+      - **[action_context]** When a quick A/B test (one config toggle) has already shown one option is worse, bundle the revert with other improvements to save submission budget, but re-test the rejected option once more after the bundle to confirm it wasn't confounded.  *(1 items, 1 kernels)*
+        - **[action]** After a negative A/B result, revert the change and bundle with other queued improvements. Then re-test the rejected option one more time against the improved baseline to confirm the finding still holds. If confirmed twice, stop testing that option.  *(1 items, 1 kernels)*
+          - items: `49576186:e26#2`
+    - **[lever]** sequential single-element probing  *(2 items, 2 kernels)*
+      - **[action_context]** A discrete hyperparameter was consistently worse in past tests, but the model or data pipeline has changed substantially since the last test.  *(1 items, 1 kernels)*
+        - **[action]** After a significant change to the model (new checkpoint, architecture tweak, new data), re-test a small number of previously rejected discrete options exactly once. If the result is still worse, stop probing that option and move on to a different lever. Do not re-probe the same option a fourth time   *(1 items, 1 kernels)*
+          - items: `49576186:e28#1`
+      - **[action_context]** When you have N checkpoints/components and need to verify each works, but running all together is expensive or masks individual failures.  *(1 items, 1 kernels)*
+        - **[action]** Gate the inference loop with an index condition (e.g., if i == k) and sweep k from 0 to N-1, submitting each. Compare scores to identify broken or weak components. Once all are verified, remove the gate and run the full ensemble. Expect each single-component score to be well below the ensemble targe  *(1 items, 1 kernels)*
+          - items: `15164527:e9#2`
+    - **[lever]** initialization/config side-effect debugging  *(1 items, 1 kernels)*
+      - **[action_context]** When a framework initialization call silently overrides user-specified parameters (batch size, learning rate, etc.).  *(1 items, 1 kernels)*
+        - **[action]** When a config toggle causes an unexpected score change, check whether it overrides other flags by inspecting runtime logs or printing effective config values. Add a comment documenting the side effect. Disable the call and set its needed effects manually rather than accepting the override. Re-run th  *(1 items, 1 kernels)*
+          - items: `50376011:e17#2`
+    - **[lever]** one-variable-at-a-time search with reversions  *(1 items, 1 kernels)*
+      - **[action_context]** When leaderboard noise is on the same order as the signal from configuration changes.  *(1 items, 1 kernels)*
+        - **[action]** Change only one variable per submission. If a change regresses, revert it before trying the next variable. When a no-change rerun regresses, do not conclude the previous change was bad; instead revert to the last known-good config and continue. Treat improvements that survive a revert-and-retry cycl  *(1 items, 1 kernels)*
+          - items: `50376011:e37#1`
+    - **[lever]** state_dict loading strictness  *(1 items, 1 kernels)*
+      - **[action_context]** When the checkpoint was trained with auxiliary heads or different architecture but shares the backbone weights you need.  *(1 items, 1 kernels)*
+        - **[action]** First try strict=True to see exactly which keys mismatch. If the mismatched keys are only auxiliary heads you don't need at inference, switch to strict=False. Add comments noting which keys are expected to be missing so future maintainers understand the partial load is intentional.  *(1 items, 1 kernels)*
+          - items: `55621328:e41#1`
+- **[goal]** What do I do when I want to improve an EEG classification ensemble that uses both precomputed and model-generated spectrograms?  *(50 items, 8 kernels)*
+  - **[lever_context]** Three prediction sources existed: raw EEG 2D models, 50s spectrogram models, and 50/10s spectrogram models. Previous blend used only two (0.4/0.6). The new 50/10s spectrogram models had competitive checkpoint losses.  *(45 items, 8 kernels)*
+    - **[lever]** spectrogram preprocessing parameters at inference  *(15 items, 4 kernels)*
+      - **[action_context]** When the model already works with spectrograms and you want finer frequency resolution without changing the model architecture.  *(9 items, 3 kernels)*
+        - **[action]** Do not change spectrogram generation parameters (n_fft, win_length, hop_length, scaling/normalization, frequency cropping) at inference time unless the model was trained with those exact parameters. If you must experiment, change only one parameter at a time and expect regressions if training/infere  *(7 items, 3 kernels)*
+          - items: `50496431:e55#2`, `49576186:e3#2`, `49576186:e20#2`, `52551258:e11#2`, `50496431:e5#1`, `50496431:e16#2`, `50496431:e17#1`
+        - **[action]** Apply domain-appropriate bandpass filtering (e.g., Butterworth filters for EEG frequency bands) before computing spectrograms. Combine filtered spectrograms with CNN-RNN models that can capture temporal dependencies in the EEG. Ensemble multiple model checkpoints (across folds and training stages) t  *(2 items, 2 kernels)*
+          - items: `52551258:e2#2`, `50496431:e7#2`
+      - **[action_context]** When models were trained with fixed preprocessing and you are only changing inference-time transforms.  *(5 items, 3 kernels)*
+        - **[action]** Do not change inference-time spectrogram preprocessing (window length, normalization order, log transforms) away from training-time settings—the model expects a specific input distribution. If you try such changes and see large regressions (>0.05), revert immediately rather than trying to compensate  *(4 items, 3 kernels)*
+          - items: `49524919:e35#2`, `49576186:e1#2`, `50496431:e19#2`, `50496431:e52#2`
+        - **[action]** Increase the vertical crop to include more frequency content (e.g., double the percentage of height retained) and simultaneously pass matching slice bounds to the data iterator. Submit once, and if it improves, keep the setting and move to a different lever.  *(1 items, 1 kernels)*
+          - items: `50496431:e21#1`
+      - **[action_context]** When widening the bandpass (e.g., rr from 20 to 40) causes a large regression, it likely introduces noise the model wasn't trained on.  *(1 items, 1 kernels)*
+        - **[action]** Keep inference bandpass filter parameters matched to training. If you widen the band, add a notch filter to remove known line noise (e.g., 60Hz) first. In this episode, adding a 60Hz notch filter (v172) partially recovered the score after widening rr had been catastrophic (v169). Always test filter   *(1 items, 1 kernels)*
+          - items: `50496431:e45#2`
+    - **[lever]** multi-modal fusion model integration  *(13 items, 5 kernels)*
+      - **[action_context]** When the ensemble already contains multiple spectrogram-based models and you have access to raw signal data.  *(6 items, 3 kernels)*
+        - **[action]** Retain all complementary modalities (raw EEG features, pre-computed spectrograms, and derived images) in the final model. If simplification is needed, ablate one modality at a time rather than dropping to a single one. Expect that raw EEG and spectrograms together contribute significantly beyond ima  *(4 items, 3 kernels)*
+          - items: `52551258:e13#2`, `49576186:e8#2`, `49576186:e19#3`, `50496431:e33#2`
+        - **[action]** Add a new input branch with its own backbone and preprocessing, concatenated with existing branches before the classification head. Keep the existing branches and their preprocessing unchanged. Set deterministic seeds to ensure reproducibility when comparing. Train offline and evaluate on the leader  *(2 items, 1 kernels)*
+          - items: `49576186:e12#2`, `49576186:e29#1`
+      - **[action_context]** One modality is substantially stronger than the other on the leaderboard.  *(4 items, 3 kernels)*
+        - **[action]** Start with a blend that heavily weights the stronger modality (e.g., 0.85/0.15). If this improves over the stronger modality alone, keep the blend and shift effort to improving the weaker modality's quality rather than sweeping blend weights further.  *(4 items, 3 kernels)*
+          - items: `49524919:e22#1`, `49524919:e25#3`, `49576186:e19#1`, `52551258:e12#2`
+      - **[action_context]** When adding a fundamentally new feature type that requires new transforms, feature extraction code, and model checkpoints  *(3 items, 3 kernels)*
+        - **[action]** First add the new feature pipeline and a single model, fix bugs iteratively (without submitting broken versions if possible), then submit. If the standalone new-feature model underperforms, try blending it with an existing backbone (e.g., 50/50 with another architecture). If blending still underperf  *(3 items, 3 kernels)*
+          - items: `53424936:e4#2`, `49524919:e32#2`, `50496431:e38#2`
+    - **[lever]** backbone architecture variant selection  *(5 items, 2 kernels)*
+      - **[action_context]** When swapping backbone variants in a pretrained pipeline where checkpoints were trained with a specific architecture.  *(5 items, 2 kernels)*
+        - **[action]** When you have trained multiple backbone variants (e.g., EfficientNet vs EfficientNetV2) on the same spectrogram features, evaluate them on the leaderboard by swapping only the checkpoint directory. Keep preprocessing, transforms, and ensembling logic fixed to isolate the effect of the backbone.  *(5 items, 2 kernels)*
+          - items: `49524919:e1#2`, `49524919:e7#2`, `49524919:e19#2`, `50496431:e24#2`, `50496431:e47#2`
+    - **[lever]** 3D CNN backbone swap  *(4 items, 3 kernels)*
+      - **[action_context]** When the ensemble already contains multiple 2D CNN folds and TTA variants, and the score improvement has slowed  *(4 items, 3 kernels)*
+        - **[action]** Train and add architecturally different models (3D CNNs, video transformers) that process the same data with a temporal dimension. Implement one at a time, validate each produces reasonable standalone predictions before including in the ensemble. Expect integration bugs (config mismatches, memory is  *(4 items, 3 kernels)*
+          - items: `53747598:e3#2`, `58130512:e21#1`, `50496431:e13#2`, `50496431:e20#3`
+    - **[lever]** EEG branch capacity (channel count and backbone variant)  *(2 items, 2 kernels)*
+      - **[action_context]** When the model architecture supports variable input channels and you have midline/auxiliary electrodes available in the data.  *(2 items, 2 kernels)*
+        - **[action]** Keep the EEG branch backbone small (B0) and match the channel count exactly to the number of actual signal channels (here 4 bipolar pairs per region). Padding with zeros to 6 or 8 channels wastes capacity and can hurt. Verify input shape matches the data before scaling up the backbone.  *(2 items, 2 kernels)*
+          - items: `49576186:e6#2`, `52551258:e10#2`
+    - **[lever]** model architecture selection  *(2 items, 2 kernels)*
+      - **[action_context]** When checkpoints for both architectures exist and share the same fold structure and pseudo-labeling strategy.  *(1 items, 1 kernels)*
+        - **[action]** Run inference with the alternative architecture config on all folds using the same checkpoint filenames, ensuring the Hydra experiment override matches the architecture the checkpoints were trained with. Compare standalone LB scores before attempting cross-architecture ensembles.  *(1 items, 1 kernels)*
+          - items: `52860091:e4#2`
+      - **[action_context]** When the 3D model's input format and preprocessing requirements differ substantially from existing 2D models.  *(1 items, 1 kernels)*
+        - **[action]** Before adding a 3D model to a production ensemble, validate it in isolation first: run inference with only the 3D model and verify its standalone score is reasonable. Only then blend it with existing models. If standalone performance is poor, the model weights or input preprocessing are likely wrong  *(1 items, 1 kernels)*
+          - items: `50496431:e12#3`
+    - **[lever]** Multi-modal ensemble (spectrogram + raw EEG models)  *(2 items, 1 kernels)*
+      - **[action_context]** When a spectrogram-based CNN is already optimized and raw signal data is available.  *(2 items, 1 kernels)*
+        - **[action]** Compute mel-spectrograms from raw EEG using appropriate parameters (low f_max matching EEG frequency range, sufficient n_mels for resolution), cache them to disk, and re-enable the ensemble branch that consumes them. This adds a complementary view of the data that improves ensemble diversity.  *(2 items, 1 kernels)*
+          - items: `50496431:e3#2`, `50496431:e11#2`
+    - **[lever]** channel-wise instance normalization  *(1 items, 1 kernels)*
+      - **[action_context]** When spectrogram inputs have multiple channels with heterogeneous statistics (e.g., different EEG montage regions), per-channel normalization preserves relative differences.  *(1 items, 1 kernels)*
+        - **[action]** For multi-channel spectrogram inputs to a CNN, implement instance normalization that computes mean and std per channel (axis=(0,1) only) rather than globally across all channels. This preserves inter-channel contrast that may carry diagnostic information.  *(1 items, 1 kernels)*
+          - items: `49524919:e8#2`
+    - **[lever]** Input colormap conversion and channel normalization  *(1 items, 1 kernels)*
+      - **[action_context]** When using a pretrained CNN backbone on non-natural-image data (spectrograms, heatmaps).  *(1 items, 1 kernels)*
+        - **[action]** Convert grayscale spectrograms to RGB using a perceptually rich colormap (e.g., jet), clip log-scaled values to a fixed range, map to [0,1], index into the colormap, then apply ImageNet per-channel normalization (mean/std). Train new models with this preprocessing before submitting. If the score reg  *(1 items, 1 kernels)*
+          - items: `49576186:e4#1`
+  - **[lever_context]** Mel-spectrogram models were added in v120-v125 and scores never improved beyond the pre-mel baseline (0.24265). Multiple checkpoint and blend weight adjustments failed to help.  *(5 items, 2 kernels)*
+    - **[lever]** input window and filter parameters  *(2 items, 1 kernels)*
+      - **[action_context]** When models were trained with specific preprocessing and you are adjusting inference-time parameters that may not match training conditions  *(2 items, 1 kernels)*
+        - **[action]** When an input window parameter has been validated across multiple prior submissions and the current value is at or near the best, do not change it simultaneously with other modifications. If you must explore, change only the window parameter in isolation to get a clean signal.  *(2 items, 1 kernels)*
+          - items: `50496431:e29#2`, `50496431:e32#2`
+    - **[lever]** checkpoint version sweep  *(1 items, 1 kernels)*
+      - **[action_context]** When checkpoint training is done offline and LB scores are non-monotonic across versions, indicating overfitting or training instability in some versions.  *(1 items, 1 kernels)*
+        - **[action]** Submit each new checkpoint version sequentially. Do not assume monotonic improvement — always submit. Track the best version and continue until versions stop improving or a qualitatively different approach becomes available. Keep other settings (TTA, post-processing) at their known-best state during  *(1 items, 1 kernels)*
+          - items: `49524919:e6#2`
+    - **[lever]** feature representation diversity  *(1 items, 1 kernels)*
+      - **[action_context]** When a new input representation (e.g., mel-spectrogram vs standard spectrogram) has similar offline metrics but doesn't improve the ensemble on the leaderboard.  *(1 items, 1 kernels)*
+        - **[action]** If a new feature representation's models have similar CV scores to existing models but adding them to the ensemble hurts LB, the representation is likely correlated with existing members and adds noise rather than diversity. Abandon it after 2-3 blend attempts and invest effort in representations th  *(1 items, 1 kernels)*
+          - items: `49524919:e27#3`
+    - **[lever]** remove underperforming model family from ensemble  *(1 items, 1 kernels)*
+      - **[action_context]** When a model family has been tuned across multiple iterations (checkpoints, blend weights) without improving the best score, and the ensemble without it scores better.  *(1 items, 1 kernels)*
+        - **[action]** If a model family added to an ensemble fails to improve the best score after 3+ tuning attempts (different checkpoints, weights, combinations), remove it entirely from the pipeline. Verify by running the full remaining ensemble and confirming the score improves or matches the previous best.  *(1 items, 1 kernels)*
+          - items: `49524919:e28#2`
+- **[goal]** What do I do when I have a new best score and want to explore whether alternative model variants can improve further?  *(49 items, 23 kernels)*
+  - **[lever_context]** The current best score (0.80442) came from a single deberta-v3-small fold. Alternative checkpoints (different training runs, larger model) are available but untested on the leaderboard. Threshold tuning alone has been explored extensively already (v5-v10).  *(48 items, 23 kernels)*
+    - **[lever]** model variant substitution  *(9 items, 5 kernels)*
+      - **[action_context]** When you have a stable pipeline and multiple candidate model variants available as pretrained checkpoints.  *(7 items, 4 kernels)*
+        - **[action]** Probe one alternative model variant at a time against your current best. If the first variant regresses, do not combine it into an ensemble—revert and try a structurally different alternative. If two consecutive probes both regress, abandon this family of variants and move to a different model archi  *(7 items, 4 kernels)*
+          - items: `52551258:e5#1`, `28984551:e2#1`, `73671444:e2#1`, `52551258:e10#1`, `55621328:e3#1`, `55621328:e6#1`, `55621328:e40#2`
+      - **[action_context]** When swapping boosting frameworks (e.g., LightGBM→XGBoost), the metric callback interface, early stopping API, and hyperparameter names differ.  *(1 items, 1 kernels)*
+        - **[action]** When probing an alternative boosting framework: (1) first ensure the environment runs (device/dependency fixes), (2) reduce CV folds to speed iteration, (3) adapt the custom metric callback to the new library's signature, (4) configure early stopping to monitor and maximize the competition metric wi  *(1 items, 1 kernels)*
+          - items: `55431616:e6#1`
+      - **[action_context]** When a single-checkpoint probe regresses on the leaderboard despite promising local validation  *(1 items, 1 kernels)*
+        - **[action]** Submit one probe of the variant checkpoint with co-adjusted post-processing thresholds. If the leaderboard score regresses, abandon that variant immediately and move to a qualitatively different improvement strategy rather than further tuning the same variant.  *(1 items, 1 kernels)*
+          - items: `55621328:e23#1`
+    - **[lever]** Experiment scheduling and stopping  *(4 items, 4 kernels)*
+      - **[action_context]** When the new approach's best result after a small sweep still trails the baseline by a consistent margin.  *(4 items, 4 kernels)*
+        - **[action]** After testing 3 variants of a new component and none comes within ~0.1-0.2% of the baseline, abandon the direction. Do not continue fine-tuning a clearly inferior component; revert to the prior best and try a different lever.  *(4 items, 4 kernels)*
+          - items: `13848868:e6#3`, `73671444:e7#2`, `6803050:e8#2`, `55621328:e20#3`
+    - **[lever]** blending strategy complexity  *(3 items, 3 kernels)*
+      - **[action_context]** When the evaluation set is very small (high noise), data-dependent branching in blending is unreliable.  *(2 items, 2 kernels)*
+        - **[action]** On small or noisy leaderboards, prefer fixed blend weights over data-adaptive conditional logic. If a conditional strategy does not clearly beat the simple version, revert to fixed weights immediately rather than iterating on the conditional approach.  *(2 items, 2 kernels)*
+          - items: `27502740:e4#2`, `18350823:e4#2`
+      - **[action_context]** When each reduction in the additive weight yields a new best score and the weight is still positive.  *(1 items, 1 kernels)*
+        - **[action]** Continue reducing the additive correction in fixed step sizes (e.g., 0.05) as long as each step yields improvement. Stop when the improvement plateaus or reverses, or when you reach zero. Submit each step to confirm on the leaderboard before continuing.  *(1 items, 1 kernels)*
+          - items: `77347591:e6#1`
+    - **[lever]** ordinal regression prediction head  *(3 items, 2 kernels)*
+      - **[action_context]** When the regression target has a bounded range and moderate noise, discretizing it into bins can regularize predictions.  *(2 items, 2 kernels)*
+        - **[action]** Train a model with an auxiliary categorical/bin prediction head alongside the regression head. At inference, use the regression output but benefit from the regularization the categorical head provided during training. Test the new checkpoint by swapping it into the inference pipeline before adding o  *(1 items, 1 kernels)*
+          - items: `17371717:e9#1`
+        - **[action]** Replace the regression output with K-1 sigmoid outputs summed to produce a continuous score in [0, K-1], then shift by +1 to match the label range [1, K]. Use the same optimized rounding post-processing. This preserves ordinal monotonicity and often improves QWK over raw regression.  *(1 items, 1 kernels)*
+          - items: `55621328:e31#1`
+      - **[action_context]** When you have a strong baseline with one formulation and want to test an alternative formulation.  *(1 items, 1 kernels)*
+        - **[action]** Build the alternative pipeline, submit it with minimal tuning (1-2 checkpoints), and compare against your best. If it underperforms by a meaningful margin (e.g., >0.5 points on QWK) across two variants, abandon it quickly and return to the stronger formulation rather than investing in tuning the wea  *(1 items, 1 kernels)*
+          - items: `55621328:e13#1`
+    - **[lever]** backbone architecture variant  *(3 items, 2 kernels)*
+      - **[action_context]** Multiple pre-trained checkpoint sets are available for different model sizes within the same family, and the current best uses one specific variant.  *(2 items, 1 kernels)*
+        - **[action]** Run a single-shot probe of the alternative backbone with all other settings (TTA, transforms, post-processing) held fixed at the current best configuration. If the probe regresses meaningfully, abandon that variant immediately and return to the incumbent. Do not sweep hyperparameters for the new var  *(2 items, 1 kernels)*
+          - items: `49524919:e7#1`, `49524919:e17#1`
+      - **[action_context]** When a large improvement was just obtained from a compound change and you want to isolate whether a different backbone helps.  *(1 items, 1 kernels)*
+        - **[action]** After a compound upgrade, test one alternative at a time (e.g., swap only the backbone) to learn which factors matter. If the swap regresses, revert to the previous best and try a different lever (e.g., resolution) rather than continuing to swap backbones.  *(1 items, 1 kernels)*
+          - items: `13577502:e2#2`
+    - **[lever]** model size selection  *(2 items, 2 kernels)*
+      - **[action_context]** When larger backbone variants underperform smaller ones on the leaderboard despite presumably higher capacity.  *(2 items, 2 kernels)*
+        - **[action]** Do not persist with larger models after 2-3 attempts show them underperforming the smaller variant. Return to the smaller model and invest effort in ensembling (more folds, more seeds) rather than scaling up model size. The ensemble of a well-trained smaller model often beats a single larger model.  *(2 items, 2 kernels)*
+          - items: `55621328:e16#3`, `27836972:e2#2`
+    - **[lever]** pivot to a different variant rather than tuning the failed one  *(2 items, 2 kernels)*
+      - **[action_context]** When a single-step checkpoint swap causes a regression and there are other untried checkpoint configurations available.  *(2 items, 2 kernels)*
+        - **[action]** After confirming a weak baseline with probe runs, skip incremental tuning and replace the core pipeline (model architecture, data loading, accelerator strategy) in one step. Reserve incremental tuning for when the baseline is already within a few points of the target.  *(2 items, 2 kernels)*
+          - items: `13577502:e1#2`, `55621328:e27#2`
+    - **[lever]** multi-variant ensemble  *(2 items, 2 kernels)*
+      - **[action_context]** When variants differ in pooling strategy and regularization but share the same backbone and training data.  *(1 items, 1 kernels)*
+        - **[action]** Combine all existing model-head variants by loading each variant's fold checkpoints, running inference separately, and averaging predictions with equal weights. This requires no retraining and directly reduces prediction variance. Prioritize this before exploring new architectures, as it is zero-cos  *(1 items, 1 kernels)*
+          - items: `17371717:e2#1`
+      - **[action_context]** When a simple monotonic transform on predicted probabilities improved AUC in a previous iteration.  *(1 items, 1 kernels)*
+        - **[action]** Keep the beneficial transform as a fixed component while expanding other dimensions (more models, fold averaging). After the structural changes are validated, revisit the transform choice to confirm it still helps in the new context.  *(1 items, 1 kernels)*
+          - items: `15164527:e3#3`
+    - **[lever]** checkpoint selection  *(2 items, 2 kernels)*
+      - **[action_context]** When training happens outside the submission notebook and produces a new checkpoint directory.  *(2 items, 2 kernels)*
+        - **[action]** Swap one checkpoint path at a time, submit, and compare LB scores. If the new checkpoint is worse, revert and move on to a different lever rather than continuing to search among similar checkpoints.  *(2 items, 2 kernels)*
+          - items: `17371717:e11#1`, `49576186:e13#1`
+    - **[lever]** idea abandonment timing  *(2 items, 2 kernels)*
+      - **[action_context]** When 4-5 variants of a new idea all score below the prior best by a consistent margin  *(2 items, 2 kernels)*
+        - **[action]** After 3-4 submissions of a new idea that all underperform the prior best by a similar margin, abandon the idea and return to the previously best-performing approach. The author took 5 submissions here before reverting in v26, which was one or two too many given the consistent signal.  *(2 items, 2 kernels)*
+          - items: `7018718:e7#2`, `55621328:e29#2`
+    - **[lever]** add diagnostic instrumentation to inference  *(2 items, 2 kernels)*
+      - **[action_context]** When you have been tuning ensemble composition for many iterations without understanding prediction characteristics.  *(1 items, 1 kernels)*
+        - **[action]** Temporarily reduce the ensemble to a single model, add logging of raw predictions and summary statistics (e.g., entropy, confidence), inspect the outputs, then decide whether the issue is calibration, diversity, or model quality before resuming ensemble tuning.  *(1 items, 1 kernels)*
+          - items: `50376011:e14#2`
+      - **[action_context]** A large regression after changing a model checkpoint, when the inference pipeline may also have issues (e.g., filename bugs, TTA misconfiguration).  *(1 items, 1 kernels)*
+        - **[action]** When a model swap causes a large regression, first check for and fix any pipeline bugs introduced or exposed by the change, then test with and without auxiliary inference tricks (like TTA). If the score remains substantially worse after fixing confounds, abandon that model variant and try the next i  *(1 items, 1 kernels)*
+          - items: `49524919:e2#1`
+    - **[lever]** model architecture and ensemble pipeline replacement  *(2 items, 2 kernels)*
+      - **[action_context]** When the current score is far below competitive range and multiple bottlenecks exist simultaneously (resolution, model capacity, data throughput).  *(2 items, 2 kernels)*
+        - **[action]** When your initial model scores far below competitive range, do not incrementally tune it. Instead, replace the entire model family and feature pipeline in one step with an approach known to work well for the problem type. Prepare the new models in a separate training notebook and deploy the full ens  *(1 items, 1 kernels)*
+          - items: `52551258:e2#1`
+        - **[action]** Bundle infrastructure upgrade (accelerator, data pipeline), resolution increase, and stronger backbone into a single step rather than isolating each factor. This is justified when the baseline is clearly under-optimized on all fronts and the expected gain is large enough that attribution across fact  *(1 items, 1 kernels)*
+          - items: `13577502:e2#1`
+    - **[lever]** single-variable probe before optimization  *(2 items, 2 kernels)*
+      - **[action_context]** When tuning a continuous preprocessing parameter using only LB feedback (no local validation), and the parameter interacts with pretrained weights that were trained with a specific setting.  *(2 items, 2 kernels)*
+        - **[action]** When probing a new model variant, change the checkpoint and backbone together in one submission, adjusting only the post-processing thresholds (which must change with the new prediction distribution). If the probe succeeds, then separately optimize ensemble weights and fold combinations. Do not comb  *(2 items, 2 kernels)*
+          - items: `55621328:e18#2`, `50496431:e9#1`
+    - **[lever]** prediction method (KNN vs direct logits)  *(1 items, 1 kernels)*
+      - **[action_context]** When a KNN-augmented inference method regresses on the leaderboard compared to direct softmax/exp outputs from the same model family.  *(1 items, 1 kernels)*
+        - **[action]** Revert to direct model outputs (e.g., softmax or exp of logits) immediately. KNN-augmented prediction is sensitive to train-test distribution shift and index quality; if it doesn't improve on first try, prefer standard inference and invest effort in ensemble diversity instead.  *(1 items, 1 kernels)*
+          - items: `52551258:e5#2`
+    - **[lever]** training objective / loss function  *(1 items, 1 kernels)*
+      - **[action_context]** When the model is already well-tuned on other hyperparameters and the score has plateaued.  *(1 items, 1 kernels)*
+        - **[action]** Test alternative loss functions as single-shot probes: change only the objective while holding all other hyperparameters fixed, submit, and compare to the current best. If the score does not improve, revert and try a different lever rather than sweeping over objective variants.  *(1 items, 1 kernels)*
+          - items: `27389424:e13#1`
+    - **[lever]** GBDT depth and learning rate  *(1 items, 1 kernels)*
+      - **[action_context]** When features have been enriched substantially beyond the starter set, the original shallow depth may underfit.  *(1 items, 1 kernels)*
+        - **[action]** Try roughly doubling tree depth (e.g. 4→8) while proportionally lowering learning rate (e.g. 0.05→0.03) as a single probe. Preserve the old parameters as a commented block. Evaluate on CV before submitting. If CV does not improve, revert and return to feature engineering rather than sweeping more hy  *(1 items, 1 kernels)*
+          - items: `27836972:e7#1`
+    - **[lever]** Mixed/half precision inference  *(1 items, 1 kernels)*
+      - **[action_context]** When the model is a fine-tuned transformer used only for inference (no gradient computation), and the task metric is regression RMSE where small numerical differences are unlikely to matter.  *(1 items, 1 kernels)*
+        - **[action]** Cast the model to half precision (model.half()) before eval. Submit to verify no regression on the leaderboard. If score is unchanged or negligibly different, keep it for the memory and speed benefits.  *(1 items, 1 kernels)*
+          - items: `17371717:e4#2`
+    - **[lever]** ensemble member composition  *(1 items, 1 kernels)*
+      - **[action_context]** When two individual models each produce competitive but variable scores, and single-model swaps have plateaued.  *(1 items, 1 kernels)*
+        - **[action]** Combine the two best-performing individual model variants into an equal-weight ensemble. Start with uniform weights rather than tuning weights, since the diversity benefit of averaging typically dominates weight optimization at small ensemble sizes.  *(1 items, 1 kernels)*
+          - items: `50376011:e13#1`
+    - **[lever]** Code cleanup and configuration simplification  *(1 items, 1 kernels)*
+      - **[action_context]** When a newly integrated model has many unused helpers, redundant config, and verbose code from rapid prototyping  *(1 items, 1 kernels)*
+        - **[action]** Before abandoning a new model that underperforms, do one aggressive cleanup pass: remove all unused helper functions, inline simple constants, simplify data channel configuration, and verify pretrained weight paths. This often yields a significant score improvement (here ~0.05 KL) because dead code   *(1 items, 1 kernels)*
+          - items: `52200959:e6#2`
+    - **[lever]** run mode toggle (train vs. inference)  *(1 items, 1 kernels)*
+      - **[action_context]** When models are already trained and saved as dataset artifacts, and the notebook supports both training and loading paths.  *(1 items, 1 kernels)*
+        - **[action]** Maintain a single flag in your notebook that switches between training and inference modes. Develop and iterate with training mode locally or in draft runs, then flip to inference mode for submission. Submit once to verify the loaded models reproduce expected scores before making further changes.  *(1 items, 1 kernels)*
+          - items: `55431616:e1#1`
+    - **[lever]** Revert to proven model family  *(1 items, 1 kernels)*
+      - **[action_context]** When a new model family is introduced alongside many other changes and the combined result underperforms, and the custom objective/metric has required bug fixes.  *(1 items, 1 kernels)*
+        - **[action]** If a new model family introduced alongside other changes yields a poor score and the custom objective needed bug fixes, switch back to the proven model family with the corrected objective rather than continuing to debug the new one. Preserve the other improvements (features, infrastructure) while re  *(1 items, 1 kernels)*
+          - items: `58130512:e16#3`
+    - **[lever]** boosting framework swap (LightGBM vs XGBoost)  *(1 items, 1 kernels)*
+      - **[action_context]** When the current framework has been heavily tuned and scores are stagnant.  *(1 items, 1 kernels)*
+        - **[action]** When swapping boosting frameworks, first adapt the evaluation metric and callbacks to the new API, then do a quick hyperparameter sweep (3-5 variants) using CV only. Submit to the leaderboard only after CV suggests improvement over the baseline. If the first LB submission underperforms the best know  *(1 items, 1 kernels)*
+          - items: `58130512:e38#1`
+    - **[lever]** switch from generative inference to embedding extraction  *(1 items, 1 kernels)*
+      - **[action_context]** When a large pretrained model fails at direct prediction but you have already loaded it and want to salvage value from it.  *(1 items, 1 kernels)*
+        - **[action]** Instead of using the LLM's generated text output as predictions, extract hidden-state embeddings (e.g., mean-pooled last layer) and feed them as features into a well-calibrated downstream model like LightGBM. This converts an unreliable predictor into a feature extractor.  *(1 items, 1 kernels)*
+          - items: `55987255:e8#2`
+  - **[lever_context]** The 'question_type_spelling' target likely has a strong correlation with whether the question comes from English/ELL StackExchange sites. BERT models may not capture this URL-based signal since URLs aren't typically in the fine-tuning input.  *(1 items, 1 kernels)*
+    - **[lever]** rule-based feature override for specific target columns  *(1 items, 1 kernels)*
+      - **[action_context]** When a target column has a near-deterministic relationship with metadata (e.g., site URL) that the model doesn't see as input, and the metric is rank-based (Spearman).  *(1 items, 1 kernels)*
+        - **[action]** Identify target columns where domain metadata (URLs, categories) provides a strong signal the model misses. Override the model's prediction for that column with a heuristic derived from the metadata. Start with a moderate value (e.g., 0.5) and tune it based on leaderboard feedback.  *(1 items, 1 kernels)*
+          - items: `6803050:e11#2`
+- **[goal]** What do I do when integrating a new transformer model into an existing ensemble for a regression task?  *(49 items, 20 kernels)*
+  - **[lever_context]** Individual models (RoBERTa-base ~0.467, RoBERTa-large ~0.468, T5-large, DistilBERT) each have different strengths. The dataset is small (2834 samples), making ensembling especially valuable for variance reduction.  *(46 items, 20 kernels)*
+    - **[lever]** number of embedding features and ensemble members  *(9 items, 7 kernels)*
+      - **[action_context]** When models use dropout at inference time, re-running with different seeds and averaging can reduce noise.  *(4 items, 4 kernels)*
+        - **[action]** After confirming that no single checkpoint outperforms the existing best ensemble, return to weighted averaging of complementary models (different architectures or training runs). Prioritize diversity (e.g., ALBERT + RoBERTa) over picking the single best checkpoint.  *(3 items, 3 kernels)*
+          - items: `17616127:e3#2`, `18426209:e3#2`, `18350823:e3#1`
+        - **[action]** Sweep the repeat count upward in small increments (+1 or +2) while score improves. When a step regresses, treat the previous value as the optimum and stop. Do not change other hyperparameters simultaneously when searching for the optimal repeat count, because confounded changes make regression unint  *(1 items, 1 kernels)*
+          - items: `77129691:e3#1`
+      - **[action_context]** When a LightGBM model consumes transformer embeddings as features and the feature count is already in the thousands.  *(3 items, 1 kernels)*
+        - **[action]** Prefer the smaller set of high-quality transformer embeddings over a larger set from more models. Test both configurations and compare LB scores; if the expanded set does not clearly beat the compact set, keep the compact one to avoid overfitting and memory issues. Ensure the feature-selection file   *(3 items, 1 kernels)*
+          - items: `58130512:e23#2`, `58130512:e36#2`, `58130512:e37#2`
+      - **[action_context]** When adding new backbone types has been tried and removed (Funnel, BART, GPT-2 were pruned in v6-v9), but existing backbones have untapped folds/seeds.  *(2 items, 2 kernels)*
+        - **[action]** Train additional seeds or folds of already-validated backbone architectures and add their predictions to the stacking ensemble. Each addition should be verified via CV before submission. Expect diminishing but reliable gains (here ~0.00016 RMSE).  *(2 items, 2 kernels)*
+          - items: `18550705:e4#2`, `17371717:e2#2`
+    - **[lever]** feature selection after adding stacking features  *(6 items, 5 kernels)*
+      - **[action_context]** When the bi-encoder predictions are from a different model family and the stacking meta-learner was not trained with them, or when only a subset of folds is available.  *(4 items, 3 kernels)*
+        - **[action]** Re-enable or tighten feature selection (importance-based filtering) after adding stacking features. If the score recovers to the pre-stacking baseline, the new features are likely redundant or harmful. Consider whether the external model's training data overlaps with the existing OOF features before  *(3 items, 3 kernels)*
+          - items: `17616127:e38#3`, `58130512:e10#1`, `60197293:e6#3`
+        - **[action]** Load the OOF prediction matrix, add each class probability as a separate column to the training features, and ensure the same model's test-time predictions are added to test features. This gives the tree model access to the transformer's learned representation without coupling inference pipelines.  *(1 items, 1 kernels)*
+          - items: `58130512:e12#1`
+      - **[action_context]** When the target is ordinal (essay scores 1-6) and the metric is QWK, both semantic representations and surface-level text statistics contribute complementary signal.  *(2 items, 2 kernels)*
+        - **[action]** Extract transformer embeddings (sentence-transformers or DeBERTa hidden states) and concatenate with handcrafted NLP features (spelling errors, readability scores, paragraph/sentence statistics, TF-IDF). Reduce combined feature dimensionality (e.g., top 10k by importance) before feeding to GBDT ense  *(2 items, 2 kernels)*
+          - items: `7573212:e3#1`, `58527792:e3#2`
+    - **[lever]** pooling complexity in transformer head  *(5 items, 2 kernels)*
+      - **[action_context]** When the dataset is small (~2800 samples) and the model is a pretrained transformer, the top layers may be too specialized for the pretraining task.  *(5 items, 2 kernels)*
+        - **[action]** Try adding attention-based pooling over the last hidden states and reinitializing the last N (e.g., 4) transformer encoder layers to the model's initializer range. Validate via CV before submitting, as these changes can hurt if the reinitialized layers don't converge properly with limited data. If L  *(5 items, 2 kernels)*
+          - items: `18757376:e5#2`, `17371717:e3#2`, `18757376:e2#1`, `17371717:e1#2`, `17371717:e5#3`
+    - **[lever]** multisample dropout at inference  *(4 items, 3 kernels)*
+      - **[action_context]** When the model head has a single dropout layer and the dataset is small/noisy, predictions can be unstable across random seeds.  *(4 items, 3 kernels)*
+        - **[action]** When adding dropout to a multi-branch model, apply it symmetrically to all branches at the same rate (e.g., 0.2) as a single probe rather than sweeping rates. If the gain is marginal (<0.1% of metric), deprioritize further dropout tuning and move to higher-impact levers like input features or archit  *(4 items, 3 kernels)*
+          - items: `18350823:e1#1`, `18350823:e12#2`, `17371717:e8#2`, `7613444:e3#1`
+    - **[lever]** stacking head architecture simplification  *(3 items, 3 kernels)*
+      - **[action_context]** When handcrafted features are expensive to compute and you suspect the transformer already captures most of the signal.  *(2 items, 2 kernels)*
+        - **[action]** Stop toggling the uncertain feature. Instead, remove it permanently and invest effort in a structural improvement (e.g., CV-driven feature selection wrapper) that systematically identifies useful features. Pair with post-processing optimization to recover any lost signal. This reduces complexity and  *(2 items, 2 kernels)*
+          - items: `59253662:e8#2`, `58130512:e11#3`
+      - **[action_context]** When the training set is very small and the stacking head may overfit.  *(1 items, 1 kernels)*
+        - **[action]** Replace a multi-layer stacking head with a learnable softmax-weighted average of base model predictions. If this degrades performance, the original head was not overfitting, and you should revert. Do not change the stacking head and the ensemble membership simultaneously, as you cannot attribute the  *(1 items, 1 kernels)*
+          - items: `18550705:e5#2`
+    - **[lever]** backbone diversity in ensemble  *(3 items, 3 kernels)*
+      - **[action_context]** When you have pre-trained checkpoints from different transformer families available and the ensemble pipeline is already working.  *(3 items, 3 kernels)*
+        - **[action]** Replace the weakest existing backbone with a stronger one from a different architecture family first (one swap at a time), submit to verify improvement, then add a completely new architecture as an additional member. Flatten ensemble weights toward uniform when adding diverse models rather than heav  *(3 items, 3 kernels)*
+          - items: `18550705:e1#1`, `18523075:e2#1`, `18423958:e3#2`
+    - **[lever]** pruning weak base models from ensemble  *(2 items, 2 kernels)*
+      - **[action_context]** When a weaker backbone's OOF score is noticeably worse than the stronger backbone's, and the ensemble is small enough that the weak model's noise isn't averaged away.  *(2 items, 2 kernels)*
+        - **[action]** In a transformer stacking ensemble, compare OOF RMSE of each backbone group. If a weaker backbone group degrades the blend, remove it entirely rather than downweighting it. Fewer but stronger members often outperform more diverse but noisier ones on small datasets.  *(2 items, 2 kernels)*
+          - items: `18550705:e2#2`, `18757376:e4#2`
+    - **[lever]** Aggregation method for fold predictions  *(2 items, 2 kernels)*
+      - **[action_context]** When ensembling K-fold checkpoints of the same architecture where no fold is known to be better than others.  *(1 items, 1 kernels)*
+        - **[action]** Use unweighted mean across fold predictions rather than weighted average. Weighted averaging requires per-fold validation scores to set weights; without them, equal weights avoid bugs and are a strong default.  *(1 items, 1 kernels)*
+          - items: `17616127:e5#2`
+      - **[action_context]** When adding a TF model to a PyTorch ensemble in an inference-only notebook with limited compute.  *(1 items, 1 kernels)*
+        - **[action]** Build a self-contained inference block: import the framework, define a separate tokenizer and encoding function, build the model architecture to match training, load each fold's weights sequentially, average fold predictions, then blend with existing model predictions using a weighted average. Keep   *(1 items, 1 kernels)*
+          - items: `18350823:e5#2`
+    - **[lever]** model size upgrade (base → large)  *(2 items, 2 kernels)*
+      - **[action_context]** When fold-level checkpoints of a larger variant are available and the inference pipeline is identical.  *(2 items, 2 kernels)*
+        - **[action]** Before adding complexity (stacking, weighted averaging), first try swapping all fold checkpoints from base to large variants of the same architecture. This is a low-risk change that often yields a meaningful improvement (here ~0.016 RMSE).  *(2 items, 2 kernels)*
+          - items: `17616127:e6#2`, `55621328:e20#2`
+    - **[lever]** ensemble expansion with additional checkpoint sets  *(2 items, 2 kernels)*
+      - **[action_context]** When the pipeline already uses several large transformer models and memory/compute is constrained (Kaggle kernel limits).  *(2 items, 2 kernels)*
+        - **[action]** Add the new checkpoint predictions as a separate averaged group, then blend them into the existing ensemble with reduced individual weight (e.g., average the new group with an existing group before applying ensemble weights). Verify the LB score improves; a small improvement (~0.001 RMSE) on a tiny   *(2 items, 2 kernels)*
+          - items: `18837555:e1#2`, `55987255:e16#2`
+    - **[lever]** precomputed transformer features as GBDT inputs  *(2 items, 2 kernels)*
+      - **[action_context]** When transformer models have been fine-tuned offline and their predictions are available as datasets, and a GBDT model can consume them as meta-features.  *(2 items, 2 kernels)*
+        - **[action]** Replace live transformer inference with precomputed prediction pickles loaded at submission time. Feed these as additional features into a GBDT ensemble (LightGBM + XGBoost). This saves GPU time, avoids OOM/timeout errors, and lets you iterate faster on the GBDT layer while keeping transformer signa  *(2 items, 2 kernels)*
+          - items: `55431616:e8#2`, `58130512:e16#2`
+    - **[lever]** stratified cross-validation via target binning  *(1 items, 1 kernels)*
+      - **[action_context]** When the target is continuous but the dataset is small enough that random splits can create imbalanced folds.  *(1 items, 1 kernels)*
+        - **[action]** Bin the continuous target into Sturges-rule bins (1 + log2(n)), then use StratifiedKFold on those bins. Train both SVR and Ridge per fold, average their test predictions across folds, then blend SVR and Ridge predictions together. This stabilizes CV estimates and final predictions.  *(1 items, 1 kernels)*
+          - items: `18851026:e8#3`
+    - **[lever]** blend weight allocation for weaker model  *(1 items, 1 kernels)*
+      - **[action_context]** When a model family is substantially weaker than existing ensemble members on its own  *(1 items, 1 kernels)*
+        - **[action]** Give the weaker model a small blend weight (e.g., 0.2 or less) and verify the ensemble improves over the baseline without it. If the blended score does not improve, drop the model rather than continuing to tune its weight—diversity from a much weaker model rarely compensates for its noise.  *(1 items, 1 kernels)*
+          - items: `18423958:e8#2`
+    - **[lever]** SVR on frozen transformer embeddings  *(1 items, 1 kernels)*
+      - **[action_context]** When you have a fine-tuned transformer and want a cheap diverse ensemble member.  *(1 items, 1 kernels)*
+        - **[action]** Extract CLS or attention-pooled embeddings from the fine-tuned model on both train and test. Use stratified K-fold (bin the continuous target) to train SVR with an RBF kernel, tuning C and gamma. Average OOF predictions across folds for test. Blend with existing models at a modest weight. Evaluate o  *(1 items, 1 kernels)*
+          - items: `18350823:e14#2`
+    - **[lever]** Ensemble structurally different model variants  *(1 items, 1 kernels)*
+      - **[action_context]** When you have pre-trained weights for two model architectures that differ in input structure (e.g., one uses concatenated QA input, the other does not), and prior attempts at weighted fold ensembles degraded performance.  *(1 items, 1 kernels)*
+        - **[action]** Create a second model function with a different input configuration, load its separately trained weights, run inference with both models, and simple-average their predictions. Use equal weights rather than tuned weights if prior weighting experiments showed instability. Expect a meaningful gain (~1-  *(1 items, 1 kernels)*
+          - items: `7573212:e6#1`
+    - **[lever]** numerical precision in inference  *(1 items, 1 kernels)*
+      - **[action_context]** When the model uses regression outputs that are post-processed with optimized rounding thresholds (fitted in fp32), switching to fp16 can shift predictions enough to degrade QWK.  *(1 items, 1 kernels)*
+        - **[action]** If optimized rounding thresholds were calibrated under fp32 inference, do not switch to fp16 without re-optimizing thresholds. If you must use mixed precision, re-run threshold optimization on fp16 predictions. Otherwise keep inference in fp32.  *(1 items, 1 kernels)*
+          - items: `55621328:e36#2`
+    - **[lever]** Checkpoint management and per-model tokenization  *(1 items, 1 kernels)*
+      - **[action_context]** When ensembling transformer checkpoints that may come from different fine-tuning runs or model variants.  *(1 items, 1 kernels)*
+        - **[action]** Use explicit checkpoint paths rather than glob patterns. Move tokenizer initialization and dataset tokenization inside the per-model loop so each checkpoint uses its own tokenizer. This prevents silent mismatches between tokenizer and model that degrade predictions.  *(1 items, 1 kernels)*
+          - items: `55431616:e7#2`
+  - **[lever_context]** The model predicts continuous readability scores; there may be a systematic offset. A benchmark example with known properties (standard_error==0, meaning a reliable ground truth) can serve as a reference point to normalize predictions.  *(3 items, 2 kernels)*
+    - **[lever]** checkpoint selection by offline validation loss  *(1 items, 1 kernels)*
+      - **[action_context]** When offline CV loss and public LB scores disagree due to tiny public test sets.  *(1 items, 1 kernels)*
+        - **[action]** Trust offline cross-validation loss over a tiny public leaderboard for checkpoint selection. If you must use the LB, submit each checkpoint once, record scores, then build an ensemble of the top-k rather than picking the single best LB scorer. Do not iterate many single-checkpoint submissions—the no  *(1 items, 1 kernels)*
+          - items: `17616127:e1#2`
+    - **[lever]** paired-input encoding with benchmark text  *(1 items, 1 kernels)*
+      - **[action_context]** When the task is regression on text and you hypothesize that relative comparison to a reference could help, but the model was trained without this pairing  *(1 items, 1 kernels)*
+        - **[action]** Do not change the input format at inference time if the model checkpoints were not trained with paired inputs—the token_type_ids and positional embeddings will be misaligned with training. If you want to use a benchmark reference, apply it as a post-processing normalization (subtract benchmark predi  *(1 items, 1 kernels)*
+          - items: `17371717:e10#2`
+    - **[lever]** benchmark-relative normalization of predictions  *(1 items, 1 kernels)*
+      - **[action_context]** When you have a reference example with reliable ground truth and suspect the model has a systematic bias that varies across folds/seeds.  *(1 items, 1 kernels)*
+        - **[action]** Append a fixed benchmark example to each inference batch, compute its logits alongside the target examples, and subtract the benchmark logits from all target logits. Train the model with this same normalization scheme. Validate by ablating (disabling the subtraction) to confirm it helps before commi  *(1 items, 1 kernels)*
+          - items: `17371717:e12#1`
+- **[goal]** What do I do when my GBDT model uses a small manually-selected feature subset and scores poorly?  *(47 items, 16 kernels)*
+  - **[lever_context]** The model already had mean/std/min/max/last aggregations scoring ~0.793. GBDT models can benefit from rounded features because they create natural bin boundaries that the tree splits can exploit more efficiently.  *(40 items, 16 kernels)*
+    - **[lever]** GBDT hyperparameter tuning  *(9 items, 8 kernels)*
+      - **[action_context]** When multiple GBDT models contribute to an ensemble and you suspect none is individually well-tuned.  *(7 items, 7 kernels)*
+        - **[action]** Adjust hyperparameters across all GBDT models simultaneously in one submission: lower learning rates paired with higher iteration counts, moderate regularization, and increase tree depth/leaves. This trades off interpretability of which change helped for faster wall-clock iteration. If the gain is s  *(7 items, 7 kernels)*
+          - items: `27389424:e8#1`, `28984551:e2#2`, `27656049:e3#1`, `73671444:e4#1`, `77347591:e2#1`, `60759531:e4#2`, `55987255:e27#1`
+      - **[action_context]** When the search space is small and one-dimensional (integer depth values typically range 2–10), and each run takes moderate time.  *(1 items, 1 kernels)*
+        - **[action]** Start from a very shallow depth (e.g., 2) and increment by 1 each run, monitoring validation metric. Submit only the best-looking value. If you later change a related parameter (e.g., min_child_samples), re-sweep depth from the same starting region because the optimum may shift. Two passes with diff  *(1 items, 1 kernels)*
+          - items: `27389424:e11#1`
+      - **[action_context]** When tree-based models are trained in separate scripts and contribute to a blend, iterating on those scripts offline (more folds, better features, incremental data) and swapping predictions is more efficient than in-notebook retraining.  *(1 items, 1 kernels)*
+        - **[action]** For ensembles using externally-trained GBDT models, maintain versioned prediction scripts. Train improved versions offline with CV validation, then swap the prediction scripts into the ensemble notebook as a batch update. Submit once to confirm the gain before further tuning blend weights.  *(1 items, 1 kernels)*
+          - items: `77450317:e3#2`
+    - **[lever]** tree complexity hyperparameters  *(6 items, 4 kernels)*
+      - **[action_context]** When the baseline uses a moderate default depth (e.g., 6) and the dataset has aggregated features with moderate dimensionality (~900 columns).  *(4 items, 3 kernels)*
+        - **[action]** When tuning num_leaves for a GBDT that is blended with strong external submissions, test moderate increases (e.g., 2-3x default) before large ones (6x default). A large jump (31→200) with a shallow max_depth (5) creates an inconsistent capacity setting that may degrade performance. Adjust num_leaves  *(4 items, 3 kernels)*
+          - items: `58527792:e2#2`, `29588171:e4#1`, `29588171:e6#2`, `27825577:e1#1`
+      - **[action_context]** When manually searching boosting_type and tree params without automated tuning.  *(1 items, 1 kernels)*
+        - **[action]** Fix all other variables (training data, inference method, blend weight) before sweeping boosting_type. Test each boosting type once with default tree params, record validation scores, pick the best, then sweep tree params (max_depth, num_leaves) around that winner. Do not interleave bug fixes with h  *(1 items, 1 kernels)*
+          - items: `29588171:e3#2`
+      - **[action_context]** No leaderboard signal yet; only training/validation logs are available.  *(1 items, 1 kernels)*
+        - **[action]** Start with moderate defaults, try a deliberately small model to check for underfitting (watch validation loss), then jump to a substantially larger model. Use large step sizes (e.g., 4-10x changes in num_leaves) rather than fine-tuning, since the goal is to bracket the right capacity range before in  *(1 items, 1 kernels)*
+          - items: `27656049:e1#1`
+    - **[lever]** learning rate and n_estimators co-adjustment  *(4 items, 3 kernels)*
+      - **[action_context]** When you suspect underfitting due to insufficient boosting rounds and you have early stopping available.  *(4 items, 3 kernels)*
+        - **[action]** When adjusting learning rate downward, keep n_estimators high enough (or increase it) so early stopping can find the optimum. If you halve both simultaneously, you reduce effective capacity—do this deliberately only if you suspect overfitting. Always check the actual early stopping round to verify t  *(4 items, 3 kernels)*
+          - items: `60759531:e2#2`, `28984551:e1#1`, `27799930:e2#1`, `27799930:e2#3`
+    - **[lever]** CV fold count reduction  *(3 items, 3 kernels)*
+      - **[action_context]** When multiplying the number of trained models (e.g., from 1 to k folds), and the original model was tuned for a single run.  *(2 items, 2 kernels)*
+        - **[action]** When introducing k-fold CV for a GBDT, reduce per-model complexity proportionally: cut boosting rounds (e.g., from 5000 to 1000) and reduce tree complexity (fewer leaves). The ensemble effect of averaging k models compensates for weaker individual models, and total runtime stays manageable. Fine-tun  *(2 items, 2 kernels)*
+          - items: `27656049:e2#2`, `73937748:e3#2`
+      - **[action_context]** When exploring a hyperparameter that affects the loss landscape (like class_weight) and you need directional signal, not precise scores.  *(1 items, 1 kernels)*
+        - **[action]** Switch to a minimal CV configuration (e.g., 2 folds, 2 seeds, fewer trees) for the entire sweep. Use the custom competition metric as eval_metric so early stopping and printed scores reflect the actual objective. Only switch back to full training and submit once you have identified the best region.  *(1 items, 1 kernels)*
+          - items: `27389424:e2#2`
+    - **[lever]** Per-model hyperparameter specialization  *(2 items, 2 kernels)*
+      - **[action_context]** When the model being tuned contributes a small fraction of the ensemble weight  *(2 items, 2 kernels)*
+        - **[action]** Before tuning hyperparameters of a low-weight ensemble member, estimate the maximum possible score improvement given the blend weight. If the model contributes <5% of the blend, even large model improvements will be invisible on the leaderboard. Either increase the model's blend weight first or focu  *(1 items, 1 kernels)*
+          - items: `29588171:e5#2`
+        - **[action]** Run an automated hyperparameter search (e.g., Optuna) per model-target combination offline, then inject the best-found parameters as dedicated config dicts. Submit once after applying all tuned configs rather than submitting each individually.  *(1 items, 1 kernels)*
+          - items: `73937748:e5#1`
+    - **[lever]** Pairwise difference interaction features  *(2 items, 1 kernels)*
+      - **[action_context]** When there are many candidate column pairs for interaction features and both CV and LB are available for feedback.  *(1 items, 1 kernels)*
+        - **[action]** Start with a broad set of interaction pairs, submit or validate, then systematically narrow: remove columns that hurt CV one at a time, try both raw-level and aggregated-level (last, mean) variants separately, and compare CV. If the broad set doesn't beat baseline, try subsets before abandoning. Kee  *(1 items, 1 kernels)*
+          - items: `27836972:e9#1`
+      - **[action_context]** When you have domain-meaningful feature groups (e.g., balance minus payment = remaining balance) and multiple aggregation windows (last, mean, tail3m_mean).  *(1 items, 1 kernels)*
+        - **[action]** Start with the most interpretable cross-group differences (e.g., balance_last minus payment_last). If those help, try the same differences using different temporal aggregations (tail3m_mean, mean). Expand to more column pairs cautiously; if adding many pairs at once doesn't help, prune back to the o  *(1 items, 1 kernels)*
+          - items: `27836972:e12#2`
+    - **[lever]** feature set expansion  *(2 items, 2 kernels)*
+      - **[action_context]** When the first drop list causes a regression, the importance rankings may be unreliable for some features due to correlation or noise.  *(1 items, 1 kernels)*
+        - **[action]** Rather than simply dropping fewer features, regenerate the importance analysis (possibly with a different seed or method) and construct a new drop list. Compare the two lists to identify features that appear in one but not the other—these borderline features are likely the ones causing the regressio  *(1 items, 1 kernels)*
+          - items: `27799930:e9#2`
+      - **[action_context]** When a GBDT already handles missing values and feature interactions internally, and the current feature set is a small fraction of available features.  *(1 items, 1 kernels)*
+        - **[action]** Progressively expand the feature set: first add the next batch of important features and submit to confirm improvement, then add more, and finally switch to automatic aggregation of all available features. Simultaneously simplify preprocessing (remove imputation, scaling, outlier removal) that the G  *(1 items, 1 kernels)*
+          - items: `28093671:e8#1`
+    - **[lever]** scale_pos_weight exponent sweep  *(2 items, 1 kernels)*
+      - **[action_context]** When is_unbalance gives decent results but you suspect the full inverse-frequency weight is too aggressive.  *(2 items, 1 kernels)*
+        - **[action]** Replace is_unbalance with scale_pos_weight set to (n_neg/n_pos)^(1/k) where k>1 (e.g., k=3 for cube root). This dampens the correction. Evaluate on the competition metric; if it improves, keep it and further tune the exponent k.  *(2 items, 1 kernels)*
+          - items: `27656049:e8#1`, `27656049:e7#2`
+    - **[lever]** importance-based feature selection ratio  *(2 items, 2 kernels)*
+      - **[action_context]** When the feature space is large and a quick initial model can produce importance rankings.  *(2 items, 2 kernels)*
+        - **[action]** Train a cheap initial model (few folds, few trees) to get feature importances. Then sweep the fraction of top features retained, starting with an aggressive cut (e.g., 10%), and if validation degrades, monotonically increase the fraction in small steps (5–10 percentage points) until validation plate  *(2 items, 2 kernels)*
+          - items: `27389424:e3#1`, `27656049:e6#2`
+    - **[lever]** rounded numeric features replacing raw floats  *(2 items, 2 kernels)*
+      - **[action_context]** When using XGBoost/LightGBM on panel data with repeated observations per entity.  *(2 items, 2 kernels)*
+        - **[action]** Round the 'last' float columns to 2 decimal places, create them as new columns (suffix _round2), and drop the original high-precision columns. This gives the tree model cleaner split points. Expect a small improvement (~0.001) on the metric.  *(1 items, 1 kernels)*
+          - items: `27836972:e4#2`
+        - **[action]** Aggregate multi-row records to one row per entity using groupby statistics (mean, last). Impute missing continuous features with per-customer median, then global mean as fallback. Avoid one-hot encoding and standard scaling for tree models—they add dimensionality without helping splits. Select a foc  *(1 items, 1 kernels)*
+          - items: `28093671:e6#2`
+    - **[lever]** Multi-seed averaging count  *(2 items, 2 kernels)*
+      - **[action_context]** When training time is constrained (Kaggle kernel limits) and you need to balance variance reduction against compute budget.  *(1 items, 1 kernels)*
+        - **[action]** Start with 2-3 seeds. If compute is tight, prefer fewer seeds (2) with more folds over more seeds with fewer folds. The marginal gain from a third seed is smaller than from the second. Verify by submitting — if 2 seeds already capture most of the variance reduction, stop there.  *(1 items, 1 kernels)*
+          - items: `27799930:e8#3`
+      - **[action_context]** When the model architecture has changed significantly (new loss, new sub-model) since the last repeat-count sweep.  *(1 items, 1 kernels)*
+        - **[action]** After major model changes, re-probe the repeat count with a single +1 increment. If it doesn't help, the new model's variance is already low enough at the current count; redirect effort to hyperparameter tuning or architectural changes instead.  *(1 items, 1 kernels)*
+          - items: `77129691:e10#2`
+    - **[lever]** feature exclusion filters on aggregated features  *(1 items, 1 kernels)*
+      - **[action_context]** When using a well-regularized GBDT (with feature_fraction, bagging_fraction, and early stopping) on aggregated tabular features.  *(1 items, 1 kernels)*
+        - **[action]** Do not manually remove broad categories of engineered features (max, min, shift) from a regularized GBDT—the model's built-in feature subsampling and early stopping handle irrelevant features. If a targeted exclusion regresses the score, revert it and keep all features.  *(1 items, 1 kernels)*
+          - items: `27389424:e9#2`
+    - **[lever]** preprocessing simplification  *(1 items, 1 kernels)*
+      - **[action_context]** When using a tree-based model that natively handles missing values and is scale-invariant.  *(1 items, 1 kernels)*
+        - **[action]** Remove scaling, imputation, and outlier removal from the GBDT pipeline. Let the model handle missing values natively. Submit to confirm that removing these steps does not hurt (and likely helps by preserving more data and signal).  *(1 items, 1 kernels)*
+          - items: `28093671:e8#3`
+    - **[lever]** L2 regularization strength (reg_lambda)  *(1 items, 1 kernels)*
+      - **[action_context]** When validation scores are not improving despite feature selection changes, and the current reg_lambda is moderate.  *(1 items, 1 kernels)*
+        - **[action]** Sweep reg_lambda upward in roughly 2× steps (e.g., 10→20→50→100) while monitoring validation. If validation degrades or stagnates across 2–3 increases, the model is likely underfitting at those values; reverse direction and simultaneously relax other complexity constraints (e.g., reduce min_child_sa  *(1 items, 1 kernels)*
+          - items: `27389424:e4#1`
+    - **[lever]** evaluation metric alignment  *(1 items, 1 kernels)*
+      - **[action_context]** When the competition metric depends on predicted probabilities or ranking, but the CV loop uses hard-label metrics.  *(1 items, 1 kernels)*
+        - **[action]** Switch from predict() to predict_proba() and compute the competition's actual metric on probabilities. Plot the OOF probability distribution to verify calibration. Do this before tuning hyperparameters, since tuning against the wrong metric wastes iterations.  *(1 items, 1 kernels)*
+          - items: `27799930:e1#3`
+  - **[lever_context]** For customer-level aggregated features from monthly statements, the model already has 'last' and 'mean' which capture recent and average behavior. Custom lag features (last_2, last_3, last12dif, last23dif) add complexity and NaN handling but may be redundant with existing min/max/std/var aggregation  *(6 items, 2 kernels)*
+    - **[lever]** lag and difference aggregation features  *(5 items, 2 kernels)*
+      - **[action_context]** When adding expensive or potentially noisy custom aggregations (like RMS or interaction features) to a pipeline with 100+ base columns.  *(5 items, 2 kernels)*
+        - **[action]** First add new aggregation types broadly, then use importance-based analysis to build explicit feature-group lists specifying which base columns get which aggregation. Combine this with an expanded drop list to remove low-value combinations. Test on validation before submitting. Only apply expensive   *(5 items, 2 kernels)*
+          - items: `27836972:e1#2`, `27836972:e8#1`, `27836972:e11#2`, `27799930:e4#2`, `27799930:e10#1`
+    - **[lever]** date-to-numeric transformation before aggregation  *(1 items, 1 kernels)*
+      - **[action_context]** When a date column exists alongside numeric/categorical features that are aggregated per entity via groupby stats (mean, std, min, max, last).  *(1 items, 1 kernels)*
+        - **[action]** Convert the date to days-since-reference (global max or fixed date) to make it numeric. Then decide whether to include it in the main numeric aggregation or aggregate it separately (e.g., only 'last'). Avoid per-group date merges that are expensive and may introduce NaNs. Test the simplest version (  *(1 items, 1 kernels)*
+          - items: `27836972:e3#2`
+  - **[lever_context]** reg_alpha was swept across 5 orders of magnitude (1e-5 to 1000) with no monotonic trend visible in submissions. The author kept reversing direction, suggesting local validation was not giving a clear optimum.  *(1 items, 1 kernels)*
+    - **[lever]** regularization strength (L1/L2)  *(1 items, 1 kernels)*
+      - **[action_context]** When sweeping regularization on a DART/GBDT model and the metric is noisy or flat across a wide range.  *(1 items, 1 kernels)*
+        - **[action]** First do a coarse log-scale sweep (e.g., 0.01, 0.1, 1, 10, 100, 1000) to find the order of magnitude, then narrow. If after 15+ trials no clear optimum emerges, the regularization lever may have low sensitivity for this model — stop and switch to a different lever (e.g., learning rate, subsampling,   *(1 items, 1 kernels)*
+          - items: `27389424:e17#2`
+- **[goal]** What do I do when I want to test a new idea but it requires multiple code changes?  *(43 items, 20 kernels)*
+  - **[lever_context]** The author had several potential improvements (feature selection toggle, ADD_FEATURE expansion, early stopping callbacks, reg_lambda). They made incremental changes across v95→v100 without submitting, using local CV as the signal, then bundled the final configuration into one submission.  *(39 items, 18 kernels)*
+    - **[lever]** incremental build-and-fix before submission  *(10 items, 8 kernels)*
+      - **[action_context]** When a feature touches multiple code paths (function signatures, data pipelines, inference scripts) and a single omission causes silent errors or crashes.  *(10 items, 8 kernels)*
+        - **[action]** After adding a speculative feature, run locally first without submitting. Fix any runtime errors (shape mismatches, type errors) in a separate micro-commit. Only submit once the pipeline runs cleanly. If the result is neutral or negative, revert the speculative part and submit the minimal surviving   *(10 items, 8 kernels)*
+          - items: `27502740:e2#2`, `18757376:e5#1`, `60197293:e18#3`, `27836972:e4#3`, `27836972:e11#1`, `77450317:e8#2`, `53424936:e12#2`, `60264017:e3#1`, `58130512:e12#2`, `60197293:e13#2`
+    - **[lever]** experiment isolation  *(7 items, 5 kernels)*
+      - **[action_context]** When you have high confidence that multiple changes are each independently correct (e.g., matching known training settings), and submission budget is limited.  *(5 items, 3 kernels)*
+        - **[action]** Change at most one pipeline component per submission. If you must bundle changes, pair a high-confidence improvement with a neutral cleanup. Never simultaneously switch a precomputed artifact (e.g., feature-selection file) and the CV splitting logic, because both affect which features the model sees  *(5 items, 3 kernels)*
+          - items: `15082684:e4#2`, `49576186:e15#3`, `49576186:e20#3`, `58130512:e15#2`, `58130512:e35#3`
+      - **[action_context]** When you have 2-3 binary toggles and multiple checkpoints to evaluate  *(2 items, 2 kernels)*
+        - **[action]** Before starting a hyperparameter sweep, run the full pipeline end-to-end once and verify it produces a valid submission. Parameterize the variables you plan to sweep (boosting_type, max_depth) so changes require editing only one line, not toggling multiple commented blocks. This avoids wasting itera  *(2 items, 2 kernels)*
+          - items: `29588171:e3#3`, `7018718:e7#1`
+    - **[lever]** iterative debugging with checkpoint re-runs  *(5 items, 5 kernels)*
+      - **[action_context]** After making infrastructure or pipeline changes that affect inference through new model checkpoints or data processing, but where the code itself may appear unchanged between the training notebook and the inference notebook.  *(5 items, 5 kernels)*
+        - **[action]** After a batch of structural changes, do a no-code rerun and submit to get a leaderboard score before making further adjustments. If the score improves substantially, continue refining; if it regresses, revert or diagnose. Keep each verification step as a separate version for traceability.  *(5 items, 5 kernels)*
+          - items: `77450317:e11#2`, `7018718:e12#1`, `50376011:e5#1`, `49576186:e14#2`, `60197293:e6#2`
+    - **[lever]** change isolation in submissions  *(5 items, 4 kernels)*
+      - **[action_context]** When a combined change regresses and you cannot tell which component caused the regression  *(4 items, 3 kernels)*
+        - **[action]** Do not revert everything. Instead, identify the highest-value change (typically the backbone/checkpoint swap) and resubmit with that change isolated and properly implemented. Defer secondary improvements (TTA, ensembling tweaks) until the primary change is validated on the leaderboard.  *(4 items, 3 kernels)*
+          - items: `53424936:e9#2`, `53424936:e6#3`, `49576186:e7#2`, `58130512:e8#2`
+      - **[action_context]** When you introduce a new hyperparameter (fold count) alongside an existing one you've been tuning (model index), and the first combined result is ambiguous or unsubmitted.  *(1 items, 1 kernels)*
+        - **[action]** After introducing a compound change, isolate by reverting one variable to its known-good value and submitting. Use that result as a baseline, then adjust the new variable in the next step. This lets you attribute score changes to specific levers even without local validation.  *(1 items, 1 kernels)*
+          - items: `50376011:e28#2`
+    - **[lever]** submission frequency and incremental validation  *(3 items, 3 kernels)*
+      - **[action_context]** When making structural changes to the feature pipeline (column renames, new feature sources, changed merge keys), each change can silently break downstream alignment.  *(3 items, 3 kernels)*
+        - **[action]** Submit after each major structural change (adding a new model type, changing data source, adding a feature block) rather than batching many changes into one submission. If a regression appears, you can isolate which change caused it. Batching 10+ changes into one submission makes debugging the regre  *(3 items, 3 kernels)*
+          - items: `27799930:e5#3`, `60197293:e11#2`, `55987255:e23#2`
+    - **[lever]** CV fold count as a speed knob for exploratory runs  *(2 items, 2 kernels)*
+      - **[action_context]** When trying a slow variant that may not pay off, and you have a per-fold metric printed.  *(2 items, 2 kernels)*
+        - **[action]** Reduce CV folds to 2 for a quick probe of the new idea. Inspect per-fold validation scores. If the idea doesn't clearly beat the baseline on those folds, revert the risky change while keeping any ancillary improvements (e.g., class weighting, hyperparams). Then restore full CV folds and submit.  *(2 items, 2 kernels)*
+          - items: `27656049:e7#1`, `73937748:e3#1`
+    - **[lever]** change granularity and testing  *(2 items, 1 kernels)*
+      - **[action_context]** When a major refactor requires multiple infra fixes (pip install, import cleanup) before it can run  *(2 items, 1 kernels)*
+        - **[action]** After a large refactor, make infra fixes in separate commits but do not submit them individually. Only submit once the full intended configuration is runnable. Budget one submission per complete configuration to avoid wasting submissions on broken states. Track which bundle of changes corresponds to  *(2 items, 1 kernels)*
+          - items: `49576186:e3#3`, `49576186:e19#2`
+    - **[lever]** submission timing  *(2 items, 2 kernels)*
+      - **[action_context]** When multiple code changes are needed to make a new feature functional (imports, string bugs, array shape fixes)  *(2 items, 2 kernels)*
+        - **[action]** Batch all fixes needed to make the pipeline run correctly before submitting. Only submit to the leaderboard once the pipeline executes without errors end-to-end. This conserves submission budget and avoids interpreting scores from partially-broken pipelines.  *(2 items, 2 kernels)*
+          - items: `49576186:e23#3`, `60197293:e16#2`
+    - **[lever]** incremental feature addition with CV gating  *(1 items, 1 kernels)*
+      - **[action_context]** When adding features one at a time to a pipeline and tracking CV after each addition  *(1 items, 1 kernels)*
+        - **[action]** Add one feature group at a time, record CV. If CV improves, keep it and add the next idea. If CV drops, comment out or remove that feature before proceeding. Only submit to LB when CV shows clear improvement over the prior best. If two consecutive LB submissions fail to beat the best, consider the f  *(1 items, 1 kernels)*
+          - items: `27836972:e8#2`
+    - **[lever]** revert one variable at a time  *(1 items, 1 kernels)*
+      - **[action_context]** When two hyperparameters were changed together and the outcome worsened.  *(1 items, 1 kernels)*
+        - **[action]** When you change two hyperparameters simultaneously and get a worse result, revert only one (the more impactful or riskier one) and re-run. Keep the other change to isolate which variable caused the regression. Prefer reverting the variable with the larger expected effect (e.g., learning rate over dr  *(1 items, 1 kernels)*
+          - items: `7240226:e1#2`
+    - **[lever]** scope of code changes per commit  *(1 items, 1 kernels)*
+      - **[action_context]** When working in a Kaggle notebook where each run is expensive and error feedback is sequential.  *(1 items, 1 kernels)*
+        - **[action]** Split large additions into independently runnable pieces: first add and verify the feature-extraction function alone, then wire it into train/test, then add the selection wrapper. Submit or validate after each piece works. Bundling causes a cascade of dependent bugs that take many iterations to reso  *(1 items, 1 kernels)*
+          - items: `60197293:e3#2`
+  - **[lever_context]** The author suspected the test data was not being read correctly (hardcoded size 952, variable named 'train' for test data). Rather than guessing, they inserted a diagnostic guard first.  *(4 items, 4 kernels)*
+    - **[lever]** diagnostic assertion before fix  *(2 items, 2 kernels)*
+      - **[action_context]** When a hand-crafted feature introduces complexity and potential data leakage or bugs, and the expected marginal gain is small relative to existing features.  *(2 items, 2 kernels)*
+        - **[action]** Insert a conditional assertion or raise statement at the suspected failure point in a non-submitted run. Use the runtime output to confirm the hypothesis. Then make the targeted fix in the next version and submit. This two-step approach avoids wasting submissions on speculative fixes.  *(2 items, 2 kernels)*
+          - items: `27656049:e4#2`, `6803050:e5#2`
+    - **[lever]** local validation before submission  *(2 items, 2 kernels)*
+      - **[action_context]** When a structural code change involves filtering on categorical columns that may have been encoded earlier in the pipeline.  *(1 items, 1 kernels)*
+        - **[action]** Before submitting, check that filter conditions match the actual column encoding (strings vs. integers vs. floats). Inspect subset sizes or validation scores locally. If the local signal is clearly wrong or unchanged, fix the bug before spending a submission. Only submit once the local signal confir  *(1 items, 1 kernels)*
+          - items: `77129691:e7#2`
+      - **[action_context]** When preparing a modified pipeline for its first leaderboard submission.  *(1 items, 1 kernels)*
+        - **[action]** Before submitting an experimental change, comment out verbose logging and debug prints in inference loops. This prevents timeouts and makes the submission cleaner. Treat the cleanup as a separate micro-commit so the experimental change itself is isolated.  *(1 items, 1 kernels)*
+          - items: `53424936:e1#2`
+- **[goal]** What do I do when I need to iterate quickly on a complex multi-model inference notebook that is slow and memory-heavy?  *(41 items, 29 kernels)*
+  - **[lever_context]** The notebook ran DeBERTa inference, spaCy NLP, sentence transformers, and extensive feature engineering live each time. Earlier versions showed many not-submitted runs and slow iteration. Precomputing features in a separate module and loading pickles removes the bottleneck.  *(38 items, 27 kernels)*
+    - **[lever]** memory management during sequential inference  *(8 items, 7 kernels)*
+      - **[action_context]** When running many sequential model inferences in a memory-constrained environment (e.g., Kaggle's ~16GB GPU RAM) and the notebook crashes or slows down.  *(6 items, 5 kernels)*
+        - **[action]** After each model group finishes inference, delete the model objects, call gc.collect(), and clear all unnecessary variables (e.g., using globals cleanup). Keep only the prediction arrays in memory. This allows loading the next model group without OOM errors.  *(6 items, 5 kernels)*
+          - items: `28093671:e5#1`, `17616127:e18#2`, `17616127:e37#2`, `7823861:e1#1`, `60264017:e6#2`, `15164527:e3#2`
+      - **[action_context]** When the dataset provider or a preprocessing step has already split test data into numbered part files.  *(1 items, 1 kernels)*
+        - **[action]** Loop over pre-split test file chunks, predict on each chunk, append predictions to a list, delete the chunk and call gc.collect before loading the next. Concatenate all predictions at the end for submission. Free training data before starting inference to maximize available memory.  *(1 items, 1 kernels)*
+          - items: `27502740:e1#1`
+      - **[action_context]** When changing batch size alongside other config changes and the larger size risks OOM.  *(1 items, 1 kernels)*
+        - **[action]** Try the aggressive batch size in one submission. If you observe memory issues or the score doesn't improve as expected, immediately revert batch size to the safe value while keeping other beneficial changes. Don't change batch size and model selection simultaneously if you want to isolate effects —   *(1 items, 1 kernels)*
+          - items: `50376011:e18#2`
+    - **[lever]** caching intermediate results  *(5 items, 4 kernels)*
+      - **[action_context]** When the notebook has expensive preprocessing that is stable across experiments and the platform supports input datasets.  *(5 items, 4 kernels)*
+        - **[action]** Pre-compute expensive intermediate artifacts (feature matrices, labels, model outputs) in a separate run and serialize them as pickles. In the main notebook, gate the computation behind a flag: if cached files exist, load them; otherwise compute from scratch. This lets you iterate on downstream code  *(5 items, 4 kernels)*
+          - items: `75584724:e2#2`, `55431616:e2#2`, `60197293:e10#1`, `55591012:e1#1`, `55591012:e9#1`
+    - **[lever]** memory management and component pruning  *(4 items, 4 kernels)*
+      - **[action_context]** When multiple large models must run sequentially in a single notebook with limited GPU RAM.  *(3 items, 3 kernels)*
+        - **[action]** First add explicit del and optionally torch.cuda.empty_cache() after each model's inference pass. If OOM persists, halve the batch size. For large image models at 640px, batch size 64 is a safer starting point than 128 on a single GPU.  *(3 items, 3 kernels)*
+          - items: `58130512:e18#1`, `55987255:e14#3`, `15164527:e1#2`
+      - **[action_context]** When adding ensemble members causes runtime failures on a resource-constrained platform.  *(1 items, 1 kernels)*
+        - **[action]** After adding a new component, if it causes OOM: first add explicit memory cleanup (del variables, gc.collect, torch.cuda.empty_cache) after each model inference. If that's insufficient, reduce the number of seeds/folds for existing components. If it still fails, remove the new component entirely and  *(1 items, 1 kernels)*
+          - items: `18350823:e15#1`
+    - **[lever]** inference pipeline architecture  *(4 items, 4 kernels)*
+      - **[action_context]** When replacing a large in-notebook pipeline with external script calls, expect that the first attempt will likely fail due to missing dependencies, path issues, or silent failures. Plan for at least two iterations: one to restructure, one to diagnose and fix failures.  *(2 items, 2 kernels)*
+        - **[action]** First reorganize and clean existing code in a preparatory commit. Then make the major architectural switch in one commit. Then add debug prints and diagnostic outputs to verify correctness. Remove debug artifacts incrementally. Do a clean re-run before moving on. Do not submit to the leaderboard unt  *(2 items, 2 kernels)*
+          - items: `7548275:e4#2`, `7670859:e3#1`
+      - **[action_context]** When the consolidated in-notebook approach doesn't clearly improve validation metrics or introduces complexity  *(1 items, 1 kernels)*
+        - **[action]** When migrating external model scripts into a notebook, do not submit until validation confirms parity with the baseline. If in-notebook training shows no improvement after a few post-processing tweaks, revert to external scripts and iterate on the scripts themselves. Keep the first working submissio  *(1 items, 1 kernels)*
+          - items: `77450317:e2#1`
+      - **[action_context]** When you have external code modules and saved checkpoints but no working submission yet.  *(1 items, 1 kernels)*
+        - **[action]** Build the complete pipeline in one edit: data preprocessing, model inference with a known checkpoint, and submission file generation. Then re-run the identical notebook (no code changes) to confirm reproducibility and submit to get a baseline score. Only after the baseline is confirmed, begin swappi  *(1 items, 1 kernels)*
+          - items: `52860091:e1#1`
+    - **[lever]** Caching precomputed features to decouple feature engineering from model training  *(3 items, 3 kernels)*
+      - **[action_context]** When feature engineering is stable (no longer the primary lever being tuned) and the notebook is slow or memory-constrained.  *(3 items, 3 kernels)*
+        - **[action]** Move expensive feature extraction (embeddings, NLP features, TF-IDF) into a separate preprocessing script that saves results as pickles. In the main notebook, load cached features and focus only on model training, CV, and blending. This lets you iterate on model architecture, hyperparameters, and en  *(3 items, 3 kernels)*
+          - items: `27799930:e12#1`, `7670859:e4#2`, `59253662:e11#1`
+    - **[lever]** code and pipeline cleanup  *(3 items, 2 kernels)*
+      - **[action_context]** When a complex inference notebook has multiple model families and blending steps, and you suspect the wrong predictions are being written to the submission CSV.  *(3 items, 2 kernels)*
+        - **[action]** After every structural change to the model loop or blend logic, verify two things before submitting: (1) no stray 'continue' or 'skip' statements remain in model loops, and (2) the final submission assignment references the intended blend column, not a single-model column. Treat these as a checklist  *(2 items, 1 kernels)*
+          - items: `49524919:e24#3`, `49524919:e32#3`
+        - **[action]** Serialize full sklearn pipelines (preprocessing + model) rather than bare models. In the inference notebook, load each pipeline, run predict through a unified Trainer class, and collect both OOF and test predictions into dictionaries keyed by model name. Verify the return signature of the prediction  *(1 items, 1 kernels)*
+          - items: `73937748:e8#2`
+    - **[lever]** model checkpoint and library artifact selection  *(2 items, 2 kernels)*
+      - **[action_context]** When the modeling code is mature and packaged as an uploaded dataset, prefer importing the shared implementation over duplicating it inline, and iterate by swapping checkpoint directories and submitting to see leaderboard impact.  *(2 items, 2 kernels)*
+        - **[action]** Package your training framework and checkpoints as versioned Kaggle datasets. In the inference notebook, import from the package rather than copying code inline. To compare models, change only the experiment directory path and submit. This isolates the model effect from code bugs.  *(1 items, 1 kernels)*
+          - items: `7018718:e1#2`
+        - **[action]** Start with a generous list of candidate models, attempt to run them, and when resource limits are hit, keep only the largest/most capable variants of each architecture family (e.g., keep -large, drop -base). Simultaneously reduce other feature dimensions (e.g., topic model components) to stay within  *(1 items, 1 kernels)*
+          - items: `55987255:e9#3`
+    - **[lever]** debug mode gating and test simulation  *(2 items, 2 kernels)*
+      - **[action_context]** When a notebook has multiple expensive stages that must all execute end-to-end before you can verify the pipeline works.  *(1 items, 1 kernels)*
+        - **[action]** Create a global DEBUG flag that gates every expensive step. Make it adaptive to the environment (e.g., check dataset size) so it auto-activates locally. Add a test-data simulation function that enlarges small test sets to stress-test batching and memory. Wire gc.collect() after each heavy stage. Gat  *(1 items, 1 kernels)*
+          - items: `7548275:e1#1`
+      - **[action_context]** When the competition's hidden test set is small (detectable at runtime) and you want to avoid wasting GPU quota on full CV during submission.  *(1 items, 1 kernels)*
+        - **[action]** At the start of the notebook, read the test file and check its size. If it is below a threshold (e.g., fewer than 10 rows, indicating a code-competition sample test), train only one fold and break early. This saves runtime for submission while still producing valid predictions. Keep the guard so ful  *(1 items, 1 kernels)*
+          - items: `58130512:e31#2`
+    - **[lever]** dependency and model loading infrastructure  *(1 items, 1 kernels)*
+      - **[action_context]** When a saved Keras model was trained with custom library layers (e.g., efficientnet.tfkeras), the .h5 file contains references to those custom objects.  *(1 items, 1 kernels)*
+        - **[action]** Before removing a custom package dependency, verify that the saved model can be deserialized without it by checking for custom_objects references. If the model was saved with custom layers, you must either supply those layers at load time or re-export the model in a format that doesn't need them. Do  *(1 items, 1 kernels)*
+          - items: `13521245:e4#1`
+    - **[lever]** ensemble composition simplification  *(1 items, 1 kernels)*
+      - **[action_context]** When a complex multi-architecture stacking pipeline scores worse than simpler alternatives did historically, and resource constraints may be causing failures.  *(1 items, 1 kernels)*
+        - **[action]** Replace a complex multi-model stacking pipeline with a simple average of fewer but individually stronger checkpoints. Compare the simplified result against historical bests to decide whether to re-expand. Add models back incrementally afterward.  *(1 items, 1 kernels)*
+          - items: `17616127:e19#1`
+    - **[lever]** code parameterization for flexibility  *(1 items, 1 kernels)*
+      - **[action_context]** When the notebook already works for one model and you plan to iterate over multiple backbones or pretrained checkpoints.  *(1 items, 1 kernels)*
+        - **[action]** Before experimenting with new model variants, refactor inference functions to accept model name/path as a parameter rather than hardcoding. Bundle this refactoring with a small substantive change (e.g., a head tweak) so the submission also tests a hypothesis, avoiding a wasted submission on pure ref  *(1 items, 1 kernels)*
+          - items: `18757376:e2#2`
+    - **[lever]** device and environment configuration  *(1 items, 1 kernels)*
+      - **[action_context]** When a multi-source notebook fails to run and the errors are device-related.  *(1 items, 1 kernels)*
+        - **[action]** First try enabling GPU everywhere to maximize speed. If that fails (no GPU available or driver issues), systematically switch all models and tensor operations to CPU in one pass—search for all occurrences of 'cuda', 'gpu', 'GPU', 'device', and '.cuda()' calls. Do not leave mixed device settings. Sav  *(1 items, 1 kernels)*
+          - items: `77276039:e1#1`
+    - **[lever]** file copy infrastructure commands  *(1 items, 1 kernels)*
+      - **[action_context]** Kaggle input directories are read-only, so files must be copied (not moved) into the writable working directory before imports can succeed.  *(1 items, 1 kernels)*
+        - **[action]** When building an inference notebook that imports from uploaded dataset packages, use 'cp -r' instead of 'mv' for Kaggle input paths. Submit immediately after fixing infrastructure to confirm the pipeline runs end-to-end before changing any modeling decisions.  *(1 items, 1 kernels)*
+          - items: `7018718:e1#1`
+    - **[lever]** file path configuration  *(1 items, 1 kernels)*
+      - **[action_context]** When model artifacts are uploaded as a single Kaggle dataset (not preserving the original fold-subfolder structure), per-fold subdirectory paths will break.  *(1 items, 1 kernels)*
+        - **[action]** Before adding any modeling improvements, first verify that config/weight file paths resolve correctly in the Kaggle input directory. Add a print or bare variable reference to confirm the path. Only submit once the pipeline executes without path errors.  *(1 items, 1 kernels)*
+          - items: `15372370:e1#1`
+    - **[lever]** sequential bug fixing and memory management  *(1 items, 1 kernels)*
+      - **[action_context]** When merging code from multiple sources that use different library conventions (e.g., timm model attribute names vary by architecture).  *(1 items, 1 kernels)*
+        - **[action]** Fix bugs in priority order: first resolve hard errors (attribute mismatches, import failures) so the code can parse and begin execution, then address resource errors (memory cleanup between sequential model runs via explicit deletion), then reduce batch size if OOM persists. Only submit once the pip  *(1 items, 1 kernels)*
+          - items: `15164527:e1#1`
+  - **[lever_context]** Hard-coded checkpoint paths are error-prone and verbose; the author had three sets of 5 paths each. Directory-based discovery is simpler and automatically picks up all checkpoints.  *(2 items, 2 kernels)*
+    - **[lever]** file path string correction  *(1 items, 1 kernels)*
+      - **[action_context]** Kaggle input dataset paths have specific naming conventions (no dots in directory names, specific subdirectory structures) that differ from how the dataset appears in the UI.  *(1 items, 1 kernels)*
+        - **[action]** Make one small path change per commit and attempt to run. Check error output after each attempt. Common fixes: file extension, dot-to-hyphen in directory names, removing hyphens entirely. Once one path works and produces a submission, note the exact naming convention before trying other checkpoints   *(1 items, 1 kernels)*
+          - items: `7606235:e1#1`
+    - **[lever]** checkpoint management / code infrastructure  *(1 items, 1 kernels)*
+      - **[action_context]** When checkpoints are organized by model type in separate directories with consistent naming  *(1 items, 1 kernels)*
+        - **[action]** Replace hard-coded weight path lists with directory paths plus sorted os.listdir expansion. This reduces maintenance burden, prevents accidentally omitting checkpoints, and makes it trivial to swap model versions by changing the directory.  *(1 items, 1 kernels)*
+          - items: `50496431:e4#2`
+  - **[lever_context]** No submissions were made during the entire episode. The author made 4 transitions without submitting, all focused on making the code execute. Only after v5 did they begin tuning (v6+).  *(1 items, 1 kernels)*
+    - **[lever]** infrastructure stabilization before optimization  *(1 items, 1 kernels)*
+      - **[action_context]** When starting from a complex assembled notebook that has never been run end-to-end in the target environment.  *(1 items, 1 kernels)*
+        - **[action]** Prioritize getting the full pipeline to execute before any model tuning. Make minimal changes per iteration targeting only execution blockers. Remove optional additions (extra data, extra imports) that complicate debugging. Once the notebook runs cleanly, save a checkpoint, then begin optimization.  *(1 items, 1 kernels)*
+          - items: `77276039:e1#2`
+- **[goal]** What do I do when I want to test multiple new ideas (custom eval metric, different feature ranking, hyperparameter tweaks) but each submission is costly?  *(31 items, 21 kernels)*
+  - **[lever_context]** The author had a working baseline (v5, LB 0.69346) and wanted to make substantial changes (more folds, hyperparameter tuning, code restructuring). Submitting after each intermediate change would waste submission quota on potentially broken code.  *(31 items, 21 kernels)*
+    - **[lever]** experiment isolation  *(11 items, 8 kernels)*
+      - **[action_context]** When a bundled change produces a large regression  *(5 items, 5 kernels)*
+        - **[action]** When probing a new idea, change only one lever per submission so regressions can be attributed. If you bundle changes and regress, partially revert the most suspicious change first. If two consecutive submissions both regress from the baseline, abandon the new ideas and revert fully before trying so  *(5 items, 5 kernels)*
+          - items: `28093671:e8#2`, `27656049:e5#1`, `77450317:e5#1`, `49576186:e5#1`, `55987255:e22#2`
+      - **[action_context]** When leaderboard submissions are the only reliable signal and multiple levers interact  *(2 items, 2 kernels)*
+        - **[action]** When a multi-variable change yields a good score, do not assume all changes helped. In subsequent iterations, remove one change at a time and re-submit to isolate which lever drove the improvement. Prioritize submitting the simplest configuration first to establish a clean baseline.  *(2 items, 2 kernels)*
+          - items: `49576186:e27#3`, `13848868:e2#1`
+      - **[action_context]** The idea is a single discrete change (add/remove a filter) rather than a continuous sweep, so one local evaluation suffices to decide.  *(1 items, 1 kernels)*
+        - **[action]** Apply the change, run the notebook to get local CV metrics, and checkpoint the version without submitting. Only submit after confirming improvement locally or after combining the change with other pending improvements in a single submission.  *(1 items, 1 kernels)*
+          - items: `77450317:e9#2`
+      - **[action_context]** When adding a new input field to a bag-of-words model that also has a vocabulary-size hyperparameter  *(1 items, 1 kernels)*
+        - **[action]** Change one thing at a time. First add the new feature with the existing hyperparameters and measure the effect. Only then re-tune vocabulary size and regularization. If you change input, feature dimensionality, and regularization together and get a regression, you cannot tell which change caused it   *(1 items, 1 kernels)*
+          - items: `7676170:e3#1`
+      - **[action_context]** When making structural pipeline changes (adding/removing model components, feature groups) that interact with each other  *(1 items, 1 kernels)*
+        - **[action]** Submit after each major structural change (adding a new model type, adding/removing a feature family) rather than batching many changes. If you must iterate without submitting, keep a stable baseline version you can diff against, and change only one structural element at a time. Toggling the same co  *(1 items, 1 kernels)*
+          - items: `55987255:e25#2`
+      - **[action_context]** A speculative change has just failed, and you have knowledge of multiple small improvements from prior experiments that haven't been combined yet.  *(1 items, 1 kernels)*
+        - **[action]** After a failed experiment, bundle the revert with one or two other untested-but-promising changes into a single submission. This recovers from the regression while also exploring new territory, making efficient use of limited submission budget.  *(1 items, 1 kernels)*
+          - items: `50496431:e43#3`
+    - **[lever]** Batching multiple changes per submission  *(7 items, 7 kernels)*
+      - **[action_context]** When multiple changes are believed to be independently beneficial (e.g., updated external models + output rescaling + coefficient adjustments), and you want to confirm overall direction quickly.  *(6 items, 6 kernels)*
+        - **[action]** Bundle several small, low-risk changes (bug fixes, minor hyperparameter tweaks, feature count adjustments) into one version and evaluate via local CV. Only submit to the leaderboard once you have a configuration that clearly improves local CV. If the bundled change regresses, unbundle and test indiv  *(6 items, 6 kernels)*
+          - items: `27799930:e10#2`, `77450317:e7#2`, `77347591:e4#1`, `59253662:e3#2`, `60197293:e9#2`, `55987255:e27#2`
+      - **[action_context]** When a new feature requires several dependent code changes (imports, data plumbing, column naming) to produce valid output.  *(1 items, 1 kernels)*
+        - **[action]** Implement the feature across multiple small edits without submitting, verifying each fix locally (via notebook execution). Submit only once the pipeline produces a well-formed output. If the first submission underperforms the baseline, abandon the idea promptly.  *(1 items, 1 kernels)*
+          - items: `55621328:e21#1`
+    - **[lever]** Submission gating by local CV  *(4 items, 4 kernels)*
+      - **[action_context]** When CV and LB have shown reasonable correlation in prior experiments, and the new idea has multiple natural variants (window size, feature types, aggregation functions).  *(3 items, 3 kernels)*
+        - **[action]** Submit the first promising variant to LB to confirm the direction works. Then explore variants (different windows, feature subsets, aggregation types) using only CV, without submitting. Revert changes that hurt CV. Only submit again once you have a clearly superior configuration. Record CV results i  *(3 items, 3 kernels)*
+          - items: `27836972:e10#2`, `58130512:e38#2`, `60197293:e4#3`
+      - **[action_context]** When each training run produces a reliable local metric and the hyperparameter space is small enough to sweep exhaustively.  *(1 items, 1 kernels)*
+        - **[action]** Run the full sweep locally without submitting, using CV scores to identify the best value. Submit only the single best candidate to the leaderboard. If you change a companion parameter, re-sweep locally before submitting again. This conserves submission budget while still validating against the publ  *(1 items, 1 kernels)*
+          - items: `27389424:e11#2`
+    - **[lever]** train/validation split strategy  *(2 items, 2 kernels)*
+      - **[action_context]** When a holdout split reduces training data enough to hurt leaderboard score relative to using all data with K-fold CV.  *(2 items, 2 kernels)*
+        - **[action]** Use a temporary holdout split to iterate on hyperparameters locally, but before final submission, disable the holdout and retrain on all data with cross-validation. Always compare the holdout-based submission against the full-data baseline to verify the split isn't causing a regression from data los  *(2 items, 2 kernels)*
+          - items: `7670859:e5#1`, `60759531:e2#3`
+    - **[lever]** incremental recovery and unbundling of changes  *(2 items, 1 kernels)*
+      - **[action_context]** When a multi-change submission worsens score, revert all changes simultaneously and re-apply only the ones with prior evidence of helping.  *(2 items, 1 kernels)*
+        - **[action]** When a multi-change submission causes catastrophic regression, do not revert everything. Instead, keep the new ideas but fix implementation details (shapes, batch sizes, preprocessing alignment) in the next version. If the score partially recovers, continue debugging. Avoid bundling more than one ri  *(2 items, 1 kernels)*
+          - items: `50496431:e40#3`, `50496431:e49#1`
+    - **[lever]** model family selection / revert  *(1 items, 1 kernels)*
+      - **[action_context]** When a quick experiment with an alternative model family fails or clearly underperforms on a regression task with continuous targets  *(1 items, 1 kernels)*
+        - **[action]** Revert to the previously best-performing model family immediately rather than trying to fix the experimental one. When reverting, also restore the proper evaluation metric (here OOF Spearman) rather than using the new model's default scorer, since metric-aligned validation is essential for meaningfu  *(1 items, 1 kernels)*
+          - items: `7676170:e5#1`
+    - **[lever]** chunked inference pipeline with memory management  *(1 items, 1 kernels)*
+      - **[action_context]** When the test set exceeds available memory and you need to produce predictions from multiple fold models.  *(1 items, 1 kernels)*
+        - **[action]** First get an end-to-end pipeline working with reduced model capacity (fewer trees) to minimize iteration time. Once the pipeline runs, split test data into N chunks by customer ID, process each chunk independently (read, feature-engineer, predict, delete), and average fold predictions. If you hit OO  *(1 items, 1 kernels)*
+          - items: `27799930:e3#1`
+    - **[lever]** checkpoint selection and ensembling  *(1 items, 1 kernels)*
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** After several single-checkpoint swaps fail to beat an ensemble baseline, stop probing individual checkpoints and return to ensembling. Use the ensemble score as a floor; only submit a single checkpoint if you have strong local validation evidence it exceeds that floor.  *(1 items, 1 kernels)*
+          - items: `17616127:e2#2`
+    - **[lever]** reduce model complexity and increase search budget  *(1 items, 1 kernels)*
+      - **[action_context]** When a big refactor with high-complexity models fails to run or validate well within resource constraints.  *(1 items, 1 kernels)*
+        - **[action]** Cut individual model complexity substantially (e.g., reduce iterations by 5-7x) while increasing the hyperparameter search budget (e.g., 2.5x more Optuna trials). The ensemble's diversity compensates for weaker individual models, and better blend weights recover lost accuracy. Submit only after conf  *(1 items, 1 kernels)*
+          - items: `73937748:e2#2`
+    - **[lever]** hyperparameter rollback with conservative reset  *(1 items, 1 kernels)*
+      - **[action_context]** When multiple unsubmitted iterations suggest a hyperparameter has been pushed too far based on validation output.  *(1 items, 1 kernels)*
+        - **[action]** Roll back the aggressive hyperparameter to a value well below the last known good setting (e.g., 10x reduction for learning rate), submit to confirm improvement, then gradually increase from the new baseline to find the optimum. Do not try to find the exact boundary in one step.  *(1 items, 1 kernels)*
+          - items: `7253130:e4#1`
+- **[goal]** What do I do when I'm unsure whether a new post-processing step is actually helping versus other changes I'm making simultaneously?  *(30 items, 13 kernels)*
+  - **[lever_context]** Post-processing (KBinsDiscretizer) boosted score from ~0.38 to ~0.42+ (v37-v45). But the base model predictions varied across checkpoints (0.37-0.39 range). A stronger base model + post-processing could yield further gains.  *(27 items, 12 kernels)*
+    - **[lever]** post-processing toggle  *(12 items, 6 kernels)*
+      - **[action_context]** When the model's global post-processing is already well-tuned and the subgroup classifier adds noise or the per-group thresholds are poorly estimated due to small test size.  *(12 items, 6 kernels)*
+        - **[action]** After every substantive model or config change, submit both with and without the toggle. Use whichever scores better. Do not assume the direction from previous experiments carries over to a new model configuration. Always test the toggle on the new best before moving on.  *(12 items, 6 kernels)*
+          - items: `13848868:e6#1`, `77347591:e7#2`, `77347591:e8#1`, `7823861:e6#2`, `7018718:e2#1`, `55621328:e9#1`, `55621328:e20#1`, `55621328:e24#1`, `13848868:e1#1`, `13848868:e7#2`, `13848868:e10#2`, `50496431:e50#3`
+    - **[lever]** rank-based vs raw probability averaging  *(3 items, 2 kernels)*
+      - **[action_context]** When the toggle's effect is small, inconsistent, and interacts with other settings.  *(2 items, 1 kernels)*
+        - **[action]** For any cheap binary post-processing toggle whose effect is model-dependent, always test both states after every model change. Submit both and keep whichever scores higher. Do not assume the previous winner carries over. Budget two submissions per model change for this.  *(2 items, 1 kernels)*
+          - items: `13848868:e5#3`, `13848868:e8#2`
+      - **[action_context]** When the ensemble weighting scheme is based on noisy per-fold metrics and the overall score is low, the expected gain from weight tuning is small.  *(1 items, 1 kernels)*
+        - **[action]** Run a single probe comparing the current post-processing to the simplest baseline (e.g., uniform average). If the LB difference is negligible, abandon weight tuning and invest effort in higher-impact levers like features or model architecture.  *(1 items, 1 kernels)*
+          - items: `7573212:e2#1`
+    - **[lever]** prediction normalization  *(1 items, 1 kernels)*
+      - **[action_context]** When the evaluation metric is rank-based (Spearman) and post-processing includes discretization/quantile-mapping.  *(1 items, 1 kernels)*
+        - **[action]** Before applying ad-hoc normalization to predictions feeding a rank-based metric, verify whether the normalization changes rank order or interacts with downstream discretization. If dividing by a global max, note it can distort per-column distributions. Always submit the normalized version separately  *(1 items, 1 kernels)*
+          - items: `6803050:e7#2`
+    - **[lever]** blend/adjustment weight  *(1 items, 1 kernels)*
+      - **[action_context]** When the adjustment is a simple scalar added to predictions, and you have both OOF CV and leaderboard feedback available.  *(1 items, 1 kernels)*
+        - **[action]** Probe by halving the adjustment weight and checking both CV and LB. If the halved value regresses, revert and keep the original. If it improves, try halving again or interpolating. One probe is sufficient to decide direction when the score change is small and consistent across CV and LB.  *(1 items, 1 kernels)*
+          - items: `77347591:e1#1`
+    - **[lever]** Custom JIT-compiled ranking post-processing  *(1 items, 1 kernels)*
+      - **[action_context]** When the metric is rank-based (e.g., concordance index) and you need fast, potentially customizable ranking across many folds/models during ensembling.  *(1 items, 1 kernels)*
+        - **[action]** Replace generic ranking utilities with a numba JIT-compiled binary-tree ranker. This allows custom tie-breaking, race-group-aware ranking, or other metric-aligned post-processing that generic libraries don't support. Validate equivalence on local CV before submitting.  *(1 items, 1 kernels)*
+          - items: `75924487:e6#1`
+    - **[lever]** Ablation by removal to confirm component value  *(1 items, 1 kernels)*
+      - **[action_context]** When a pipeline has multiple new components and you see a large improvement, remove the suspected key component while keeping other changes to confirm its contribution before investing more effort refining it.  *(1 items, 1 kernels)*
+        - **[action]** After achieving a score jump with a multi-component change, submit a version with the suspected key component removed. If the score drops substantially, the component is confirmed valuable—rebuild and refine it. If the score holds, the component was not the driver and can be deprioritized.  *(1 items, 1 kernels)*
+          - items: `7018718:e11#2`
+    - **[lever]** base model checkpoint selection  *(1 items, 1 kernels)*
+      - **[action_context]** When post-processing accounts for a large fraction of the total score improvement, test new base checkpoints without post-processing first to get a clean signal on raw prediction quality, then re-apply post-processing.  *(1 items, 1 kernels)*
+        - **[action]** Evaluate candidate checkpoints without post-processing to compare their raw prediction quality. Pick the checkpoint with the best raw score, then re-tune post-processing on top of it. Do not compare checkpoints with post-processing tuned to a different checkpoint's distribution.  *(1 items, 1 kernels)*
+          - items: `7018718:e12#2`
+    - **[lever]** revert failed change before adding new idea  *(1 items, 1 kernels)*
+      - **[action_context]** When a recent change caused a regression and you want to try a different lever on the same pipeline.  *(1 items, 1 kernels)*
+        - **[action]** Revert the failed change to restore the last-best configuration, then add the new idea on top of that clean baseline. Batch the new idea with other planned improvements and submit them together rather than submitting intermediate broken or incomplete states.  *(1 items, 1 kernels)*
+          - items: `7573212:e5#2`
+    - **[lever]** pipeline debugging / data flow verification  *(1 items, 1 kernels)*
+      - **[action_context]** When the leaderboard score is invariant to changes that should clearly affect predictions (different models, different post-processing, adding ensembles), the predictions being submitted are likely not actually changing.  *(1 items, 1 kernels)*
+        - **[action]** If your score does not move after 3+ substantively different changes (model swap, post-processing on/off, ensemble), stop tuning and instead verify the end-to-end data flow: check that test data is loaded correctly, predictions have the expected shape and variance, and the submission file actually c  *(1 items, 1 kernels)*
+          - items: `6803050:e4#1`
+    - **[lever]** isolate root cause before tuning secondary knobs  *(1 items, 1 kernels)*
+      - **[action_context]** When multiple potential causes exist (post-processing, checkpoint selection, path errors) and the score is far below expectations  *(1 items, 1 kernels)*
+        - **[action]** When score is far below a known baseline, do not spend time tuning post-processing. Instead, systematically verify the data pipeline end-to-end: confirm model weights load correctly, inputs are shaped properly, and outputs are in the expected range. Only after the pipeline is verified should you tun  *(1 items, 1 kernels)*
+          - items: `6803050:e9#2`
+    - **[lever]** Replacement value refinement  *(1 items, 1 kernels)*
+      - **[action_context]** When a threshold-based rule gives a marginal gain, the replacement value may matter more than the threshold itself for rank-based metrics.  *(1 items, 1 kernels)*
+        - **[action]** After confirming a threshold helps, try replacing the fallback value with the exact discrete level from the training distribution rather than an arbitrary value like 0. If the score doesn't improve after one refinement, stop and move to a different lever rather than continuing to sweep.  *(1 items, 1 kernels)*
+          - items: `6803050:e14#2`
+    - **[lever]** factorial testing of interacting components  *(1 items, 1 kernels)*
+      - **[action_context]** When two levers interact (model weights and post-processing), and each submission is cheap relative to the budget.  *(1 items, 1 kernels)*
+        - **[action]** When updating a model checkpoint, first submit without the post-processing adjustment to isolate the checkpoint's effect. If the score is better without it, keep it off for subsequent checkpoints. Only re-test the adjustment if a new checkpoint regresses. This avoids carrying forward stale calibrati  *(1 items, 1 kernels)*
+          - items: `49524919:e6#1`
+    - **[lever]** Threshold optimization data subset  *(1 items, 1 kernels)*
+      - **[action_context]** When the test distribution is known to resemble a specific training subset rather than the full training set.  *(1 items, 1 kernels)*
+        - **[action]** Optimize ordinal thresholds on the subset of OOF predictions that matches the expected test distribution, not the full OOF set. Verify by submitting both variants. If the subset-optimized version scores higher on LB, the distribution mismatch is confirmed and subset optimization should be kept.  *(1 items, 1 kernels)*
+          - items: `58130512:e25#3`
+    - **[lever]** evaluation pipeline correctness  *(1 items, 1 kernels)*
+      - **[action_context]** When OOF predictions are stored after transformations (clipping, rounding, offsets) that should only apply to final submissions.  *(1 items, 1 kernels)*
+        - **[action]** Before tuning any post-processing step, ensure OOF predictions are stored in their raw form so that CV metrics accurately reflect model output. Move OOF assignment to immediately after prediction, before any clipping or rounding.  *(1 items, 1 kernels)*
+          - items: `55987255:e18#2`
+  - **[lever_context]** The ensemble pipeline is already functional and submitted. The author has a new idea (prediction transform) that is cheap to implement and test. No local validation is set up for this inference-only notebook.  *(2 items, 2 kernels)*
+    - **[lever]** toggle test (on/off probe)  *(2 items, 2 kernels)*
+      - **[action_context]** When a single binary configuration choice is in question and each run is expensive (full retrain + submission).  *(1 items, 1 kernels)*
+        - **[action]** Disable the setting, submit, compare to the previous score. If the score regresses, immediately re-enable and submit to confirm recovery. Two submissions answer the question definitively. Do not explore further variants if the toggle clearly resolves the question.  *(1 items, 1 kernels)*
+          - items: `75924487:e4#1`
+      - **[action_context]** When the change is a single conceptual idea with one natural default setting (e.g., sqrt), and the leaderboard is the only feedback channel available.  *(1 items, 1 kernels)*
+        - **[action]** Implement the idea with one reasonable default, submit, and use the leaderboard delta to decide whether to keep or discard. If the gain is positive but small, keep it provisionally but re-validate after any subsequent pipeline change, since small gains from postprocessing often interact with other c  *(1 items, 1 kernels)*
+          - items: `15164527:e2#2`
+  - **[lever_context]** v16 gained +0.029 with ~20 conservative rules. The temptation is to add many more rules at once.  *(1 items, 1 kernels)*
+    - **[lever]** Incremental expansion of rule-based adjustments  *(1 items, 1 kernels)*
+      - **[action_context]** When a coarse set of rules improves the score substantially.  *(1 items, 1 kernels)*
+        - **[action]** Do not double the number of rules and add finer granularity in a single step. Instead, add rules for a few new columns at a time and submit after each batch. This isolates which additions help versus hurt. Large simultaneous expansions make it impossible to identify harmful rules without further abl  *(1 items, 1 kernels)*
+          - items: `7823861:e4#2`
+- **[goal]** What do I do when I want to enrich a stacking ensemble's inputs beyond the base model predictions?  *(29 items, 9 kernels)*
+  - **[lever_context]** The ensemble has many base models whose predictions are combined via a linear meta-learner. Ridge (L2) was working well (LB 0.69155). Lasso (L1) could zero out weak models, potentially reducing overfitting.  *(29 items, 9 kernels)*
+    - **[lever]** handcrafted feature engineering for meta-learner  *(8 items, 6 kernels)*
+      - **[action_context]** When the feature space for the meta-learner is low-dimensional (a handful of base model predictions) and the dataset is small.  *(8 items, 6 kernels)*
+        - **[action]** Try both raw and rank-transformed base predictions as meta-learner inputs. If base models already produce monotonically related outputs on similar scales, prefer raw predictions so the linear meta-learner can exploit magnitude differences. Reserve rank transformation for when base model scales are w  *(7 items, 5 kernels)*
+          - items: `18851026:e1#1`, `75924487:e4#2`, `17616127:e28#2`, `18757376:e3#1`, `73937748:e14#2`, `73937748:e18#1`, `73937748:e20#2`
+        - **[action]** When integrating pre-trained models into a stacking pipeline, first reduce the new model's training cost (fewer estimators, simpler trees) to iterate quickly on infrastructure. Once the pipeline is verified, restore competitive hyperparameters (more estimators, appropriate complexity) before submitt  *(1 items, 1 kernels)*
+          - items: `28984551:e4#2`
+    - **[lever]** stacking feature integration  *(7 items, 6 kernels)*
+      - **[action_context]** When base model predictions alone yield a modest stacking improvement, and pretrained transformer checkpoints are available.  *(6 items, 5 kernels)*
+        - **[action]** Add the auxiliary logits as extra columns in the stacking feature matrix and retrain the meta-learner offline with those features. Submit once. If the leaderboard regresses, the auxiliary features are adding noise rather than signal on the small test set—revert and try a different diversity source (  *(6 items, 5 kernels)*
+          - items: `59253662:e6#1`, `17616127:e7#2`, `17616127:e27#1`, `18851026:e2#1`, `18757376:e6#2`, `55987255:e25#1`
+      - **[action_context]** When merging external predictions into an existing feature matrix that uses feature selection (a saved list of column names), column names must match exactly between train and test, and between the saved selection list and the actual DataFrame columns.  *(1 items, 1 kernels)*
+        - **[action]** Before submitting a stacking integration: (1) verify that train and test feature matrices have identical column names in identical order, (2) check that any precomputed feature-selection list matches the current column names exactly (especially after renaming columns), (3) run a local CV evaluation   *(1 items, 1 kernels)*
+          - items: `60197293:e11#1`
+    - **[lever]** regressor ensemble member composition  *(5 items, 4 kernels)*
+      - **[action_context]** When you have OOF scores or correlation analysis for each base model and the ensembler accepts arbitrary column subsets.  *(2 items, 2 kernels)*
+        - **[action]** Examine per-model OOF performance and inter-model correlation. Curate a subset that drops weak or highly redundant members. Apply the filter before the ensembler trains. Verify with a single submission; if positive, keep and move on rather than iterating further on the subset.  *(1 items, 1 kernels)*
+          - items: `75924487:e1#1`
+        - **[action]** Revert the feature addition and instead focus on improving the base model quality (e.g., model head architecture, layer normalization) or adjusting blend weights among existing strong base models. On small NLP datasets, stacking gains come more from diverse strong base models than from handcrafted f  *(1 items, 1 kernels)*
+          - items: `18757376:e3#2`
+      - **[action_context]** When an ensemble with N members doesn't beat a simpler version, and the newly added members may be correlated with existing ones or lower quality.  *(2 items, 1 kernels)*
+        - **[action]** If adding diverse models to a blend doesn't improve over the previous best after fixing integration issues, try removing the weakest or most correlated member and rebalancing weights rather than continuing to add more members.  *(2 items, 1 kernels)*
+          - items: `18851026:e6#3`, `18851026:e9#1`
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** On competitions with very small public test sets, do not use public LB score changes of <0.005 to guide ensemble membership decisions. Instead, rely on local CV (OOF RMSE) to select which models and folds to include. Reserve LB submissions for confirming large directional improvements only.  *(1 items, 1 kernels)*
+          - items: `17616127:e29#3`
+    - **[lever]** hierarchical blending structure  *(2 items, 1 kernels)*
+      - **[action_context]** When a meta-learner's predictions are trained on different features (logits+predictions) than the raw model outputs being averaged.  *(1 items, 1 kernels)*
+        - **[action]** Do not simply append meta-learner predictions into the same averaging pool as base models. Instead, average base models within their group first, then combine the group mean with the meta-learner output using a separate weighted average. Give the base model group higher weight (e.g., 5/12 vs 4/12) s  *(1 items, 1 kernels)*
+          - items: `17616127:e10#2`
+      - **[action_context]** When a stacking meta-model from one backbone family is available and separate large models from a different family exist  *(1 items, 1 kernels)*
+        - **[action]** Compute the stacked prediction from the meta-models, then blend it with one or two predictions from a different model family using a weighted average. Give the stacked output roughly equal or slightly higher weight than each individual cross-architecture model. Typical starting weights: stacked ~3/8  *(1 items, 1 kernels)*
+          - items: `17616127:e9#2`
+    - **[lever]** Ensemble member diversity  *(2 items, 1 kernels)*
+      - **[action_context]** When meta-learner tuning yields diminishing returns and pretrained models from untapped model families are available.  *(2 items, 1 kernels)*
+        - **[action]** After saturating target-transform × model-family combinations, shift effort from adding more base models to improving individual strong models (e.g., NN architecture/hyperparameters) or the meta-learner itself, rather than appending marginal variants.  *(2 items, 1 kernels)*
+          - items: `73937748:e12#2`, `73937748:e24#2`
+    - **[lever]** single-shot probe with immediate revert on regression  *(1 items, 1 kernels)*
+      - **[action_context]** When the change is self-contained (one new input to the meta-learner) and the leaderboard is noisy.  *(1 items, 1 kernels)*
+        - **[action]** Make the change in one submission. If the score worsens by any amount, revert immediately and move to a qualitatively different idea rather than tuning the failed addition. Do not spend multiple submissions refining a feature that hurt on the first try when the leaderboard is very small.  *(1 items, 1 kernels)*
+          - items: `17616127:e27#2`
+    - **[lever]** ensemble fold membership and meta-model selection  *(1 items, 1 kernels)*
+      - **[action_context]** When you have per-fold stacking and the score is sensitive to which folds are included.  *(1 items, 1 kernels)*
+        - **[action]** Test fold exclusion by commenting out individual folds and submitting. If removing a fold improves the score, keep it out and try removing additional folds. When a new base model is available, retrain the ridge meta-models offline with the new features, swap the meta-model files, and submit. Iterate  *(1 items, 1 kernels)*
+          - items: `17616127:e28#1`
+    - **[lever]** aggregation function configuration  *(1 items, 1 kernels)*
+      - **[action_context]** When a meta-learner prediction function can return either per-fold or averaged outputs and the downstream code expects a single averaged array  *(1 items, 1 kernels)*
+        - **[action]** Ensure the meta-learner's return mode matches what the downstream blending code expects. When combining multiple stacked ensembles, each should return a single averaged prediction vector (return_mean=True) unless you have explicit per-fold blending logic downstream.  *(1 items, 1 kernels)*
+          - items: `17616127:e39#2`
+    - **[lever]** embedding source consistency (checkpoint vs precomputed)  *(1 items, 1 kernels)*
+      - **[action_context]** When train features are extracted from model checkpoints but test features come from a different pipeline (e.g., precomputed CSVs).  *(1 items, 1 kernels)*
+        - **[action]** Replace precomputed test feature files with inference from the same checkpoints used for training features. If this regresses, the precomputed features may actually be better calibrated or from a superior model version—revert and investigate before adding complexity.  *(1 items, 1 kernels)*
+          - items: `18851026:e3#1`
+    - **[lever]** Feature source pruning  *(1 items, 1 kernels)*
+      - **[action_context]** When a richer feature set underperforms a simpler one on the leaderboard despite seeming informative.  *(1 items, 1 kernels)*
+        - **[action]** When adding a second stacked feature source degrades LB score compared to using only one, drop the weaker source immediately rather than trying to tune it. Extra stacking features from weaker or redundant models often add noise that hurts generalization, especially when the base features are already  *(1 items, 1 kernels)*
+          - items: `60197293:e13#3`
+- **[goal]** What do I do when a notebook version fails to submit (runtime error) after making structural changes?  *(24 items, 20 kernels)*
+  - **[lever_context]** The notebook had multiple broken dependencies (wrong model name, missing library paths, no submission output, device errors). Tuning hyperparameters or ensembling would be premature before the pipeline runs end-to-end.  *(24 items, 20 kernels)*
+    - **[lever]** bug fix before resubmission  *(8 items, 8 kernels)*
+      - **[action_context]** Multiple bugs exist in the same codebase, and fixing one may introduce new errors (e.g., indentation).  *(4 items, 4 kernels)*
+        - **[action]** Fix all identified bugs in one pass, then immediately attempt to run the notebook. If a new error surfaces, fix it in a minimal follow-up edit before submitting. Do not submit until the notebook executes cleanly end-to-end.  *(4 items, 4 kernels)*
+          - items: `7573212:e1#1`, `7670859:e1#1`, `7253130:e1#2`, `55987255:e6#2`
+      - **[action_context]** When the pipeline is complex (multiple model types, fold ensembles, multiple input modalities) and refactoring touches data flow.  *(3 items, 3 kernels)*
+        - **[action]** First get a working submission with minimal changes from training code, submit to establish a baseline score. Then refactor in stages (extract base classes, wrap in dataset API, clean signatures), submitting after each major structural change. If the score stays within noise (±0.001), continue. If i  *(3 items, 3 kernels)*
+          - items: `17616127:e19#2`, `18423958:e7#2`, `52200959:e1#1`
+      - **[action_context]** When each notebook run is expensive and errors are only visible after execution.  *(1 items, 1 kernels)*
+        - **[action]** Fix exactly one error per iteration rather than attempting multiple speculative fixes. After each run, identify the first failure point, apply the minimal fix, and re-run. This avoids introducing new bugs while fixing old ones and ensures each run gives clear signal about what works. Once the pipeli  *(1 items, 1 kernels)*
+          - items: `55591012:e1#2`
+    - **[lever]** revert and redirect  *(2 items, 2 kernels)*
+      - **[action_context]** When a parameter change is so extreme it likely causes runtime failure or nonsensical results.  *(1 items, 1 kernels)*
+        - **[action]** If a run fails or produces nonsensical output due to an extreme parameter, do not try to fix incrementally. Instead, reset the problematic parameter to a reasonable value and pivot to the next experiment you want to try. Bundling the fix with a new idea saves a version.  *(1 items, 1 kernels)*
+          - items: `7676170:e4#2`
+      - **[action_context]** When a change involves swapping a pretrained backbone and the run fails without submission  *(1 items, 1 kernels)*
+        - **[action]** Immediately revert to the last working configuration, submit to confirm it works, and only then attempt the upgrade again with verified assets (correct checkpoint paths, matching layer dimensions). Do not spend time debugging a broken upgrade before securing a baseline submission.  *(1 items, 1 kernels)*
+          - items: `18423958:e1#1`
+    - **[lever]** edit hygiene and validation before rerun  *(2 items, 2 kernels)*
+      - **[action_context]** When the notebook has structural issues (dead code, missing parameter centralization) that could cause silent bugs or inconsistency in results.  *(2 items, 2 kernels)*
+        - **[action]** Before tuning anything, consolidate all parameters into named constants, remove dead/duplicated code, wire up the full train-to-submission pipeline, and submit to get a baseline LB score. Only then make one targeted change at a time (e.g., one augmentation) and submit again to measure its isolated e  *(2 items, 2 kernels)*
+          - items: `27799930:e1#2`, `13542132:e1#2`
+    - **[lever]** repeated re-runs without code changes  *(2 items, 2 kernels)*
+      - **[action_context]** When working on Kaggle where notebook execution can fail due to GPU availability, dataset attachment issues, or timeout, and you cannot see intermediate outputs without running.  *(1 items, 1 kernels)*
+        - **[action]** Re-run the notebook without code changes to verify it executes cleanly before committing to a submission. Only submit once you've confirmed via output inspection that predictions look reasonable. Limit re-runs to avoid wasting compute budget.  *(1 items, 1 kernels)*
+          - items: `17616127:e8#2`
+      - **[action_context]** When the pipeline is new and untested on the platform, and submission failures waste time.  *(1 items, 1 kernels)*
+        - **[action]** After building a new pipeline, rerun the notebook without code changes at least once before submitting. This catches environment issues, non-determinism, or transient errors. Only submit once the rerun succeeds cleanly.  *(1 items, 1 kernels)*
+          - items: `52860091:e1#2`
+    - **[lever]** execution device configuration  *(2 items, 2 kernels)*
+      - **[action_context]** When you toggle a flag manually and risk forgetting to flip it back before submission.  *(1 items, 1 kernels)*
+        - **[action]** Instead of hardcoding a debug flag, infer the execution context from the data itself (e.g., check the length of sample_submission.csv or the presence of certain files). Set DEBUG=True when the detected context indicates a small/local run, and False otherwise. This eliminates the risk of submitting w  *(1 items, 1 kernels)*
+          - items: `7548275:e1#2`
+      - **[action_context]** When a Kaggle notebook fails after enabling GPU and the primary goal is testing new features, not GPU speedup.  *(1 items, 1 kernels)*
+        - **[action]** When a submission fails after enabling GPU, immediately revert only the device setting to CPU and resubmit, rather than reverting all changes. Keep infrastructure changes (device, memory) in separate commits from feature/model changes so failures are attributable.  *(1 items, 1 kernels)*
+          - items: `55987255:e4#2`
+    - **[lever]** infrastructure and pipeline correctness  *(2 items, 2 kernels)*
+      - **[action_context]** When a notebook has multiple independent failure points (imports, model loading, device placement, output writing).  *(2 items, 2 kernels)*
+        - **[action]** Fix one failure at a time in execution order: first ensure libraries import, then model loads on the correct device, then inference runs, then output is written. After each fix, re-run to discover the next error. Submit once the pipeline completes to establish a baseline score, even if you expect it  *(2 items, 2 kernels)*
+          - items: `15173072:e1#1`, `50496431:e1#1`
+    - **[lever]** pipeline complexity reduction  *(1 items, 1 kernels)*
+      - **[action_context]** When a pipeline has multiple interacting components (data loading, ID conversion, groupby aggregation, model training, inference) and you haven't verified each piece.  *(1 items, 1 kernels)*
+        - **[action]** First fix data plumbing issues (ID columns, dtypes) without changing logic. Then inline complex functions to inspect intermediate outputs. Then simplify the feature engineering to the minimum viable version (e.g., one aggregation stat instead of five). Submit this minimal version to confirm end-to-e  *(1 items, 1 kernels)*
+          - items: `27836972:e1#1`
+    - **[lever]** bundle complementary improvements into one probe  *(1 items, 1 kernels)*
+      - **[action_context]** When multiple changes are theoretically complementary (regularization, initialization, inference stability) and you have no prior submission score to protect, bundle them into a single first submission to establish a baseline quickly.  *(1 items, 1 kernels)*
+        - **[action]** When building on public notebooks, apply all known-good architectural improvements (dropout, normalization, weight init) in a single commit to establish a strong first baseline. Only decompose into individual experiments if the bundled result regresses or is unexpectedly poor.  *(1 items, 1 kernels)*
+          - items: `18350823:e1#2`
+    - **[lever]** device placement and runtime infrastructure  *(1 items, 1 kernels)*
+      - **[action_context]** When a deep learning inference pipeline exists but has never been successfully submitted  *(1 items, 1 kernels)*
+        - **[action]** Before tuning any modeling choices, ensure the inference script runs end-to-end on the target hardware: move model and input tensors to the accelerator, verify the submission file is created, and add a debug/stress-test mode that expands the test set to catch OOM or timeout issues early. Only after   *(1 items, 1 kernels)*
+          - items: `55621328:e2#1`
+    - **[lever]** dependency / import fix  *(1 items, 1 kernels)*
+      - **[action_context]** An import fails and the imported module is not used downstream in the notebook.  *(1 items, 1 kernels)*
+        - **[action]** Comment out or remove unused imports that cause errors before doing anything else. Verify the notebook runs end-to-end and produces a valid submission to establish a baseline score, then proceed to substantive changes.  *(1 items, 1 kernels)*
+          - items: `58527792:e1#1`
+    - **[lever]** code restructuring and cleanup  *(1 items, 1 kernels)*
+      - **[action_context]** When the source notebook has many components not needed for inference  *(1 items, 1 kernels)*
+        - **[action]** First, strip out all training/evaluation code in one pass (fold generation, OOF scoring, logging utilities, training transforms) and point to the correct checkpoint path. Do not submit yet. Second, run the notebook to catch runtime errors from misplaced statements or leftover references, fix those,   *(1 items, 1 kernels)*
+          - items: `15082684:e1#1`
+    - **[lever]** isolate-and-restore debugging  *(1 items, 1 kernels)*
+      - **[action_context]** When a notebook fails and the cause is unclear, and you have many imports or setup cells.  *(1 items, 1 kernels)*
+        - **[action]** Comment out a suspect block of code entirely, re-run to confirm the error changes, then restore the block and fix the actual issue. This binary-search style isolation is fast when execution logs point to a general area but not the exact line. Keep each debug iteration as a separate version so you ca  *(1 items, 1 kernels)*
+          - items: `50496431:e1#2`
+- **[goal]** What do I do when predictions are continuous but the target metric (Spearman correlation) depends on ranks and the ground truth takes discrete values?  *(22 items, 11 kernels)*
+  - **[lever_context]** Spearman correlation depends on ranks, not values. When targets are averages of crowd ratings taking few discrete levels, continuous predictions create unnecessary rank noise. Discretizing/scaling predictions to match the target distribution can improve rank alignment without retraining.  *(21 items, 11 kernels)*
+    - **[lever]** Post-processing discretization/binning of predictions  *(13 items, 6 kernels)*
+      - **[action_context]** When a particular target column has a heavily skewed distribution (e.g., most values at one level with a gap), thresholding low predictions to the nearest discrete training level can fix rank errors.  *(12 items, 6 kernels)*
+        - **[action]** For each target column, examine the distribution of raw predictions and the known discrete levels. Set thresholds to snap predictions to the nearest discrete level, starting with the most binary/sparse columns (where most values are 0 or 1). Apply conservative thresholds first (only snap extreme val  *(12 items, 6 kernels)*
+          - items: `7823861:e5#1`, `7548275:e6#1`, `27389424:e1#2`, `7823861:e4#1`, `7018718:e11#1`, `7018718:e13#1`, `7573212:e5#1`, `6803050:e1#2`, `6803050:e2#1`, `6803050:e6#2`, `6803050:e13#2`, `6803050:e14#1`
+      - **[action_context]** After any significant change to the ensemble (adding/removing models), the interaction between post-processing and the new blend may shift.  *(1 items, 1 kernels)*
+        - **[action]** Re-validate post-processing contribution after each major ensemble change by running one submission with and one without. For Spearman-optimized competitions, expect discretization/scaling post-processing to contribute meaningfully (~0.03 in this case) and plan to keep it unless the ablation shows o  *(1 items, 1 kernels)*
+          - items: `7548275:e8#2`
+    - **[lever]** rank blending configuration  *(2 items, 2 kernels)*
+      - **[action_context]** When the inference pipeline uses only one experiment/checkpoint rather than multiple diverse models.  *(1 items, 1 kernels)*
+        - **[action]** Disable rank blending for single-model inference. Rank averaging is beneficial when combining diverse predictions but can be neutral or harmful when applied to a single model's outputs. Test with a single toggle and check leaderboard.  *(1 items, 1 kernels)*
+          - items: `7018718:e2#2`
+      - **[action_context]** When ensembling multiple folds or models and the evaluation metric is KL divergence (or any metric on probability simplex), the order of softmax vs. averaging matters.  *(1 items, 1 kernels)*
+        - **[action]** For KL-divergence metrics, apply softmax to each fold/model's logits individually before averaging across folds, rather than averaging logits and applying softmax once at the end. Test both orderings and keep the one that scores better. The per-fold softmax approach typically works better because it  *(1 items, 1 kernels)*
+          - items: `50376011:e22#3`
+    - **[lever]** repeated identical submissions to measure LB variance  *(1 items, 1 kernels)*
+      - **[action_context]** When the model's training procedure is inherently stochastic and you are about to begin hyperparameter tuning.  *(1 items, 1 kernels)*
+        - **[action]** Before tuning, submit the same unchanged notebook multiple times (5–10) and record the LB spread. Continue until scores stabilize. Use the observed range as the minimum detectable effect size; only treat HP changes as improvements if they exceed this noise band.  *(1 items, 1 kernels)*
+          - items: `28834369:e1#1`
+    - **[lever]** regression model with built-in hyperparameter selection  *(1 items, 1 kernels)*
+      - **[action_context]** When targets are continuous or quasi-continuous and the evaluation metric is rank-based  *(1 items, 1 kernels)*
+        - **[action]** Use a linear regression model (e.g., Ridge) rather than a classifier. Select the regularization strength via built-in CV (e.g., RidgeCV with a wide alpha grid). Score OOF predictions with the competition metric (Spearman) rather than the model's default .score() method, to get feedback aligned with   *(1 items, 1 kernels)*
+          - items: `7676170:e5#2`
+    - **[lever]** logit temperature scaling in forward pass  *(1 items, 1 kernels)*
+      - **[action_context]** When sigmoid outputs cluster near 0.5 (low confidence) and the evaluation metric is rank-based (C-index), the model may benefit from sharper outputs.  *(1 items, 1 kernels)*
+        - **[action]** Multiply logits by a constant (e.g., 2) before the sigmoid activation to sharpen output probabilities. Test a single reasonable value first; if it improves the ranking metric, keep it. This is a low-risk, single-parameter change that doesn't require retraining from scratch if the scaling is applied   *(1 items, 1 kernels)*
+          - items: `77129691:e9#1`
+    - **[lever]** prediction jitter  *(1 items, 1 kernels)*
+      - **[action_context]** After normalizing predictions to [0,1], many values may coincide, especially if the underlying model outputs are degenerate or discrete.  *(1 items, 1 kernels)*
+        - **[action]** Add tiny Gaussian noise (e.g., sd=1e-7) to each prediction column after normalization to break ties. This preserves the approximate ranking while ensuring no two predictions are exactly equal. However, jitter cannot rescue fundamentally broken predictions—it only helps when the underlying signal is   *(1 items, 1 kernels)*
+          - items: `7548275:e3#2`
+    - **[lever]** Feature matrix enrichment with multiple embedding sources and categorical encodings  *(1 items, 1 kernels)*
+      - **[action_context]** When you have access to multiple pretrained encoders and structured metadata columns  *(1 items, 1 kernels)*
+        - **[action]** Stack embeddings from multiple pretrained models (e.g., USE-QA, DistilBERT) for each text field, add one-hot encoded categorical features (domain, category), and optionally add pairwise similarity features (cosine/inner product between question and answer embeddings). Build incrementally: add one fe  *(1 items, 1 kernels)*
+          - items: `7670859:e4#1`
+    - **[lever]** output normalization / softmax application  *(1 items, 1 kernels)*
+      - **[action_context]** When the metric is KL divergence and the model may already output probabilities  *(1 items, 1 kernels)*
+        - **[action]** Test with and without softmax post-processing by submitting both variants. If removing softmax improves score, the model already outputs calibrated probabilities. Do not assume raw logits; verify empirically with one submission.  *(1 items, 1 kernels)*
+          - items: `50376011:e1#1`
+  - **[lever_context]** The 'question_type_spelling' target likely correlates with whether the question is from an English/language-learning site. A BERT model may not capture this metadata signal well, but a simple URL-domain flag can directly indicate it. Other targets are already handled by the ensemble.  *(1 items, 1 kernels)*
+    - **[lever]** post-hoc rule-based feature injection for specific targets  *(1 items, 1 kernels)*
+      - **[action_context]** When one target column maps cleanly to an observable metadata field (e.g., site domain), and the model's predictions for that column are noisy.  *(1 items, 1 kernels)*
+        - **[action]** Identify metadata fields (URL, category) that are near-perfect proxies for specific target columns. Add a binary or weighted indicator derived from that metadata and inject it into the corresponding prediction column. Prefer metadata-based indicators over content-based ones (phonetic characters, key  *(1 items, 1 kernels)*
+          - items: `6803050:e12#2`
+- **[goal]** What do I do when I have a working multi-model ensemble and want to improve it by adding another pretrained backbone?  *(21 items, 11 kernels)*
+  - **[lever_context]** The author had checkpoints trained with EfficientNet-B5. Switching to B7 (v116) changed feature dimensions and architecture, causing weight loading issues or feature mismatches. The score regressed from 0.278 to 0.299.  *(21 items, 11 kernels)*
+    - **[lever]** backbone selection  *(13 items, 8 kernels)*
+      - **[action_context]** When a new inference architecture is being evaluated and multiple backbone sizes are available with trained checkpoints.  *(12 items, 8 kernels)*
+        - **[action]** When swapping backbone variants on a well-tuned pipeline, expect that simply changing the architecture without retuning hyperparameters (LR, batch size, augmentation) will likely regress. Submit the backbone swap alone first. If it regresses, the backbone may not be the bottleneck—move to other leve  *(12 items, 8 kernels)*
+          - items: `18851026:e4#1`, `13848868:e5#2`, `18423958:e2#1`, `18423958:e6#1`, `49524919:e20#2`, `49576186:e5#2`, `55621328:e29#1`, `15082684:e8#1`, `50496431:e31#2`, `50496431:e34#3`, `50496431:e49#2`, `50496431:e53#2`
+      - **[action_context]** When checkpoint directory names or config files indicate the model size used during training.  *(1 items, 1 kernels)*
+        - **[action]** Always match the pretrained backbone size to what was used during fine-tuning. If the checkpoint path contains 'large', use the large backbone. A mismatch (e.g., base backbone with large-trained weights) will silently degrade performance or fail. Verify this before submitting.  *(1 items, 1 kernels)*
+          - items: `55621328:e34#2`
+    - **[lever]** model architecture swap  *(4 items, 4 kernels)*
+      - **[action_context]** When checkpoint weights were trained with a specific backbone architecture.  *(4 items, 4 kernels)*
+        - **[action]** Remove the old model class and dataset class entirely rather than commenting them out or trying to reuse them. Rewrite the preprocessing to match the new backbone's training-time pipeline. Load the new checkpoints with a clean model definition. Verify with a submission before adding TTA or other com  *(4 items, 4 kernels)*
+          - items: `13848868:e5#1`, `53424936:e6#2`, `49524919:e18#1`, `50496431:e9#3`
+    - **[lever]** bundling multiple changes  *(2 items, 2 kernels)*
+      - **[action_context]** When adding a new model to a multi-component ensemble pipeline that has many integration points (data loading, inference, feature alignment, blend formula).  *(1 items, 1 kernels)*
+        - **[action]** Add one new component at a time and submit after each addition. Before submitting, verify row counts match across all prediction arrays and that blend weights are properly normalized. Do not add multiple new components across several unsubmitted versions—bugs compound and become harder to diagnose.  *(1 items, 1 kernels)*
+          - items: `18851026:e6#2`
+      - **[action_context]** When you have many untested ideas and limited submission budget  *(1 items, 1 kernels)*
+        - **[action]** Do NOT bundle more than one major change per submission. When multiple changes are made simultaneously and the score regresses, you cannot identify which change caused the regression and cannot selectively revert. Instead, add one change at a time, submit, and only stack the next change if the previ  *(1 items, 1 kernels)*
+          - items: `49576186:e9#1`
+    - **[lever]** ensemble member addition and blend weight tuning  *(1 items, 1 kernels)*
+      - **[action_context]** When a new backbone is added to an existing ensemble and initial uniform-ish weights produce only marginal improvement.  *(1 items, 1 kernels)*
+        - **[action]** First add the new member with roughly uniform weights and submit to confirm it doesn't hurt. Then use OOF predictions to re-optimize blend weights, down-weighting members that contribute least. If weight tuning doesn't yield meaningful gains, consider replacing the weakest member with a stronger bac  *(1 items, 1 kernels)*
+          - items: `18523075:e1#1`
+    - **[lever]** checkpoint and architecture consistency verification  *(1 items, 1 kernels)*
+      - **[action_context]** When upgrading a pretrained model size (e.g., base→large) and the score degrades far beyond random, the checkpoint likely doesn't match the architecture.  *(1 items, 1 kernels)*
+        - **[action]** Before submitting, verify that the new checkpoint was actually trained with the new architecture by loading it locally and checking for missing/unexpected keys. If a size swap causes a regression much larger than the expected model-quality difference, suspect a weight mismatch before blaming the mod  *(1 items, 1 kernels)*
+          - items: `18426209:e2#1`
+- **[goal]** What do I do when I have a working baseline and want to test whether adding a batch of new engineered features improves performance?  *(19 items, 11 kernels)*
+  - **[lever_context]** The author had a working baseline (v24, LB 0.78812) and wanted to improve via feature engineering. Many candidate features existed (temporal, lag, diff, variance). Adding all at once risks noise and makes it hard to attribute gains.  *(17 items, 9 kernels)*
+    - **[lever]** iterative feature pruning by category  *(4 items, 4 kernels)*
+      - **[action_context]** A rule-based feature has few tunable dimensions: the detection logic, the text field it reads, and the numeric weight assigned.  *(2 items, 2 kernels)*
+        - **[action]** First test the new features with feature selection enabled (to filter noise). If that underperforms, try without feature selection (letting the model see all new features). Compare both against the baseline without the new features. If the new features help only without feature selection, the select  *(2 items, 2 kernels)*
+          - items: `60197293:e18#1`, `6803050:e12#1`
+      - **[action_context]** When a large feature group is added in bulk and local validation is available but leaderboard submissions are expensive.  *(2 items, 2 kernels)*
+        - **[action]** Add all candidate features at once, then iteratively remove subsets while monitoring validation score. Remove features that don't improve or hurt validation. Only submit to leaderboard after pruning converges. This is faster than testing each feature individually when the feature space is large.  *(2 items, 2 kernels)*
+          - items: `27799930:e4#1`, `55987255:e14#1`
+    - **[lever]** engineered feature expansion  *(4 items, 3 kernels)*
+      - **[action_context]** When the new feature requires significant infrastructure work (new library, new prediction pipeline) and the ensemble is already strong.  *(4 items, 3 kernels)*
+        - **[action]** Add the full set of candidate features first, evaluate on local CV without submitting. If CV degrades, progressively prune subsets to isolate which (if any) help. Only submit once you have a configuration that matches or beats the baseline on CV. If nothing helps, revert completely and move to a dif  *(4 items, 3 kernels)*
+          - items: `55987255:e24#1`, `17616127:e36#2`, `58130512:e2#1`, `58130512:e4#1`
+    - **[lever]** controlled ablation via toggle experiments  *(3 items, 2 kernels)*
+      - **[action_context]** When you suspect a particular feature group may be noisy or redundant and want a quick answer.  *(1 items, 1 kernels)*
+        - **[action]** Remove the feature group in one version, check local validation, and if the score does not improve, immediately revert and move on. Do not submit to the leaderboard for a probe you can evaluate locally. Limit the probe to a single add/remove cycle to avoid wasting compute.  *(1 items, 1 kernels)*
+          - items: `27389424:e15#1`
+      - **[action_context]** When a bundled change yields a modest improvement but doesn't set a new best, and you need to decide whether to invest more iterations tuning the new lever.  *(1 items, 1 kernels)*
+        - **[action]** If a new feature source bundled with other changes doesn't surpass your global best, do one quick ablation (e.g., adjust feature count) to check sensitivity. If that regresses, abandon the new source promptly rather than running a long sweep—the signal-to-noise ratio is too low to justify further tu  *(1 items, 1 kernels)*
+          - items: `58130512:e5#2`
+      - **[action_context]** When a component's value is unclear because it was always changed alongside other things.  *(1 items, 1 kernels)*
+        - **[action]** Run a remove-then-re-add sequence (A→B→A') where only the component of interest changes, submitting each variant. If the component's effect reverses when a co-factor changes, identify and fix the co-factor before concluding the component is harmful.  *(1 items, 1 kernels)*
+          - items: `58130512:e10#2`
+    - **[lever]** re-adding and refining removed features  *(2 items, 2 kernels)*
+      - **[action_context]** When a feature removal improved the score but the feature concept seems sound  *(2 items, 2 kernels)*
+        - **[action]** Re-implement the feature with bug fixes and variations, but submit early after 2-3 iterations to get leaderboard signal. If the re-added feature still regresses, accept that the feature is harmful and move on rather than continuing to refine it. Do not spend many iterations fixing and polishing befo  *(2 items, 2 kernels)*
+          - items: `27799930:e5#1`, `58130512:e6#2`
+    - **[lever]** prediction normalization before ensembling  *(1 items, 1 kernels)*
+      - **[action_context]** A binary toggle (on/off) with no continuous hyperparameter to sweep.  *(1 items, 1 kernels)*
+        - **[action]** For a binary preprocessing toggle, first evaluate locally (OOF) without submitting. If local results are ambiguous, submit both variants to the leaderboard. If neither variant beats the prior best, abandon the idea and move on rather than iterating further on the same lever.  *(1 items, 1 kernels)*
+          - items: `75584724:e5#1`
+    - **[lever]** feature variant A/B testing  *(1 items, 1 kernels)*
+      - **[action_context]** When a heuristic feature has a clear alternative value to test  *(1 items, 1 kernels)*
+        - **[action]** Test the variant in isolation. If the score drops, immediately revert to the original. Do not combine the variant with other changes in the same submission, so you can attribute the effect cleanly. Only after reverting, layer on additional changes.  *(1 items, 1 kernels)*
+          - items: `6803050:e13#1`
+    - **[lever]** Switching levers when returns diminish  *(1 items, 1 kernels)*
+      - **[action_context]** When successive feature engineering rounds yield progressively smaller LB improvements (e.g., from +0.01 to +0.002 to +0.001), the feature space is near saturation.  *(1 items, 1 kernels)*
+        - **[action]** After a feature expansion probe yields a small positive gain, do not iterate further on the same feature family. Instead switch to a qualitatively different lever (e.g., model stacking, ensemble diversity, or architecture changes) that can provide a step-change improvement.  *(1 items, 1 kernels)*
+          - items: `59253662:e5#2`
+    - **[lever]** hand-crafted text features  *(1 items, 1 kernels)*
+      - **[action_context]** When adding a single cheap feature to an existing pipeline with many features.  *(1 items, 1 kernels)*
+        - **[action]** Add the feature to the training set first and check validation. If results are ambiguous, toggle it off and compare. Before submitting, ensure the feature is computed identically for both train and test to avoid feature mismatch. Only proceed to submission after confirming parity.  *(1 items, 1 kernels)*
+          - items: `60197293:e2#1`
+  - **[lever_context]** The lag/diff features required iterating over each customer group with Python-level loops, which was extremely slow on ~460k customers. The author observed this via tqdm and sampling.  *(1 items, 1 kernels)*
+    - **[lever]** feature engineering approach selection  *(1 items, 1 kernels)*
+      - **[action_context]** When a per-row or per-group feature requires a Python loop over hundreds of thousands of groups and cannot be vectorized  *(1 items, 1 kernels)*
+        - **[action]** Prototype the feature on a small sample to verify correctness, then estimate full-data runtime. If infeasible, abandon the approach and pivot to a vectorized alternative (e.g., column-level transformations like rounding) rather than trying to optimize the loop. Do not submit the slow version.  *(1 items, 1 kernels)*
+          - items: `27836972:e4#1`
+  - **[lever_context]** The new inference script included --use_ekg as an extra feature. The author had no clear signal whether EKG was beneficial at inference time. The simplest test is an ablation: remove the flag and compare.  *(1 items, 1 kernels)*
+    - **[lever]** single-feature ablation  *(1 items, 1 kernels)*
+      - **[action_context]** When a new best score has just been established with a feature enabled, and the feature's contribution is uncertain.  *(1 items, 1 kernels)*
+        - **[action]** Immediately after establishing a new baseline, ablate one optional feature at a time by removing it and submitting. If the score is equal or better without the feature, drop it permanently to reduce complexity. A difference smaller than typical leaderboard noise (< 0.001) means the feature is not re  *(1 items, 1 kernels)*
+          - items: `50376011:e6#2`
+- **[goal]** What do I do when my tree-based model on text data has plateaued and I want richer features?  *(13 items, 5 kernels)*
+  - **[lever_context]** The pipeline already had TF-IDF, count vectors, NMF topics, Word2Vec, and DeBERTa OOF predictions. Adding more diverse feature families (sentiment, readability, topic models) is a natural next step for gradient-boosted trees which benefit from heterogeneous features.  *(8 items, 4 kernels)*
+    - **[lever]** pretrained sentence embeddings as tabular features  *(3 items, 2 kernels)*
+      - **[action_context]** When adding high-dimensional dense features (e.g., 1024-d) to a tree model that already has thousands of sparse features.  *(3 items, 2 kernels)*
+        - **[action]** Add the dense embeddings and simultaneously increase the feature-selection budget to ensure the new features survive selection. Submit to check LB lift. If the gain is small or absent relative to your best score, remove the heavy features rather than continuing to tune around them—the inference cost  *(2 items, 2 kernels)*
+          - items: `58130512:e5#1`, `55987255:e2#2`
+        - **[action]** First ablate each representation individually to confirm it contributes (remove one, check score). Then combine all confirmed-useful representations together. Different decomposition methods (SVD, NMF, Word2Vec) capture complementary signals, so their union typically outperforms any single one for t  *(1 items, 1 kernels)*
+          - items: `55987255:e1#1`
+    - **[lever]** max_depth and feature subset size  *(2 items, 2 kernels)*
+      - **[action_context]** When the feature space is very large (10k+) relative to training samples, and you suspect overfitting.  *(2 items, 2 kernels)*
+        - **[action]** After adding new candidate features to a curated feature set, re-run feature selection (e.g., importance-based or wrapper-based) rather than simply appending all new columns. Unselected features can degrade tree-based models by splitting on noise.  *(2 items, 2 kernels)*
+          - items: `59253662:e12#2`, `60197293:e4#2`
+    - **[lever]** handcrafted linguistic features  *(1 items, 1 kernels)*
+      - **[action_context]** When the model already has rich transformer-derived features, handcrafted NLP features (readability indices, POS tag counts, sentiment scores) are likely redundant and may add noise.  *(1 items, 1 kernels)*
+        - **[action]** When a tree model already consumes transformer embeddings, treat handcrafted linguistic features as low-priority. If you try them, add them as a single probe submission. Expect diminishing or negative returns because transformers already encode most of the same signal. Be prepared to revert quickly.  *(1 items, 1 kernels)*
+          - items: `58130512:e34#2`
+    - **[lever]** Add diverse NLP feature families (readability, sentiment, topic models)  *(1 items, 1 kernels)*
+      - **[action_context]** When the model already uses bag-of-words and embedding features but lacks linguistically-motivated metrics.  *(1 items, 1 kernels)*
+        - **[action]** Add features in batches by family: first text statistics (counts, unique counts, spelling errors) across preprocessing variants, then topic model components (LDA), then sentiment scores (VADER), then readability indices (textstat). Submit after each batch to measure lift. If a batch helps, keep it a  *(1 items, 1 kernels)*
+          - items: `55987255:e6#1`
+    - **[lever]** TF-IDF/CountVectorizer hyperparameters (min_df, max_df, ngram_range)  *(1 items, 1 kernels)*
+      - **[action_context]** When the feature space is dominated by sparse text vectorizer outputs and CV is the only feedback signal available.  *(1 items, 1 kernels)*
+        - **[action]** Sweep min_df upward in multiplicative steps (e.g., 0.05→0.1→0.2→0.3) while holding max_df fixed, observe CV, then reverse direction if CV degrades. Separately sweep ngram_range by narrowing then widening. After finding a good min_df, toggle whether a second vectorizer (e.g., CountVectorizer) is incl  *(1 items, 1 kernels)*
+          - items: `55987255:e22#1`
+  - **[lever_context]** v67 (best at 0.82432) used the full feature list. v77 truncated to 1000 (0.82224). v79 truncated to 10000 (0.82069). v78 and v80 used the full list and scored higher.  *(2 items, 1 kernels)*
+    - **[lever]** Tree depth and regularization tuning  *(1 items, 1 kernels)*
+      - **[action_context]** When reducing tree complexity (max_depth, n_estimators, colsample_bytree) in LightGBM/XGBoost for a tabular regression task  *(1 items, 1 kernels)*
+        - **[action]** Reduce max_depth and n_estimators incrementally (e.g., one step at a time: 8→6 before 8→5) and validate each change. Cutting max_depth from 8 to 5 while also halving colsample_bytree and lowering n_estimators simultaneously can cause underfitting that is hard to diagnose. Check CV QWK before submitt  *(1 items, 1 kernels)*
+          - items: `58130512:e20#2`
+    - **[lever]** feature count truncation threshold  *(1 items, 1 kernels)*
+      - **[action_context]** When a precomputed feature-selection list already orders features by importance and the tree model has built-in regularization (colsample_bytree, num_leaves).  *(1 items, 1 kernels)*
+        - **[action]** Start by using the full preselected feature list rather than aggressively truncating it; tree models with column subsampling and shallow depth already handle excess features. Only truncate if memory or runtime is a binding constraint, and verify any truncation on LB before keeping it.  *(1 items, 1 kernels)*
+          - items: `58130512:e26#3`
+  - **[lever_context]** XGBoost natively handles NaN by learning optimal split directions for missing values. Filling NaN with 0 destroys this signal by conflating missing with zero, which is especially harmful for financial features where 0 has real meaning (e.g., zero balance vs. missing balance).  *(1 items, 1 kernels)*
+    - **[lever]** missing value imputation strategy  *(1 items, 1 kernels)*
+      - **[action_context]** When using XGBoost or other GBDT that natively handles NaN, and features are numeric aggregates where zero is a meaningful value.  *(1 items, 1 kernels)*
+        - **[action]** Do not fill missing numeric features with zero before feeding to XGBoost. Let the model handle NaN natively. If you must impute, use median or leave as NaN. Filling with zero conflates missingness with a real value and typically hurts performance.  *(1 items, 1 kernels)*
+          - items: `28093671:e9#2`
+  - **[lever_context]** With 5-fold CV, each validation fold is ~20% of data; increasing folds gives larger training sets per fold and more OOF predictions, but at higher cost and smaller validation sets.  *(1 items, 1 kernels)*
+    - **[lever]** CV fold count  *(1 items, 1 kernels)*
+      - **[action_context]** When the dataset is large enough that even 1/30th is a reasonable validation set and you suspect high variance in fold-level metrics.  *(1 items, 1 kernels)*
+        - **[action]** Try increasing fold count substantially (e.g., 5→30) and check whether OOF QWK stabilizes. If runtime becomes prohibitive or validation sets become too small for reliable metric estimation, reduce to an intermediate value (e.g., 10). Do not submit until you have confirmed CV improvement.  *(1 items, 1 kernels)*
+          - items: `60197293:e5#3`
+  - **[lever_context]** The task is ordinal regression (scores 1-6) with imbalanced class distribution. scale_pos_weight is designed for binary classification imbalance, not multi-class ordinal regression. class_weight='balanced' was already set.  *(1 items, 1 kernels)*
+    - **[lever]** class imbalance weighting in tree models  *(1 items, 1 kernels)*
+      - **[action_context]** When using XGBoost for multi-class or ordinal regression with QWK metric.  *(1 items, 1 kernels)*
+        - **[action]** Avoid using scale_pos_weight for multi-class/ordinal tasks—it is a binary classification parameter and an extreme value (100) can distort predictions. Instead, use sample_weight computed per class or tune class_weight. If you already have class_weight='balanced', adding scale_pos_weight is redundant  *(1 items, 1 kernels)*
+          - items: `60197293:e14#2`
+- **[goal]** What do I do when a large code change doesn't produce a submission?  *(13 items, 9 kernels)*
+  - **[lever_context]** v9 combined three changes (tokenizer tokens, new checkpoints, restored optimized rounding) but was not submitted, suggesting a bug. The author needed to isolate the problem quickly.  *(13 items, 9 kernels)*
+    - **[lever]** configuration consistency check before submission  *(6 items, 3 kernels)*
+      - **[action_context]** After a major code addition with many new moving parts, where a single variable name error or shape mismatch could silently corrupt predictions.  *(3 items, 2 kernels)*
+        - **[action]** After a large code change, run the notebook without submitting. Inspect outputs for errors or unexpected values. Fix any bugs found, then submit the corrected version. This avoids wasting submissions and ensures the LB signal reflects the true method, not a bug.  *(3 items, 2 kernels)*
+          - items: `77129691:e5#2`, `55591012:e4#2`, `55591012:e13#2`
+      - **[action_context]** When a multi-change version fails, inspect the output for the error, apply the smallest possible fix, and submit. Do not revert the other changes if they are believed correct.  *(1 items, 1 kernels)*
+        - **[action]** When a bundled change fails, check for simple coding errors (wrong array shape, typos, import issues) before reverting substantive changes. Fix the minimal bug and submit to confirm the bundle works. This avoids losing progress from reverting good changes alongside the bug.  *(1 items, 1 kernels)*
+          - items: `55621328:e5#2`
+      - **[action_context]** When switching model checkpoints, multiple config fields (checkpoint path, backbone path, tokenizer path) must be updated in sync.  *(1 items, 1 kernels)*
+        - **[action]** When swapping to a different model size, audit all related configuration fields (pretrained path, checkpoint path, config path) for consistency before submitting. If a run produces unexpected output or errors, check for partial updates before re-running rather than reverting the entire change.  *(1 items, 1 kernels)*
+          - items: `55621328:e22#2`
+      - **[action_context]** When a notebook run produces no submission or an error, and you need to iterate quickly.  *(1 items, 1 kernels)*
+        - **[action]** When a submission fails, inspect the command-line arguments for formatting issues (e.g., list separators, quoting) before changing the model or weights. Fix the minimal bug and resubmit the same configuration to get a clean comparison, rather than changing multiple things at once.  *(1 items, 1 kernels)*
+          - items: `55621328:e33#2`
+    - **[lever]** incremental code verification  *(2 items, 2 kernels)*
+      - **[action_context]** When modifying an inference pipeline by adding multiple prediction calls and aggregation steps in one edit.  *(1 items, 1 kernels)*
+        - **[action]** When adding multiple new model predictions and aggregation logic, make changes incrementally: first add the prediction calls and verify they run, then add the aggregation, then wire it to submission. Renaming variables across scattered cells is error-prone; do a find-and-replace check on all referen  *(1 items, 1 kernels)*
+          - items: `17616127:e12#2`
+      - **[action_context]** When a large code change breaks execution and the error source is unclear.  *(1 items, 1 kernels)*
+        - **[action]** Make small targeted fixes (comment updates, import reordering) across separate versions rather than one large fix. Do not submit to the leaderboard until the pipeline runs cleanly end-to-end. Use version saves as checkpoints to isolate which fix resolved the issue.  *(1 items, 1 kernels)*
+          - items: `15203842:e2#2`
+    - **[lever]** infrastructure/config debugging before continuing the sweep  *(2 items, 2 kernels)*
+      - **[action_context]** When you change a model artifact and the inference pipeline fails or produces unexpected output, fix the pipeline issue before evaluating the new artifact, rather than reverting the artifact change.  *(1 items, 1 kernels)*
+        - **[action]** If a run fails or looks wrong after changing an experimental variable, first check whether the failure is due to infrastructure (config, paths, arguments) rather than the variable itself. Fix the infrastructure, then submit. Do not count the failed run as evidence against the variable.  *(1 items, 1 kernels)*
+          - items: `52860091:e2#2`
+      - **[action_context]** When switching to a new data source or checkpoint and the notebook fails to produce output.  *(1 items, 1 kernels)*
+        - **[action]** When changing input references (paths, dataset names), verify the exact path exists before making the substantive change. If a run fails after a combined infra+model change, isolate the infra fix in a separate commit so you can attribute any score change to the model change, not the path fix.  *(1 items, 1 kernels)*
+          - items: `7018718:e3#2`
+    - **[lever]** diagnose and fix before reverting  *(2 items, 2 kernels)*
+      - **[action_context]** When a multi-change experiment produces ambiguous or negative results after bug fixes.  *(2 items, 2 kernels)*
+        - **[action]** Revert the most uncertain or costly change (here DART and low fold count) while keeping changes with strong prior justification (class weighting, regularization). Submit the partially-reverted version. If it beats the previous best, the kept changes are validated; then probe the reverted changes ind  *(2 items, 2 kernels)*
+          - items: `27656049:e7#3`, `55621328:e39#2`
+    - **[lever]** Output file naming / submission mechanics  *(1 items, 1 kernels)*
+      - **[action_context]** When refactoring or rewriting an inference pipeline, output filenames may accidentally change.  *(1 items, 1 kernels)*
+        - **[action]** After any major pipeline refactor, verify that the output file has the exact name expected by the competition platform before submitting. If a version fails to submit, check the output filename first as the simplest possible cause before debugging model code.  *(1 items, 1 kernels)*
+          - items: `73671444:e4#2`
+- **[goal]** What do I do when fine-tuning a current lever yields diminishing returns?  *(13 items, 11 kernels)*
+  - **[lever_context]** Three weight-tuning submissions produced scores within 0.0004 of each other, suggesting the blend-weight lever is nearly exhausted. Adding a new diverse model member could provide a larger improvement.  *(13 items, 11 kernels)*
+    - **[lever]** experiment scheduling / pivot decision  *(7 items, 7 kernels)*
+      - **[action_context]** When a small discrete sweep (2-3 options) on a secondary lever yields marginal gains and one variant clearly regresses.  *(7 items, 7 kernels)*
+        - **[action]** After testing a few discrete options on a secondary lever, if the best gain is small and a variant regresses substantially, stop the sweep and pivot to a higher-impact lever (e.g., richer features, additional base models, or a fundamentally different blending strategy) rather than continuing to tune  *(7 items, 7 kernels)*
+          - items: `18851026:e1#2`, `55431616:e4#2`, `15203842:e1#2`, `18426209:e1#2`, `77129691:e13#2`, `73937748:e10#3`, `50376011:e8#2`
+    - **[lever]** stopping criterion for hyperparameter probing  *(2 items, 2 kernels)*
+      - **[action_context]** When prior exploration has already mapped the rough landscape and a single re-probe after a structural change confirms improvement.  *(2 items, 2 kernels)*
+        - **[action]** If you have already swept a parameter extensively in a prior episode and then make a structural change, a single re-probe near the old optimum is sufficient. If it improves, accept and move on to a different lever rather than re-sweeping the full range, since diminishing returns are likely.  *(2 items, 2 kernels)*
+          - items: `55591012:e7#2`, `77129691:e8#2`
+    - **[lever]** switching from tuning existing lever to adding new capacity  *(2 items, 2 kernels)*
+      - **[action_context]** When successive adjustments to the current lever produce changes smaller than the noise floor of the evaluation metric.  *(2 items, 2 kernels)*
+        - **[action]** If a hyperparameter sweep yields a gain smaller than typical LB noise (e.g., <0.001 on a 0-1 metric), stop tuning that lever and switch to a structurally different lever such as adding new model types, new targets, or new features. Do not iterate further on the same parameters.  *(2 items, 2 kernels)*
+          - items: `18350823:e8#2`, `73937748:e5#2`
+    - **[lever]** Underlying model quality before ensemble weights  *(1 items, 1 kernels)*
+      - **[action_context]** When an ensemble weight change causes regression, it may indicate the underlying predictions are not strong enough for the weighting scheme to matter much.  *(1 items, 1 kernels)*
+        - **[action]** After a regression from an ensemble weight change, first try improving the base model predictions (hyperparameters, regularization) in a single probe step. If the gain is modest, treat it as confirmation that the base models are near-saturated and return to ensemble-level levers (weights, feature se  *(1 items, 1 kernels)*
+          - items: `77347591:e2#2`
+    - **[lever]** feature dimensionality reduction  *(1 items, 1 kernels)*
+      - **[action_context]** When a big change added many new features and the score didn't reach the best, suspect overfitting from excess dimensionality.  *(1 items, 1 kernels)*
+        - **[action]** After a multi-lever change that adds many features, try trimming the feature count as a quick follow-up experiment. If trimming also doesn't help, check for pipeline correctness bugs before abandoning the approach—large changes often introduce subtle errors that mask true performance.  *(1 items, 1 kernels)*
+          - items: `58130512:e21#2`
+- **[goal]** What do I do when adding handcrafted linguistic features (NER counts, POS ratios, readability scores) to a LightGBM + transformer-embedding pipeline?  *(12 items, 5 kernels)*
+  - **[lever_context]** The pipeline already uses TF-IDF, topic models, and transformer embeddings as features for LightGBM. Handcrafted linguistic features add interpretable signal but also noise and memory overhead. Earlier attempts to add them (v59-v79) were repeatedly pruned.  *(12 items, 5 kernels)*
+    - **[lever]** dense linguistic features on top of high-dimensional text features  *(3 items, 2 kernels)*
+      - **[action_context]** When the model already uses TF-IDF with wide n-gram ranges and transformer embeddings.  *(3 items, 2 kernels)*
+        - **[action]** Expect diminishing returns from high-level NLP features (sentiment, lexical richness) on top of dense TF-IDF representations. Test them on CV first; if they don't clearly help, remove them rather than keeping them as noise. Prioritize features from the model's own representations (e.g., transformer   *(3 items, 2 kernels)*
+          - items: `58130512:e2#3`, `58130512:e4#2`, `55987255:e17#2`
+    - **[lever]** feature engineering (new feature families)  *(2 items, 2 kernels)*
+      - **[action_context]** When hyperparameter tuning of a tree model on existing features plateaus, the bottleneck is likely feature quality rather than model capacity.  *(1 items, 1 kernels)*
+        - **[action]** After one round of hyperparameter tuning shows marginal or no LB improvement, pivot to adding qualitatively different features (e.g., linguistic, syntactic, sentiment) rather than continuing to tune the same feature set. Expanding the number of selected features from the same pool has diminishing re  *(1 items, 1 kernels)*
+          - items: `58130512:e1#2`
+      - **[action_context]** When the existing feature pipeline is complex and fragile, adding features requires a clean rebuild rather than incremental patching.  *(1 items, 1 kernels)*
+        - **[action]** When adding substantial new feature engineering to a complex pipeline, do a full reorganization in one step: add the new features, clean up imports, ensure consistent data flow, and verify locally before submitting. Avoid submitting intermediate broken states. Expect the first submission after reorg  *(1 items, 1 kernels)*
+          - items: `55591012:e8#2`
+    - **[lever]** precomputed feature selection file  *(2 items, 2 kernels)*
+      - **[action_context]** When feature selection is expensive and its interaction with other pipeline components (oversampling, CV splits) causes score instability.  *(2 items, 2 kernels)*
+        - **[action]** Run feature selection once offline, save the selected feature list as a pickle file, and load it as a fixed input in the submission notebook. This decouples feature selection from training, making the pipeline deterministic and faster, and prevents accidental interactions with other pipeline changes  *(2 items, 2 kernels)*
+          - items: `58130512:e14#2`, `60197293:e7#2`
+    - **[lever]** latent topic feature dimensionality and inclusion  *(2 items, 1 kernels)*
+      - **[action_context]** When latent decomposition features are computationally expensive and their benefit is uncertain in a pipeline that already has transformer embeddings and TF-IDF features.  *(2 items, 1 kernels)*
+        - **[action]** Add latent features (LDA/LSA/NMF) one family at a time with a small number of components (5-10), validate each addition independently via CV before combining. If CV doesn't improve, remove rather than keep. These features often add noise when TF-IDF features are already present at sufficient dimensi  *(2 items, 1 kernels)*
+          - items: `55987255:e25#3`, `55987255:e30#2`
+    - **[lever]** Model stacking with pretrained LM predictions as features  *(1 items, 1 kernels)*
+      - **[action_context]** When you have multiple fine-tuned LM checkpoints and a gradient-boosted tree model consuming tabular features.  *(1 items, 1 kernels)*
+        - **[action]** Generate out-of-fold predictions from each LM checkpoint, average their softmax probabilities, and append the per-class probabilities as additional columns in the feature matrix for the tree model. For test inference, ensemble all checkpoints the same way. Verify the full pipeline runs before submit  *(1 items, 1 kernels)*
+          - items: `59253662:e2#1`
+    - **[lever]** LightGBM reg_lambda  *(1 items, 1 kernels)*
+      - **[action_context]** Doubling reg_lambda from 0.8 to 1.6 with 10k features and feature selection off produced a 0.003 QWK regression on LB.  *(1 items, 1 kernels)*
+        - **[action]** For LightGBM on high-dimensional sparse text features, doubling reg_lambda from a working value is too aggressive a step. Try increments of 20-30% (e.g., 0.8→1.0→1.2) and validate each step on CV before submitting. If the feature count or selection changes simultaneously, the reg_lambda signal is co  *(1 items, 1 kernels)*
+          - items: `60197293:e8#2`
+    - **[lever]** number and choice of embedding model checkpoints  *(1 items, 1 kernels)*
+      - **[action_context]** When the feature space is already high-dimensional relative to training data, adding more embedding sources can hurt generalization in tree models.  *(1 items, 1 kernels)*
+        - **[action]** When a tree-based model already uses embeddings from 3+ transformer checkpoints, prefer improving feature quality (hand-crafted features, better preprocessing) over adding more embedding models. Additional embedding dimensions risk overfitting without proportional signal gain.  *(1 items, 1 kernels)*
+          - items: `55987255:e13#2`
+- **[goal]** What do I do when I need to find the optimal learning rate for a gradient boosting model with early stopping?  *(11 items, 9 kernels)*
+  - **[lever_context]** BERT fine-tuning is known to be sensitive to learning rate; 1e-4 is often too high for BERT-base, while 1e-5 to 3e-5 is the standard range. The model uses sigmoid output with BCE loss on 30 targets.  *(11 items, 9 kernels)*
+    - **[lever]** learning rate tuning  *(6 items, 5 kernels)*
+      - **[action_context]** When starting from a conservative lr (1e-5) for BERT fine-tuning with few epochs.  *(6 items, 5 kernels)*
+        - **[action]** Sweep learning rate upward in ~3x multiplicative steps (e.g., 1e-5 → 3e-5 → 1e-4) while monitoring validation metrics. Stop and revert when validation performance degrades. Expect the useful range for BERT fine-tuning to be 1e-5 to 5e-5; going to 1e-4 often overshoots and requires additional stabili  *(6 items, 5 kernels)*
+          - items: `27825577:e3#1`, `27799930:e13#1`, `77450317:e8#1`, `7240226:e2#2`, `7253130:e3#1`, `7253130:e4#2`
+    - **[lever]** number of boosting iterations  *(2 items, 2 kernels)*
+      - **[action_context]** When early stopping is unavailable or unreliable (e.g., DART boosting), and each run is expensive.  *(1 items, 1 kernels)*
+        - **[action]** Sweep n_estimators upward in fixed increments (e.g., +500), submitting periodically. Track the marginal LB gain per step. When the gain per step drops below ~0.0002 or validation stops improving, stop and revert to the last clearly beneficial value. Skip submissions for intermediate values and rely   *(1 items, 1 kernels)*
+          - items: `27389424:e16#1`
+      - **[action_context]** When validation performance does not degrade as you reduce n_estimators, indicating the model was over-complex.  *(1 items, 1 kernels)*
+        - **[action]** Start from the current value and halve n_estimators repeatedly (e.g., 900→850→700→400→200→100), checking validation after each step. If performance holds, keep reducing. Stop when validation degrades. This geometric reduction is faster than linear steps for finding the right order of magnitude.  *(1 items, 1 kernels)*
+          - items: `55987255:e11#2`
+    - **[lever]** Early stopping callback presence/absence  *(2 items, 2 kernels)*
+      - **[action_context]** When the number of boosting rounds is already moderate (e.g. 1024) and the model uses a custom objective function where early stopping metric alignment is uncertain.  *(2 items, 2 kernels)*
+        - **[action]** Test a substantially smaller value first (e.g., 5x reduction), then an intermediate value, then compare back to the original. Use validation metrics to skip LB submissions for clearly worse settings. If the original value wins, stop and move to a different lever.  *(2 items, 2 kernels)*
+          - items: `27825577:e4#1`, `60197293:e16#3`
+    - **[lever]** Fold composition / data duplication  *(1 items, 1 kernels)*
+      - **[action_context]** When the metric (QWK) depends on the joint distribution of predictions and labels, not just per-sample loss, changing which samples appear in validation matters more than reweighting the training loss.  *(1 items, 1 kernels)*
+        - **[action]** Instead of passing sample_weight to the boosting model, duplicate the important subpopulation's indices into both train and validation arrays within each CV fold. This forces the model to see them more during training and ensures they influence the early-stopping metric. Compare CV scores against th  *(1 items, 1 kernels)*
+          - items: `58130512:e7#2`
+- **[goal]** What do I do when I want to test a new model but also need to adjust preprocessing parameters simultaneously?  *(11 items, 8 kernels)*
+  - **[lever_context]** The author had many model variants and preprocessing options. Changing multiple things at once risks confounding, but submitting every micro-change is expensive.  *(11 items, 8 kernels)*
+    - **[lever]** isolating changes across submissions  *(3 items, 3 kernels)*
+      - **[action_context]** When multiple changes are logically coupled (new checkpoints require compatible preprocessing and device setup)  *(2 items, 2 kernels)*
+        - **[action]** Bundle tightly coupled infrastructure changes (model swap, preprocessing toggle, device handling) into a single submission rather than submitting each independently. But if the bundle scores poorly, you cannot isolate which change caused the regression — so revert to the last known-good configuratio  *(2 items, 2 kernels)*
+          - items: `49576186:e18#2`, `55621328:e48#1`
+      - **[action_context]** When leaderboard submissions are the primary feedback signal and each submission costs time.  *(1 items, 1 kernels)*
+        - **[action]** When introducing a new model, first test it by swapping it for an existing member (not adding alongside preprocessing changes). If it regresses, revert and try the preprocessing change alone. Bundling architecture and preprocessing changes makes it impossible to attribute regression to either factor  *(1 items, 1 kernels)*
+          - items: `50496431:e28#3`
+    - **[lever]** Per-model feature pipeline functions  *(2 items, 1 kernels)*
+      - **[action_context]** When each pretrained model was trained with its own preprocessing and the inference pipeline must replicate it exactly.  *(2 items, 1 kernels)*
+        - **[action]** For each new model, create a dedicated feature-preparation function and an explicit inference branch keyed on the model path. Also add a dedicated post-processing branch (e.g., whether to divide by number of folds, negate, or combine with a classifier). Test each model in isolation (e.g., with a bre  *(2 items, 1 kernels)*
+          - items: `75145694:e10#2`, `75145694:e13#2`
+    - **[lever]** inference batch size  *(2 items, 2 kernels)*
+      - **[action_context]** When a single submission confirms no score change from doubling batch size.  *(1 items, 1 kernels)*
+        - **[action]** Double the inference batch size once and submit. If the score is identical, accept that batch size is prediction-neutral and stop testing it. Use the largest batch size that fits in GPU memory for speed. Do not spend more than one submission verifying this.  *(1 items, 1 kernels)*
+          - items: `15173072:e3#2`
+      - **[action_context]** When pretrained weights are fixed and you are only changing the feature extraction at inference time.  *(1 items, 1 kernels)*
+        - **[action]** Avoid changing spectrogram/feature-extraction parameters at inference if the model was trained with different settings — the distribution shift almost always hurts. If you must explore this, make one small change at a time and revert immediately if the score regresses significantly (>5% relative). D  *(1 items, 1 kernels)*
+          - items: `50496431:e51#2`
+    - **[lever]** Training data resampling / class balancing  *(1 items, 1 kernels)*
+      - **[action_context]** When introducing a speculative preprocessing change (like oversampling) that modifies the training distribution  *(1 items, 1 kernels)*
+        - **[action]** Treat it as a single probe: apply the change, submit once, and if the leaderboard score regresses, abandon the idea immediately and revert. Do not tune the resampling parameters—if the direction is wrong, parameter tuning won't save it. Bundle the change with minimal other modifications so the signa  *(1 items, 1 kernels)*
+          - items: `59253662:e7#1`
+    - **[lever]** Staged development: build then submit  *(1 items, 1 kernels)*
+      - **[action_context]** When making a non-trivial infrastructure change to the inference pipeline that changes how predictions are aggregated.  *(1 items, 1 kernels)*
+        - **[action]** First implement the infrastructure change and verify it runs without errors (skip submission). Then submit with a simple/known-good configuration to establish a baseline for the new pipeline. Only after confirming the pipeline works correctly, begin tuning parameters (e.g., which model indices to in  *(1 items, 1 kernels)*
+          - items: `50376011:e9#2`
+    - **[lever]** inference infrastructure change  *(1 items, 1 kernels)*
+      - **[action_context]** When the pipeline is already near its best score and the change is purely infrastructural (should be score-neutral in theory).  *(1 items, 1 kernels)*
+        - **[action]** Make the infrastructure change in isolation on one script first and submit to verify score parity before propagating. If the score regresses even slightly, suspect numerical precision or config mismatches rather than tuning further. Revert quickly (within 1-2 attempts) if parity is not achieved, sin  *(1 items, 1 kernels)*
+          - items: `55621328:e36#1`
+    - **[lever]** incremental single-point bug fixes  *(1 items, 1 kernels)*
+      - **[action_context]** When a new code block has multiple potential failure points (wrong input to fit, wrong input to predict, leaking target/ID columns, wrong random state), and you cannot see all bugs at once because the first error halts execution.  *(1 items, 1 kernels)*
+        - **[action]** Fix one bug per run, starting from the earliest failure point. After each run, read the error or output, fix only the next issue, and re-run. Do not attempt to fix all issues simultaneously—each fix may reveal the next bug. Continue until the block runs without errors and produces sensible output.  *(1 items, 1 kernels)*
+          - items: `55987255:e19#1`
+- **[goal]** What do I do when the competition metric rewards both accuracy and equity across subgroups?  *(10 items, 9 kernels)*
+  - **[lever_context]** The competition metric is stratified C-index (mean minus std across race groups). Multiple model families (GBDT, NN, TabNet, SVR) and survival transforms (KM, Cox) are available. No single model is likely optimal, and ensemble diversity helps both accuracy and subgroup stability.  *(10 items, 9 kernels)*
+    - **[lever]** custom eval metric for GBDT early stopping  *(2 items, 2 kernels)*
+      - **[action_context]** When a competition metric is a weighted combination of sub-metrics and you can implement each sub-metric separately.  *(2 items, 2 kernels)*
+        - **[action]** Implement the custom metric and test it as eval_metric in isolation, without changing other hyperparameters. If the leaderboard score does not improve, revert to standard metrics (AUC/logloss) — complex custom metrics can produce noisy early-stopping signals that hurt generalization, especially with  *(2 items, 2 kernels)*
+          - items: `27656049:e5#2`, `27825577:e6#1`
+    - **[lever]** target transform stratification by protected group  *(2 items, 2 kernels)*
+      - **[action_context]** When the target is derived from a survival estimator (KM, NA, Cox baseline) and the metric penalizes cross-group variance.  *(2 items, 2 kernels)*
+        - **[action]** Compute the survival-based target transform separately within each protected subgroup so that each group's target reflects its own survival distribution. Verify that the subgroup column uses its encoded representation (not raw labels) if preprocessing has already been applied. Reduce ensemble repeat  *(2 items, 2 kernels)*
+          - items: `77450317:e4#1`, `77129691:e7#1`
+    - **[lever]** model diversity and ensemble blending  *(2 items, 2 kernels)*
+      - **[action_context]** When the metric is subgroup-stratified and a single model baseline exists.  *(2 items, 2 kernels)*
+        - **[action]** For each new model family, train it with every available target transformation (Cox, KM, Nelson-Aalen, rank, quantile, etc.) and cache OOF predictions. Add all variants to the ensemble pool and let the weight optimizer select which contribute. Also try the same model architecture with and without fe  *(2 items, 2 kernels)*
+          - items: `75584724:e2#1`, `73937748:e2#1`
+    - **[lever]** sample/class weights during training  *(1 items, 1 kernels)*
+      - **[action_context]** When using an AutoML framework with a custom metric and the metric already guides model selection via validation, adding explicit sample weights may double-count the asymmetry or distort the loss landscape.  *(1 items, 1 kernels)*
+        - **[action]** Probe sample weights matching the metric's class asymmetry on a single run. If OOF or LB score does not improve, revert weights but keep the custom metric for model selection. The ranking-based component of metrics like normalized Gini is often better served by the model's native ranking ability tha  *(1 items, 1 kernels)*
+          - items: `27502740:e2#1`
+    - **[lever]** re-sweep previously tuned hyperparameters  *(1 items, 1 kernels)*
+      - **[action_context]** When the evaluation metric or loss function changes, previously tuned hyperparameters may no longer be optimal because the training dynamics and validation signal have shifted.  *(1 items, 1 kernels)*
+        - **[action]** After changing the training metric or loss, restart sweeps of key hyperparameters (especially those that interact with the metric, like feature selection or class weights) from the beginning of the search range rather than continuing from the last value. Use the same step schedule as before.  *(1 items, 1 kernels)*
+          - items: `27389424:e6#2`
+    - **[lever]** callback wrapper debugging  *(1 items, 1 kernels)*
+      - **[action_context]** When a custom metric function fails at runtime due to API signature mismatch.  *(1 items, 1 kernels)*
+        - **[action]** Keep a thin wrapper function that matches the framework's expected signature and calls your metric internally. When changing which metric to use, modify only the wrapper's internals rather than swapping the callback reference. Test each change by running the notebook before submitting.  *(1 items, 1 kernels)*
+          - items: `27825577:e6#2`
+    - **[lever]** ensemble infrastructure with diverse pretrained models  *(1 items, 1 kernels)*
+      - **[action_context]** When you have access to multiple pretrained model outputs from separate experiments and the metric penalizes variance across subgroups.  *(1 items, 1 kernels)*
+        - **[action]** Build the full ensemble pipeline in one large initial commit: import all available pretrained model predictions, define preprocessing and target transforms, set up scoring utilities, and submit to establish a baseline. Defer incremental tuning until you have a working end-to-end pipeline with a lead  *(1 items, 1 kernels)*
+          - items: `75145694:e1#1`
+- **[goal]** What do I do when my model's prediction distribution may not match the test distribution?  *(10 items, 5 kernels)*
+  - **[lever_context]** The competition has Persuade vs non-Persuade data with different score distributions; the test set resembles non-Persuade. The author tried oversampling in earlier versions with mixed results. Synthetic interpolation (mixup-style) is a natural next step.  *(8 items, 3 kernels)*
+    - **[lever]** Post-prediction distribution alignment (scaling/normalization)  *(3 items, 1 kernels)*
+      - **[action_context]** When training data has a known subpopulation with different score distribution from the test set, and you have OOF predictions to estimate the mapping.  *(3 items, 1 kernels)*
+        - **[action]** Fit a MinMaxScaler on OOF raw predictions, apply it to test predictions, then map back to the label range before applying threshold-based rounding. If this doesn't improve over unscaled predictions within 1-2 submissions, abandon the approach—distribution alignment via simple scaling rarely helps wh  *(3 items, 1 kernels)*
+          - items: `55621328:e44#1`, `55621328:e21#2`, `55621328:e49#2`
+    - **[lever]** Sample handling in cross-validation folds  *(2 items, 1 kernels)*
+      - **[action_context]** When you can flag distribution-shifted samples but cannot remove them (they still carry useful signal), and simple sample weighting doesn't improve CV.  *(1 items, 1 kernels)*
+        - **[action]** First try per-sample weighting to upweight test-like samples during training. If CV doesn't improve, try oversampling the test-like subpopulation by duplicating their indices into both train and validation splits of each fold. Submit only the variant that shows CV improvement. Be prepared to revert   *(1 items, 1 kernels)*
+          - items: `58130512:e7#1`
+      - **[action_context]** When a large portion of training data comes from a different distribution than the test set.  *(1 items, 1 kernels)*
+        - **[action]** Do not bundle a data-subsetting change with multiple other changes (feature source swap, TF-IDF refit scope) in a single submission. Test subsetting in isolation first. If subsetting removes a large fraction of training data, expect potential underfitting—verify on CV before submitting. If the combi  *(1 items, 1 kernels)*
+          - items: `58130512:e15#1`
+    - **[lever]** synthetic sample generation via nearest-neighbor interpolation  *(1 items, 1 kernels)*
+      - **[action_context]** When the feature space is high-dimensional (thousands of TF-IDF + embedding features) and the underrepresented subset is small relative to the full training set.  *(1 items, 1 kernels)*
+        - **[action]** Generate synthetic samples by interpolating between nearest neighbors of the same label within the minority subset (SMOTE/mixup-like). Use approximate NN (e.g., Annoy) for speed. Start with a moderate count (1000-3000), submit, and compare to the no-augmentation baseline. If the score does not impro  *(1 items, 1 kernels)*
+          - items: `58130512:e28#2`
+    - **[lever]** CV split strategy and fold index construction  *(1 items, 1 kernels)*
+      - **[action_context]** When the dataset has labeled subpopulations and you want validation folds to reflect the test distribution.  *(1 items, 1 kernels)*
+        - **[action]** When adjusting CV splits for subpopulation handling, change only one element at a time (grouping variable, fold count, or index augmentation logic) and submit after each change. If switching from splitting on a subset to splitting on the full dataset, keep the feature-selection file and other hyperp  *(1 items, 1 kernels)*
+          - items: `58130512:e35#2`
+    - **[lever]** CV grouping strategy using domain metadata  *(1 items, 1 kernels)*
+      - **[action_context]** When ground-truth group labels (topics, sources, prompts) exist or can be obtained from external data, and unsupervised grouping has yielded poor CV-LB alignment.  *(1 items, 1 kernels)*
+        - **[action]** Replace unsupervised cluster-based CV groups with actual domain metadata labels (e.g., topic, prompt, source). Load the metadata from an external dataset, use it as the group column in StratifiedGroupKFold, and increase the number of folds to match the number of groups if feasible. Expect to need se  *(1 items, 1 kernels)*
+          - items: `55987255:e21#1`
+  - **[lever_context]** With 5 folds and early_stop=300, CV variance may be high for neural/tree models on ~28.8k samples. Increasing folds and patience costs compute but reduces variance of the CV estimate, which is critical when improvements are in the 4th decimal place.  *(2 items, 2 kernels)*
+    - **[lever]** training data outlier filtering  *(1 items, 1 kernels)*
+      - **[action_context]** An external outlier detection has been run (e.g., residual-based at a chosen quantile) and a list of IDs is available.  *(1 items, 1 kernels)*
+        - **[action]** Filter outliers only from the minority/event class where mislabeled or extreme cases have the most impact on the loss. Load the precomputed outlier list, remove those IDs before training, and evaluate on local CV before submitting. Start with a single threshold and only sweep if the first probe show  *(1 items, 1 kernels)*
+          - items: `77450317:e9#1`
+    - **[lever]** CV fold count and early-stopping patience  *(1 items, 1 kernels)*
+      - **[action_context]** When working with tabular survival data where score differences between versions are <0.001 and you need to distinguish real improvements from noise.  *(1 items, 1 kernels)*
+        - **[action]** Double the number of CV folds (e.g., 5→10) and increase early-stopping patience by 2-4× (e.g., 300→700→1300) together. This reduces both CV variance and the risk of undertrained models. Accept the increased compute cost as worthwhile for more reliable selection signals.  *(1 items, 1 kernels)*
+          - items: `77347591:e4#2`
+- **[goal]** What do I do when I have an imbalanced ordinal regression target and want to improve QWK?  *(10 items, 6 kernels)*
+  - **[lever_context]** The model already uses LightGBM+XGBoost with fixed rounding thresholds. QWK is non-differentiable and threshold-sensitive, so both the objective and the threshold mapping are plausible improvement levers.  *(10 items, 6 kernels)*
+    - **[lever]** threshold optimization for ordinal metrics  *(4 items, 3 kernels)*
+      - **[action_context]** When the target is ordinal (1–6 scale) and the evaluation metric is QWK, which is sensitive to rounding boundaries.  *(3 items, 3 kernels)*
+        - **[action]** Train regressors with standard loss, then optimize rounding thresholds on out-of-fold predictions to maximize QWK. Use scipy.optimize.minimize to find optimal bin boundaries rather than rounding at 1.5, 2.5, etc. Apply these optimized thresholds at test time. Combine with a custom QWK eval metric du  *(3 items, 3 kernels)*
+          - items: `59253662:e7#2`, `55431616:e8#3`, `58130512:e6#1`
+      - **[action_context]** When introducing a custom objective that reshapes predictions, dynamic threshold search may overfit to OOF noise, especially with many folds.  *(1 items, 1 kernels)*
+        - **[action]** When testing a custom QWK-aligned objective, first evaluate it with dynamic threshold search on CV. If the dynamic thresholds do not clearly beat well-tuned fixed thresholds, revert to fixed thresholds for submission to avoid overfitting the threshold search to OOF predictions.  *(1 items, 1 kernels)*
+          - items: `59253662:e10#1`
+    - **[lever]** optimized rounding thresholds  *(3 items, 3 kernels)*
+      - **[action_context]** When you have OOF predictions and ground truth labels available for threshold fitting, and the metric is QWK or similar ordinal metric.  *(3 items, 3 kernels)*
+        - **[action]** After training, optimize 5 thresholds (for 6 classes) using Nelder-Mead on the OOF predictions, maximizing QWK against true labels. Use np.digitize with sorted thresholds to map continuous predictions to integers. Apply the same thresholds to test predictions. Fit thresholds on the subset of data mo  *(3 items, 3 kernels)*
+          - items: `55621328:e4#1`, `59253662:e11#2`, `58130512:e11#2`
+    - **[lever]** Hessian computation in custom objective  *(1 items, 1 kernels)*
+      - **[action_context]** When a custom objective uses a placeholder constant Hessian and the model underperforms or is unstable.  *(1 items, 1 kernels)*
+        - **[action]** Derive the analytical second derivative of the custom loss and implement it as the Hessian. Keep the gradient and loss formulation simple (unweighted) rather than adding ad-hoc class weights. The correct Hessian gives the optimizer proper curvature information and typically improves both stability a  *(1 items, 1 kernels)*
+          - items: `58130512:e3#2`
+    - **[lever]** custom eval function with framework dispatch  *(1 items, 1 kernels)*
+      - **[action_context]** When the same metric function is passed as eval_metric to both LightGBM and XGBoost in an ensemble pipeline.  *(1 items, 1 kernels)*
+        - **[action]** Use isinstance checks on the second argument to detect the framework. For XGBoost, the second argument is a DMatrix; swap argument order and call .get_label() to extract true labels. Return a 2-tuple for XGBoost and a 3-tuple (with is_higher_better) for LightGBM.  *(1 items, 1 kernels)*
+          - items: `60197293:e1#3`
+    - **[lever]** L1/L2 regularization strength in gradient boosting  *(1 items, 1 kernels)*
+      - **[action_context]** When the current regularization is mild (reg_alpha < 1) and the model is complex with many heterogeneous features.  *(1 items, 1 kernels)*
+        - **[action]** Increase L1 regularization substantially (e.g., 2-5x) while decreasing L2 regularization, and modestly increase n_estimators to compensate for the stronger sparsity penalty. Submit after each change to confirm direction. If the gain is meaningful, move on to other levers rather than continuing to mi  *(1 items, 1 kernels)*
+          - items: `55987255:e3#1`
+- **[goal]** What do I do when I have importance-based feature selection and need to find the right fraction of features to keep?  *(9 items, 7 kernels)*
+  - **[lever_context]** The dataset has ~190 raw features expanded to many more via aggregation. Earlier episodes already established that feature selection by importance helps. The author has a working pipeline with validation scores available per run.  *(8 items, 6 kernels)*
+    - **[lever]** feature selection count threshold  *(6 items, 5 kernels)*
+      - **[action_context]** When the search space is a single continuous ratio (fraction of features kept) and each run gives a validation score.  *(4 items, 3 kernels)*
+        - **[action]** Start at a low value, then sweep upward in roughly doubling steps (10%→20%→25%→33%→50%→75%), submitting every 1–2 steps to get leaderboard signal. When the score drops after an increase, the optimum is bracketed between the last two submitted values. Stop and move on rather than bisecting further if  *(4 items, 3 kernels)*
+          - items: `27389424:e7#1`, `27799930:e9#1`, `55431616:e4#1`, `27389424:e6#1`
+      - **[action_context]** When a block of features represents the same underlying concept at multiple granularities.  *(2 items, 2 kernels)*
+        - **[action]** Start by submitting with a moderate subset to establish a baseline. Then prune entire variant groups (e.g., drop all _ppr features) rather than individual features. If pruning too aggressively regresses, restore features and try adding diversity (new feature types) instead of further pruning. Rate/n  *(2 items, 2 kernels)*
+          - items: `77347591:e3#2`, `55987255:e5#1`
+    - **[lever]** drop high-NA raw columns before feature engineering  *(1 items, 1 kernels)*
+      - **[action_context]** When aggregated features inherit missingness from raw columns and you have identified which raw columns are predominantly NA (from data profiling or domain knowledge).  *(1 items, 1 kernels)*
+        - **[action]** Identify raw columns with very high missing rates and drop them before computing aggregations (last, mean, std, diff, etc.). This eliminates multiple derived features at once, reducing noise and memory. Verify improvement via validation before submitting. This is complementary to post-hoc feature im  *(1 items, 1 kernels)*
+          - items: `27799930:e11#2`
+    - **[lever]** feature count cap removal  *(1 items, 1 kernels)*
+      - **[action_context]** When using tree-based models with early stopping and regularization, and the feature cap was set arbitrarily rather than tuned.  *(1 items, 1 kernels)*
+        - **[action]** Remove or raise arbitrary feature count caps for tree-based ensembles that already have regularization (early stopping, max depth, L1/L2). Tree models are robust to extra features and the cap may exclude informative ones. Verify with a single submission whether the full feature set improves or hurts  *(1 items, 1 kernels)*
+          - items: `59253662:e9#2`
+  - **[lever_context]** Columns follow a naming convention (D_, S_, P_, B_, R_ prefixes) that encodes semantic groups. Understanding group sizes, dtypes, and NA patterns per group informs which aggregations and imputations to apply.  *(1 items, 1 kernels)*
+    - **[lever]** structured column-group inspection  *(1 items, 1 kernels)*
+      - **[action_context]** When feature names encode semantic categories via prefixes or suffixes and the dataset is too wide to inspect column-by-column.  *(1 items, 1 kernels)*
+        - **[action]** Parse column name prefixes, sort columns by group, and print group membership counts and per-group NA rates. Use this to create a TODO list of group-specific preprocessing steps (imputation strategy, aggregation type) before writing any feature engineering code.  *(1 items, 1 kernels)*
+          - items: `28093671:e1#2`
+- **[goal]** What do I do when increasing input resolution for a CNN inference pipeline trained at a different resolution?  *(9 items, 5 kernels)*
+  - **[lever_context]** EfficientNet variants have canonical input resolutions (224–600) that increase with model size. Using a mismatched resolution at inference can significantly hurt performance. The IMSIZE tuple encodes these standard sizes.  *(9 items, 5 kernels)*
+    - **[lever]** inference image resolution  *(9 items, 5 kernels)*
+      - **[action_context]** When the model architecture supports variable input sizes and the task has fine spatial details that higher resolution could capture.  *(7 items, 5 kernels)*
+        - **[action]** When probing a new inference resolution, change both the image decoder target size and the model's declared input shape in the same edit. If only one is changed, the framework may silently resize or distort features, yielding suboptimal scores that don't reflect the true effect of the resolution cha  *(7 items, 5 kernels)*
+          - items: `13521245:e4#2`, `13577502:e3#1`, `15372370:e6#1`, `13848868:e3#2`, `13848868:e8#1`, `13702907:e3#1`, `13702907:e4#1`
+      - **[action_context]** When the model's architecture index is known (e.g., B7), the canonical resolution and one step below are the natural candidates.  *(2 items, 1 kernels)*
+        - **[action]** Start with the canonical resolution for the model variant, then try one step above and one below. Pick the resolution that scores best. For EfficientNet B7, the canonical resolution is 600; try 528 and 600 and keep the winner. Two or three trials suffice to bracket the optimum.  *(2 items, 1 kernels)*
+          - items: `13521245:e2#1`, `13521245:e3#1`
+- **[goal]** What do I do when I need to blend predictions from models with different architectures or training configurations?  *(8 items, 7 kernels)*
+  - **[lever_context]** The author has 3 single-checkpoint models (ResNet200D, SeResNet152D, EfficientNetB5) plus 5-fold predictions from another ResNet200D. Earlier experiments (v13–v23) showed rank-based averaging outperforms probability averaging for this mix. Adding TTA (v16) also helped.  *(8 items, 7 kernels)*
+    - **[lever]** multi-architecture ensemble composition and weights  *(3 items, 3 kernels)*
+      - **[action_context]** When models have similar validation performance and the same architecture.  *(3 items, 3 kernels)*
+        - **[action]** Combine at least 2-3 architecturally diverse transformer backbones (e.g., encoder-only, encoder-decoder, distilled) with fold-averaged predictions per backbone. Weight stronger standalone models more heavily (e.g., 0.6) and weaker ones less (0.4). Adding a third diverse model often beats a two-model  *(3 items, 3 kernels)*
+          - items: `18423958:e5#2`, `15173072:e5#3`, `15164527:e10#2`
+    - **[lever]** Simplify model then re-complexify  *(1 items, 1 kernels)*
+      - **[action_context]** When the new infrastructure change (multi-seed ensembling) conflicts with the current model complexity, and you need to verify the infrastructure works.  *(1 items, 1 kernels)*
+        - **[action]** Temporarily simplify the model to a minimal working version that is compatible with all checkpoint variants. Submit to confirm the infrastructure improvement works. Then incrementally restore the complex components in subsequent iterations, verifying each doesn't regress.  *(1 items, 1 kernels)*
+          - items: `17371717:e4#1`
+    - **[lever]** isolating changes by re-adding removed components  *(1 items, 1 kernels)*
+      - **[action_context]** When a combined change regresses and one removed component (ensembling) was previously known to help  *(1 items, 1 kernels)*
+        - **[action]** Re-add the removed component in the next iteration to determine whether the new component (architecture) is beneficial when combined with the old one. If the score still doesn't recover, the new component is likely harmful and should be reverted entirely rather than further tuned.  *(1 items, 1 kernels)*
+          - items: `17371717:e5#1`
+    - **[lever]** model variant selection and rounding threshold co-optimization  *(1 items, 1 kernels)*
+      - **[action_context]** When a new training run (checkpoint) becomes available for a previously tested inference pipeline that had competitive but not best scores.  *(1 items, 1 kernels)*
+        - **[action]** When you have two inference pipelines and a new checkpoint trained with improved settings (e.g., intermediate pretraining), revisit the previously inferior pipeline with the new checkpoint and re-optimize the rounding thresholds from CV simultaneously. Do not assume the currently best pipeline will   *(1 items, 1 kernels)*
+          - items: `55621328:e15#1`
+    - **[lever]** tokenizer and model compatibility in multi-model inference  *(1 items, 1 kernels)*
+      - **[action_context]** When combining predictions from transformer checkpoints of different model families or sizes  *(1 items, 1 kernels)*
+        - **[action]** Ensure each model uses its own tokenizer AND that the dataset is re-tokenized per model. If models have different output spaces (e.g., different number of classes or label mappings), verify prediction alignment before averaging. Test on a small sample locally before submitting. If results degrade, t  *(1 items, 1 kernels)*
+          - items: `55591012:e6#2`
+    - **[lever]** inference pipeline refactoring  *(1 items, 1 kernels)*
+      - **[action_context]** When you have heterogeneous checkpoints (different architectures, multi-GPU vs single-GPU saves) that need to be ensembled.  *(1 items, 1 kernels)*
+        - **[action]** Refactor inference so each checkpoint specifies its own architecture class. Instantiate, load, and run each model independently, collecting per-model predictions into a list, then average externally. First get the loading mechanics right (handle DataParallel key stripping, map_location) with a singl  *(1 items, 1 kernels)*
+          - items: `15082684:e6#1`
+- **[goal]** What do I do when blending DeBERTa regressors for essay scoring and I have models trained with different objectives or preprocessing?  *(8 items, 6 kernels)*
+  - **[lever_context]** The author had both standard (exp303-ts) and CoPE (exp302-cope) DeBERTa-large checkpoints. Both use the same backbone size but different training configurations. Each has its own optimized rounding thresholds from CV.  *(6 items, 6 kernels)*
+    - **[lever]** checkpoint-preprocessing interaction search  *(1 items, 1 kernels)*
+      - **[action_context]** When NER/math preprocessing effects depend on which checkpoint is used (some checkpoints were trained with these features, others without).  *(1 items, 1 kernels)*
+        - **[action]** Match preprocessing flags to what the checkpoint was trained with. If you don't know the training config, test the checkpoint first without preprocessing, then with it. Expect that preprocessing helps only checkpoints trained to expect it. Abandon a checkpoint after 2 toggle tests if it underperform  *(1 items, 1 kernels)*
+          - items: `7018718:e9#2`
+    - **[lever]** ensemble diversity vs. redundancy tradeoff  *(1 items, 1 kernels)*
+      - **[action_context]** When candidate models share the same architecture but differ in training details.  *(1 items, 1 kernels)*
+        - **[action]** Prefer a smaller set of diverse models over a larger set with redundant variants. When two models from the same experiment family (e.g., exp320 and exp320b) are both included, test removing one — the marginal gain from a near-duplicate is often negative after weight optimization. Re-optimize per-mod  *(1 items, 1 kernels)*
+          - items: `60264017:e4#3`
+    - **[lever]** input feature selection for fine-tuned transformer models  *(1 items, 1 kernels)*
+      - **[action_context]** When a fine-tuned transformer already captures categorical/domain information implicitly through the text, and auxiliary one-hot features add many sparse dimensions.  *(1 items, 1 kernels)*
+        - **[action]** Remove broad one-hot categorical features from the auxiliary input branch of a fine-tuned transformer model, retaining only a small set of meaningful engineered numeric features. The transformer's text representations likely already encode categorical distinctions, making explicit one-hot features r  *(1 items, 1 kernels)*
+          - items: `7613444:e4#2`
+    - **[lever]** fold ensemble averaging  *(1 items, 1 kernels)*
+      - **[action_context]** When K-fold checkpoints are available, averaging their predictions is a standard low-risk improvement for BERT-based models on small datasets.  *(1 items, 1 kernels)*
+        - **[action]** Load each fold's checkpoint separately, run inference with each, and take the element-wise mean of all fold predictions. Start with all available folds rather than incrementally adding them. Ensure the tokenizer and config match across all folds.  *(1 items, 1 kernels)*
+          - items: `6803050:e4#2`
+    - **[lever]** pretrained model paths and base learning rate  *(1 items, 1 kernels)*
+      - **[action_context]** When starting from a new BERT checkpoint on a regression/ranking task with small data (~6K samples).  *(1 items, 1 kernels)*
+        - **[action]** First verify that the model checkpoint and tokenizer paths are correct and consistent (same model, same casing). Then set dropout moderately (0.2) and try the standard BERT fine-tuning lr (3e-5). If training is unstable, reduce to 1e-5. Fix infrastructure before tuning hyperparameters—do not tune hy  *(1 items, 1 kernels)*
+          - items: `7240226:e1#1`
+    - **[lever]** positional encoding variant selection  *(1 items, 1 kernels)*
+      - **[action_context]** When you have CoPE and standard DeBERTa-large checkpoints available and want to find which single-variant ensemble scores highest before blending across variants.  *(1 items, 1 kernels)*
+        - **[action]** Test each positional-encoding variant independently with its own CV-optimized rounding thresholds before blending them together. Use the same prediction script and only swap config, checkpoints, and thresholds. Compare LB scores to decide which to include in a final blend.  *(1 items, 1 kernels)*
+          - items: `55621328:e37#2`
+  - **[lever_context]** The competition has two data sources (Persuade vs non-Persuade) with different score distributions. Adding a topic/source indicator to the prompt template could help the model condition its predictions. The author already had a topic classifier and per-source flags available.  *(2 items, 2 kernels)*
+    - **[lever]** config-driven prompt template with domain metadata  *(2 items, 2 kernels)*
+      - **[action_context]** When the test set is known to come from one source and the model was trained on mixed sources  *(2 items, 2 kernels)*
+        - **[action]** Add a configurable prompt template that can interpolate domain metadata (e.g., data source, topic) into the tokenizer input. Gate the metadata fields on config keys so the same code works with and without the feature. Test the plumbing offline before submitting.  *(2 items, 2 kernels)*
+          - items: `60264017:e3#2`, `55621328:e46#2`
+- **[goal]** What do I do when I want to test whether a recently added component (augmentation) is actually helping?  *(8 items, 7 kernels)*
+  - **[lever_context]** Augmentation was added in v81-v86 with mixed results (0.82295, 0.82322). The author needed to isolate its effect by removing it cleanly.  *(8 items, 7 kernels)*
+    - **[lever]** ablation experiment  *(2 items, 2 kernels)*
+      - **[action_context]** When a new technique is introduced alongside other changes (new checkpoints, hyperparameters) and the score improves, but causation is unclear.  *(2 items, 2 kernels)*
+        - **[action]** After observing improvement, disable only the new technique while keeping other changes fixed, and submit. If the score worsens, the technique is confirmed beneficial. Then re-enable it and continue iterating on the remaining levers (e.g., checkpoint version). Do this within 1-2 submissions to avoid  *(2 items, 2 kernels)*
+          - items: `17371717:e12#2`, `58130512:e29#3`
+    - **[lever]** TTA toggle  *(2 items, 2 kernels)*
+      - **[action_context]** When switching to a new checkpoint version whose sensitivity to TTA is unknown.  *(1 items, 1 kernels)*
+        - **[action]** For each promising checkpoint, test both TTA-on and TTA-off. If TTA consistently helps across checkpoints, leave it on for the sweep. If results are mixed, always test both variants for the best checkpoint before finalizing.  *(1 items, 1 kernels)*
+          - items: `49524919:e3#2`
+      - **[action_context]** When a single boolean setting may interact with the current model mix and its effect is uncertain after ensemble changes.  *(1 items, 1 kernels)*
+        - **[action]** Toggle the setting off, submit, then toggle it back on and submit. Compare the three scores (before, off, on). If the difference is within noise (~0.001), treat the setting as neutral and move to higher-impact levers. If re-enabling produces a worse score than the original, suspect non-determinism a  *(1 items, 1 kernels)*
+          - items: `50496431:e23#1`
+    - **[lever]** augmentation selection  *(2 items, 2 kernels)*
+      - **[action_context]** When adding a new augmentation type on top of an already-helpful one produces a regression.  *(1 items, 1 kernels)*
+        - **[action]** When an augmentation variant causes regression, revert it in the next experiment rather than keeping it. Test augmentations one at a time against the best-so-far configuration. If multiple augmentation additions each individually help but combining them hurts, keep only the one with the larger indiv  *(1 items, 1 kernels)*
+          - items: `49576186:e25#2`
+      - **[action_context]** When a new technique requires infrastructure changes (new functions, precomputed artifacts, feature alignment) before it can produce a valid submission.  *(1 items, 1 kernels)*
+        - **[action]** Implement the core logic first and submit to get a directional signal. Then iterate on infrastructure (speed, precomputation, feature alignment) without submitting until bugs are resolved. Submit again after fixes. If the final score does not beat the pre-augmentation best after 2 submissions, rever  *(1 items, 1 kernels)*
+          - items: `58130512:e28#1`
+    - **[lever]** staged evaluation of new components  *(1 items, 1 kernels)*
+      - **[action_context]** When adding a new model or feature source that requires pipeline changes, there is risk of bugs or regressions.  *(1 items, 1 kernels)*
+        - **[action]** When integrating a new component, first run locally without submitting to verify it doesn't break the pipeline and check CV. Only submit after confirming CV is reasonable. If the new component doesn't help on CV, revert it before spending a submission.  *(1 items, 1 kernels)*
+          - items: `55591012:e12#3`
+    - **[lever]** probing new ideas via single submission  *(1 items, 1 kernels)*
+      - **[action_context]** When you have a stable baseline and want to quickly test a hypothesis.  *(1 items, 1 kernels)*
+        - **[action]** Test one idea at a time rather than bundling unrelated changes (preprocessing + model hyperparameter). When a bundled probe regresses, you cannot tell which change hurt. If you must bundle, be prepared to unbundle and test each separately before abandoning both. If the combined result regresses, rev  *(1 items, 1 kernels)*
+          - items: `60197293:e14#1`
+- **[goal]** What do I do when I want to test whether a new configuration improves over a strong baseline?  *(8 items, 7 kernels)*
+  - **[lever_context]** The 5-model ensemble just set a new best. The author has repeatedly toggled between single-model and multi-model configs throughout the history (v68-v71, v93-v97, etc.), and scores vary across identical re-runs, so a single comparison is unreliable.  *(8 items, 7 kernels)*
+    - **[lever]** model architecture and loss function  *(2 items, 2 kernels)*
+      - **[action_context]** When the new architecture requires retraining and produces new checkpoints that haven't been validated on the leaderboard  *(2 items, 2 kernels)*
+        - **[action]** Keep the ensembling and inference pipeline identical when swapping architecture, so the leaderboard delta isolates the architecture effect. If you must change multiple things (new architecture + new checkpoints + different ensembling), expect ambiguous signal and plan a follow-up submission that re-  *(2 items, 2 kernels)*
+          - items: `17371717:e5#2`, `7613444:e2#1`
+    - **[lever]** staged experiment setup  *(2 items, 2 kernels)*
+      - **[action_context]** When preparing a multi-step change (adding comments, then activating config), especially after many prior edits have left the notebook in an uncertain state.  *(2 items, 2 kernels)*
+        - **[action]** First commit the new candidate configurations as comments without changing runtime behavior (no submission needed). Then re-run the existing baseline to confirm it works and record its score. Only then activate the new configuration and submit. This two-step approach isolates config errors from mode  *(2 items, 2 kernels)*
+          - items: `50376011:e20#2`, `13848868:e3#1`
+    - **[lever]** ensemble member selection and blend weights  *(1 items, 1 kernels)*
+      - **[action_context]** When you have a small set of candidate models (e.g., K-fold checkpoints) and can submit each variant.  *(1 items, 1 kernels)*
+        - **[action]** After finding a good ensemble pair, systematically try each alternative member one at a time while noting scores. If all alternatives score worse than the original, revert to the original configuration. Do not change multiple things (checkpoint + weight + normalization) simultaneously, as it confoun  *(1 items, 1 kernels)*
+          - items: `15173072:e5#1`
+    - **[lever]** feature engineering and new model members with transformed targets  *(1 items, 1 kernels)*
+      - **[action_context]** When the improvement requires multiple interdependent changes (new target, new features, new model training loops, ensemble integration), submitting after each micro-change is wasteful.  *(1 items, 1 kernels)*
+        - **[action]** When building a major new pipeline component (new target transform, feature set, and model), implement the full pipeline end-to-end across multiple edits without submitting, validating only via local CV. Submit only after the complete component is integrated into the ensemble. This avoids noisy lead  *(1 items, 1 kernels)*
+          - items: `77276039:e3#1`
+    - **[lever]** ablation probe with re-run verification  *(1 items, 1 kernels)*
+      - **[action_context]** When the leaderboard has high run-to-run variance (identical code yields different scores), a single submission is insufficient to confirm a regression.  *(1 items, 1 kernels)*
+        - **[action]** To verify an ensemble advantage: (1) switch to the simpler config and submit; (2) if the score regresses, re-run the same simpler config once more to rule out stochastic noise; (3) if both runs are worse, revert to the stronger config and submit to confirm it still leads. Accept the finding only aft  *(1 items, 1 kernels)*
+          - items: `50376011:e24#1`
+    - **[lever]** modality ablation and architecture variant testing  *(1 items, 1 kernels)*
+      - **[action_context]** When you have a multi-modality pipeline and want to understand which components contribute, and you also want to test a new architectural idea.  *(1 items, 1 kernels)*
+        - **[action]** Test the new architecture with all modalities first to isolate the architecture effect. Then systematically remove modalities one at a time (keeping the rest fixed) to find the best subset. If all variants score worse than the pre-change baseline, revert the architectural change and stop the ablatio  *(1 items, 1 kernels)*
+          - items: `49576186:e22#1`
+- **[goal]** What do I do when I have a working GBDT ensemble with basic features and want to improve concordance on a survival prediction task?  *(8 items, 5 kernels)*
+  - **[lever_context]** Cox PH / sksurv linear models scored ~0.670. GBDTs (LightGBM) with rank-averaged fold predictions are known to be stronger on tabular survival tasks with many categorical features.  *(8 items, 5 kernels)*
+    - **[lever]** Kaplan-Meier survival probability as target transform  *(3 items, 2 kernels)*
+      - **[action_context]** When the competition uses a concordance-based metric and you have censored survival data, transform the target via KaplanMeierFitter.survival_function_at_times() to get a probability target, then train standard regressors (XGB, CatBoost, LGB) on it. Train multiple GBDT variants on this target and ad  *(3 items, 2 kernels)*
+        - **[action]** Compute Kaplan-Meier survival curves from training data, then assign each patient their KM-estimated survival probability at their observed time as the regression target. This converts censored survival data into a continuous target that any regressor can handle. Combine with other transforms (Nelso  *(3 items, 2 kernels)*
+          - items: `75145694:e1#2`, `75145694:e2#2`, `77276039:e3#2`
+    - **[lever]** switch from linear to GBDT models  *(2 items, 1 kernels)*
+      - **[action_context]** When linear survival models show no improvement across variants on tabular data with many categorical and mixed features.  *(2 items, 1 kernels)*
+        - **[action]** Replace linear survival models with LightGBM boosters trained per fold. Load pre-trained boosters, predict on test data, and rank-average predictions across folds. Use label-encoded categoricals (not one-hot) for GBDT input. Expect a meaningful improvement over linear baselines.  *(2 items, 1 kernels)*
+          - items: `73671444:e2#2`, `73671444:e3#2`
+    - **[lever]** Training data outlier removal  *(1 items, 1 kernels)*
+      - **[action_context]** When you have a precomputed outlier detection (e.g., from residual analysis or anomaly scoring at a chosen threshold) and the event-positive class is the noisier subset.  *(1 items, 1 kernels)*
+        - **[action]** Filter only the event-positive training subset by removing precomputed outlier IDs. Use a single threshold (e.g., 0.9 anomaly score) and test on the leaderboard. If it improves, keep it and move on to other levers rather than sweeping thresholds, since the gain is typically small and threshold sensi  *(1 items, 1 kernels)*
+          - items: `77129691:e12#1`
+    - **[lever]** model family variants with same targets  *(1 items, 1 kernels)*
+      - **[action_context]** When you already have strong tree-based models on the same targets, adding another tree-based framework (LGB vs HistGBM) on identical targets is unlikely to add enough diversity to improve the ensemble.  *(1 items, 1 kernels)*
+        - **[action]** Before training and integrating a new GBDT variant, check whether it uses a genuinely different target or feature set from existing ensemble members. If it only differs in the GBDT library (e.g., LightGBM vs HistGBM) on the same target, expect diminishing returns and test with a single leaderboard s  *(1 items, 1 kernels)*
+          - items: `73671444:e8#2`
+    - **[lever]** domain-driven feature engineering with interaction terms  *(1 items, 1 kernels)*
+      - **[action_context]** When the dataset has clinical/medical features with known risk relationships (e.g., age thresholds, HLA matching, comorbidity-performance interactions), and the model stack is already diverse.  *(1 items, 1 kernels)*
+        - **[action]** Add composite scores that combine related features with domain-informed weights (e.g., medical risk = weighted sum of comorbidity, performance, and match quality). Add binary risk flags at clinically meaningful thresholds. Create cross-feature interactions between the strongest predictors. Submit af  *(1 items, 1 kernels)*
+          - items: `73937748:e4#1`
+- **[goal]** What do I do when I want to test an expensive training variant without wasting too much compute?  *(7 items, 6 kernels)*
+  - **[lever_context]** Running 5-fold inference at 1024 resolution with batch_size 4 is slow and memory-intensive. The author needed to verify feasibility before committing.  *(7 items, 6 kernels)*
+    - **[lever]** experiment budget control  *(2 items, 2 kernels)*
+      - **[action_context]** When the change being tested (booster type, architecture) makes each run much slower, the existing CV/ensemble configuration is too expensive.  *(2 items, 2 kernels)*
+        - **[action]** Before testing an expensive variant, reduce the number of CV folds and ensemble seeds to the minimum needed for a reliable validation signal. Restore them only after confirming the variant is promising. This keeps iteration speed high during exploration.  *(2 items, 2 kernels)*
+          - items: `27799930:e13#2`, `15372370:e6#2`
+    - **[lever]** incremental fold training with checkpoint saving and separate inference  *(2 items, 1 kernels)*
+      - **[action_context]** When each fold takes significant time and the platform imposes session time limits.  *(2 items, 1 kernels)*
+        - **[action]** Train folds incrementally across separate runs, saving model weights per fold. Then create a dedicated inference-only notebook that loads all fold checkpoints, generates predictions for each, and averages them. This decouples training cost from submission cost and lets you scale fold count beyond si  *(2 items, 1 kernels)*
+          - items: `7613444:e4#1`, `7613444:e6#1`
+    - **[lever]** multi-dimensional hyperparameter sweep  *(1 items, 1 kernels)*
+      - **[action_context]** When changing multiple dimensions simultaneously and each submission shows regression  *(1 items, 1 kernels)*
+        - **[action]** When sweeping multiple interacting dimensions and scores regress, do not continue changing multiple things at once. Instead, revert to the last best configuration and change only one dimension at a time. If three consecutive multi-factor changes all regress, stop the sweep and try a structurally dif  *(1 items, 1 kernels)*
+          - items: `49576186:e6#1`
+    - **[lever]** toggle-based A/B testing of code blocks  *(1 items, 1 kernels)*
+      - **[action_context]** When you have two candidate configurations in the same code cell and need to compare them via CV output before committing to a submission.  *(1 items, 1 kernels)*
+        - **[action]** Keep both configurations in the code as comment-togglable blocks. Activate one at a time, run CV, inspect validation metrics, then toggle to the other. Only submit the winner. Fix any append/reference bugs introduced by the toggling before submitting. Limit toggles to 2-3 rounds to avoid confusion.  *(1 items, 1 kernels)*
+          - items: `60197293:e5#2`
+    - **[lever]** pipeline simplification  *(1 items, 1 kernels)*
+      - **[action_context]** When replacing live inference with cached predictions in a submission notebook  *(1 items, 1 kernels)*
+        - **[action]** First verify the replacement produces identical or near-identical outputs before disabling the original code. Do not disable all original predictions simultaneously—keep a subset active as a sanity check. Only submit after confirming outputs match. If the score regresses, restore the original pipeli  *(1 items, 1 kernels)*
+          - items: `17616127:e34#3`
+- **[goal]** What do I do when I want to add richer temporal features to a customer-level aggregation pipeline for sequential transaction data?  *(7 items, 3 kernels)*
+  - **[lever_context]** Standard aggregations (mean/std/min/max/last) were already in place. The time-series nature of the data (13 monthly statements) means recent changes carry signal not captured by simple statistics.  *(7 items, 3 kernels)*
+    - **[lever]** aggregation function selection and derived feature creation  *(6 items, 3 kernels)*
+      - **[action_context]** When there are many raw features (~190) and aggregating all of them would create excessive dimensionality and noise.  *(4 items, 3 kernels)*
+        - **[action]** Start with core aggregations (mean, std, min, max, last) for numeric features and (count, last, nunique) for categorical features. Add secondary aggregations (var, count, first) one at a time, validating each. Remove aggregations that are near-duplicates of others (var ≈ std², count on numerics ofte  *(4 items, 3 kernels)*
+          - items: `27836972:e2#1`, `27799930:e5#2`, `27799930:e6#3`, `27656049:e4#1`
+      - **[action_context]** When individual aggregation changes have small or ambiguous effects based on prior experiments.  *(1 items, 1 kernels)*
+        - **[action]** Instead of submitting each single aggregation toggle, bundle multiple complementary feature additions (restore a borderline aggregation, add interaction features like last-minus-mean, add rounding) into one submission. Use local CV to pre-screen individual removals and only submit the combined packa  *(1 items, 1 kernels)*
+          - items: `27836972:e6#1`
+      - **[action_context]** When customers have up to 13 monthly statements and the task is default prediction where recent behavior matters most.  *(1 items, 1 kernels)*
+        - **[action]** Start with a short recent window (e.g., last 3 rows) and compute mean of numeric features only. Validate via CV. Then try: (1) adding categorical tail aggregations (count, nunique) — disable if CV drops; (2) a longer window (e.g., last 6 rows) — revert if CV drops. Also try a difference feature (las  *(1 items, 1 kernels)*
+          - items: `27836972:e10#1`
+    - **[lever]** Difference-based lag features  *(1 items, 1 kernels)*
+      - **[action_context]** When you have grouped time-series data already aggregated with standard statistics and want to capture recent trends.  *(1 items, 1 kernels)*
+        - **[action]** Compute last-minus-second-to-last (lag-1 diff) and last-minus-mean (deviation from average) for all numeric columns. Add these as new feature groups alongside existing aggregations. Avoid duplicating 'last' across multiple aggregation calls — consolidate into one call. Submit and verify the combined  *(1 items, 1 kernels)*
+          - items: `27799930:e8#1`
+- **[goal]** What do I do when I suspect my tree-based model is overfitting and want to test regularization strength?  *(6 items, 4 kernels)*
+  - **[lever_context]** Feature selection interacts with regularization: the optimal number of features under reg_lambda=10 may differ from the optimum found earlier. The author had already swept this parameter once (v26-v32) under different regularization.  *(6 items, 4 kernels)*
+    - **[lever]** L2 regularization strength (reg_lambda)  *(2 items, 2 kernels)*
+      - **[action_context]** When the model has many features (TF-IDF + stacked transformer predictions) and the current reg_lambda was recently increased causing a regression.  *(2 items, 2 kernels)*
+        - **[action]** Sweep reg_lambda by halving or doubling from the current value. After a regression from tightening, revert to the looser value. Validate locally with CV before submitting. If the looser setting improves both CV and LB, keep it and move on to other levers.  *(2 items, 2 kernels)*
+          - items: `60197293:e16#1`, `55591012:e3#1`
+    - **[lever]** replace manual preprocessing with model-native regularization  *(1 items, 1 kernels)*
+      - **[action_context]** When a preprocessing sweep (e.g., feature selection) yields a flat or noisy response surface and the model has built-in equivalents (subsampling, dropout).  *(1 items, 1 kernels)*
+        - **[action]** If sweeping a preprocessing hyperparameter shows the model is insensitive across a wide range, remove the preprocessing step and instead use the model's native regularization controls (e.g., feature_fraction, bagging). This reduces pipeline complexity and often unlocks larger gains.  *(1 items, 1 kernels)*
+          - items: `27389424:e7#2`
+    - **[lever]** importance-based feature selection ratio  *(1 items, 1 kernels)*
+      - **[action_context]** When regularization has changed since the last feature-selection sweep, the previous optimum is stale.  *(1 items, 1 kernels)*
+        - **[action]** Re-sweep the feature-selection cutoff under the new regularization. Start near the previous best, probe aggressively in one direction, and if validation worsens, reverse and walk the other way in smaller increments. Use local CV only; do not submit until the sweep converges.  *(1 items, 1 kernels)*
+          - items: `27389424:e5#1`
+    - **[lever]** training budget (n_estimators, learning rate, early stopping patience)  *(1 items, 1 kernels)*
+      - **[action_context]** After a regularization change produces a significant gain, the model may benefit from more iterations at a lower learning rate.  *(1 items, 1 kernels)*
+        - **[action]** After a successful regularization change, increase n_estimators and early stopping patience first (submit or check CV), then reduce learning rate in a separate step. If the LR reduction regresses, revert to the previous LR rather than continuing to decrease it. Change one thing at a time and submit   *(1 items, 1 kernels)*
+          - items: `27389424:e8#2`
+    - **[lever]** single-shot probe before committing to a sweep  *(1 items, 1 kernels)*
+      - **[action_context]** When compute is expensive and the technique has a reasonable default value (e.g., dropout=0.2), a single probe at that default is sufficient to decide whether to invest further.  *(1 items, 1 kernels)*
+        - **[action]** Run one experiment at a conventional default value. If the improvement is marginal (near noise floor), move on to a different lever rather than sweeping the hyperparameter. Reserve sweeps for levers that show clear signal on the first probe.  *(1 items, 1 kernels)*
+          - items: `7613444:e3#2`
+- **[goal]** What do I do when applying test-time augmentation to spectrogram-based models?  *(6 items, 5 kernels)*
+  - **[lever_context]** TTA (horizontal flip) and softmax were applied in the inference loop, duplicating logic across multiple models and risking inconsistency. Moving them into forward() consolidates the logic and ensures every model applies them identically.  *(4 items, 3 kernels)*
+    - **[lever]** Test-time augmentation (horizontal flip)  *(3 items, 3 kernels)*
+      - **[action_context]** When some model inference paths already benefit from TTA and others lack it.  *(2 items, 2 kernels)*
+        - **[action]** Apply the same TTA (forward pass on original + horizontally flipped input, average sigmoid outputs) to every inference path in the pipeline. This is a one-shot change; no sweep is needed since the augmentation type is already validated on other paths.  *(1 items, 1 kernels)*
+          - items: `15164527:e5#1`
+        - **[action]** Test TTA removal in isolation first. If score improves or is neutral, keep it off. If it was helping, re-enable it. In this domain (spectrograms with temporal axis), flip TTA can help when combined with a strong multi-model ensemble but may hurt or be neutral for single model groups.  *(1 items, 1 kernels)*
+          - items: `50496431:e8#2`
+      - **[action_context]** Models were not trained with shifted-window augmentation, so left/right crops are out-of-distribution inputs.  *(1 items, 1 kernels)*
+        - **[action]** Enable TTA on one model group first and submit. If the score does not improve, the shifted views likely add noise for models not trained on them. Revert and move on rather than tuning TTA weights. Do not combine TTA removal with other large changes (like removing model groups) in the same submission  *(1 items, 1 kernels)*
+          - items: `53424936:e9#1`
+    - **[lever]** model forward pass restructure  *(1 items, 1 kernels)*
+      - **[action_context]** When TTA involves a simple geometric transform (flip) and the ensemble averages multiple models' outputs.  *(1 items, 1 kernels)*
+        - **[action]** Move TTA duplication (concatenate original + augmented along batch dim), softmax, and averaging of augmented predictions into the model's forward method. This ensures consistent application across all models and simplifies the inference loop. Verify with a submission that the refactoring doesn't reg  *(1 items, 1 kernels)*
+          - items: `50496431:e6#1`
+  - **[lever_context]** Spectrograms have a meaningful frequency axis (vertical) and time axis (horizontal). Flipping along frequency or both axes may not preserve semantic content, unlike flipping along time alone.  *(2 items, 2 kernels)*
+    - **[lever]** selective TTA flip directions for spectrograms  *(2 items, 2 kernels)*
+      - **[action_context]** When the model input has a spatial layout with known symmetry axes (e.g., left-right hemisphere symmetry in EEG montages).  *(2 items, 2 kernels)*
+        - **[action]** For spectrogram inputs, only use TTA flips along the time axis (horizontal flip). Avoid flipping along the frequency axis or both axes simultaneously, as these produce physically implausible inputs that can hurt ensemble predictions. Test TTA on vs off and submit to confirm benefit.  *(2 items, 2 kernels)*
+          - items: `49524919:e2#2`, `52551258:e9#2`
+- **[goal]** What do I do when blending diverse models (1D CNN, spectrogram CNN, etc.) and the initial weight allocation performs poorly?  *(6 items, 4 kernels)*
+  - **[lever_context]** The EEGNet architecture has ResNet1D blocks, optional GRU, and a classification head whose input dimension must match the flattened feature size. Shape mismatches cause silent errors or crashes. The checkpoint filenames encode the architecture variant used during training.  *(6 items, 4 kernels)*
+    - **[lever]** model selection and weight tuning jointly  *(2 items, 2 kernels)*
+      - **[action_context]** When sweeping blend weights alone across a wide range (0.15→0.80 for one component) fails to recover baseline performance.  *(1 items, 1 kernels)*
+        - **[action]** Stop tuning weights and instead swap or retrain the weakest checkpoint. Blend weights cannot compensate for a poorly calibrated or weak model; replace the model first, then re-tune weights. This is more efficient than exhaustive weight search over a bad component.  *(1 items, 1 kernels)*
+          - items: `53762022:e5#2`
+      - **[action_context]** Models trained on different input modalities (spectrograms vs raw signals) with different architectures.  *(1 items, 1 kernels)*
+        - **[action]** Ensemble all available model families even if some are individually weaker. A model scoring 0.41 individually can still improve a 0.33 ensemble when blended, because it captures different patterns. Weight by inverse error rather than excluding weak models.  *(1 items, 1 kernels)*
+          - items: `52200959:e8#3`
+    - **[lever]** model architecture alignment with checkpoints  *(1 items, 1 kernels)*
+      - **[action_context]** When loading externally trained checkpoints into a model class defined in the inference notebook, and the architecture may have changed between training runs (e.g., GRU removed, activation changed).  *(1 items, 1 kernels)*
+        - **[action]** When inference gives poor results with new checkpoints, first verify the model class matches the training config: check whether components like RNN layers exist, verify activation functions, and compute the classification head input dimension from the architecture's output shape. Adjust the model de  *(1 items, 1 kernels)*
+          - items: `49524919:e10#2`
+    - **[lever]** 1D CNN model capacity (width, depth, head size)  *(1 items, 1 kernels)*
+      - **[action_context]** When offline training with a larger model shows clearly better per-fold validation scores than the current model.  *(1 items, 1 kernels)*
+        - **[action]** Scale width (channels) aggressively (e.g., 5×) and depth (blocks) modestly (e.g., +20%) simultaneously, then deploy the new checkpoints. Verify via per-fold validation metrics before submitting. A single coordinated capacity increase is more efficient than sweeping width and depth independently when  *(1 items, 1 kernels)*
+          - items: `49524919:e11#1`
+    - **[lever]** framework consolidation and validation infrastructure  *(1 items, 1 kernels)*
+      - **[action_context]** When an ensemble spans multiple deep learning frameworks and results are unstable, consolidate by temporarily disabling one framework's components, add proper cross-validation (e.g., StratifiedGroupKFold by patient), and rebuild the pipeline incrementally.  *(1 items, 1 kernels)*
+        - **[action]** Comment out the secondary framework's model/data components, add structured cross-validation with group awareness, verify the primary model pipeline works in isolation, then re-integrate components one at a time while monitoring validation scores.  *(1 items, 1 kernels)*
+          - items: `53762022:e4#2`
+    - **[lever]** Input tensor reshape dimensions  *(1 items, 1 kernels)*
+      - **[action_context]** When the total element count is fixed and multiple factorizations are possible, and you have a trained checkpoint that expects a specific shape.  *(1 items, 1 kernels)*
+        - **[action]** Try 2-3 factorizations that keep one spatial dimension large enough for the pretrained backbone's receptive field. If a reshape causes a large regression (>50% score degradation), it likely mismatches the checkpoint—revert immediately and try the next factorization. Settle on the shape that matches   *(1 items, 1 kernels)*
+          - items: `50496431:e34#1`
+- **[goal]** What do I do when tuning optimized rounding thresholds for a regression-to-ordinal model and each submission costs a leaderboard attempt?  *(5 items, 1 kernels)*
+  - **[lever_context]** The optimized rounding weights are the final mapping from continuous predictions to discrete scores. Using naive uniform thresholds [1.5,2.5,3.5,4.5,5.5] vs. OOF-optimized thresholds is a strong baseline test.  *(5 items, 1 kernels)*
+    - **[lever]** rounding threshold optimization  *(5 items, 1 kernels)*
+      - **[action_context]** When the model's raw predictions are good but the final discrete scores can be improved, and you have optimized thresholds from CV but suspect the test distribution differs.  *(5 items, 1 kernels)*
+        - **[action]** Always use OOF-optimized rounding thresholds rather than naive uniform midpoints. The v134 experiment with [1.5,2.5,3.5,4.5,5.5] dropped from 0.82503 to 0.80343, a ~0.02 QWK loss, demonstrating that optimized thresholds are critical for ordinal regression in skewed distributions.  *(5 items, 1 kernels)*
+          - items: `55621328:e44#3`, `55621328:e13#2`, `55621328:e19#2`, `55621328:e25#2`, `55621328:e43#2`
+- **[goal]** What do I do when adding a new component causes a regression and I need to diagnose whether the component or the integration is at fault?  *(5 items, 4 kernels)*
+  - **[lever_context]** Two submissions with mel-spectrogram models both regressed. The author needed to determine if the mel-spectrogram models were bad or if the blend weights/integration was wrong.  *(3 items, 2 kernels)*
+    - **[lever]** ablation by isolating individual components  *(2 items, 2 kernels)*
+      - **[action_context]** When a multi-model ensemble regresses after adding new models and you cannot tell which component is responsible.  *(2 items, 2 kernels)*
+        - **[action]** Submit each ensemble member individually to measure its standalone quality. If the isolated member scores far worse than the ensemble, the ensemble is load-bearing and the member is weak; restore the ensemble and fix the member. Do not ship the ablation — treat it as a diagnostic probe only.  *(2 items, 2 kernels)*
+          - items: `49524919:e27#2`, `53762022:e3#1`
+    - **[lever]** re-enable disabled code paths before blending  *(1 items, 1 kernels)*
+      - **[action_context]** Multiple model pipelines exist in the notebook but some were skipped via early-exit statements during iterative development.  *(1 items, 1 kernels)*
+        - **[action]** Before creating a cross-model blend, audit the inference loops for stray 'continue', 'break', or conditional skips that were inserted during development. Remove them so all component predictions are actually computed before blending.  *(1 items, 1 kernels)*
+          - items: `49524919:e22#2`
+  - **[lever_context]** The PyTorch model required dataset, preprocessing, model definition, and inference code — none of which could be validated by leaderboard until all pieces worked together.  *(2 items, 2 kernels)*
+    - **[lever]** code activation/deactivation  *(1 items, 1 kernels)*
+      - **[action_context]** When a new component regresses or is untested and the competition deadline or complexity budget is a concern.  *(1 items, 1 kernels)*
+        - **[action]** Comment out or disable the new code path rather than deleting it, preserving it for future use. Revert the submission to the known-good ensemble. Only re-enable the new component after debugging offline or confirming it helps in local validation.  *(1 items, 1 kernels)*
+          - items: `17616127:e14#2`
+    - **[lever]** Staged development with deferred submission  *(1 items, 1 kernels)*
+      - **[action_context]** When multiple interdependent components must all work before any leaderboard signal is possible  *(1 items, 1 kernels)*
+        - **[action]** Batch non-submittable development into multiple small commits (each addressing one concern: skeleton, features, model tweaks, inference refactor). Only submit once you can verify outputs locally (e.g., probability sums equal 1, correct shape). This avoids wasting submission quota on broken pipelines  *(1 items, 1 kernels)*
+          - items: `52200959:e6#3`
+- **[goal]** What do I do when a multi-head model can fuse features by averaging or concatenation, and I have pretrained weights for one configuration?  *(5 items, 3 kernels)*
+  - **[lever_context]** The double_head model has two branches producing 2048-dim features each. Concat (fc=4096) vs average (fc=2048) changes architecture and must match pretrained weights. v141 used concat (0.24275); v147 switched to average (0.24307, worse); v148 restored concat (0.23064, best).  *(5 items, 3 kernels)*
+    - **[lever]** feature fusion method (average vs concatenation)  *(3 items, 2 kernels)*
+      - **[action_context]** When pretrained weights were trained with a specific fusion method, the inference architecture must match. If you test the alternative and it's worse, revert immediately.  *(2 items, 1 kernels)*
+        - **[action]** When toggling between concat and average fusion at inference, always verify the fc layer dimension matches the checkpoint. Test both, but expect the method matching training to win. If the alternative is worse, revert in the next submission and do not revisit.  *(2 items, 1 kernels)*
+          - items: `50496431:e39#1`, `50496431:e40#2`
+      - **[action_context]** When multiple input modalities (spectrograms, raw EEG, different time windows) are available and a learned fusion head exists.  *(1 items, 1 kernels)*
+        - **[action]** Keep the multi-input fusion model when it consistently outperforms simple prediction averaging across vanilla single-input models. If disabling fusion causes regression (as seen here and in v12→v13), treat the fusion head as load-bearing and shift optimization to backbone choice or checkpoint select  *(1 items, 1 kernels)*
+          - items: `53424936:e11#2`
+    - **[lever]** per-branch backbone size selection  *(1 items, 1 kernels)*
+      - **[action_context]** When different input modalities have different spatial/spectral complexity and pretrained checkpoints are available for multiple backbone sizes.  *(1 items, 1 kernels)*
+        - **[action]** Use a larger backbone (e.g., base) for branches whose inputs are more complex or information-rich, and keep a smaller backbone (e.g., small) for simpler inputs. Adjust the fusion head dimensions to match the mixed embedding sizes. Verify with a leaderboard or validation submission before continuing.  *(1 items, 1 kernels)*
+          - items: `53424936:e12#1`
+    - **[lever]** concatenation axis for spatial feature tiling  *(1 items, 1 kernels)*
+      - **[action_context]** When region-specific spectrograms are extracted from a shared tensor and need to be tiled into a single 2D image for a pretrained CNN backbone.  *(1 items, 1 kernels)*
+        - **[action]** When concatenating K region slices of shape (B, H, W, C) into a single image for a pretrained backbone, concatenate along the height axis (axis=1) to produce (B, K*H, W, C). Verify the resulting shape matches the backbone's expected input aspect ratio. A wrong axis silently produces a valid but sema  *(1 items, 1 kernels)*
+          - items: `49576186:e7#3`
+- **[goal]** What do I do when I have a binary classifier mask that additively adjusts a regression/ranking model's predictions and I need to find the right magnitude?  *(4 items, 4 kernels)*
+  - **[lever_context]** nn-exp-06 produced both fold-level classifier probabilities and regression predictions. The author tried returning raw negated regression (v41, LB 0.691) vs. combining classifier+regressor with a +0.2 boost (v45, LB 0.693).  *(4 items, 4 kernels)*
+    - **[lever]** classifier mask additive weight  *(2 items, 2 kernels)*
+      - **[action_context]** The search space is one-dimensional and bounded (boost must be small relative to score range); CV is cheap to evaluate after training.  *(1 items, 1 kernels)*
+        - **[action]** Start from a reasonable default, try a few values in both directions (smaller and larger) guided by CV. Use irregular steps (e.g., ±50% of current value) rather than a fine grid. If no tested value beats the original, revert to the original and stop—the lever has limited headroom. Bundle the final v  *(1 items, 1 kernels)*
+          - items: `77276039:e2#1`
+      - **[action_context]** When the mask boost has shown sensitivity in prior experiments and other levers are exhausted, fine-tune it in small decrements.  *(1 items, 1 kernels)*
+        - **[action]** When blending a binary classifier mask into continuous risk scores via additive boost, sweep the boost value in steps of ~0.05 (e.g., 0.20→0.15→0.10). Each step should be submitted independently. The optimal value is typically small (0.1–0.2 range) and the relationship is non-monotonic, so bracket f  *(1 items, 1 kernels)*
+          - items: `77347591:e5#2`
+    - **[lever]** number of output bins in classification head  *(1 items, 1 kernels)*
+      - **[action_context]** When the model architecture changes (e.g., pooling method), the optimal auxiliary head configuration may also change.  *(1 items, 1 kernels)*
+        - **[action]** After changing the backbone/pooling, re-sweep the auxiliary head configuration (e.g., bins on vs off) with the new architecture. Test the simplest setting first (bins=1, i.e., disabled), then the previously best setting. Keep whichever scores better with the new architecture.  *(1 items, 1 kernels)*
+          - items: `17371717:e14#1`
+    - **[lever]** classifier-regressor combination rule  *(1 items, 1 kernels)*
+      - **[action_context]** When the classifier identifies high-risk patients and the regressor provides a continuous score, combining them can sharpen discrimination.  *(1 items, 1 kernels)*
+        - **[action]** When a model produces both a binary event classifier and a continuous risk score, try both returning the raw continuous score and a combined version where the classifier's positive prediction adds a fixed offset to the continuous score. Compare on the leaderboard. The combined version often helps wh  *(1 items, 1 kernels)*
+          - items: `75145694:e13#3`
+- **[goal]** What do I do when I have models trained on different temporal windows of the same signal?  *(4 items, 2 kernels)*
+  - **[lever_context]** The author had raw EEG models for 50-second windows and 50/10-second (multi-scale) windows, plus spectrogram models at both scales. Each captures different temporal context.  *(4 items, 2 kernels)*
+    - **[lever]** multi-resolution spectrogram ensemble with equal-class weighting  *(3 items, 1 kernels)*
+      - **[action_context]** When the labeled segment is much shorter than the spectrogram window used by current models, and you have checkpoints trained on the matching shorter window.  *(2 items, 1 kernels)*
+        - **[action]** Include both temporal scales in the ensemble rather than choosing one. Average their predictions with equal or near-equal weights. The diversity from different temporal receptive fields provides complementary information that improves the blend beyond either scale alone.  *(2 items, 1 kernels)*
+          - items: `49524919:e23#1`, `49524919:e26#3`
+      - **[action_context]** When adding a third temporal resolution group to an existing blend of two resolution groups, each with two backbone variants.  *(1 items, 1 kernels)*
+        - **[action]** Give higher blend weight to the resolution groups that have historically performed better (here 50/10s got 0.25 each vs 0.125 for 50s and 50/30/10s). Within each resolution group, split weight equally between backbone variants. After adding the new group, reduce existing groups' weights proportional  *(1 items, 1 kernels)*
+          - items: `49524919:e30#2`
+    - **[lever]** test-time augmentation with shifted temporal crops  *(1 items, 1 kernels)*
+      - **[action_context]** When the model was trained with temporal crop augmentation and multiple crops are already extracted in the pipeline.  *(1 items, 1 kernels)*
+        - **[action]** Enable inference on all available temporal crops (e.g., left/center/right), softmax each independently, then average the probability distributions before ensembling across models. First enable on one model group with debug prints to verify crop predictions are reasonable, then extend to all groups.  *(1 items, 1 kernels)*
+          - items: `53424936:e3#1`
+- **[goal]** What do I do when my local CV score doesn't correlate with leaderboard performance for a medical image classification task?  *(4 items, 2 kernels)*
+  - **[lever_context]** The 11 binary labels show heavy class imbalance (visible in count plots). Binary crossentropy treats all samples equally, which can underweight rare positive classes. Focal loss down-weights easy negatives and focuses on hard examples.  *(2 items, 2 kernels)*
+    - **[lever]** model architecture change  *(1 items, 1 kernels)*
+      - **[action_context]** When sweeping checkpoints of the same architecture shows poor CV-LB correlation and no improvement over baseline.  *(1 items, 1 kernels)*
+        - **[action]** If a checkpoint sweep across multiple training runs shows that higher local CV does not translate to higher LB scores, stop swapping checkpoints of the same architecture. Instead, change the model head design or add structural improvements (e.g., attention mechanisms, multi-head outputs) that may im  *(1 items, 1 kernels)*
+          - items: `15082684:e2#2`
+    - **[lever]** focal loss with higher learning rate  *(1 items, 1 kernels)*
+      - **[action_context]** Multi-label classification with skewed label distributions where per-class AUC is the metric.  *(1 items, 1 kernels)*
+        - **[action]** Switch from binary crossentropy to focal loss (e.g., via tensorflow_addons.losses.SigmoidFocalCrossEntropy) and simultaneously increase the learning rate by 2× to compensate for the reduced gradient magnitude of focal loss on easy examples. Increase dropout slightly (e.g., +0.1) to offset the more a  *(1 items, 1 kernels)*
+          - items: `13542132:e4#2`
+  - **[lever_context]** The baseline (v3) used only brightness adjustment and scored 0.95160. Adding contrast/saturation (v7) and then rotation (v11) each caused regressions. Medical chest X-rays have consistent orientation and limited color variation, making geometric and color augmentations potentially harmful.  *(2 items, 1 kernels)*
+    - **[lever]** augmentation strength and type selection  *(1 items, 1 kernels)*
+      - **[action_context]** When working with medical images that have standardized orientation and grayscale-like appearance (e.g., chest X-rays).  *(1 items, 1 kernels)*
+        - **[action]** For medical images with standardized orientation, avoid 90-degree rotations and keep color augmentation ranges very narrow (within ±10% of identity). Start with minimal augmentation and only add transforms one at a time, verifying each independently. If a combined augmentation regresses, remove the   *(1 items, 1 kernels)*
+          - items: `13542132:e3#2`
+    - **[lever]** Data augmentation additions  *(1 items, 1 kernels)*
+      - **[action_context]** When the baseline uses only geometric augmentations (flips) and the domain has known photometric variation.  *(1 items, 1 kernels)*
+        - **[action]** Add a small fixed brightness adjustment (e.g., tf.image.adjust_brightness with delta ~0.1) to the augmentation pipeline. This is a low-risk change that regularizes the model against exposure variation. Submit and check for improvement before trying more aggressive augmentations.  *(1 items, 1 kernels)*
+          - items: `13542132:e1#1`
+- **[goal]** What do I do when I want to improve TTA beyond simple horizontal flip averaging for a medical image classification model?  *(4 items, 3 kernels)*
+  - **[lever_context]** Image horizontal flip TTA had already improved scores (v54: 0.31954 vs v53: 0.33073). The EEG data has a natural left-right hemisphere symmetry (left leads mirror right leads), providing a domain-specific augmentation axis not yet exploited.  *(4 items, 3 kernels)*
+    - **[lever]** input augmentation validity  *(2 items, 2 kernels)*
+      - **[action_context]** When the input modality has a known symmetry (e.g., bilateral EEG leads), and image-level flip TTA has already proven beneficial.  *(2 items, 2 kernels)*
+        - **[action]** Be cautious applying spatial flip TTA to EEG montage-derived features. Unlike natural images, flipping EEG channel arrangements can break lateralization information. Test with a single submission before committing; if it regresses, do not pursue further flip variants.  *(2 items, 2 kernels)*
+          - items: `52551258:e7#2`, `50496431:e18#1`
+    - **[lever]** TTA augmentation strategy  *(1 items, 1 kernels)*
+      - **[action_context]** When the model was trained without heavy geometric augmentation and the task involves spatially meaningful features (catheter/line positions).  *(1 items, 1 kernels)*
+        - **[action]** For medical image classification where spatial position is semantically meaningful, prefer deterministic geometric TTA (horizontal flip with explicit averaging) over stochastic augmentation TTA. Stochastic rotations/shifts at test time can corrupt position-dependent features and degrade performance   *(1 items, 1 kernels)*
+          - items: `15372370:e5#2`
+    - **[lever]** model ensembling vs. single-model TTA  *(1 items, 1 kernels)*
+      - **[action_context]** When working with a single strong model and flip TTA shows no measurable benefit.  *(1 items, 1 kernels)*
+        - **[action]** Pivot to ensembling multiple independently trained models rather than investing in TTA variants. Flip TTA can be re-evaluated later on top of the ensemble where its effect may differ. Reserve TTA effort for after the ensemble baseline is established.  *(1 items, 1 kernels)*
+          - items: `15372370:e2#2`
+- **[goal]** What do I do when loading a pretrained checkpoint into a timm model on Kaggle where the environment may lack GPU or the right library version?  *(4 items, 3 kernels)*
+  - **[lever_context]** The author had a trained checkpoint and needed the inference model architecture to exactly match. Changing hyperparameters or data pipeline wouldn't help if the architecture mismatched the saved weights.  *(4 items, 3 kernels)*
+    - **[lever]** pretrained flag and strict loading  *(2 items, 2 kernels)*
+      - **[action_context]** When you encounter state_dict key mismatches and suspect the checkpoint was saved from a DataParallel-wrapped model.  *(2 items, 2 kernels)*
+        - **[action]** When loading a fine-tuned checkpoint, set pretrained=False in the model constructor and use strict=True in load_state_dict (or at minimum inspect warnings from strict=False). If keys don't match, fix the model definition rather than silently skipping mismatched weights.  *(2 items, 2 kernels)*
+          - items: `15173072:e2#2`, `15082684:e6#2`
+    - **[lever]** device mapping and library path management  *(1 items, 1 kernels)*
+      - **[action_context]** When using timm models with external checkpoints in a Kaggle no-internet kernel.  *(1 items, 1 kernels)*
+        - **[action]** Use conditional map_location (cuda if available, else cpu) in torch.load. For timm, add a local copy via sys.path.append rather than pip install, since internet may be off. Verify the model architecture name in timm.create_model matches the checkpoint's architecture exactly (e.g., resnet200d vs resn  *(1 items, 1 kernels)*
+          - items: `15173072:e1#2`
+    - **[lever]** model head architecture alignment with checkpoint  *(1 items, 1 kernels)*
+      - **[action_context]** When the inference model's head layers (dropout, bias initializer, layer count) don't match the training code's head layers, weight loading silently succeeds but predictions degrade.  *(1 items, 1 kernels)*
+        - **[action]** Before inference, compare the model definition layer-by-layer against the training code that produced the checkpoint. Match dropout layers, activation functions, and initializer arguments exactly. If an initializer references a variable not available at inference time, remove it (Keras will use zero  *(1 items, 1 kernels)*
+          - items: `13702907:e5#1`
+- **[goal]** What do I do when I suspect numerical precision issues may be hurting prediction quality?  *(4 items, 3 kernels)*
+  - **[lever_context]** Inference was running with amp=True, fp16=True. The author may have noticed suspicious prediction values in logs. Disabling mixed precision is a zero-cost probe that isolates precision as a variable.  *(4 items, 3 kernels)*
+    - **[lever]** numerical precision toggle  *(2 items, 1 kernels)*
+      - **[action_context]** When the pipeline already works and scores are competitive, so the risk of a single exploratory submission is low.  *(2 items, 1 kernels)*
+        - **[action]** Run a single A/B probe: change only the precision flag (FP16 on vs off) while holding all other settings fixed. If the score worsens, revert immediately and move on; do not sweep intermediate options. One submission is sufficient because the effect should be consistent.  *(2 items, 1 kernels)*
+          - items: `50376011:e35#2`, `50376011:e36#1`
+    - **[lever]** float16 rounding / denoising  *(1 items, 1 kernels)*
+      - **[action_context]** When features are stored in float16 and the data provider is known to have added small uniform noise, rounding recovers the original discrete/rounded values.  *(1 items, 1 kernels)*
+        - **[action]** Cast float16 columns to float32, round to 2 decimal places, cast back to float16. Apply identically to both train and test data. This removes sub-precision noise while preserving the true feature values. Expect a small but consistent LB improvement (~0.001 on normalized Gini-type metrics).  *(1 items, 1 kernels)*
+          - items: `27502740:e3#2`
+    - **[lever]** prediction offset calibration  *(1 items, 1 kernels)*
+      - **[action_context]** When the metric is threshold-sensitive (like QWK with rounding) and you suspect a bias in raw predictions.  *(1 items, 1 kernels)*
+        - **[action]** First fix the evaluation pipeline so OOF predictions are stored correctly (raw, before post-processing). Then try a single additive offset, submit, and compare to baseline. If it regresses, abandon the offset and look for other improvements. Do not sweep multiple offset values without CV confirmatio  *(1 items, 1 kernels)*
+          - items: `55987255:e18#1`
+- **[goal]** What do I do when transitioning from EDA/preprocessing to model training on a large tabular dataset with a custom competition metric?  *(4 items, 2 kernels)*
+  - **[lever_context]** The raw training data is ~5.5M rows / 16 GB. Full data processing is slow and expensive. The author needs to iterate quickly on feature engineering and preprocessing decisions before committing to full-scale training.  *(4 items, 2 kernels)*
+    - **[lever]** pipeline construction order  *(1 items, 1 kernels)*
+      - **[action_context]** When starting from zero with complex data preprocessing and a custom metric.  *(1 items, 1 kernels)*
+        - **[action]** Build the full pipeline in one large commit: data loading, feature engineering, CV loop, custom metric, and a simple baseline model. Only after the pipeline runs end-to-end, begin tuning hyperparameters. Do not tune before you can evaluate.  *(1 items, 1 kernels)*
+          - items: `27799930:e1#1`
+    - **[lever]** progressive data subsetting and cell disabling  *(1 items, 1 kernels)*
+      - **[action_context]** When initial EDA reveals the dataset has a dominant subgroup (e.g., most customers share the same record count) and full loads are slow.  *(1 items, 1 kernels)*
+        - **[action]** First load the full data once to inspect shapes, group distributions, and missing patterns. Then comment out heavy loading/inspection cells to speed iteration. Filter to the dominant subgroup and save a smaller file for downstream work. Re-enable full data only when needed for final training.  *(1 items, 1 kernels)*
+          - items: `28093671:e1#1`
+    - **[lever]** subsample the dataset for pipeline development  *(1 items, 1 kernels)*
+      - **[action_context]** When the dataset is too large for rapid iteration but you need to verify preprocessing logic (imputation, encoding, scaling) and inspect distributions before modeling.  *(1 items, 1 kernels)*
+        - **[action]** Sample 50-70% of unique entities (customers/users) randomly, build and validate the entire preprocessing pipeline on this subset including EDA, imputation, encoding, and scaling. Do not submit these intermediate versions. Once the pipeline is verified, proceed to full-scale model training in a separ  *(1 items, 1 kernels)*
+          - items: `28093671:e2#1`
+    - **[lever]** Custom metric implementation and GPU-accelerated training pipeline  *(1 items, 1 kernels)*
+      - **[action_context]** When the competition metric differs from standard library losses and the dataset is large enough that CPU training is slow.  *(1 items, 1 kernels)*
+        - **[action]** First build a minimal working CV training loop with default-ish hyperparameters and standard metrics to verify the pipeline runs end-to-end. Then in the next iteration, add the competition-specific custom evaluation metric and GPU data-loading optimizations before tuning hyperparameters further. Do   *(1 items, 1 kernels)*
+          - items: `28093671:e3#1`
+- **[goal]** What do I do when my notebook has accumulated many commented-out code blocks and ad-hoc configurations from past experiments, making it hard to iterate further?  *(4 items, 4 kernels)*
+  - **[lever_context]** The notebook had ~300 lines of commented-out ensemble tuning code from earlier experiments. Adding a new feature (exponential_rank) while carrying dead code makes the notebook harder to debug and may cause confusion about what is actually running.  *(4 items, 4 kernels)*
+    - **[lever]** code cleanup and config consolidation  *(4 items, 4 kernels)*
+      - **[action_context]** When introducing a new experimental change to submit, and the notebook contains stale commented-out code from abandoned approaches.  *(4 items, 4 kernels)*
+        - **[action]** Remove all dead/commented-out code, extract magic numbers into named constants at the top, and rerun without code changes to verify the cleaned pipeline reproduces the previous score before continuing experimentation. Do not submit the cleanup version until you confirm outputs look correct.  *(3 items, 3 kernels)*
+          - items: `18851026:e10#1`, `73937748:e17#2`, `60759531:e1#1`
+        - **[action]** After completing EDA, comment out or remove plotting cells and verbose inspection calls (e.g., .info(), distribution plots) in the same commit where you add production preprocessing steps (encoding, scaling). Suppress warnings. This keeps the notebook lean for the modeling phase while preserving the  *(1 items, 1 kernels)*
+          - items: `28093671:e2#2`
+- **[goal]** What do I do when I want to improve regularization for a multi-class soft-label classification task with limited expert labels?  *(4 items, 2 kernels)*
+  - **[lever_context]** The competition uses vote-count distributions from 1-28 experts as soft labels. Two-sample mixup was already in use. The model had shown capacity to overfit (varying scores across experiments).  *(4 items, 2 kernels)*
+    - **[lever]** loss function alignment with evaluation metric  *(2 items, 2 kernels)*
+      - **[action_context]** Targets are independent and bounded in [0,1], and the current setup uses softmax which enforces a probability simplex constraint across outputs.  *(1 items, 1 kernels)*
+        - **[action]** Switch the final Dense layer activation from softmax to sigmoid and the loss from categorical cross-entropy to binary cross-entropy. When making this switch, also adjust the learning rate upward (e.g., 3x) since BCE gradients per output are typically smaller than softmax CE gradients, and increase d  *(1 items, 1 kernels)*
+          - items: `7253130:e1#1`
+      - **[action_context]** When the evaluation metric is KL divergence and labels are soft probability distributions from multiple annotators.  *(1 items, 1 kernels)*
+        - **[action]** Switch the loss to KL divergence, ensure labels are normalized probability vectors (sum to 1), add small epsilon smoothing to prevent log(0), and pair with a step or cosine LR scheduler at lower learning rates since KL loss gradients behave differently from cross-entropy. Validate that the data gene  *(1 items, 1 kernels)*
+          - items: `49576186:e11#2`
+    - **[lever]** multi-sample mixup augmentation  *(1 items, 1 kernels)*
+      - **[action_context]** When two-sample mixup is already implemented and the model still overfits or plateaus.  *(1 items, 1 kernels)*
+        - **[action]** Extend to three-sample mixup with a dominant weight (e.g., 0.8) on the primary sample and random split of the remainder between two secondary samples. Ensure NaN handling occurs before mixing (nan_to_num before clipping/log). Apply the same mixing weights to both input modalities and labels. If the   *(1 items, 1 kernels)*
+          - items: `49576186:e10#2`
+    - **[lever]** class-balanced non-overlapping sample selection  *(1 items, 1 kernels)*
+      - **[action_context]** When grouping by recording ID produces unequal class counts and some recordings contribute multiple overlapping windows.  *(1 items, 1 kernels)*
+        - **[action]** Group samples by recording ID, select the most temporally separated sample per recording first, then iteratively add more samples from under-represented classes until all classes have equal count. Save the resulting balanced dataset to CSV for reproducibility and fast reloading.  *(1 items, 1 kernels)*
+          - items: `49576186:e14#3`
+- **[goal]** What do I do when my fine-tuned language model was trained with special tokens (e.g., explicit newline tokens) that aren't in the default pretrained tokenizer?  *(4 items, 1 kernels)*
+  - **[lever_context]** The PET model was trained with custom newline tokens added to the tokenizer (expanding vocab from 128001 to 128003). The model checkpoint's embedding layer was sized for this expanded vocab, but the config and model initialization may default to the original vocab size.  *(4 items, 1 kernels)*
+    - **[lever]** tokenizer vocabulary alignment with training  *(3 items, 1 kernels)*
+      - **[action_context]** When the pretrained model config's vocab_size doesn't match the tokenizer length after adding tokens, and the checkpoint was saved with the expanded embeddings.  *(3 items, 1 kernels)*
+        - **[action]** At inference time, add the same tokens in the same order as training before resizing embeddings. Verify the tokenizer length matches the model's embedding dimension. This is easy to miss when switching checkpoint versions.  *(3 items, 1 kernels)*
+          - items: `55621328:e5#1`, `55621328:e10#2`, `55621328:e14#1`
+    - **[lever]** mask token index extraction in tokenization  *(1 items, 1 kernels)*
+      - **[action_context]** When using a cloze/PET-style model where the prediction head reads from a specific token position.  *(1 items, 1 kernels)*
+        - **[action]** After tokenizing, scan input_ids for the mask_token_id, record its index as a scalar (not a list), include it in the returned dict, and ensure the dataset selection step retains this column. Verify the type matches what the collator/model expects (scalar vs list).  *(1 items, 1 kernels)*
+          - items: `55621328:e11#2`
+- **[goal]** What do I do when a bag-of-words model's score is sensitive to vocabulary size but I'm near a plateau?  *(3 items, 1 kernels)*
+  - **[lever_context]** With ~6000 training samples and 8000 features, the model is severely overfit. Earlier history showed best LB around max_features 40-100. The score dropped from 0.136 to 0.023 when max_features jumped to 8000.  *(3 items, 1 kernels)*
+    - **[lever]** vocabulary size (max_features) of text vectorizer  *(3 items, 1 kernels)*
+      - **[action_context]** When the initial vocabulary is large (hundreds) relative to training set size and LB scores are very low.  *(3 items, 1 kernels)*
+        - **[action]** Sweep max_features downward aggressively (halving or more) until LB score stops improving, then do a fine-grained search around the best value. Expect the optimum to be very small (tens of features) for small datasets with linear models. Reverse immediately when score drops and bracket the optimum f  *(3 items, 1 kernels)*
+          - items: `7676170:e1#1`, `7676170:e3#2`, `7676170:e6#2`
+- **[goal]** What do I do when a new approach causes a regression but I believe the idea has merit?  *(3 items, 3 kernels)*
+  - **[lever_context]** v44 regressed from 0.45414 to 0.46571. The author believed adding richer features (binned logits) could rescue the approach.  *(3 items, 3 kernels)*
+    - **[lever]** swap model family  *(1 items, 1 kernels)*
+      - **[action_context]** When the current model family's score has stagnated or regressed despite hyperparameter tuning.  *(1 items, 1 kernels)*
+        - **[action]** Run a quick probe with the alternative model on a small number of folds without submitting. Check validation output for basic feasibility (does it even produce valid predictions for the task?). If the probe fails or produces clearly worse results, revert to the previous model family immediately rath  *(1 items, 1 kernels)*
+          - items: `7676170:e4#1`
+    - **[lever]** community-sourced technique adoption  *(1 items, 1 kernels)*
+      - **[action_context]** When a credible community source proposes a concrete, low-risk modification to an existing pipeline.  *(1 items, 1 kernels)*
+        - **[action]** Before changing code, checkpoint the current state with version logs documenting baseline scores. Then apply the suggested change as a single isolated edit and submit. If it improves, checkpoint again. This isolates the effect of the community suggestion from any other changes.  *(1 items, 1 kernels)*
+          - items: `15203842:e3#2`
+    - **[lever]** feature enrichment of the failing approach  *(1 items, 1 kernels)*
+      - **[action_context]** When the regression is large (>2% relative) and the public leaderboard has very few rows (high noise).  *(1 items, 1 kernels)*
+        - **[action]** Allow at most one follow-up attempt to rescue a regressing approach by enriching it. If the second attempt also fails to match the previous best, abandon the approach rather than continuing to iterate. Two consecutive failures on a noisy leaderboard are a strong signal the approach direction is wron  *(1 items, 1 kernels)*
+          - items: `17616127:e11#2`
+- **[goal]** What do I do when I want to modernize my neural architecture for tabular data but risk losing performance from a proven component?  *(3 items, 2 kernels)*
+  - **[lever_context]** The existing ODST+MLP head was part of a pipeline scoring 0.69602. TabM is a newer backbone with potential but untested in this exact setup. Swapping entirely lost 0.002 on LB.  *(3 items, 2 kernels)*
+    - **[lever]** model architecture simplification  *(2 items, 2 kernels)*
+      - **[action_context]** When scaling up hidden layers yields no improvement on a dataset with only a few thousand samples and the training set has been reduced by a holdout split.  *(1 items, 1 kernels)*
+        - **[action]** If increasing model capacity shows no gain, suspect the bottleneck is data volume rather than model expressiveness. Simplify the architecture (fewer layers) and restore full training data before concluding the model family is inadequate. With small datasets (<10K rows), a single hidden layer MLP oft  *(1 items, 1 kernels)*
+          - items: `7670859:e5#2`
+      - **[action_context]** When migrating from a custom tree-based NN (ODST) to a different backbone (TabM) for tabular prediction.  *(1 items, 1 kernels)*
+        - **[action]** First try the new backbone as a drop-in replacement to measure its standalone contribution. If it regresses, do not discard either—wrap both architectures as separate heads with independent optimizer groups and aggregate their predictions. Adjust ensemble weights or K parameters per component to bal  *(1 items, 1 kernels)*
+          - items: `77129691:e14#2`
+    - **[lever]** optimizer choice for tabular deep learning  *(1 items, 1 kernels)*
+      - **[action_context]** When the current optimizer is already well-tuned and producing good results on a tabular survival/classification task.  *(1 items, 1 kernels)*
+        - **[action]** Probe the alternative optimizer in a single submission. If it regresses, revert immediately and re-tune the original optimizer's hyperparameters (learning rate, epochs, batch size) rather than spending time tuning the new optimizer. Tabular models are often less sensitive to optimizer novelty than t  *(1 items, 1 kernels)*
+          - items: `77129691:e11#2`
+- **[goal]** What do I do when I'm at a plateau (tied personal best) and want to push higher by adjusting multiple configuration knobs?  *(3 items, 3 kernels)*
+  - **[lever_context]** The author had been oscillating around 0.383 for many versions, with a best of 0.388. Multiple independent levers (blend strategy, checkpoint, encoder architecture, NER/math preprocessing) were available.  *(3 items, 3 kernels)*
+    - **[lever]** continuous hyperparameter sweep  *(2 items, 2 kernels)*
+      - **[action_context]** When at a plateau with many possible knobs and no clear signal for which one matters.  *(1 items, 1 kernels)*
+        - **[action]** Change only one knob per submission so you can attribute gains or losses. If you change multiple knobs simultaneously and regress, you cannot tell which change hurt. After a regression, revert to the last-best configuration before trying a different knob. If 2-3 consecutive submissions all regress,   *(1 items, 1 kernels)*
+          - items: `58130512:e30#1`
+      - **[action_context]** When large steps cause regressions and moderate steps yield small gains, the optimum is nearby.  *(1 items, 1 kernels)*
+        - **[action]** Start with coarse steps to identify the direction of improvement. When a step causes regression, reverse direction and halve the step size. When two consecutive submissions differ by less than noise (e.g., 0.0000 delta), declare the optimum bracketed and stop sweeping that parameter. Move to a quali  *(1 items, 1 kernels)*
+          - items: `55591012:e12#1`
+    - **[lever]** combinatorial configuration search  *(1 items, 1 kernels)*
+      - **[action_context]** When each individual change produces only marginal differences and you change multiple variables per experiment  *(1 items, 1 kernels)*
+        - **[action]** Avoid changing more than one lever per submission. When you change multiple things at once and get a regression, you cannot attribute the cause and may discard a good setting along with a bad one. If forced to explore quickly, at least keep one anchor configuration that achieved your best score and   *(1 items, 1 kernels)*
+          - items: `7018718:e10#1`
+- **[goal]** What do I do when deciding how many CV folds to use for a tree-based ensemble on ~17k samples?  *(3 items, 2 kernels)*
+  - **[lever_context]** The author tested 5 folds (v87, 0.82230), 15 folds (v91, 0.82432), and later 20 folds (v92, 0.82158). 15 folds was consistently the best, likely because more folds means more models in the ensemble (better averaging) while still having enough validation data per fold.  *(3 items, 2 kernels)*
+    - **[lever]** Number of CV folds  *(3 items, 2 kernels)*
+      - **[action_context]** When increasing fold count beyond a working value on a moderately-sized dataset with a tree-based ensemble.  *(3 items, 2 kernels)*
+        - **[action]** Start with a moderate fold count (10-15) that balances ensemble diversity with per-fold validation size. If reducing folds (e.g., to 5) hurts, the ensemble averaging benefit dominates. If increasing folds (e.g., to 20) also hurts, per-fold training data is becoming too similar and overfitting. Brack  *(3 items, 2 kernels)*
+          - items: `58130512:e30#2`, `58130512:e29#2`, `13848868:e1#2`
+- **[goal]** What do I do when I want to test whether a two-stage post-processing transform is helping or hurting survival predictions?  *(3 items, 3 kernels)*
+  - **[lever_context]** v5 added sqrt transform and improved score. v7 removed it and score dropped. But the drop could be confounded with other changes between v5 and v6. The author needed to disambiguate.  *(1 items, 1 kernels)*
+    - **[lever]** prediction calibration transform  *(1 items, 1 kernels)*
+      - **[action_context]** When removing a transform causes a regression, restore it and keep it as a fixed component while tuning other parameters.  *(1 items, 1 kernels)*
+        - **[action]** Test the transform in isolation by toggling it on/off with all other settings held constant. If removing it hurts, restore it immediately and treat it as a fixed component for subsequent tuning. Do not re-test it unless the ensemble composition changes substantially.  *(1 items, 1 kernels)*
+          - items: `15164527:e4#3`
+  - **[lever_context]** The two-stage transform converts raw regression output using the training target type (log_efs_time or log_km_proba). Disabling it and manually computing efs/exp(log_efs_time) is an equivalent but more transparent formulation that lets the author inspect intermediate values.  *(1 items, 1 kernels)*
+    - **[lever]** two-stage post-processing toggle  *(1 items, 1 kernels)*
+      - **[action_context]** When the two-stage flag is entangled with multiple models, isolate its effect by disabling it on a single model and manually applying the equivalent transform, then compare local CV scores before submitting.  *(1 items, 1 kernels)*
+        - **[action]** To test a post-processing transform, disable it (set flag to False), apply the equivalent math explicitly in a separate cell, and verify on local OOF predictions. Only submit if local CV improves. If the manual version matches or underperforms, the transform is not the bottleneck—restore it and look  *(1 items, 1 kernels)*
+          - items: `73671444:e9#2`
+  - **[lever_context]** The author had a working pipeline with a fixed global label shift (a≈3, b≈1) that achieved LB 0.82432. Per-fold centering is a natural extension that could reduce fold-specific bias but risks instability.  *(1 items, 1 kernels)*
+    - **[lever]** target transformation (centering/shifting)  *(1 items, 1 kernels)*
+      - **[action_context]** When the adaptive version is more complex and the fixed version already works well.  *(1 items, 1 kernels)*
+        - **[action]** First try the adaptive (per-fold) variant and check CV metrics without submitting. If CV does not improve, revert to the simpler fixed version with rounded constants. If neither variant beats the baseline on CV, abandon the direction quickly (within 1-2 iterations) and move to a different lever enti  *(1 items, 1 kernels)*
+          - items: `58130512:e33#1`
+- **[goal]** What do I do when a quick probe of an alternative doesn't show improvement and I have limited submissions?  *(3 items, 3 kernels)*
+  - **[lever_context]** The author has been iterating on blending strategies and checkpoints for many versions. Recent scores have plateaued around 0.385. Leaderboard submissions are a limited resource.  *(2 items, 2 kernels)*
+    - **[lever]** experiment gating by local validation  *(2 items, 2 kernels)*
+      - **[action_context]** When you have a local metric that tracks the leaderboard well, use it to gate submissions: only submit changes that show local improvement, and revert negative probes without submitting.  *(2 items, 2 kernels)*
+        - **[action]** Use local validation output to gate leaderboard submissions. If a probe (e.g., new checkpoint) does not show local improvement, skip the submission entirely and pivot to a qualitatively different approach rather than continuing incremental variants of the same idea.  *(2 items, 2 kernels)*
+          - items: `27389424:e15#2`, `7018718:e6#2`
+  - **[lever_context]** STFT modality was added at v95-v96, tested through v97-v100 with scores (0.32109, 0.27844) that never beat the pre-STFT best (0.26921). The complexity cost (extra imports, data loading, concatenation bugs) was evident from v98-v99 bug fixes.  *(1 items, 1 kernels)*
+    - **[lever]** pipeline simplification by removing unhelpful components  *(1 items, 1 kernels)*
+      - **[action_context]** When a new modality or feature has been tested across 3+ submissions without improving the best score, and has introduced bugs or complexity.  *(1 items, 1 kernels)*
+        - **[action]** Remove the unhelpful component entirely, clean up all associated code (imports, data loading, augmentation), and submit the simplified pipeline. Accept a small regression from the absolute best if the codebase is cleaner and more stable for future iteration.  *(1 items, 1 kernels)*
+          - items: `49576186:e18#1`
+- **[goal]** What do I do when I have a feature that was previously removed/disabled and I want to know if it helps the current improved pipeline?  *(3 items, 3 kernels)*
+  - **[lever_context]** The S_2 date feature had been tried in earlier versions with poor results (LB 0.77), but the pipeline has since improved (rounding, better aggregations). The feature was already coded but commented out, making it cheap to test.  *(2 items, 2 kernels)*
+    - **[lever]** feature toggle / re-evaluation  *(1 items, 1 kernels)*
+      - **[action_context]** When a previously-rejected feature exists in commented-out code and the pipeline has changed substantially since it was last tested.  *(1 items, 1 kernels)*
+        - **[action]** Re-enable the feature in isolation, submit, and compare to the current best. If the result is neutral or slightly negative (within ~0.001), check CV as well before deciding. Do not spend more than one iteration on re-testing a single previously-rejected feature.  *(1 items, 1 kernels)*
+          - items: `27836972:e5#1`
+    - **[lever]** aggregation feature selection  *(1 items, 1 kernels)*
+      - **[action_context]** When a specific aggregation type (like count) was previously shown to hurt performance on the leaderboard, and it gets re-introduced alongside other changes.  *(1 items, 1 kernels)*
+        - **[action]** If removing a feature group previously yielded a clear improvement, and re-adding it doesn't show validation gains, remove it again. Trust the repeated signal over the hope that context changes (new hyperparameters, more folds) will make the feature useful. Submit only after confirming the removal s  *(1 items, 1 kernels)*
+          - items: `27799930:e7#1`
+  - **[lever_context]** The pipeline had three overlapping 10s EEG windows (left, center, right) requiring 3× the I/O and compute. The center window is the most aligned with the label; flanking windows are plausibly redundant.  *(1 items, 1 kernels)*
+    - **[lever]** feature ablation (remove then restore)  *(1 items, 1 kernels)*
+      - **[action_context]** When a feature component is expensive and its marginal value is uncertain.  *(1 items, 1 kernels)*
+        - **[action]** Remove the suspected-redundant feature, submit to get a baseline score, then restore it and submit again. Compare the two scores. If restoring improves the score, keep the feature; if not, leave it out. Do the removal first so you have a clean simplified version to build on if the feature turns out   *(1 items, 1 kernels)*
+          - items: `53424936:e1#1`
+- **[goal]** What do I do when my aggregation-based feature pipeline is hitting memory limits on Kaggle's fixed-RAM environment?  *(3 items, 2 kernels)*
+  - **[lever_context]** The dataset has ~190 features × multiple aggregation functions, creating a wide DataFrame. Kaggle kernels have limited RAM. The author had memory issues evidenced by progressive memory optimization across many versions.  *(3 items, 2 kernels)*
+    - **[lever]** split aggregation into sequential steps with garbage collection  *(2 items, 1 kernels)*
+      - **[action_context]** When a single groupby().agg() call with many columns and functions exceeds available memory.  *(2 items, 1 kernels)*
+        - **[action]** Centralize aggregation into a helper that immediately downcasts output columns (float64→float32, int64→int32, counts→int8). Call gc.collect() after each major aggregation step and after deleting intermediate DataFrames. In the CV loop, avoid creating separate X_train/X_test copies when possible, or   *(2 items, 1 kernels)*
+          - items: `27799930:e6#2`, `27799930:e7#3`
+    - **[lever]** synthetic test set expansion for stress testing  *(1 items, 1 kernels)*
+      - **[action_context]** When the public test set is very small and you cannot verify scaling behavior from a normal submission  *(1 items, 1 kernels)*
+        - **[action]** Add a debug flag that duplicates the test dataframe many times (e.g., 2000x) and optionally lengthens text inputs, then run inference to verify GPU memory usage and wall-clock time scale acceptably. Disable the flag before final submission. This catches OOM and timeout failures that a tiny public te  *(1 items, 1 kernels)*
+          - items: `55621328:e2#2`
+- **[goal]** What do I do when I want to migrate a working pipeline to a GPU-accelerated library that has API incompatibilities with the original?  *(3 items, 2 kernels)*
+  - **[lever_context]** CuPy was introduced for GPU spectrograms (v141) but required multiple fixes: import path (v142), string matching bugs (v146-v147), incompatible .get() calls (v149), and ultimately a fallback to SciPy (v148). The feature (STFT) was eventually dropped in v151.  *(3 items, 2 kernels)*
+    - **[lever]** spectrogram computation backend  *(2 items, 1 kernels)*
+      - **[action_context]** When the current spectrogram backend is GPU-specific and scores are not improving despite augmentation tuning.  *(2 items, 1 kernels)*
+        - **[action]** Fall back to the CPU equivalent (e.g., SciPy instead of CuPy) to unblock experimentation. Fix bugs incrementally but do not submit until the pipeline runs cleanly end-to-end. If the feature computed by the GPU path doesn't improve the score once working, drop both the feature and the GPU dependency.  *(2 items, 1 kernels)*
+          - items: `49576186:e23#2`, `49576186:e25#1`
+    - **[lever]** incremental library migration with fallback  *(1 items, 1 kernels)*
+      - **[action_context]** When the target library lacks full API parity (e.g., cuDF vs pandas groupby transform, inplace semantics).  *(1 items, 1 kernels)*
+        - **[action]** Migrate I/O calls first, then run and fix errors one at a time. When a specific operation fails in the new library, convert to the original library for that operation and convert back afterward rather than rewriting the logic. Do not submit until the full pipeline executes without error.  *(1 items, 1 kernels)*
+          - items: `28093671:e7#1`
+- **[goal]** What do I do when I have a novel architectural idea that changes both input representation and model structure simultaneously?  *(3 items, 3 kernels)*
+  - **[lever_context]** The author had a well-tuned baseline (0.45265) and wanted to try 4-channel subsample stacking of spectrograms. This required changing preprocessing, transforms, and model checkpoints simultaneously, making it hard to isolate the effect of each change.  *(3 items, 3 kernels)*
+    - **[lever]** architectural probe with compound changes  *(2 items, 2 kernels)*
+      - **[action_context]** When a novel idea requires multiple simultaneous changes (input format, dataset fields, model modules) and the baseline is already strong  *(2 items, 2 kernels)*
+        - **[action]** Submit the compound change as a single probe. If it regresses, do not discard everything—identify which sub-components might still help and revert only the clearly harmful parts (e.g., the input pairing) while keeping potentially useful parts (e.g., improved pooling). If the partial revert still und  *(2 items, 2 kernels)*
+          - items: `17371717:e10#1`, `77450317:e4#2`
+    - **[lever]** new feature representation with dedicated checkpoints  *(1 items, 1 kernels)*
+      - **[action_context]** When the new representation requires multiple coordinated changes (preprocessing, normalization, model weights) that can't be tested incrementally against the old baseline.  *(1 items, 1 kernels)*
+        - **[action]** First get the new pipeline running end-to-end with one checkpoint version, fix any bugs (variable naming, transform mismatches, NaN handling), then sweep checkpoint versions. If all versions score substantially worse than the baseline (e.g., >10% relative degradation), abandon the approach rather th  *(1 items, 1 kernels)*
+          - items: `49524919:e9#1`
+- **[goal]** What do I do when adding a neural network to a fold-based ensemble and test predictions look wrong?  *(3 items, 2 kernels)*
+  - **[lever_context]** The NN was introduced at v46 (LB 0.69140) and improved through v48/v60 to 0.69283, proving it a key ensemble member. But the training code lacked standard ML engineering (per-fold model persistence, proper DataLoaders), risking inconsistency between OOF and test predictions.  *(3 items, 2 kernels)*
+    - **[lever]** Output logit rescaling before activation  *(1 items, 1 kernels)*
+      - **[action_context]** When the NN's blend weight has been tuned but further increases don't help, and the NN's raw logits may lack dynamic range.  *(1 items, 1 kernels)*
+        - **[action]** Multiply the NN's pre-activation logits by a small constant (e.g., 2) to sharpen the sigmoid output distribution. This increases discrimination without retraining. Validate on LB or CV, then re-tune the blend weight upward since the NN's predictions are now more informative.  *(1 items, 1 kernels)*
+          - items: `77450317:e7#1`
+    - **[lever]** Test prediction fold averaging  *(1 items, 1 kernels)*
+      - **[action_context]** When accumulating test predictions across CV folds in a loop for ensembling with other models.  *(1 items, 1 kernels)*
+        - **[action]** Always divide each fold's test prediction by the number of folds when accumulating (test_preds += fold_pred / n_folds). Even for rank-based metrics, consistent scaling across ensemble members matters when blending or stacking. If you accidentally remove this division, expect a regression.  *(1 items, 1 kernels)*
+          - items: `73937748:e15#3`
+    - **[lever]** NN training pipeline structure and hyperparameters  *(1 items, 1 kernels)*
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** When a neural network has demonstrated value in an ensemble but uses ad-hoc training code, refactor to use proper fold-wise training with framework DataLoaders, save per-fold model checkpoints, and tune hyperparameters simultaneously. This consolidation step typically yields a small but reliable gai  *(1 items, 1 kernels)*
+          - items: `73937748:e22#1`
+- **[goal]** What do I do when I want to add a new feature that depends on an external library and unfamiliar data types?  *(3 items, 2 kernels)*
+  - **[lever_context]** tqdm has multiple import paths (tqdm, tqdm_notebook, tqdm._tqdm_notebook) that behave differently in Jupyter vs script contexts, and pandas integration (tqdm.pandas()) can conflict. Three consecutive edits were needed to resolve this.  *(3 items, 2 kernels)*
+    - **[lever]** incremental debugging of new feature pipeline  *(2 items, 1 kernels)*
+      - **[action_context]** When integrating precomputed artifacts from another notebook or dataset, file paths and imports are error-prone because they can't be validated statically.  *(2 items, 1 kernels)*
+        - **[action]** Before writing feature logic, verify the library is installed and imported, and confirm the data object supports the API you will call (e.g., .apply). Add the install, the import, and a minimal smoke test in separate cells before wiring the feature into the full pipeline. This avoids a chain of 5+ f  *(2 items, 1 kernels)*
+          - items: `60197293:e3#1`, `60197293:e10#2`
+    - **[lever]** library import and compatibility fixes  *(1 items, 1 kernels)*
+      - **[action_context]** When a utility library (e.g., progress bars) has environment-dependent import paths and you see runtime errors after each attempt.  *(1 items, 1 kernels)*
+        - **[action]** When a library import fails in a notebook environment, try the most standard import first. If that fails, try the notebook-specific submodule import. Add integration hooks (like pandas registration) only after confirming the base import works. Keep these fixes as isolated micro-commits so you can pi  *(1 items, 1 kernels)*
+          - items: `7548275:e2#2`
+- **[goal]** What do I do when switching to group-aware cross-validation and I need to decide what column to use as the group variable?  *(3 items, 3 kernels)*
+  - **[lever_context]** StratifiedGroupKFold requires a meaningful group column. The author oscillated between using KMeans cluster labels, columns from train_feats, and an external CSV's 'group' column—none of which were the semantically correct grouping (essay topic). The resulting LB 0.80993 was far worse than the ungro  *(3 items, 3 kernels)*
+    - **[lever]** oversampling subgroup selection  *(2 items, 2 kernels)*
+      - **[action_context]** When the pipeline has an oversampling step and two plausible subgroup indicators exist  *(1 items, 1 kernels)*
+        - **[action]** Test each subgroup indicator in isolation with a leaderboard submission. If the current indicator already yields the best score, do not switch. A flag that correlates with the test distribution (here 'difficulty') may be more useful to oversample than one marking data provenance ('kaggle_prompt').  *(1 items, 1 kernels)*
+          - items: `58130512:e13#2`
+      - **[action_context]** When the dataset has a natural grouping (e.g., essay prompts/topics) that should prevent leakage across folds.  *(1 items, 1 kernels)*
+        - **[action]** Use the domain-meaningful group variable (e.g., prompt/topic ID) rather than a synthetic clustering. Verify the group variable produces balanced, non-trivial splits before submitting. If grouped CV degrades the score substantially, check whether the group variable is correct before concluding that g  *(1 items, 1 kernels)*
+          - items: `55987255:e20#2`
+    - **[lever]** data ordering and fold construction  *(1 items, 1 kernels)*
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** Do not sort or group training data by a categorical variable before applying sequential KFold splitting, as this creates folds where entire categories are missing from train or validation. If category-aware splitting is desired, use GroupKFold or StratifiedKFold explicitly.  *(1 items, 1 kernels)*
+          - items: `7670859:e7#3`
+- **[goal]** What do I do when adding external labeled data improved my score in training but I need to verify whether it helps or hurts at inference time?  *(3 items, 3 kernels)*
+  - **[lever_context]** stft_spec_from_eeg took eeg_label_offset_seconds as a parameter to compute time_temp, but this offset comes from training labels and is unavailable during inference. Setting it to 0 fixed the issue and yielded a new best score.  *(2 items, 2 kernels)*
+    - **[lever]** remove label leakage from inference preprocessing  *(2 items, 2 kernels)*
+      - **[action_context]** When external data requires shape hacks and the pipeline has multiple trained checkpoints available  *(2 items, 2 kernels)*
+        - **[action]** Audit every feature-generation function's parameters before inference submission. Any parameter derived from labels (offsets, segment boundaries, class info) must be replaced with a fixed default or estimated from the input alone. This is a common source of silent degradation that manifests as a sco  *(1 items, 1 kernels)*
+          - items: `53424936:e5#3`
+        - **[action]** Test inference both with and without the extra data pipeline code, using the same and different checkpoints. If removing extra data with a newer checkpoint beats keeping it, the extra data's benefit was likely captured during training and the inference-time complexity is unnecessary. Toggle one vari  *(1 items, 1 kernels)*
+          - items: `49576186:e27#1`
+  - **[lever_context]** The Persuade/feedback dataset has six rubric sub-scores (cohesion, syntax, vocabulary, phraseology, grammar, conventions) while the competition target is a single holistic score. Sentence-transformer embeddings can bridge the two datasets.  *(1 items, 1 kernels)*
+    - **[lever]** stacked features from auxiliary regressor on external data  *(1 items, 1 kernels)*
+      - **[action_context]** When external data has multi-dimensional labels related to the target and you have embeddings that generalize across datasets  *(1 items, 1 kernels)*
+        - **[action]** Encode both external and target data with the same sentence-transformer, train a multi-output regressor (e.g., Ridge) on external embeddings→sub-scores, predict sub-scores for train/test, and append as features to the main model. If the LB score regresses, the auxiliary predictions may be noisy or t  *(1 items, 1 kernels)*
+          - items: `55987255:e15#2`
+- **[goal]** What do I do when I want to test whether adding a new input modality improves performance?  *(3 items, 2 kernels)*
+  - **[lever_context]** The pipeline was complex with multiple models, spectrogram generation, and ensemble logic. A large refactor to add video modality touched many components simultaneously.  *(3 items, 2 kernels)*
+    - **[lever]** debugging existing architecture before adding complexity  *(1 items, 1 kernels)*
+      - **[action_context]** When a new feature branch doesn't improve scores despite being theoretically sound, and the model architecture was recently modified with shape changes.  *(1 items, 1 kernels)*
+        - **[action]** Before concluding a new input modality doesn't help, verify that existing tensor operations (concatenation axes, input dimensions, crop logic) are correct. Fix shape bugs and restore known-good hyperparameters first, then re-evaluate the modality. Toggle the new branch on/off only after the base mod  *(1 items, 1 kernels)*
+          - items: `49576186:e7#1`
+    - **[lever]** input modality addition  *(1 items, 1 kernels)*
+      - **[action_context]** When the baseline is already strong and the new modality is untested.  *(1 items, 1 kernels)*
+        - **[action]** Add the new modality, submit once to get a leaderboard signal. If the score regresses, immediately remove the new modality and revert to the prior configuration (possibly with minor other tweaks). Do not spend multiple iterations tuning the new modality if the first signal is clearly negative.  *(1 items, 1 kernels)*
+          - items: `49576186:e17#1`
+    - **[lever]** pipeline refactoring scope  *(1 items, 1 kernels)*
+      - **[action_context]** When introducing a new modality or major architectural change to a working inference pipeline.  *(1 items, 1 kernels)*
+        - **[action]** Never combine a large infrastructure refactor (disabling existing preprocessing, restructuring data flow) with introducing a new modality in a single submission. First add the new modality alongside the existing pipeline in a minimal change, verify it runs, then refactor. A catastrophic regression f  *(1 items, 1 kernels)*
+          - items: `50496431:e26#2`
+- **[goal]** What do I do when I have a working fold-ensemble and want to squeeze out more score?  *(3 items, 3 kernels)*
+  - **[lever_context]** The author already had a 4-fold ensemble scoring ~0.82. Full-model (trained on all folds) checkpoints from different random seeds were available. Adding diverse checkpoints to an ensemble typically reduces variance.  *(3 items, 3 kernels)*
+    - **[lever]** switching model family or training regime for ensemble diversity  *(1 items, 1 kernels)*
+      - **[action_context]** When adding more members of the same type yields <0.5% relative improvement, diversity is exhausted for that model family.  *(1 items, 1 kernels)*
+        - **[action]** Once same-architecture ensemble gains become marginal (relative improvement <0.5%), stop adding members and instead introduce a different model architecture or training variant (e.g., 1D CNN vs 2D CNN, or pseudo-label fine-tuned models). Blend across architectures for the next round of gains.  *(1 items, 1 kernels)*
+          - items: `52860091:e3#2`
+    - **[lever]** Ensemble composition — adding full-data seed checkpoints  *(1 items, 1 kernels)*
+      - **[action_context]** When fold-based checkpoints are already ensembled and full-model seed checkpoints are available from the same experiment.  *(1 items, 1 kernels)*
+        - **[action]** Add full-model (all-data) checkpoints trained with different seeds to the existing fold ensemble. Keep the same prediction script and rounding thresholds (re-optimized offline). This adds diversity without changing the model architecture. Expect a small but consistent gain.  *(1 items, 1 kernels)*
+          - items: `55621328:e40#1`
+    - **[lever]** cross-validation fold count  *(1 items, 1 kernels)*
+      - **[action_context]** When you have prior evidence (your own records or commented-out code) that more folds helped before, and you reduced folds only for iteration speed.  *(1 items, 1 kernels)*
+        - **[action]** Restore the higher fold count as a single probe once iteration is done. For tree-based ensembles on ~17K samples, going from 5 to 15 folds increases training set size per fold from 80% to ~93%, which can improve OOF quality and final ensemble. No sweep needed if you already have evidence for the tar  *(1 items, 1 kernels)*
+          - items: `55591012:e2#1`
+- **[goal]** What do I do when my feature matrix construction fails with type or key errors in a mixed feature pipeline?  *(3 items, 2 kernels)*
+  - **[lever_context]** The code had a SentenceTransformer and a LightGBM model both potentially named 'model', causing ambiguity. The LightGBM prediction call was also using the wrong dataframe variable.  *(2 items, 2 kernels)*
+    - **[lever]** Consistency of dependent constants across code  *(2 items, 2 kernels)*
+      - **[action_context]** When a pipeline chains multiple models (embedding model, topic model, prediction model) and the same generic name is reused.  *(1 items, 1 kernels)*
+        - **[action]** Give each model a unique, descriptive variable name (e.g., 'sentence_model' vs 'lgb_model') before debugging prediction logic. Verify that the prediction call references the correct feature dataframe by checking variable names match between training and inference paths. Fix naming before tuning.  *(1 items, 1 kernels)*
+          - items: `59253662:e1#2`
+      - **[action_context]** When a dimensionality or component-count parameter is changed in one place but hardcoded column counts exist elsewhere.  *(1 items, 1 kernels)*
+        - **[action]** After changing any parameter that determines the shape of generated features, search the entire notebook for all hardcoded references to the old value (column name ranges, feature list lengths, array shapes) and update them simultaneously. Use a single constant or variable rather than repeating magi  *(1 items, 1 kernels)*
+          - items: `55987255:e10#1`
+  - **[lever_context]** The pipeline combined TF-IDF sparse matrices, embedding floats, and handcrafted features into one DataFrame. Selecting only numeric columns and excluding the target avoids dtype errors when casting to float32.  *(1 items, 1 kernels)*
+    - **[lever]** feature matrix dtype filtering  *(1 items, 1 kernels)*
+      - **[action_context]** When a heterogeneous DataFrame with string IDs, targets, and numeric features must be converted to a numpy float array for model input.  *(1 items, 1 kernels)*
+        - **[action]** Select only numeric-typed columns from the DataFrame, explicitly remove the target and ID columns from that list, then cast to float32. This is more robust than try/except with a pickle fallback.  *(1 items, 1 kernels)*
+          - items: `55987255:e23#3`
+- **[goal]** What do I do when tuning a custom loss function's constants and the score is sensitive to small changes?  *(3 items, 1 kernels)*
+  - **[lever_context]** Prior versions (v67-v72) extensively tuned the constants a and b in the custom objective. The best LB score used a≈2.996, b≈0.973, which are close to the dataset's true mean (~3) and variance (~1).  *(3 items, 1 kernels)*
+    - **[lever]** revert to proven hyperparameter values  *(2 items, 1 kernels)*
+      - **[action_context]** When multiple alternative computations of a sensitive hyperparameter all score below a known good setting.  *(2 items, 1 kernels)*
+        - **[action]** Hold one constant fixed. First probe an extreme value to gauge sensitivity. If validation degrades, return near the original value and make small perturbations (±0.01–0.03). Also try simplifying the hessian to a constant to isolate gradient effects. Stop when two consecutive perturbations in opposit  *(2 items, 1 kernels)*
+          - items: `58130512:e24#1`, `58130512:e32#3`
+    - **[lever]** label shift constants in custom objective  *(1 items, 1 kernels)*
+      - **[action_context]**   *(1 items, 1 kernels)*
+        - **[action]** When the tuned constants are very close to simple round numbers (e.g., mean≈3→use 3, var≈1→use 1), test whether rounding them simplifies the pipeline without hurting performance. Use CV to verify before submitting. If the rounded values match CV performance, keep them for simplicity.  *(1 items, 1 kernels)*
+          - items: `58130512:e33#2`
+- **[goal]** What do I do when a large improvement suggests I'm in a productive region of the search space?  *(2 items, 2 kernels)*
+  - **[lever_context]** v25 was best at 0.79261. Exponent 1/4 gave 0.79258 (v26), exponent 1/2 gave 0.79196 (v24). Reverting sampling fractions gave 0.79224 (v27). All directions regressed.  *(2 items, 2 kernels)*
+    - **[lever]** stopping criterion for hyperparameter sweep  *(2 items, 2 kernels)*
+      - **[action_context]** When a change produces a large improvement, there may be further gains from small perturbations in the same direction.  *(2 items, 2 kernels)*
+        - **[action]** Stop a hyperparameter sweep when you have tested values on both sides of the current best and all score worse. If the differences are within noise (~0.0003 on this metric), accept the best configuration and move to a different lever (e.g., feature engineering or model architecture).  *(2 items, 2 kernels)*
+          - items: `27656049:e8#3`, `50376011:e33#2`
+- **[goal]** What do I do when my bag-of-words model only uses one text field but the task requires predicting labels about multiple text fields (e.g., both question and answer)?  *(2 items, 2 kernels)*
+  - **[lever_context]** The author spent v20-v25 exploring cross-encoder variants with NER/math toggles, plateauing around 0.382. Bi-encoder with NER+math was untried. Earlier bi-encoder attempts (v14-v18) without NER/math peaked at 0.385.  *(1 items, 1 kernels)*
+    - **[lever]** architecture + preprocessing combination  *(1 items, 1 kernels)*
+      - **[action_context]** When a preprocessing improvement (NER/math) was developed for one architecture but not yet tested with another architecture that previously showed promise.  *(1 items, 1 kernels)*
+        - **[action]** When you develop a preprocessing improvement on one model architecture, port it to other architectures you have available. Combine the best preprocessing with each architecture variant and search over checkpoints for each combination.  *(1 items, 1 kernels)*
+          - items: `7018718:e8#2`
+  - **[lever_context]** The competition has 30 targets, half about questions and half about answers. The model only used question_body text. Adding answer text is the most obvious missing signal; alternative levers like model architecture changes are less impactful when the input data itself is incomplete.  *(1 items, 1 kernels)*
+    - **[lever]** input feature coverage (adding text fields)  *(1 items, 1 kernels)*
+      - **[action_context]** When a second text field is clearly relevant to a subset of targets and the current pipeline already preprocesses one field.  *(1 items, 1 kernels)*
+        - **[action]** Concatenate the new text field into the existing preprocessed text, then increase the vocabulary size proportionally (e.g., 2-3× if input text roughly doubles) so the vectorizer can capture tokens from both fields. Validate locally before submitting. If the gain is confirmed, consider adding further  *(1 items, 1 kernels)*
+          - items: `7676170:e2#1`
+- **[goal]** What do I do when feature column names in my saved feature-selection list no longer match the DataFrame after renaming aggregation aliases?  *(2 items, 2 kernels)*
+  - **[lever_context]** Adding 'std' to groupby aggregations produces NaN for single-row groups. The author tried fillna with column means (v13) then removed it (v16), suggesting uncertainty about the right approach.  *(2 items, 2 kernels)*
+    - **[lever]** NaN handling strategy for derived aggregation features  *(1 items, 1 kernels)*
+      - **[action_context]** When new aggregation statistics (std, median) create NaNs for groups with insufficient rows, and the model uses a NAN_VALUE sentinel.  *(1 items, 1 kernels)*
+        - **[action]** First check whether the model handles NaN natively (XGBoost does). If using a sentinel fill value, be aware that filling std NaNs with column means mixes semantics. Prefer letting the model handle NaN natively or filling with 0 (for std of single observations). Test with and without explicit fill to  *(1 items, 1 kernels)*
+          - items: `27836972:e3#3`
+    - **[lever]** feature name consistency between selection list and generated features  *(1 items, 1 kernels)*
+      - **[action_context]** When using a precomputed feature-selection list (e.g., pickled column names) with a feature-engineering pipeline that generates column names dynamically.  *(1 items, 1 kernels)*
+        - **[action]** After any column rename in feature engineering, regenerate the feature-selection list rather than loading a stale one. Print and compare the loaded selection list against actual DataFrame columns to detect mismatches before training. If using a saved list, assert that all names in the list exist in   *(1 items, 1 kernels)*
+          - items: `60197293:e11#3`
+- **[goal]** What do I do when a version regresses after changing multiple things at once (model scripts + blend weights)?  *(2 items, 2 kernels)*
+  - **[lever_context]** v12 changed both external prediction scripts (to inc13) and reduced NN weight simultaneously, causing a regression from v11. This makes it unclear which change was harmful.  *(2 items, 2 kernels)*
+    - **[lever]** multi-backbone ensemble composition  *(1 items, 1 kernels)*
+      - **[action_context]** A simplified single-backbone submission scores worse than a prior diverse blend.  *(1 items, 1 kernels)*
+        - **[action]** Revert to the diverse multi-backbone per-fold blend that previously worked, then incrementally add new backbone predictions and tune the blend weight between old and new components. Submit after each addition to confirm improvement before adding more.  *(1 items, 1 kernels)*
+          - items: `17616127:e25#1`
+    - **[lever]** revert and isolate changes  *(1 items, 1 kernels)*
+      - **[action_context]** When a multi-change version regresses and you suspect one component was beneficial (NN weight was higher in the previous best).  *(1 items, 1 kernels)*
+        - **[action]** Revert the suspected harmful change (script variants) while restoring the suspected beneficial setting (blend weight). Then make additional small adjustments to other coefficients informed by local validation. Submit only after verifying the pipeline produces the correct output file.  *(1 items, 1 kernels)*
+          - items: `77450317:e6#1`
+- **[goal]** What do I do when I suspect my pretrained model pipelines have data leakage in their OOF predictions?  *(2 items, 2 kernels)*
+  - **[lever_context]** The author switched from 'models_03' to 'no_leakage_models_riza_02' in v40, implying the earlier pipelines had a leakage issue. Despite individual model scores possibly being lower without leakage, the stacking meta-learner should generalize better.  *(2 items, 2 kernels)*
+    - **[lever]** replace leaked OOF predictions with properly cross-validated ones  *(1 items, 1 kernels)*
+      - **[action_context]** When using pretrained pipelines whose OOF predictions feed a stacking meta-learner, leaked OOF predictions inflate the meta-learner's apparent CV score but hurt LB.  *(1 items, 1 kernels)*
+        - **[action]** Retrain or replace all base-model pipelines with versions that produce strictly out-of-fold predictions (no train-set leakage). Expect an initial LB drop because the meta-learner was previously overfitting to leaked signal. The cleaner OOF predictions provide a more trustworthy foundation for subseq  *(1 items, 1 kernels)*
+          - items: `73937748:e13#2`
+    - **[lever]** in-notebook OOF computation  *(1 items, 1 kernels)*
+      - **[action_context]** When pre-trained fold models are available as pickles and the corresponding feature matrices can be reconstructed in-notebook  *(1 items, 1 kernels)*
+        - **[action]** Instead of loading pre-computed OOF predictions from CSV files (which may have alignment or formatting issues), load the fold models directly and compute predictions on both train and test embeddings in-notebook. This ensures index alignment and avoids parsing artifacts. Verify with CV before submit  *(1 items, 1 kernels)*
+          - items: `55987255:e26#2`
+- **[goal]** What do I do when OneHotEncoder fitted on training data encounters unseen categories in test data?  *(2 items, 1 kernels)*
+  - **[lever_context]** OneHotEncoder fitted on training data throws errors on unseen test categories. The test set has netloc/category values not in training. Simply using handle_unknown='ignore' zeros out those rows, losing information.  *(2 items, 1 kernels)*
+    - **[lever]** unknown category handling in OHE  *(2 items, 1 kernels)*
+      - **[action_context]** When the test set may contain unseen categorical values and the feature is important enough that zeroing out is suboptimal  *(2 items, 1 kernels)*
+        - **[action]** As a temporary workaround, transform training data and slice to test length to get a running pipeline, but immediately follow up with handle_unknown='ignore' in the encoder to properly handle unseen categories. The workaround assigns incorrect features but may still produce reasonable scores if the   *(2 items, 1 kernels)*
+          - items: `7823861:e2#2`, `7823861:e3#2`
+- **[goal]** What do I do when a sweep produces confounded results partway through?  *(2 items, 2 kernels)*
+  - **[lever_context]** Successive checkpoint versions (v1.4→v1.7) showed best at v1.5, then regressions. Adding TTA variants also hurt. The single-model approach appeared saturated.  *(2 items, 2 kernels)*
+    - **[lever]** experimental control discipline  *(1 items, 1 kernels)*
+      - **[action_context]** When you accidentally vary two factors simultaneously and get ambiguous results.  *(1 items, 1 kernels)*
+        - **[action]** Change only one variable per submission. If you discover a confound mid-sweep, isolate and fix it first, then restart the sweep from the known-good baseline. Do not draw conclusions from runs where multiple factors changed simultaneously.  *(1 items, 1 kernels)*
+          - items: `50376011:e17#3`
+    - **[lever]** checkpoint version sweep with early stopping  *(1 items, 1 kernels)*
+      - **[action_context]** When 3+ consecutive checkpoint versions fail to improve over the current best, and adding inference-time augmentation also regresses, the single-model capacity is likely saturated.  *(1 items, 1 kernels)*
+        - **[action]** Sweep checkpoint versions in order, submitting each. If two consecutive versions regress from the best, stop the sweep. Do not add TTA complexity simultaneously with a checkpoint change—test them independently. When the sweep plateaus, pivot to ensembling diverse model architectures rather than cont  *(1 items, 1 kernels)*
+          - items: `49524919:e12#2`
+- **[goal]** What do I do when my image preprocessing has manual numpy operations that should be part of the augmentation pipeline for consistency?  *(2 items, 2 kernels)*
+  - **[lever_context]** The channel dimension was added via manual numpy indexing (`spectrogram.T[..., None]`) outside the albumentations pipeline. This creates a fragile dependency between preprocessing steps and can cause issues when TTA or other transforms expect consistent input shapes.  *(1 items, 1 kernels)*
+    - **[lever]** input preprocessing pipeline refactoring  *(1 items, 1 kernels)*
+      - **[action_context]** When using albumentations for image transforms and some shape manipulations are done outside the pipeline, risking inconsistency with TTA or other augmentations.  *(1 items, 1 kernels)*
+        - **[action]** Move all shape and normalization operations into custom albumentations ImageOnlyTransform classes so the entire preprocessing is a single composable pipeline. This ensures TTA flips and other transforms operate on consistently shaped inputs. Bundle this refactor with any functional change to minimiz  *(1 items, 1 kernels)*
+          - items: `49524919:e4#2`
+  - **[lever_context]** The existing ensemble already includes multiple model architectures (EfficientNet, X3D, raw EEG CNNs). Preprocessing (filter type/parameters) is an orthogonal source of diversity. MNE and SciPy Butterworth filters have different impulse responses, potentially capturing complementary signal character  *(1 items, 1 kernels)*
+    - **[lever]** preprocessing filter variant as ensemble diversity source  *(1 items, 1 kernels)*
+      - **[action_context]** When you have a working ensemble and want to add diversity without training a new architecture.  *(1 items, 1 kernels)*
+        - **[action]** First, test the alternative preprocessing globally (replacing the existing one) to confirm it doesn't degrade performance. If it matches or improves, make the preprocessing switchable, train a model with the new preprocessing, and add it as a separate ensemble member alongside models using the origi  *(1 items, 1 kernels)*
+          - items: `50496431:e48#1`
+- **[goal]** What do I do when I have a new checkpoint but the optimized rounding thresholds are unknown?  *(2 items, 1 kernels)*
+  - **[lever_context]** Each checkpoint produces a different continuous prediction distribution; thresholds from one checkpoint are suboptimal for another. The author had local CV to derive thresholds but still needed LB confirmation.  *(2 items, 1 kernels)*
+    - **[lever]** optimized rounding thresholds  *(2 items, 1 kernels)*
+      - **[action_context]** The model and inference pipeline are fixed; only the 5 threshold values can be adjusted.  *(1 items, 1 kernels)*
+        - **[action]** Derive initial thresholds from local CV optimization, submit once, then if the score is below expectations, shift thresholds (especially the middle ones controlling the most populated bins) by 0.1-0.2 and resubmit. Expect 1-2 threshold iterations per checkpoint before moving on.  *(1 items, 1 kernels)*
+          - items: `55621328:e12#2`
+      - **[action_context]** When the prediction distribution shifts due to ensembling more or fewer checkpoints  *(1 items, 1 kernels)*
+        - **[action]** When changing the number of checkpoints in an ensemble, always re-optimize rounding thresholds on a held-out validation set that matches the test distribution. If two consecutive threshold/checkpoint combinations both regress, the issue is likely the checkpoints themselves, not the thresholds—move o  *(1 items, 1 kernels)*
+          - items: `55621328:e32#2`
+- **[goal]** What do I do when I want to capture surface-level text patterns beyond handcrafted statistics?  *(2 items, 1 kernels)*
+  - **[lever_context]** Handcrafted features (readability, word counts, sentiment) were already present. Character n-gram TF-IDF and word n-gram counts capture spelling patterns, common phrases, and writing style that handcrafted features miss.  *(2 items, 1 kernels)*
+    - **[lever]** TF-IDF and CountVectorizer n-gram features  *(1 items, 1 kernels)*
+      - **[action_context]** When the model is a tree ensemble that can handle high-dimensional sparse features, and the text data has stylistic variation correlated with the target.  *(1 items, 1 kernels)*
+        - **[action]** Add character-level TF-IDF (e.g., 3-6 grams) and word-level CountVectorizer (e.g., 2-3 grams) features. Convert sparse matrices to dense, concatenate with existing features, and use feature selection or let the tree model handle sparsity. Combine with stacked LM predictions for complementary signal.  *(1 items, 1 kernels)*
+          - items: `59253662:e2#2`
+    - **[lever]** Sentence-level feature granularity  *(1 items, 1 kernels)*
+      - **[action_context]** When you have a set of metrics computed at a coarse granularity (document/section) but only a subset at a finer granularity (sentence), and feature selection is available to prune noise.  *(1 items, 1 kernels)*
+        - **[action]** Mirror all document-level readability/count metrics at the sentence level, aggregate them (mean, std, min, max, etc.) per essay, and run automatic feature selection to keep only the useful ones. Submit once and check for improvement; if positive, move on to other levers.  *(1 items, 1 kernels)*
+          - items: `59253662:e5#1`
+- **[goal]** What do I do when choosing between GroupKFold (by prompt) and StratifiedKFold (by score) for a text regression task with multiple prompts?  *(2 items, 2 kernels)*
+  - **[lever_context]** The competition data lacks natural group IDs. KMeans on feature representations can create pseudo-groups. The author needed groups that reflect essay similarity without leaking the target or ID.  *(2 items, 2 kernels)*
+    - **[lever]** CV splitting strategy  *(1 items, 1 kernels)*
+      - **[action_context]** When the test set does not require generalization to completely unseen prompts (i.e., test prompts overlap with or resemble training prompts), and when the number of natural groups is small.  *(1 items, 1 kernels)*
+        - **[action]** Prefer StratifiedKFold with many folds (≥10) over GroupKFold when the number of groups is small (<10) and the test distribution does not require out-of-group generalization. GroupKFold with few groups yields high-variance OOF predictions and unstable threshold optimization. Augment folds with minori  *(1 items, 1 kernels)*
+          - items: `58130512:e25#2`
+    - **[lever]** KMeans clustering on text features for CV group assignment  *(1 items, 1 kernels)*
+      - **[action_context]** When fitting KMeans to generate group labels for cross-validation, the clustering input must exclude target and ID columns, and the predict call must use the same feature subset as fit. Using TF-IDF features (topic-level signal) is preferable to the full engineered feature set which may contain targ  *(1 items, 1 kernels)*
+        - **[action]** Drop target and ID columns before fitting KMeans. Fit on a topic-representative feature subset (e.g., TF-IDF columns) rather than all features. Use the identical column subset for both fit and predict. Store the resulting labels as a 'group' column for the CV splitter.  *(1 items, 1 kernels)*
+          - items: `55987255:e19#2`
+- **[goal]** What do I do when I discover that a debug shortcut (e.g., early exit after one fold) was accidentally left in a submitted notebook that achieved a new best score?  *(2 items, 2 kernels)*
+  - **[lever_context]** The v37 best score was achieved with only partial cross-validation (one fold due to a leftover break statement). Running all folds should theoretically improve generalization, but the single-fold model may have been luckily well-calibrated.  *(2 items, 2 kernels)*
+    - **[lever]** removing debug shortcuts and running full training  *(1 items, 1 kernels)*
+      - **[action_context]** A debug early-exit was left in a CV loop, meaning the best score came from an incomplete pipeline.  *(1 items, 1 kernels)*
+        - **[action]** When removing a debug shortcut that restricted training (e.g., running only 1 of N folds), expect that the score may regress because the previous best may have benefited from lucky single-fold calibration or different averaging. Submit the fix but be prepared to revert or investigate if the score dr  *(1 items, 1 kernels)*
+          - items: `55987255:e7#1`
+    - **[lever]** restore production-quality settings  *(1 items, 1 kernels)*
+      - **[action_context]** When you have a working pipeline and a baseline score, and you know you degraded certain settings for speed.  *(1 items, 1 kernels)*
+        - **[action]** Before tuning new levers, restore all settings you weakened for iteration speed (fold count, data size, ensemble members). Submit to confirm the restored setting matches or exceeds your baseline. This establishes the true baseline before further optimization.  *(1 items, 1 kernels)*
+          - items: `55591012:e2#2`
+- **[goal]** What do I do when moving code out of a disabled block (e.g., `if False`) into the active path?  *(1 items, 1 kernels)*
+  - **[lever_context]** Code inside a conditional block has extra indentation; moving it outside requires adjusting indentation, which is error-prone in Python.  *(1 items, 1 kernels)*
+    - **[lever]** indentation and syntax correctness  *(1 items, 1 kernels)*
+      - **[action_context]** When relocating statements from inside a block to outside it in Python.  *(1 items, 1 kernels)*
+        - **[action]** After moving code out of a conditional block, verify that the indentation matches the surrounding scope before running. If the notebook is not submitted, catch the error locally and fix in a minimal follow-up edit.  *(1 items, 1 kernels)*
+          - items: `7573212:e1#2`
+- **[goal]** What do I do when I want to incorporate categorical metadata into a pretrained transformer model?  *(1 items, 1 kernels)*
+  - **[lever_context]** The dataset has a 'category' column with a small number of values. The model is BERT-based with fixed 512-token input. One-hot encoding the category is a natural low-dimensional feature to add.  *(1 items, 1 kernels)*
+    - **[lever]** auxiliary categorical features via one-hot encoding  *(1 items, 1 kernels)*
+      - **[action_context]** When the transformer has a fixed input length and the auxiliary feature is small-dimensional.  *(1 items, 1 kernels)*
+        - **[action]** Encode the categorical feature as a one-hot vector and concatenate it into the input arrays (trimming token positions to maintain the fixed sequence length). Submit to verify the feature adds signal before layering other changes on top.  *(1 items, 1 kernels)*
+          - items: `7240226:e3#1`
+- **[goal]** What do I do when trying to improve a CNN classification model by replacing one spatial attention mechanism with another?  *(1 items, 1 kernels)*
+  - **[lever_context]** The prior SSEBlock model scored 0.952. A SpatialAttentionBlock with learnable conv-based attention maps is a plausible alternative. Channel width is the main capacity knob for such blocks.  *(1 items, 1 kernels)*
+    - **[lever]** attention block channel width sweep  *(1 items, 1 kernels)*
+      - **[action_context]** When the new attention block underperforms the baseline at its initial configuration.  *(1 items, 1 kernels)*
+        - **[action]** Try 2-3 channel width configurations (e.g., narrow → wider → revert). If the best variant still underperforms the original block type by a meaningful margin after the sweep, revert to the original block rather than continuing to tune. A gap of >0.5% AUC after 3 configurations suggests the block type  *(1 items, 1 kernels)*
+          - items: `13848868:e6#2`
+- **[goal]** What do I do when I want to try a different model artifact but am unsure it will work?  *(1 items, 1 kernels)*
+  - **[lever_context]** The author had two model files: one loaded via create_model (weights-only) and one as a full saved Keras model. Switching loading methods can cause compatibility issues on TPU.  *(1 items, 1 kernels)*
+    - **[lever]** Model loading method  *(1 items, 1 kernels)*
+      - **[action_context]** A new checkpoint or saved model is available but its compatibility with the current inference setup is uncertain.  *(1 items, 1 kernels)*
+        - **[action]** When switching to a new model artifact, first try without submitting (or check outputs locally). If it fails or looks wrong, revert to the known-good loading method and adjust only the path. Do not change both the loading method and the checkpoint simultaneously.  *(1 items, 1 kernels)*
+          - items: `13702907:e8#3`
+- **[goal]** What do I do when I want to make two coupled changes (add a data source and adjust a capacity parameter) but need to understand their individual effects?  *(1 items, 1 kernels)*
+  - **[lever_context]** Adding answer text changes the input distribution, and the old vocabulary size (40) may be too small for the combined text. Both changes are needed, but submitting both at once obscures attribution.  *(1 items, 1 kernels)*
+    - **[lever]** experiment sequencing  *(1 items, 1 kernels)*
+      - **[action_context]** When one change (adding data) is a prerequisite that the other change (capacity increase) depends on, and local validation is available.  *(1 items, 1 kernels)*
+        - **[action]** Make the prerequisite change first and check local validation (without submitting) to confirm it helps. Then make the dependent capacity change and submit. This saves submission budget while still giving signal on each change's contribution.  *(1 items, 1 kernels)*
+          - items: `7676170:e2#2`
+- **[goal]** What do I do when fold models need to be reused at test time in a memory-constrained environment?  *(1 items, 1 kernels)*
+  - **[lever_context]** XGBoost models can be serialized with save_model/load_model. Keeping all fold models in memory simultaneously with the test data would exceed limits.  *(1 items, 1 kernels)*
+    - **[lever]** serialize fold models to disk and load one at a time  *(1 items, 1 kernels)*
+      - **[action_context]** When using K-fold GBDT ensembles and test-time memory is tight.  *(1 items, 1 kernels)*
+        - **[action]** During training, save each fold's model to disk immediately after fitting (e.g., clf.save_model). At inference, for each test chunk, load one fold model at a time, accumulate predictions, then average. Delete the model and call gc.collect between folds/chunks to free memory.  *(1 items, 1 kernels)*
+          - items: `27799930:e3#3`
+- **[goal]** What do I do when I need to get predictions from a native XGBoost Booster object trained via xgb.train?  *(1 items, 1 kernels)*
+  - **[lever_context]** XGBoost has two APIs: sklearn-compatible (XGBClassifier with predict_proba) and native Booster (with predict only). The author used xgb.train which returns a Booster, not a classifier wrapper.  *(1 items, 1 kernels)*
+    - **[lever]** prediction API call selection  *(1 items, 1 kernels)*
+      - **[action_context]** When using xgb.train (native API) rather than XGBClassifier, the returned Booster has no predict_proba method.  *(1 items, 1 kernels)*
+        - **[action]** When training with xgb.train, always use model.predict(DMatrix) for inference. If you need probabilities, set the objective to a logistic variant (e.g., binary:logistic) which makes predict return probabilities directly. Do not call predict_proba on a Booster—it will raise an AttributeError.  *(1 items, 1 kernels)*
+          - items: `28093671:e4#1`
+- **[goal]** What do I do when adding categories to a pandas Categorical column before fillna, and the check for existing categories fails on some chunks?  *(1 items, 1 kernels)*
+  - **[lever_context]** Using `x not in df[col].values` scans actual data values, which may include the category even if it's not in the dtype's category list, or miss it in a chunk. This causes add_categories to either skip needed additions or raise errors.  *(1 items, 1 kernels)*
+    - **[lever]** categorical dtype category-set inspection  *(1 items, 1 kernels)*
+      - **[action_context]** When conditionally adding categories before fillna on chunked or subsetted data.  *(1 items, 1 kernels)*
+        - **[action]** Check `x not in df[col].cat.categories` instead of `x not in df[col].values` before calling `add_categories`. The .cat.categories attribute reflects the dtype's registered categories, which is what add_categories modifies, whereas .values reflects actual data which may differ across chunks.  *(1 items, 1 kernels)*
+          - items: `28093671:e5#3`
+- **[goal]** What do I do when I have manually assigned non-uniform combination weights to fold models and want to check if this is actually helping?  *(1 items, 1 kernels)*
+  - **[lever_context]** Custom fold weights (heavily favoring one fold) were in place. Such weights risk overfitting to validation quirks. Equal averaging is the standard baseline for fold ensembles.  *(1 items, 1 kernels)*
+    - **[lever]** ensemble fold weighting  *(1 items, 1 kernels)*
+      - **[action_context]** When custom weights were assigned without a principled optimization procedure (e.g., based on eyeballing fold scores).  *(1 items, 1 kernels)*
+        - **[action]** Test equal-weight averaging as a baseline before investing in custom fold weights. If equal averaging matches or beats custom weights on the leaderboard, keep it for simplicity. If custom weights win, verify they were derived from a held-out signal, not the same folds they weight.  *(1 items, 1 kernels)*
+          - items: `28093671:e11#1`
+- **[goal]** What do I do when rescaling all ensemble weights by a constant factor to test sensitivity?  *(1 items, 1 kernels)*
+  - **[lever_context]** In v8→v9, all weights were multiplied by ~10. Since weighted averaging normalizes by sum of weights, this is mathematically identical.  *(1 items, 1 kernels)*
+    - **[lever]** ensemble blend weights  *(1 items, 1 kernels)*
+      - **[action_context]** Weighted ensemble blending uses relative, not absolute, weights.  *(1 items, 1 kernels)*
+        - **[action]** When adjusting ensemble blend weights, only change the ratios between weights, not their absolute scale. Multiplying all weights by a constant has no effect on a normalized weighted average. To test a component's contribution, set its weight to zero or change it relative to others.  *(1 items, 1 kernels)*
+          - items: `77347591:e5#3`
+- **[goal]** What do I do when model.predict() fails and I suspect the batch_size parameter is the cause?  *(1 items, 1 kernels)*
+  - **[lever_context]** With large transformer models (RoBERTa-large, sequence length 514), even batch_size=2 can cause OOM on a Kaggle GPU. The author saw a failure at batch_size=1 initially (likely due to the memory issue from loading all models), then tried batch_size=2 after restructuring, then reverted to batch_size=1  *(1 items, 1 kernels)*
+    - **[lever]** prediction batch size  *(1 items, 1 kernels)*
+      - **[action_context]** When running inference with large transformer models on limited GPU memory.  *(1 items, 1 kernels)*
+        - **[action]** Start with batch_size=1 for large models to minimize memory. If that fails, fix the memory issue (e.g., don't hold multiple models simultaneously) rather than increasing batch size. Only increase batch size after confirming single-model inference works.  *(1 items, 1 kernels)*
+          - items: `7823861:e1#2`
+- **[goal]** What do I do when I want to transition from a debug/development mode to a full production run?  *(1 items, 1 kernels)*
+  - **[lever_context]** The notebook had an adaptive DEBUG flag that auto-enabled based on dataset size, plus DEBUG guards around the submission assembly block. These needed to be removed for a real submission.  *(1 items, 1 kernels)*
+    - **[lever]** debug flag management  *(1 items, 1 kernels)*
+      - **[action_context]** When the notebook must run end-to-end on the competition platform where the dataset size would normally trigger debug mode.  *(1 items, 1 kernels)*
+        - **[action]** Before submitting, audit all DEBUG gates in the notebook and either remove them or force DEBUG=False. Do this as a separate, minimal commit so it is easy to verify and revert. Check that no code path critical to submission generation is gated behind a debug condition.  *(1 items, 1 kernels)*
+          - items: `7548275:e3#3`
+- **[goal]** What do I do when a global batch-size setting is silently overridden by a framework default after disabling an initialization call?  *(1 items, 1 kernels)*
+  - **[lever_context]** The author commented out mt.init() to avoid it forcing eval_batch_size=64, but this broke the global eval_batch_size propagation entirely, so the actual batch size used during prediction didn't match the command-line flag.  *(1 items, 1 kernels)*
+    - **[lever]** explicitly set the global batch-size variable  *(1 items, 1 kernels)*
+      - **[action_context]** When you disable a framework init function to avoid one side effect but that function also sets other needed globals.  *(1 items, 1 kernels)*
+        - **[action]** After disabling the init call, manually set each global that the init would have configured (here mt.set_global('eval_batch_size', bs)). Verify with a print/log that the value propagated correctly before running inference.  *(1 items, 1 kernels)*
+          - items: `50376011:e18#1`
+- **[goal]** What do I do when I want to use runtime prediction statistics to gate or filter submissions?  *(1 items, 1 kernels)*
+  - **[lever_context]** At v107, the author added code to compute prediction entropy and 'other' class probability, then sleep for varying durations based on thresholds—effectively using prediction statistics as a proxy for submission quality to decide whether to let the notebook complete.  *(1 items, 1 kernels)*
+    - **[lever]** runtime prediction quality proxy  *(1 items, 1 kernels)*
+      - **[action_context]** When the competition platform times out notebooks and you can observe prediction statistics before final submission, you can use those statistics to abort bad runs early.  *(1 items, 1 kernels)*
+        - **[action]** Compute a cheap summary statistic of predictions (e.g., average entropy, class probability) and compare against thresholds calibrated from prior runs. If the statistic indicates a poor run, sleep until timeout to prevent a bad submission from being recorded. Disable this gating for production runs o  *(1 items, 1 kernels)*
+          - items: `50376011:e21#3`
+- **[goal]** What do I do when I find a new single component that outperforms the current best single component?  *(1 items, 1 kernels)*
+  - **[lever_context]** Model 1 alone (0.23560) beat model 0 alone (~0.24029). Both are valid checkpoints from the same training run. Ensembling has consistently helped throughout the history.  *(1 items, 1 kernels)*
+    - **[lever]** ensemble composition  *(1 items, 1 kernels)*
+      - **[action_context]** A newly tested member scores better solo than the previous best solo member.  *(1 items, 1 kernels)*
+        - **[action]** After finding a new best single member, immediately test combining it with the previous best member. If the pair beats both individuals, keep the pair. If not, keep the better individual. This one-step greedy addition is cheap and almost always worth trying before exploring further.  *(1 items, 1 kernels)*
+          - items: `50376011:e41#1`
+- **[goal]** What do I do when my EEG time-window extraction uses an offset that's already in seconds but needs to be in samples?  *(1 items, 1 kernels)*
+  - **[lever_context]** The eeg_median column stores offsets in seconds, but array indexing requires sample indices. The original code added fractional-second offsets to sample-rate-scaled windows without converting the base offset, causing misaligned EEG crops.  *(1 items, 1 kernels)*
+    - **[lever]** EEG time indexing units  *(1 items, 1 kernels)*
+      - **[action_context]** When computing start/stop sample indices from a seconds-based offset column for EEG data  *(1 items, 1 kernels)*
+        - **[action]** Always multiply time offsets in seconds by the sampling rate before adding sample-based window margins. Verify by checking that the resulting index range length equals the expected number of samples (duration × sampling rate).  *(1 items, 1 kernels)*
+          - items: `49576186:e2#2`
+- **[goal]** What do I do when I want to sort a dataset by sequence length for efficient bucketed padding during inference?  *(1 items, 1 kernels)*
+  - **[lever_context]** Sorting by token length reduces padding waste and speeds up inference, but the model outputs will be in sorted order, not the original order needed for submission.  *(1 items, 1 kernels)*
+    - **[lever]** index tracking after dataset reordering  *(1 items, 1 kernels)*
+      - **[action_context]** When sorting a dataset by a feature (e.g., length) before inference, the predictions array will follow the sorted order.  *(1 items, 1 kernels)*
+        - **[action]** Before sorting, extract the ID column from the sorted dataset into a separate variable. After inference, create a dataframe mapping sorted IDs to predictions and merge it onto the submission template by ID. Never rely on positional indexing between a sorted dataset and an unsorted dataframe.  *(1 items, 1 kernels)*
+          - items: `55621328:e26#2`
+- **[goal]** What do I do when I need to wire together outputs from two separate model stages into a single submission file?  *(1 items, 1 kernels)*
+  - **[lever_context]** The notebook has two independent model outputs (DeBERTa predictions and LightGBM predictions) that need to be combined. The merge code was previously commented out and had hardcoded paths that didn't match actual file locations.  *(1 items, 1 kernels)*
+    - **[lever]** submission pipeline file I/O and blending logic  *(1 items, 1 kernels)*
+      - **[action_context]** When building a multi-model blending pipeline for the first time in a notebook environment where file paths are uncertain.  *(1 items, 1 kernels)*
+        - **[action]** First write each model's predictions to an explicitly named file immediately after that model's inference cell. Then in the merge cell, read those exact filenames. Test the full pipeline end-to-end before submitting. Expect 2-3 iterations of path fixes when the working directory or naming convention  *(1 items, 1 kernels)*
+          - items: `55431616:e5#1`
+- **[goal]** What do I do when a hardware-specific configuration (e.g., GPU flags) causes failures across environments?  *(1 items, 1 kernels)*
+  - **[lever_context]** GPU device flags were added in v2, removed in v4 due to likely errors, then re-added in v5 with a runtime check. The root issue was hardcoded device selection vs. conditional detection.  *(1 items, 1 kernels)*
+    - **[lever]** runtime environment detection  *(1 items, 1 kernels)*
+      - **[action_context]** When code must run on both GPU and CPU environments (e.g., local vs. Kaggle kernels with varying GPU availability).  *(1 items, 1 kernels)*
+        - **[action]** Never hardcode device strings. Always wrap device selection in a runtime availability check (e.g., torch.cuda.is_available()). If a device flag causes an error, don't just remove it—replace it with a conditional so you retain GPU acceleration when available.  *(1 items, 1 kernels)*
+          - items: `60197293:e1#2`
+- **[goal]** What do I do when my notebook uses polars for data loading but I need to apply row-wise Python functions (e.g., nltk/textstat)?  *(1 items, 1 kernels)*
+  - **[lever_context]** Polars DataFrames don't support .apply with arbitrary Python functions the way pandas does; the author hit this going from v18→v20.  *(1 items, 1 kernels)*
+    - **[lever]** DataFrame library compatibility  *(1 items, 1 kernels)*
+      - **[action_context]** When the pipeline loads data with polars for speed but downstream feature engineering uses Python-level row functions.  *(1 items, 1 kernels)*
+        - **[action]** Maintain a parallel pandas DataFrame (or convert once) for columns that need row-wise Python UDFs. Load it alongside the polars frame at data-loading time rather than converting inline at each feature call.  *(1 items, 1 kernels)*
+          - items: `60197293:e3#3`
+- **[goal]** What do I do when reading a file twice in Python (once for a set, once for a list) produces an empty second result?  *(1 items, 1 kernels)*
+  - **[lever_context]** The code read english_vocab as a set from the file iterator, then tried to read eng_words from the same exhausted iterator, producing an empty list. Debug prints at v122-v123 revealed the discrepancy.  *(1 items, 1 kernels)*
+    - **[lever]** file I/O pattern fix  *(1 items, 1 kernels)*
+      - **[action_context]** When a file handle is consumed by one comprehension and a second comprehension on the same handle yields nothing  *(1 items, 1 kernels)*
+        - **[action]** Either read all lines into a list first and derive both structures from it, or derive the second structure from the first (e.g., list(set_variable)). Add a length-check print immediately after loading to catch empty collections before they silently corrupt downstream features.  *(1 items, 1 kernels)*
+          - items: `60197293:e17#3`
+- **[goal]** What do I do when ablation of a feature group shows a tiny score drop?  *(1 items, 1 kernels)*
+  - **[lever_context]** Removing LSA caused a 0.0003 drop; removing Word2Vec and restoring LSA recovered only partially. Both drops were within noise range but consistently directional.  *(1 items, 1 kernels)*
+    - **[lever]** feature inclusion decision  *(1 items, 1 kernels)*
+      - **[action_context]** When individual ablation signals are weak but consistent in direction across multiple tests.  *(1 items, 1 kernels)*
+        - **[action]** If removing a feature group consistently (even slightly) hurts, keep it and try adding more complementary feature groups rather than continuing to ablate. Small consistent signals from multiple feature types compound when combined. Submit the combined version to confirm.  *(1 items, 1 kernels)*
+          - items: `55987255:e1#2`
+- **[goal]** What do I do when adding a new category of handcrafted features requires significant infrastructure work before I can evaluate them?  *(1 items, 1 kernels)*
+  - **[lever_context]** The new features required pip installs, nltk tokenizers, spell-checkers, and multiple preprocessing pipelines. Six versions (v13-v19) were spent on infrastructure before the first submission.  *(1 items, 1 kernels)*
+    - **[lever]** infrastructure debugging before evaluation  *(1 items, 1 kernels)*
+      - **[action_context]** When a feature engineering idea requires new dependencies, data type conversions, or complex pipelines that may fail at runtime.  *(1 items, 1 kernels)*
+        - **[action]** Get the pipeline running end-to-end with a minimal version of the new features first, submit once to confirm the baseline hasn't regressed, then iterate on feature selection. Avoid switching frameworks mid-implementation (e.g., Polars vs Pandas) as it multiplies debugging steps. Budget several itera  *(1 items, 1 kernels)*
+          - items: `55987255:e5#2`
+- **[goal]** What do I do when NMF features are generated with default iteration limits that may not converge?  *(1 items, 1 kernels)*
+  - **[lever_context]** NMF with default max_iter (200) may not converge on large text corpora, producing unstable topic features. Increasing max_iter ensures convergence but changes the feature values.  *(1 items, 1 kernels)*
+    - **[lever]** NMF max_iter parameter  *(1 items, 1 kernels)*
+      - **[action_context]** Convergence warnings observed in logs for NMF decomposition used as features in a tree-based pipeline.  *(1 items, 1 kernels)*
+        - **[action]** When using NMF as a feature generator for downstream models, set max_iter high enough to ensure convergence (e.g., 400+), but validate that converged NMF features actually improve downstream performance — fully converged topic features are not always better features for the final model.  *(1 items, 1 kernels)*
+          - items: `55987255:e7#2`
+- **[goal]** What do I do when I've pruned components for efficiency and want to recover lost accuracy?  *(1 items, 1 kernels)*
+  - **[lever_context]** The author had previously added many features (v59-v79) then pruned them (v77-v92) for memory/stability. The best LB was 0.82112 (v57) but recent scores were lower. Re-adding pruned components might recover lost signal.  *(1 items, 1 kernels)*
+    - **[lever]** Re-adding previously pruned features and model components  *(1 items, 1 kernels)*
+      - **[action_context]** When multiple components were removed in separate steps and you want to test whether they collectively help.  *(1 items, 1 kernels)*
+        - **[action]** Do not re-add many pruned components simultaneously in one large change. Instead, re-add them one at a time or in small groups, submitting after each, so you can isolate which components help and which hurt. A single large re-addition makes it impossible to diagnose regressions.  *(1 items, 1 kernels)*
+          - items: `55987255:e17#1`

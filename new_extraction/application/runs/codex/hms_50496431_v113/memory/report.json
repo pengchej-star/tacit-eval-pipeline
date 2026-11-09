@@ -1,0 +1,110 @@
+{
+  "observations": [
+    {
+      "observation": "Does the supplied taxonomy include restoring model compatibility as an improvement option?",
+      "result": "yes",
+      "evidence": "memory/taxonomy.md, T.2.1 lists matching architecture, weights and input preprocessing; this motivated checking inference contracts before architecture changes."
+    },
+    {
+      "observation": "Is the competition evaluated with lower-is-better KL divergence?",
+      "result": "yes",
+      "evidence": "task.md Evaluation and Summary from our notes specify KL divergence against expert vote distributions, lower is better."
+    },
+    {
+      "observation": "Must submission rows contain six probabilities that sum to one?",
+      "result": "yes",
+      "evidence": "task.md Submission File specifies eeg_id plus six vote columns and explicitly requires row sums of one."
+    },
+    {
+      "observation": "Did the latest revision substantially regress on the leaderboard?",
+      "result": "yes",
+      "evidence": "history.md reports v112 at 0.27837 and v113 at 0.45086 following the double-head architecture refactor."
+    },
+    {
+      "observation": "Have unchanged-code runs shown score variation?",
+      "result": "yes",
+      "evidence": "history.md v97 to v98 is a NOOP yet changes 0.28132 to 0.28002, much smaller than the latest regression."
+    },
+    {
+      "observation": "Did past X3D inclusion improve the reported blend score?",
+      "result": "yes",
+      "evidence": "history.md v103 to v104 improves 0.28450 to 0.27115; v110 to v111 improves 0.27637 to 0.25772."
+    },
+    {
+      "observation": "Did past raw-EEG inclusion improve the reported blend score?",
+      "result": "yes",
+      "evidence": "history.md v108 to v109 enables run_weight_eeg_raw and improves 0.30242 to 0.27038."
+    },
+    {
+      "observation": "Have inference filtering changes already regressed in the history?",
+      "result": "yes",
+      "evidence": "history.md ll=0.5 in v96 regressed to 0.30501, reverting ll=0 in v97 reached 0.28132; reverting rr=30 to rr=20 in v106 improved 0.31083 to 0.28677."
+    },
+    {
+      "observation": "Do the relevant attention entries prioritize checking compatibility after a regression?",
+      "result": "yes",
+      "evidence": "memory/attention/t-2-1-restore-model-and-input-compatibility.md prioritizes checkpoint shapes and preprocessing; t-1-3-choose-a-response-to-an-unsuccessful-searc.md discusses restoring proven configurations after regressions."
+    },
+    {
+      "observation": "Does the dataset already use the historically preferred EEG filtering defaults?",
+      "result": "yes",
+      "evidence": "current_code.py AlaskaDataIter uses ll=0, rr=20 and mne.filter.filter_data; active candidate runners explicitly pass those values."
+    },
+    {
+      "observation": "Does the mixed-input dataset pass its flip flag into get_mix?",
+      "result": "no",
+      "evidence": "current_code.py single_map_func calls self.get_mix(dp,is_training) without self.flip_eeg, so the double-head second pass duplicates the base view. This path will be excluded, not relied upon."
+    },
+    {
+      "observation": "Does the raw-EEG model still contain the v112 learned spatial neck?",
+      "result": "yes",
+      "evidence": "current_code.py Net1d defines Linear(79*2,1), reshapes EEG to (bs,16,2500,4), and uses the neck in extract_features. Its existing architecture is retained for checkpoint compatibility."
+    },
+    {
+      "observation": "Are checkpoint mismatches known from supplied checkpoint tensors?",
+      "result": "no",
+      "evidence": "No checkpoint tensors are supplied here; only path references and load_state_dict calls are available. Architecture incompatibility cannot be established from leaderboard scores alone."
+    },
+    {
+      "observation": "Are the standalone X3D checkpoint loads strict?",
+      "result": "yes",
+      "evidence": "current_code.py run_weight_x3d uses load_state_dict(state_dict,strict=True) for both normal and mirrored views."
+    },
+    {
+      "observation": "Are the standalone raw-EEG checkpoint loads strict?",
+      "result": "yes",
+      "evidence": "current_code.py run_weight_eeg_raw uses load_state_dict(state_dict,strict=True) for both normal and mirrored views."
+    },
+    {
+      "observation": "Is the refactored double-head the only active final prediction source?",
+      "result": "yes",
+      "evidence": "current_code.py final prediction cell calls only run_weight_double_head; X3D, raw EEG and all other calls are commented out."
+    },
+    {
+      "observation": "Do the displayed four blend weights affect the existing submission?",
+      "result": "no",
+      "evidence": "current_code.py weights_by_score is assigned but its weighted-sum expression is commented; np.mean is applied to the single active member."
+    },
+    {
+      "observation": "Does the ensemble-membership attention entry support restoring previously useful members?",
+      "result": "yes",
+      "evidence": "memory/attention/t-6-2-choose-ensemble-membership.md lists restoring complementary members, checking regression-associated members and prior removal regressions. History provides positive inclusion evidence for X3D and raw EEG."
+    },
+    {
+      "observation": "Does the original final output explicitly validate finite probability rows?",
+      "result": "no",
+      "evidence": "current_code.py constructs sub[TARGETS] directly from the mean and calls to_csv without probability validity checks."
+    },
+    {
+      "observation": "Is the revised script syntactically valid Python?",
+      "result": "yes",
+      "evidence": "Parsed the complete output/revised_code.py with ast.parse without executing it; no notebook magics remain."
+    },
+    {
+      "observation": "Does the report satisfy the requested JSON schema?",
+      "result": "yes",
+      "evidence": "Loaded output/report.json with json.loads and checked both top-level fields, every observation field, string types, and every result against yes/no."
+    }
+  ],
+  "action_summary": "Replace the sole v113 double-head predictor with an equal arithmetic blend of the existing X3D and raw-EEG model families, each retaining its checkpoint architecture, checkpoint averaging, mirror augmentation and 0\u201320 Hz filtering. This removes the newly refactored member associated with the large regression and restores two contributors whose inclusion improved earlier scores; it is not an exact reconstruction of v111. Add prediction shape/finiteness checks and small numerical clipping followed by row normalization, preserving submission column order and Kaggle paths. Convert notebook shell copies into equivalent Python shutil calls. No training or inference was run; leaderboard improvement remains unmeasured."
+}

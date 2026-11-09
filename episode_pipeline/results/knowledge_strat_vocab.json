@@ -1,0 +1,827 @@
+{
+ "categories": [
+  {
+   "name": "ensemble_blend_weight_tuning",
+   "definition": "Adjusting the numeric weights assigned to ensemble members when combining their predictions.",
+   "examples": [
+    "Blend weight tuning",
+    "ensemble blend weight sweep",
+    "ensemble blend weight tuning"
+   ]
+  },
+  {
+   "name": "ensemble_composition",
+   "definition": "Deciding which models or checkpoints to include or exclude as members of an ensemble.",
+   "examples": [
+    "ensemble member selection",
+    "ensemble member pruning",
+    "removing weak ensemble members"
+   ]
+  },
+  {
+   "name": "ensemble_member_addition",
+   "definition": "Adding a new or diverse model to an existing ensemble, possibly with rebalancing.",
+   "examples": [
+    "Add a diverse backbone to the ensemble",
+    "Add a new ensemble member and rebalance blend weights",
+    "ensemble composition (adding new diverse models)"
+   ]
+  },
+  {
+   "name": "ensemble_blending_method",
+   "definition": "Choosing the mathematical formulation or space (e.g., logit vs probability, rank-based, hierarchical) for combining ensemble predictions.",
+   "examples": [
+    "ensemble blending space (logit vs probability)",
+    "rank-based vs probability-based averaging",
+    "hierarchical blending structure"
+   ]
+  },
+  {
+   "name": "ensemble_composition_and_weights_joint",
+   "definition": "Jointly deciding ensemble membership and blend weights as a coupled lever.",
+   "examples": [
+    "ensemble member selection and blend weights",
+    "multi-architecture ensemble composition and weights",
+    "checkpoint selection and ensemble composition"
+   ]
+  },
+  {
+   "name": "ensemble_diversity_strategy",
+   "definition": "Choosing to prioritize diversity of base models over optimizing combination weights or vice versa.",
+   "examples": [
+    "backbone diversity over weight optimization",
+    "Pivot the diversity source rather than abandon blending entirely",
+    "ensemble diversity vs. redundancy tradeoff"
+   ]
+  },
+  {
+   "name": "ensemble_seed_fold_averaging",
+   "definition": "Controlling the number of seeds or folds used for averaging within an ensemble to reduce variance.",
+   "examples": [
+    "number of ensemble repeats (multi-seed averaging)",
+    "multi-fold and multi-seed averaging",
+    "ensemble seed count"
+   ]
+  },
+  {
+   "name": "checkpoint_selection",
+   "definition": "Choosing which saved model checkpoint(s) to use for inference or ensembling.",
+   "examples": [
+    "pretrained checkpoint selection",
+    "model checkpoint index selection",
+    "checkpoint variant selection"
+   ]
+  },
+  {
+   "name": "checkpoint_ensembling",
+   "definition": "Combining predictions from multiple checkpoints of the same or related training runs.",
+   "examples": [
+    "checkpoint ensembling",
+    "checkpoint set selection and combination",
+    "checkpoint selection and ensembling"
+   ]
+  },
+  {
+   "name": "backbone_model_swap",
+   "definition": "Replacing the core model architecture or model family with a different one.",
+   "examples": [
+    "backbone selection",
+    "base model family substitution",
+    "swap model family"
+   ]
+  },
+  {
+   "name": "model_architecture_design",
+   "definition": "Modifying the internal structure of a model such as layers, pooling, attention, or capacity.",
+   "examples": [
+    "hidden-layer weighted pooling architecture",
+    "attention block channel width sweep",
+    "EEG branch capacity (channel count and backbone variant)"
+   ]
+  },
+  {
+   "name": "model_architecture_simplification",
+   "definition": "Reducing model complexity by simplifying architecture or removing components.",
+   "examples": [
+    "model architecture simplification",
+    "stacking head architecture simplification",
+    "replace manual preprocessing with model-native regularization"
+   ]
+  },
+  {
+   "name": "model_capacity_tuning",
+   "definition": "Adjusting parameters that control model capacity such as tree depth, layer width, or model size.",
+   "examples": [
+    "model capacity tuning",
+    "tree capacity hyperparameters",
+    "model size selection"
+   ]
+  },
+  {
+   "name": "gbdt_hyperparameter_tuning",
+   "definition": "Tuning hyperparameters specific to gradient-boosted decision tree models.",
+   "examples": [
+    "GBDT hyperparameter tuning",
+    "GBDT hyperparameter step size reduction",
+    "learning rate (with co-adjusted tree depth)"
+   ]
+  },
+  {
+   "name": "continuous_hyperparameter_sweep",
+   "definition": "Systematically searching over continuous or multi-dimensional hyperparameter spaces.",
+   "examples": [
+    "continuous hyperparameter sweep",
+    "multi-dimensional hyperparameter sweep",
+    "multi-knob configuration sweep"
+   ]
+  },
+  {
+   "name": "learning_rate_and_optimizer",
+   "definition": "Choosing or tuning the optimizer, learning rate, and related training dynamics.",
+   "examples": [
+    "learning rate and iteration count coordination",
+    "optimizer choice for tabular deep learning",
+    "dropout rate and learning rate in the classification head"
+   ]
+  },
+  {
+   "name": "custom_eval_metric",
+   "definition": "Defining or changing the evaluation metric used during training for early stopping or model selection.",
+   "examples": [
+    "custom eval metric for GBDT early stopping",
+    "scale_pos_weight exponent sweep"
+   ]
+  },
+  {
+   "name": "cv_fold_strategy",
+   "definition": "Choosing the number of cross-validation folds or the train/validation splitting strategy.",
+   "examples": [
+    "CV fold count",
+    "number of cross-validation folds",
+    "train/validation split strategy"
+   ]
+  },
+  {
+   "name": "training_data_balancing",
+   "definition": "Resampling, reweighting, or augmenting training data to address class imbalance.",
+   "examples": [
+    "Training data resampling / class balancing",
+    "SMOTE oversampling for ordinal targets",
+    "sample/class weights during training"
+   ]
+  },
+  {
+   "name": "training_data_filtering",
+   "definition": "Filtering or cleaning training data by removing outliers or selecting external data.",
+   "examples": [
+    "training data outlier filtering",
+    "external data inclusion and filtering",
+    "drop high-NA raw columns before feature engineering"
+   ]
+  },
+  {
+   "name": "feature_engineering",
+   "definition": "Creating new features from existing data through transformations, aggregations, or encodings.",
+   "examples": [
+    "Pairwise difference interaction features",
+    "auxiliary categorical features via one-hot encoding",
+    "handcrafted linguistic features"
+   ]
+  },
+  {
+   "name": "feature_selection",
+   "definition": "Choosing which features to include or exclude from the model input.",
+   "examples": [
+    "feature selection via dropping low-importance features",
+    "adjusting the feature drop list composition",
+    "feature selection count threshold"
+   ]
+  },
+  {
+   "name": "feature_aggregation_config",
+   "definition": "Configuring how features are aggregated, such as groupby functions or vocabulary sizes.",
+   "examples": [
+    "groupby aggregation function selection",
+    "vocabulary size (max_features) of text vectorizer",
+    "feature exclusion filters on aggregated features"
+   ]
+  },
+  {
+   "name": "stacking_meta_learner",
+   "definition": "Choosing or configuring the meta-learner used in stacking or blending pipelines.",
+   "examples": [
+    "stacking meta-learner type (linear model)",
+    "meta-learner model type and kernel choice",
+    "auxiliary feature engineering via stacking"
+   ]
+  },
+  {
+   "name": "input_resolution_selection",
+   "definition": "Choosing the resolution of input images or spectrograms for training or inference.",
+   "examples": [
+    "Input image resolution and matching checkpoint",
+    "inference image resolution",
+    "input resolution selection"
+   ]
+  },
+  {
+   "name": "augmentation_strategy",
+   "definition": "Selecting or tuning data augmentation techniques and their strength during training or inference.",
+   "examples": [
+    "augmentation strength and type selection",
+    "train/val split ratio and color augmentation diversity",
+    "TTA augmentation strategy"
+   ]
+  },
+  {
+   "name": "test_time_augmentation",
+   "definition": "Applying augmentation at inference time to produce multiple predictions that are then aggregated.",
+   "examples": [
+    "multi-view test-time augmentation",
+    "test-time augmentation with shifted temporal crops",
+    "test-time image resolution"
+   ]
+  },
+  {
+   "name": "preprocessing_alignment",
+   "definition": "Ensuring preprocessing steps are consistent between training and inference or across pipeline components.",
+   "examples": [
+    "inference preprocessing alignment",
+    "spectrogram preprocessing alignment between training and inference",
+    "text preprocessing / input normalization"
+   ]
+  },
+  {
+   "name": "postprocessing_calibration",
+   "definition": "Applying transformations to model outputs such as rounding, scaling, normalization, or calibration.",
+   "examples": [
+    "Post-processing: threshold-based rounding of predictions to discrete target levels",
+    "prediction calibration transform",
+    "rounding threshold optimization"
+   ]
+  },
+  {
+   "name": "prediction_scaling_normalization",
+   "definition": "Scaling or normalizing raw predictions before ensembling or submission.",
+   "examples": [
+    "prediction normalization before ensembling",
+    "prediction value scaling",
+    "scaling model outputs before weight optimization"
+   ]
+  },
+  {
+   "name": "additive_correction",
+   "definition": "Applying additive post-hoc adjustments or boosts to predictions.",
+   "examples": [
+    "additive post-processing boost magnitude",
+    "joint tuning of blend weights and additive correction",
+    "ensemble blend weights and post-hoc additive corrections"
+   ]
+  },
+  {
+   "name": "inference_dropout_settings",
+   "definition": "Configuring dropout behavior at inference time, including enabling or tuning its magnitude.",
+   "examples": [
+    "Inference-time dropout magnitude",
+    "inference-time dropout settings",
+    "disable dynamic/adaptive features during special inference modes"
+   ]
+  },
+  {
+   "name": "model_loading_infrastructure",
+   "definition": "Handling how models and checkpoints are loaded, including pretrained flags and dependency setup.",
+   "examples": [
+    "Model loading method",
+    "checkpoint loading method",
+    "dependency and model loading infrastructure"
+   ]
+  },
+  {
+   "name": "ablation_testing",
+   "definition": "Systematically removing or reverting individual components to isolate their contribution.",
+   "examples": [
+    "ablation and bug isolation",
+    "ablation of recent additions",
+    "ensemble composition ablation"
+   ]
+  },
+  {
+   "name": "revert_to_baseline",
+   "definition": "Rolling back to a known-good configuration after a regression or failed experiment.",
+   "examples": [
+    "revert to known-good baseline",
+    "revert to known-good configuration",
+    "direction reversal after regression"
+   ]
+  },
+  {
+   "name": "change_isolation_revert_strategy",
+   "definition": "Deciding how to isolate, revert, or unbundle coupled changes to diagnose regressions.",
+   "examples": [
+    "selective revert of bundled changes",
+    "revert confounded changes",
+    "sequential isolation of changes"
+   ]
+  },
+  {
+   "name": "experiment_scheduling_stopping",
+   "definition": "Planning the order, batching, and stopping criteria for experiments.",
+   "examples": [
+    "Experiment scheduling and stopping",
+    "experiment termination criterion",
+    "stopping criterion for hyperparameter sweep"
+   ]
+  },
+  {
+   "name": "experiment_prioritization_pivot",
+   "definition": "Deciding which lever to explore next or whether to pivot to a qualitatively different approach.",
+   "examples": [
+    "experiment prioritization / pivot decision",
+    "switching to a qualitatively different modeling approach",
+    "pipeline replacement vs. incremental tuning"
+   ]
+  },
+  {
+   "name": "leaderboard_probing_validation",
+   "definition": "Using leaderboard submissions to evaluate, probe, or estimate noise rather than relying solely on local validation.",
+   "examples": [
+    "LB-based variant selection over CV-based",
+    "repeated identical submissions to estimate leaderboard noise",
+    "baseline probing via repeated submission"
+   ]
+  },
+  {
+   "name": "submission_budget_verification",
+   "definition": "Managing submission budget, gating submissions on local checks, and verifying correctness before submitting.",
+   "examples": [
+    "submission budget management",
+    "submission gating on local validation",
+    "Submission verification strategy"
+   ]
+  },
+  {
+   "name": "debugging_code_integrity",
+   "definition": "Fixing bugs, verifying code correctness, and ensuring pipeline integrity before continuing experiments.",
+   "examples": [
+    "bug fixes to enable valid submission",
+    "inference pipeline debugging",
+    "indentation and syntax correctness"
+   ]
+  },
+  {
+   "name": "version_control_discipline",
+   "definition": "Maintaining version control practices including checkpointing, re-running, and incremental verification.",
+   "examples": [
+    "Version control and revert discipline",
+    "checkpoint and re-run before next iteration",
+    "incremental code verification"
+   ]
+  },
+  {
+   "name": "community_technique_adoption",
+   "definition": "Incorporating techniques, models, or code sourced from the community or external notebooks.",
+   "examples": [
+    "community-sourced technique adoption",
+    "stacking with external model predictions",
+    "external model version selection and blend coefficient co-tuning"
+   ]
+  },
+  {
+   "name": "missing_value_imputation",
+   "definition": "Choosing how to handle missing values in the data.",
+   "examples": [
+    "missing value imputation strategy"
+   ]
+  },
+  {
+   "name": "multimodal_integration",
+   "definition": "Combining multiple data modalities (e.g., text, image, tabular) into a single model.",
+   "examples": [
+    "multimodal model integration",
+    "architecture + preprocessing combination"
+   ]
+  },
+  {
+   "name": "pooling_strategy",
+   "definition": "Selecting the pooling method and layer reinitialization strategy in transformer or deep learning models.",
+   "examples": [
+    "pooling strategy paired with matching checkpoint",
+    "transformer pooling strategy and layer reinitialization"
+   ]
+  },
+  {
+   "name": "toggle_ab_testing",
+   "definition": "Using on/off toggles or paired submissions to isolate the effect of a single code change.",
+   "examples": [
+    "toggle test (on/off probe)",
+    "toggle-based A/B testing of code blocks",
+    "paired submission protocol for architecture × postprocessing"
+   ]
+  },
+  {
+   "name": "prediction_method_selection",
+   "definition": "Choosing the method used to generate final predictions (e.g., KNN vs logits, weighted vs equal averaging).",
+   "examples": [
+    "prediction method (KNN vs direct logits)",
+    "weighted vs. equal-weight aggregation",
+    "prediction distribution alignment / rescaling"
+   ]
+  }
+ ],
+ "lever_map": {
+  "Add a diverse backbone to the ensemble": "ensemble_member_addition",
+  "Add a new ensemble member and rebalance blend weights": "ensemble_member_addition",
+  "Blend weight tuning": "ensemble_blend_weight_tuning",
+  "CV fold count": "cv_fold_strategy",
+  "CV fold count and averaging alignment": "cv_fold_strategy",
+  "EEG branch capacity (channel count and backbone variant)": "model_capacity_tuning",
+  "Experiment budget and abandonment threshold": "experiment_scheduling_stopping",
+  "Experiment bundling": "experiment_scheduling_stopping",
+  "Experiment scheduling and stopping": "experiment_scheduling_stopping",
+  "GBDT hyperparameter step size reduction": "gbdt_hyperparameter_tuning",
+  "GBDT hyperparameter tuning": "gbdt_hyperparameter_tuning",
+  "Inference-time dropout magnitude": "inference_dropout_settings",
+  "Input image resolution and matching checkpoint": "input_resolution_selection",
+  "LB-based variant selection over CV-based": "leaderboard_probing_validation",
+  "Model loading method": "model_loading_infrastructure",
+  "Pairwise difference interaction features": "feature_engineering",
+  "Pivot the diversity source rather than abandon blending entirely": "ensemble_diversity_strategy",
+  "Post-processing: threshold-based rounding of predictions to discrete target levels": "postprocessing_calibration",
+  "SMOTE oversampling for ordinal targets": "training_data_balancing",
+  "Split ensemble member into separate model and OOF-blend": "stacking_meta_learner",
+  "Submission verification strategy": "submission_budget_verification",
+  "TTA augmentation strategy": "test_time_augmentation",
+  "Training data resampling / class balancing": "training_data_balancing",
+  "Version control and revert discipline": "version_control_discipline",
+  "ablation and bug isolation": "ablation_testing",
+  "ablation by reverting suspected harmful component": "ablation_testing",
+  "ablation of joint changes": "ablation_testing",
+  "ablation of recent additions": "ablation_testing",
+  "ablation testing via ensemble pruning": "ablation_testing",
+  "additive post-processing boost magnitude": "additive_correction",
+  "adjusting the feature drop list composition": "feature_selection",
+  "architecture + preprocessing combination": "model_architecture_design",
+  "attention block channel width sweep": "model_capacity_tuning",
+  "augmentation strength and type selection": "augmentation_strategy",
+  "auxiliary categorical features via one-hot encoding": "feature_engineering",
+  "auxiliary feature engineering via stacking": "stacking_meta_learner",
+  "backbone diversity over weight optimization": "ensemble_diversity_strategy",
+  "backbone selection": "backbone_model_swap",
+  "base model family substitution": "backbone_model_swap",
+  "baseline probing via repeated submission": "leaderboard_probing_validation",
+  "batching related changes before submission": "experiment_scheduling_stopping",
+  "blend weight selection criterion": "ensemble_blend_weight_tuning",
+  "blending strategy complexity": "ensemble_blending_method",
+  "bug diagnosis before reverting": "debugging_code_integrity",
+  "bug fixes to enable valid submission": "debugging_code_integrity",
+  "change bundling and reversion strategy": "change_isolation_revert_strategy",
+  "change isolation and reversion strategy": "change_isolation_revert_strategy",
+  "checkpoint and re-run before next iteration": "version_control_discipline",
+  "checkpoint ensembling": "checkpoint_ensembling",
+  "checkpoint loading method": "model_loading_infrastructure",
+  "checkpoint selection and ensemble composition": "ensemble_composition",
+  "checkpoint selection and ensembling": "checkpoint_ensembling",
+  "checkpoint selection and matching inference hyperparameters": "checkpoint_selection",
+  "checkpoint selection during ablation": "checkpoint_selection",
+  "checkpoint selection via leaderboard evaluation": "leaderboard_probing_validation",
+  "checkpoint selection via leaderboard probing": "leaderboard_probing_validation",
+  "checkpoint selection via sequential submission": "checkpoint_selection",
+  "checkpoint set selection and combination": "checkpoint_ensembling",
+  "checkpoint source selection": "checkpoint_selection",
+  "checkpoint swap and hyperparameter co-adjustment": "checkpoint_selection",
+  "checkpoint variant selection": "checkpoint_selection",
+  "checkpoint variant selection and ensemble composition": "ensemble_composition",
+  "checkpoint variant swap": "checkpoint_selection",
+  "checkpoint-preprocessing interaction search": "preprocessing_alignment",
+  "checkpoint/model selection": "checkpoint_selection",
+  "community-sourced technique adoption": "community_technique_adoption",
+  "confirmation via extreme values and co-parameter variation": "continuous_hyperparameter_sweep",
+  "continuous hyperparameter sweep": "continuous_hyperparameter_sweep",
+  "controlling for randomness during manual sweeps": "continuous_hyperparameter_sweep",
+  "custom eval metric for GBDT early stopping": "custom_eval_metric",
+  "data pipeline integrity / variable reloading": "debugging_code_integrity",
+  "data/model consistency fix": "debugging_code_integrity",
+  "dependency and model loading infrastructure": "model_loading_infrastructure",
+  "direction reversal after regression": "revert_to_baseline",
+  "disable dynamic/adaptive features during special inference modes": "inference_dropout_settings",
+  "drop high-NA raw columns before feature engineering": "feature_selection",
+  "dropout rate and learning rate in the classification head": "learning_rate_and_optimizer",
+  "ensemble blend weight": "ensemble_blend_weight_tuning",
+  "ensemble blend weight sweep": "ensemble_blend_weight_tuning",
+  "ensemble blend weight tuning": "ensemble_blend_weight_tuning",
+  "ensemble blend weights": "ensemble_blend_weight_tuning",
+  "ensemble blend weights across model variants": "ensemble_blend_weight_tuning",
+  "ensemble blend weights and post-hoc additive corrections": "ensemble_blend_weight_tuning",
+  "ensemble blending formula": "ensemble_blending_method",
+  "ensemble blending method": "ensemble_blending_method",
+  "ensemble blending space (logit vs probability)": "ensemble_blending_method",
+  "ensemble blending weight": "ensemble_blend_weight_tuning",
+  "ensemble blending weights via hierarchical grouping": "ensemble_blending_method",
+  "ensemble composition": "ensemble_composition",
+  "ensemble composition (adding new diverse models)": "ensemble_member_addition",
+  "ensemble composition ablation": "ensemble_composition",
+  "ensemble composition validation via ablation": "ensemble_composition",
+  "ensemble diversity vs. redundancy tradeoff": "ensemble_diversity_strategy",
+  "ensemble member addition and blend weight tuning": "ensemble_member_addition",
+  "ensemble member evaluation order": "experiment_scheduling_stopping",
+  "ensemble member inclusion/exclusion": "ensemble_composition",
+  "ensemble member pruning": "ensemble_composition",
+  "ensemble member selection": "ensemble_composition",
+  "ensemble member selection (feature subset for meta-learner)": "stacking_meta_learner",
+  "ensemble member selection / input filtering": "ensemble_composition",
+  "ensemble member selection and blend weights": "ensemble_composition_and_weights_joint",
+  "ensemble member selection via ablation": "ensemble_composition",
+  "ensemble membership and blend weights": "ensemble_composition_and_weights_joint",
+  "ensemble membership selection": "ensemble_composition",
+  "ensemble seed count": "ensemble_seed_fold_averaging",
+  "ensemble weight adjustment": "ensemble_blend_weight_tuning",
+  "exhaustive enumeration then transition to ensembling": "experiment_prioritization_pivot",
+  "exhaustive evaluation of all variants on leaderboard": "leaderboard_probing_validation",
+  "experiment abandonment threshold": "experiment_scheduling_stopping",
+  "experiment batching": "experiment_scheduling_stopping",
+  "experiment bundling and progressive escalation": "experiment_scheduling_stopping",
+  "experiment continuation vs. reversion decision": "change_isolation_revert_strategy",
+  "experiment design (single-variable vs. multi-variable changes)": "change_isolation_revert_strategy",
+  "experiment design for leaderboard-guided tuning": "leaderboard_probing_validation",
+  "experiment interpretation under noisy feedback": "leaderboard_probing_validation",
+  "experiment isolation and forward exploration": "change_isolation_revert_strategy",
+  "experiment isolation and revert discipline": "change_isolation_revert_strategy",
+  "experiment prioritization": "experiment_prioritization_pivot",
+  "experiment prioritization / pivot decision": "experiment_prioritization_pivot",
+  "experiment reversion vs. compounding changes": "change_isolation_revert_strategy",
+  "experiment rollback and isolation": "change_isolation_revert_strategy",
+  "experiment rollback decision": "change_isolation_revert_strategy",
+  "experiment scheduling": "experiment_scheduling_stopping",
+  "experiment scheduling / pivot decision": "experiment_prioritization_pivot",
+  "experiment scheduling and pivot decision": "experiment_prioritization_pivot",
+  "experiment scheduling and stopping": "experiment_scheduling_stopping",
+  "experiment staging without submission": "submission_budget_verification",
+  "experiment strategy and stopping criteria": "experiment_scheduling_stopping",
+  "experiment termination criterion": "experiment_scheduling_stopping",
+  "experimental isolation of factors": "change_isolation_revert_strategy",
+  "external data inclusion and filtering": "training_data_filtering",
+  "external model version selection and blend coefficient co-tuning": "ensemble_composition_and_weights_joint",
+  "factorial sweep of preprocessing flags and model checkpoints": "continuous_hyperparameter_sweep",
+  "feature exclusion filters on aggregated features": "feature_selection",
+  "feature inclusion and feature selection configuration": "feature_selection",
+  "feature selection count threshold": "feature_selection",
+  "feature selection threshold sweep": "feature_selection",
+  "feature selection via dropping low-importance features": "feature_selection",
+  "feature selection — removing redundant column groups": "feature_selection",
+  "feature set composition": "feature_selection",
+  "feature set expansion": "feature_engineering",
+  "feature/column selection for post-processing": "feature_selection",
+  "full ensemble re-activation": "ensemble_composition",
+  "groupby aggregation function selection": "feature_aggregation_config",
+  "handcrafted linguistic features": "feature_engineering",
+  "hidden-layer weighted pooling architecture": "pooling_strategy",
+  "hierarchical blending structure": "ensemble_blending_method",
+  "hyperparameter search discipline": "continuous_hyperparameter_sweep",
+  "hyperparameter search strategy": "continuous_hyperparameter_sweep",
+  "incremental code verification": "version_control_discipline",
+  "incremental debugging before submission": "debugging_code_integrity",
+  "incremental restoration after controlled ablation": "ablation_testing",
+  "incremental submission with partial configurations": "submission_budget_verification",
+  "indentation and syntax correctness": "debugging_code_integrity",
+  "inference image resolution": "input_resolution_selection",
+  "inference pipeline debugging": "debugging_code_integrity",
+  "inference preprocessing alignment": "preprocessing_alignment",
+  "inference-time dropout settings": "inference_dropout_settings",
+  "infrastructure/config debugging before continuing the sweep": "debugging_code_integrity",
+  "input resolution selection": "input_resolution_selection",
+  "isolating changes across submissions": "change_isolation_revert_strategy",
+  "isolating the cause of regression": "change_isolation_revert_strategy",
+  "joint tuning of blend weights and additive correction": "ensemble_blend_weight_tuning",
+  "learning rate (with co-adjusted tree depth)": "learning_rate_and_optimizer",
+  "learning rate and iteration count coordination": "learning_rate_and_optimizer",
+  "manual discrete sweep with leaderboard feedback": "leaderboard_probing_validation",
+  "meta-learner model type and kernel choice": "stacking_meta_learner",
+  "missing value imputation strategy": "missing_value_imputation",
+  "model architecture change": "model_architecture_design",
+  "model architecture simplification": "model_architecture_simplification",
+  "model architecture swap combined with post-processing toggle": "backbone_model_swap",
+  "model backbone swap (boosting framework)": "backbone_model_swap",
+  "model capacity tuning": "model_capacity_tuning",
+  "model checkpoint index selection": "checkpoint_selection",
+  "model size selection": "model_capacity_tuning",
+  "model training variant selection within an ensemble slot": "ensemble_composition",
+  "model variant substitution": "backbone_model_swap",
+  "multi-architecture ensemble composition and weights": "ensemble_composition_and_weights_joint",
+  "multi-dimensional hyperparameter sweep": "continuous_hyperparameter_sweep",
+  "multi-fold and multi-seed averaging": "ensemble_seed_fold_averaging",
+  "multi-knob configuration sweep": "continuous_hyperparameter_sweep",
+  "multi-model ensemble at inference time": "ensemble_composition",
+  "multi-view test-time augmentation": "test_time_augmentation",
+  "multimodal model integration": "multimodal_integration",
+  "multiple reruns to estimate noise floor": "leaderboard_probing_validation",
+  "new model/feature probing via leaderboard submission": "leaderboard_probing_validation",
+  "number of cross-validation folds": "cv_fold_strategy",
+  "number of ensemble repeats (multi-seed averaging)": "ensemble_seed_fold_averaging",
+  "optimizer choice for tabular deep learning": "learning_rate_and_optimizer",
+  "paired submission protocol for architecture × postprocessing": "toggle_ab_testing",
+  "parameter rollback and isolation": "change_isolation_revert_strategy",
+  "partial reversion of changes": "change_isolation_revert_strategy",
+  "partial revert of coupled changes": "change_isolation_revert_strategy",
+  "per-component ablation via leaderboard probing": "ablation_testing",
+  "pipeline hygiene — removing fallback paths": "debugging_code_integrity",
+  "pipeline replacement vs. incremental tuning": "experiment_prioritization_pivot",
+  "pooling strategy paired with matching checkpoint": "pooling_strategy",
+  "post-processing discretization and 0-1 scaling": "postprocessing_calibration",
+  "prediction calibration transform": "postprocessing_calibration",
+  "prediction distribution alignment / rescaling": "prediction_scaling_normalization",
+  "prediction method (KNN vs direct logits)": "prediction_method_selection",
+  "prediction normalization": "prediction_scaling_normalization",
+  "prediction normalization before ensembling": "prediction_scaling_normalization",
+  "prediction scaling method and solver precision": "prediction_scaling_normalization",
+  "prediction value scaling": "prediction_scaling_normalization",
+  "preprocessing simplification": "model_architecture_simplification",
+  "pretrained checkpoint selection": "checkpoint_selection",
+  "pretrained flag and strict loading": "model_loading_infrastructure",
+  "pruning weak base models from ensemble": "ensemble_composition",
+  "rank-based vs probability-based averaging": "ensemble_blending_method",
+  "rank-based vs raw probability averaging": "ensemble_blending_method",
+  "re-run confirmation": "version_control_discipline",
+  "re-submission for stability check": "leaderboard_probing_validation",
+  "refactoring with leaderboard verification": "leaderboard_probing_validation",
+  "removing weak ensemble members": "ensemble_composition",
+  "repeated identical submissions to estimate leaderboard noise": "leaderboard_probing_validation",
+  "repeated identical submissions to measure LB variance": "leaderboard_probing_validation",
+  "repeated submissions of identical code": "leaderboard_probing_validation",
+  "replace manual preprocessing with model-native regularization": "model_architecture_simplification",
+  "revert and isolate changes": "change_isolation_revert_strategy",
+  "revert and redirect": "change_isolation_revert_strategy",
+  "revert confounded changes": "change_isolation_revert_strategy",
+  "revert strategy for failed experiments": "change_isolation_revert_strategy",
+  "revert the riskier/novel change first": "change_isolation_revert_strategy",
+  "revert to known-good baseline": "revert_to_baseline",
+  "revert to known-good configuration": "revert_to_baseline",
+  "revert vs. pivot decision": "change_isolation_revert_strategy",
+  "reverting and expanding in the opposite direction": "change_isolation_revert_strategy",
+  "rounding threshold optimization": "postprocessing_calibration",
+  "sample/class weights during training": "training_data_balancing",
+  "scale_pos_weight exponent sweep": "training_data_balancing",
+  "scaling model outputs before weight optimization": "prediction_scaling_normalization",
+  "search direction and step size": "continuous_hyperparameter_sweep",
+  "selective revert of bundled changes": "change_isolation_revert_strategy",
+  "selective rollback of bundled changes": "change_isolation_revert_strategy",
+  "sequential isolation of changes": "change_isolation_revert_strategy",
+  "single-model sanity check before ensemble integration": "ablation_testing",
+  "single-parameter perturbation after a multi-param jump": "change_isolation_revert_strategy",
+  "spectrogram preprocessing alignment between training and inference": "preprocessing_alignment",
+  "stacking head architecture simplification": "model_architecture_simplification",
+  "stacking meta-learner type (linear model)": "stacking_meta_learner",
+  "stacking with external model predictions": "stacking_meta_learner",
+  "staged evaluation of new components": "ablation_testing",
+  "staged verification with debug output before submission": "submission_budget_verification",
+  "stopping criterion for hyperparameter probing": "experiment_scheduling_stopping",
+  "stopping criterion for hyperparameter sweep": "experiment_scheduling_stopping",
+  "stopping criterion for variance probing": "experiment_scheduling_stopping",
+  "submission budget management": "submission_budget_verification",
+  "submission gating on local validation": "submission_budget_verification",
+  "submission timing strategy": "submission_budget_verification",
+  "swap in improved component model versions": "ensemble_member_addition",
+  "swap model family": "backbone_model_swap",
+  "switch from tuning combiner to expanding base model pool": "ensemble_diversity_strategy",
+  "switching to a different lever entirely": "experiment_prioritization_pivot",
+  "switching to a qualitatively different modeling approach": "experiment_prioritization_pivot",
+  "systematic parameter sweep with confirmation": "continuous_hyperparameter_sweep",
+  "test-time augmentation with shifted temporal crops": "test_time_augmentation",
+  "test-time image resolution": "input_resolution_selection",
+  "text preprocessing / input normalization": "preprocessing_alignment",
+  "toggle test (on/off probe)": "toggle_ab_testing",
+  "toggle-based A/B testing of code blocks": "toggle_ab_testing",
+  "top-member selection in weighted ensemble": "ensemble_composition",
+  "train/val split ratio and color augmentation diversity": "cv_fold_strategy",
+  "train/validation split strategy": "cv_fold_strategy",
+  "training data outlier filtering": "training_data_filtering",
+  "transformer pooling strategy and layer reinitialization": "pooling_strategy",
+  "tree capacity hyperparameters": "model_capacity_tuning",
+  "verification re-runs": "version_control_discipline",
+  "vocabulary size (max_features) of text vectorizer": "feature_aggregation_config",
+  "weight search bounds and normalization": "ensemble_blend_weight_tuning",
+  "weighted ensemble of all available model variants": "ensemble_composition_and_weights_joint",
+  "weighted vs. equal-weight aggregation": "prediction_method_selection"
+ },
+ "trigger_map": {
+  "API switch complete, need to validate on LB": "pipeline_gap",
+  "a new idea": "new_idea",
+  "all model members in place, now optimizing their relative contributions": "new_idea",
+  "baseline established, trying to improve": "new_idea",
+  "bugs preventing correct execution": "bug_or_error",
+  "checking if single model with fixes improves": "bug_or_error",
+  "continued optimization after cleanup": "new_idea",
+  "desire to improve ensemble by adding more diverse models": "new_idea",
+  "desire to simplify dependencies / avoid import failures": "bug_or_error",
+  "desire to streamline ensemble and stabilize predictions after best score": "new_idea",
+  "ensemble built but weights not optimized": "new_idea",
+  "exploring EEG branch configuration": "new_idea",
+  "exploring whether different saved weights improve score": "new_idea",
+  "exploring whether fewer members help": "new_idea",
+  "incremental improvement possible": "new_idea",
+  "incremental tuning after v9 improvement": "new_idea",
+  "initial baseline established, trying to improve by picking best checkpoint": "new_idea",
+  "large score jump at v37 suggested new model data": "new_resource",
+  "new best at 0.38287; trying to improve further": "new_idea",
+  "new best at v15; desire to improve blending strategy": "new_idea",
+  "new best at v2 prompted further ensemble tuning": "new_idea",
+  "new best at v22, attempting micro-optimization": "new_idea",
+  "new best at v3": "new_idea",
+  "new best at v30; trying to squeeze more from existing models": "new_idea",
+  "new best at v69": "new_idea",
+  "new best at v7, exploring alternatives": "new_idea",
+  "new best score at v13; trying to improve further": "new_idea",
+  "new best score prompting further tuning": "new_idea",
+  "new best score to refine": "new_idea",
+  "new best score, opportunity to optimize blend": "new_idea",
+  "new ensemble components available after v6 infrastructure build": "new_resource",
+  "new ensemble composition": "new_idea",
+  "new ensemble members available from the tree-model pipeline": "new_resource",
+  "new exponential_rank models available": "new_resource",
+  "new idea": "new_idea",
+  "new idea (bertadam checkpoints)": "new_idea",
+  "new idea (external outlier list available)": "new_resource",
+  "new idea after establishing the new pipeline": "new_idea",
+  "new idea for payment-balance difference features": "new_idea",
+  "new idea to add CatBoost-only model for blending": "new_idea",
+  "new idea to add DeBERTa-xlarge and re-enable previously disabled members": "new_idea",
+  "new idea to add a second model for ensembling": "new_idea",
+  "new idea to add another RoBERTa inference member": "new_idea",
+  "new idea to add external DeBERTa predictions": "new_resource",
+  "new idea to add heavy text normalization": "new_idea",
+  "new idea to add more models": "new_idea",
+  "new idea to add rich NLP features": "new_idea",
+  "new idea to add roberta-base-light backbone": "new_idea",
+  "new idea to adjust mask contribution and blending strategy": "new_idea",
+  "new idea to adjust split and augmentation after establishing baseline": "new_idea",
+  "new idea to align training metric with competition metric": "new_idea",
+  "new idea to balance classes with SMOTE": "new_idea",
+  "new idea to better match training preprocessing": "new_idea",
+  "new idea to discretize/scale predictions for better Spearman rank correlation": "new_idea",
+  "new idea to enrich feature engineering": "new_idea",
+  "new idea to filter ensemble inputs": "new_idea",
+  "new idea to improve model head and pooling": "new_idea",
+  "new idea to incorporate T5 backbone": "new_idea",
+  "new idea to incorporate category metadata": "new_idea",
+  "new idea to increase ensemble averaging": "new_idea",
+  "new idea to normalize model outputs": "new_idea",
+  "new idea to prune weak ensemble member (pytorch_base)": "new_idea",
+  "new idea to retune model after feature exploration plateau": "new_idea",
+  "new idea to scale up to 800px": "new_idea",
+  "new idea to simplify and improve single model": "new_idea",
+  "new idea to systematically expand features and tune params": "new_idea",
+  "new idea to try Lion optimizer": "new_idea",
+  "new idea to try XGBoost": "new_idea",
+  "new idea to try a different pretrained checkpoint": "new_idea",
+  "new idea to try classification approach": "new_idea",
+  "new idea to try different trained checkpoints": "new_idea",
+  "new idea to try simpler weighted blend instead of Ridge stacking": "new_idea",
+  "new idea to tune ensemble weights after baseline": "new_idea",
+  "new idea to tune learning rate after infrastructure changes": "new_idea",
+  "new idea to tune the MLP component of the ensemble": "new_idea",
+  "new idea to use feedback data embeddings": "new_idea",
+  "new idea to use linear stacking instead of weight optimization": "new_idea",
+  "new idea to use multi-view TTA": "new_idea",
+  "new idea to use random augmentations for TTA": "new_idea",
+  "new idea to weight classes for AMEX metric optimization": "new_idea",
+  "new multimodal model architecture available": "new_resource",
+  "new pseudo-labeled model artifacts": "new_resource",
+  "new resource (different pretrained model checkpoint)": "new_resource",
+  "new resource (roberta5seed checkpoints)": "new_resource",
+  "new sigmoid/BCE setup needs hyperparameter tuning": "new_idea",
+  "no single variant matched original score — blend all": "new_idea",
+  "nothing visible": "none_visible",
+  "plateau": "plateau",
+  "plateau after checkpoint experiments; return to weight tuning": "plateau",
+  "plateau after v37; trying to squeeze more from imputation/outlier strategies": "plateau",
+  "plateau around 0.949–0.950": "plateau",
+  "plateau at 0.46275, trying to break through via blending": "plateau",
+  "plateau — trying to beat 0.81998": "plateau",
+  "plateau — unable to beat v3 best despite split changes": "plateau",
+  "question of whether all members or a subset is better": "new_idea",
+  "realization that rounding/thresholding affects Spearman rank correlation": "new_idea",
+  "refactored model builders ready — now evaluate variants": "new_idea",
+  "regression after first HP change (v2→v3 dropped to 0.81909)": "regression",
+  "regression at v4 prompted adjustments": "regression",
+  "regression at v9 (0.81719) prompted further tuning": "regression",
+  "regression from DART experiment prompted trying CatBoost": "regression",
+  "regression from learning rate change": "regression",
+  "regression from num_leaves change prompted broader hyperparameter search": "regression",
+  "regressions in v21-v22 motivate trying newer script versions": "regression",
+  "resuming ensemble tuning after tokenizer build": "pipeline_gap",
+  "revisiting TTA idea with new ensemble": "new_idea",
+  "score crashed to 0.61268 at v24 due to disabling most inference": "bug_or_error",
+  "seeking further improvement after new best at v10": "new_idea",
+  "single-checkpoint sweep plateaued at 0.38871": "plateau",
+  "spell-correction pipeline finally working": "pipeline_gap",
+  "systematic tuning of blend parameter": "new_idea",
+  "tied best; try to push higher": "plateau",
+  "trying to balance question/answer model contributions": "new_idea",
+  "trying to improve beyond 0.81762": "new_idea",
+  "trying to improve on v29 best by varying pooling": "new_idea",
+  "trying to isolate LightGBM performance": "new_idea",
+  "trying to leverage extra labeled data": "new_resource",
+  "trying to recover and surpass previous best": "regression",
+  "verifying blend superiority": "new_idea",
+  "very low initial score (0.50990) suggesting broken predictions": "bug_or_error"
+ }
+}

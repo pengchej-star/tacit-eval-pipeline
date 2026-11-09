@@ -1,0 +1,90 @@
+{
+  "observations": [
+    {
+      "observation": "Is the competition metric mean column-wise Spearman correlation?",
+      "result": "yes",
+      "evidence": "task.md, Evaluation: Spearman is computed separately for each target, then averaged; higher is better."
+    },
+    {
+      "observation": "Are the targets fractional ratings rather than binary outcomes?",
+      "result": "yes",
+      "evidence": "task.md, Dataset Description: targets are aggregated crowd ratings in [0,1]."
+    },
+    {
+      "observation": "Does the training set contain duplicated questions?",
+      "result": "yes",
+      "evidence": "task.md explicitly describes repeated training questions with different answers; this would require question-grouped folds if retraining."
+    },
+    {
+      "observation": "Must the submission pipeline run without internet access?",
+      "result": "yes",
+      "evidence": "task.md, Notebooks Requirements: internet must be turned off; GPU execution is limited to two hours."
+    },
+    {
+      "observation": "Did v46 score below v45?",
+      "result": "yes",
+      "evidence": "history.md: v45 scored 0.42580; v46 scored 0.38762, a decrease of 0.03818 using the displayed scores."
+    },
+    {
+      "observation": "Did a prior version with guarded postprocessing exceed 0.42?",
+      "result": "yes",
+      "evidence": "history.md: v38 scored 0.42704 after preserving original predictions for columns whose adjusted values became constant; v45 scored 0.42580 with guarded discretization."
+    },
+    {
+      "observation": "Did the reported switch to rank-based fold blending improve its predecessor score?",
+      "result": "no",
+      "evidence": "history.md: the pre-switch v31 score was 0.38356, v32 made no code changes, and rank-blending v33 scored 0.38345."
+    },
+    {
+      "observation": "Can the v45-to-v46 score change be attributed exclusively to removing discretization?",
+      "result": "no",
+      "evidence": "history.md also reports a checkpoint/source change and a switch to packaged evaluators in v46."
+    },
+    {
+      "observation": "Does v46 retain mean blending of saved fold predictions?",
+      "result": "yes",
+      "evidence": "current_code.py constructs BiEncoderEvaluator with blend_strategy='mean' and models_dir_name='fold_models'. The evaluator internals are not supplied."
+    },
+    {
+      "observation": "Does v46 enable NER preprocessing?",
+      "result": "yes",
+      "evidence": "current_code.py instantiates NERDetector and passes ner_model to the evaluator."
+    },
+    {
+      "observation": "Does v46 enable mathematical-text preprocessing?",
+      "result": "yes",
+      "evidence": "current_code.py sets process_math=True and passes it to the evaluator."
+    },
+    {
+      "observation": "Does v46 apply discretization before submission?",
+      "result": "no",
+      "evidence": "current_code.py writes the direct output of evaluator.run(test_df) into out_df."
+    },
+    {
+      "observation": "Are the exact earlier discretizer bin settings supplied?",
+      "result": "no",
+      "evidence": "history.md describes KBinsDiscretizer, collapsed-column fallback, and min-max normalization, but gives no n_bins or strategy settings; current_code.py contains no discretizer."
+    },
+    {
+      "observation": "Are local competition data files available for validating candidate changes?",
+      "result": "no",
+      "evidence": "The current-directory listing contains task.md, history.md, current_code.py, and prompt.txt; no competition CSVs or model files are present."
+    },
+    {
+      "observation": "Is an AGENTS.md file present in the current directory tree?",
+      "result": "no",
+      "evidence": "find . -name AGENTS.md -print returned no paths."
+    },
+    {
+      "observation": "Does the revised code pass a Python syntax check with notebook shell escapes excluded?",
+      "result": "yes",
+      "evidence": "compile() succeeded for output/revised_code.py with the four original !cp lines replaced by pass; no code was executed."
+    },
+    {
+      "observation": "Does the report satisfy the required JSON structure?",
+      "result": "yes",
+      "evidence": "json.loads succeeded; assertions verified the top-level keys, observation fields, and yes/no results."
+    }
+  ],
+  "action_summary": "Restore guarded ordinal discretization after the existing mean-blended fold ensemble, motivated by the substantially stronger historical versions that included tied-rank postprocessing. Use five deterministic quantile bins per target, normalize nonconstant bin codes into [0,1], and retain raw predictions for collapsed columns. The exact historical bin parameters are unavailable, so five quantile bins are an explicit unvalidated choice, not a claimed reconstruction; the historical checkpoint changes also confound the score comparison. Preserve the current checkpoint, Kaggle paths, NER/math preprocessing, and evaluator. Cache raw and processed predictions, validate prediction shape/finiteness, and align submission rows by qa_id. No training or inference was run, and no improvement is claimed as measured."
+}

@@ -1,0 +1,95 @@
+{
+  "observations": [
+    {
+      "observation": "Is lower KL divergence the competition objective?",
+      "result": "yes",
+      "evidence": "task.md Evaluation and metric direction specify KL divergence with lower scores better."
+    },
+    {
+      "observation": "Must submission rows contain six probabilities summing to one?",
+      "result": "yes",
+      "evidence": "task.md Submission File specifies eeg_id plus six vote columns and unit row sums."
+    },
+    {
+      "observation": "Is v15 the best recorded version?",
+      "result": "no",
+      "evidence": "history.md reports v15 at 0.43907, while v13 reached 0.30219."
+    },
+    {
+      "observation": "Did restoring the second EEG family improve v13 over v12?",
+      "result": "yes",
+      "evidence": "history.md: v12 scored 0.32099; adding baseline_eeg_diff in v13 scored 0.30219."
+    },
+    {
+      "observation": "Did flip augmentation improve the recorded leaderboard score?",
+      "result": "no",
+      "evidence": "history.md: v13 to v14 changed 0.30219 to 0.31017 after adding flips."
+    },
+    {
+      "observation": "Did the spectrogram revision improve the recorded leaderboard score?",
+      "result": "no",
+      "evidence": "history.md: v14 to v15 changed 0.31017 to 0.43907."
+    },
+    {
+      "observation": "Does the active v15 loader include the raw EEG models?",
+      "result": "no",
+      "evidence": "current_code.py wraps models_0 and models_1 loading in a triple-quoted string; only models_2 is loaded."
+    },
+    {
+      "observation": "Does active v15 inference blend EEG predictions with spectrogram predictions?",
+      "result": "no",
+      "evidence": "current_code.py gen_ensemble_pred places raw EEG inference inside a triple-quoted string; only models_2 predictions reach the active average."
+    },
+    {
+      "observation": "Are the original raw EEG checkpoint paths retained in v15?",
+      "result": "yes",
+      "evidence": "current_code.py lists new_distil/send_kaggle, new_fold/send_kaggle and baseline_eeg_diff/model_best_val_g10.pt."
+    },
+    {
+      "observation": "Do the two raw EEG families use different normalization?",
+      "result": "yes",
+      "evidence": "current_code.py proc_0 divides by mean lead standard deviation; proc_1 divides each lead by its own standard deviation."
+    },
+    {
+      "observation": "Does proc_0 expect a different input layout from proc_1?",
+      "result": "yes",
+      "evidence": "current_code.py reshapes proc_0 to (4,4,2500) and proc_1 to (16,1,2500)."
+    },
+    {
+      "observation": "Does the existing TTA preserve proc_0 layout for its flipped variants?",
+      "result": "no",
+      "evidence": "current_code.py tta reshapes each flipped variant to (16,1,-1), including variants from proc_0."
+    },
+    {
+      "observation": "Does raw EEG preprocessing explicitly repair NaNs before filtering?",
+      "result": "no",
+      "evidence": "current_code.py compute_eeg_from_file calls fill_null(0) only; explicit numpy NaN cleanup occurs after filtering in the disabled inference block."
+    },
+    {
+      "observation": "Does the supplied EEG pipeline use four-sample averaging after bandpass filtering?",
+      "result": "yes",
+      "evidence": "current_code.py compute_eeg uses a 0.25-50 Hz bandpass followed by bin_array(bin_size=4).mean(axis=-1)."
+    },
+    {
+      "observation": "Does the original raw EEG inference treat model outputs as log probabilities?",
+      "result": "yes",
+      "evidence": "current_code.py disabled models_0 and models_1 inference calls model(x).exp()."
+    },
+    {
+      "observation": "Does the original submission explicitly align rows to sample_submission?",
+      "result": "no",
+      "evidence": "current_code.py builds df_sub directly in df_test order and never uses the loaded sample_submission for alignment."
+    },
+    {
+      "observation": "Does the revised script pass Python syntax validation?",
+      "result": "yes",
+      "evidence": "Parsed output/revised_code.py with ast.parse and compiled its source with compile in exec mode; no code was executed."
+    },
+    {
+      "observation": "Does the report satisfy the required JSON schema?",
+      "result": "yes",
+      "evidence": "Parsed output/report.json with json.loads; checked top-level keys, observation keys, string fields, and yes/no result values."
+    }
+  ],
+  "action_summary": "Restore the two-family raw EEG ensemble using the retained new_distil, new_fold, and baseline_eeg_diff checkpoint paths, with equal checkpoint weights and the existing family-specific preprocessing. Remove the spectrogram-only route and flip TTA: both changes worsened recorded scores, whereas v13 reached 0.30219. Repair nonfinite raw values before filtering, use stable normalized probability averaging, and enforce sample-submission ordering and valid probability rows. No training or inference was run; improvement remains unverified without competition data."
+}

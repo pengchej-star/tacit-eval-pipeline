@@ -1,0 +1,105 @@
+{
+  "observations": [
+    {
+      "observation": "Does the task use mean per-label ROC AUC?",
+      "result": "yes",
+      "evidence": "task.md Evaluation specifies AUC for each of 11 labels, averaged; higher is better."
+    },
+    {
+      "observation": "Does the submission require probabilities?",
+      "result": "yes",
+      "evidence": "task.md Submission File requires a probability for every target variable for each StudyInstanceUID."
+    },
+    {
+      "observation": "Did the latest rank conversion reduce the leaderboard score?",
+      "result": "yes",
+      "evidence": "history.md: v17 raw probabilities scored 0.93993; v18 changed only CONVERT_TO_RANK to True and scored 0.93941."
+    },
+    {
+      "observation": "Has rank conversion consistently improved prior versions?",
+      "result": "no",
+      "evidence": "history.md records gains in v2, v8, v10, v12, but regressions in v4, v6, v16, v18."
+    },
+    {
+      "observation": "Was the best recorded score obtained by a multi-head version?",
+      "result": "yes",
+      "evidence": "history.md gives v15 0.94396; the switch to SingleHeadModel is recorded later, in v17."
+    },
+    {
+      "observation": "Does history isolate resolution as the cause of the v11 regression?",
+      "result": "no",
+      "evidence": "history.md v10 to v11 simultaneously changed 448 to 512, removed intermediate head layers, and disabled ranks; its 0.93722 cannot establish a resolution-only effect."
+    },
+    {
+      "observation": "Is the current pipeline inference-only?",
+      "result": "yes",
+      "evidence": "current_code.py loads fold settings and best_model_fold checkpoints; there is no optimizer or training loop."
+    },
+    {
+      "observation": "Does the active inference code instantiate SingleHeadModel?",
+      "result": "yes",
+      "evidence": "current_code.py inference loop calls SingleHeadModel; MultiHeadResNeXt instantiation is commented out."
+    },
+    {
+      "observation": "Does checkpoint loading enforce the model state schema?",
+      "result": "yes",
+      "evidence": "current_code.py uses model.load_state_dict without strict=False; preserving this avoids using partially initialized incompatible heads."
+    },
+    {
+      "observation": "Does the baseline use all five configured fold checkpoints?",
+      "result": "yes",
+      "evidence": "current_code.py FOLDS=[0,1,2,3,4] and inference visits each fold before averaging."
+    },
+    {
+      "observation": "Does the baseline already perform test-time view averaging?",
+      "result": "no",
+      "evidence": "current_code.py run_inference_loop makes one model call per batch; its transforms are Normalize and ToTensorV2."
+    },
+    {
+      "observation": "Does the baseline disable training-mode dropout during inference?",
+      "result": "yes",
+      "evidence": "current_code.py run_inference_loop calls model.eval() before torch.no_grad()."
+    },
+    {
+      "observation": "Does the code provide held-out predictions for fitting blend weights?",
+      "result": "no",
+      "evidence": "current_code.py constructs patient-group folds but only predicts test_loader; no validation prediction arrays are produced or loaded."
+    },
+    {
+      "observation": "Are the normalization constants specified as strings?",
+      "result": "yes",
+      "evidence": "current_code.py get_dataloaders_for_inference uses one-element string lists for mean and std; values can be preserved as numeric RGB triples."
+    },
+    {
+      "observation": "Does enabled rank conversion produce values outside the requested probability range?",
+      "result": "yes",
+      "evidence": "current_code.py double argsort yields ranks from 0 to number_of_test_images minus 1, then averages folds without normalization."
+    },
+    {
+      "observation": "Do the selected memory entries support checking deterministic views before adding TTA?",
+      "result": "yes",
+      "evidence": "Read memory/taxonomy.md first, then attention/t-7-6-choose-inference-time-averaging.md; the latter prioritizes label-preserving deterministic flips and evaluation-mode checks. Also read t-7-1-choose-a-combination-rule.md, t-2-1-restore-model-and-input-compatibility.md, and t-1-3-choose-a-response-to-an-unsuccessful-searc.md to assess aggregation, checkpoint compatibility, and the recent regression."
+    },
+    {
+      "observation": "Do any target names explicitly encode left-versus-right laterality?",
+      "result": "no",
+      "evidence": "task.md target definitions and current_code.py CLASSES encode tube placement categories or presence, not laterality. Horizontal reflection preserves these target meanings, though its empirical benefit remains unmeasured."
+    },
+    {
+      "observation": "Does history report a scored horizontal-flip TTA experiment?",
+      "result": "no",
+      "evidence": "history.md v1 through v18 describes rank toggles, folds, resolution, and head changes; it records no horizontal-flip TTA comparison."
+    },
+    {
+      "observation": "Does the revised script pass Python syntax validation?",
+      "result": "yes",
+      "evidence": "Parsed output/revised_code.py with ast.parse and compiled it with compile in exec mode without executing it."
+    },
+    {
+      "observation": "Does the report satisfy the required JSON schema?",
+      "result": "yes",
+      "evidence": "Loaded output/report.json with json.loads; checked top-level keys, observation keys, string fields, and that every result is yes or no."
+    }
+  ],
+  "action_summary": "Restore probability averaging, supported by the direct v17/v18 comparison, and add equal-weight original/horizontal-flip probability averaging within each of the five folds at 448x448. This adds deterministic view diversity without changing checkpoint architecture or requiring retraining; its leaderboard benefit is a hypothesis because no data are available. Preserve the existing model, paths, normalization values, fold pool, and submission layout. Express normalization as numeric RGB triples, index prediction storage independently of fold IDs, normalize the optional rank branch with tie-aware ranks, and validate submission alignment and probability bounds. No training or inference was run."
+}

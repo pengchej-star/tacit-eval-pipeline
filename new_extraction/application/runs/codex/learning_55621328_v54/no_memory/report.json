@@ -1,0 +1,70 @@
+{
+  "observations": [
+    {
+      "observation": "Is quadratic weighted kappa the competition metric?",
+      "result": "yes",
+      "evidence": "task.md Evaluation identifies quadratic weighted kappa; higher is better."
+    },
+    {
+      "observation": "Did v54 improve on v52?",
+      "result": "no",
+      "evidence": "history.md reports v52=0.81978 and v54=0.80482."
+    },
+    {
+      "observation": "Did changing only the rounding parameters degrade v53?",
+      "result": "yes",
+      "evidence": "history.md reports v52 to v53 changed the --weights list and fell from 0.81978 to 0.81104."
+    },
+    {
+      "observation": "Did additional checkpoints always improve the recorded score?",
+      "result": "no",
+      "evidence": "history.md: v45 to v46 improved 0.81599 to 0.81880, but v48 to v49 fell 0.80865 to 0.80701."
+    },
+    {
+      "observation": "Does the active predictor interpret --weights as checkpoint blend weights?",
+      "result": "no",
+      "evidence": "current_code.py averages checkpoint predictions equally with np.mean, then passes --weights to OptimizedRounder.predict as five score cutoffs."
+    },
+    {
+      "observation": "Does the active invocation use the experiment associated with the best reported score?",
+      "result": "no",
+      "evidence": "It uses exp301-1-large-itpt10-all with four folds; history.md associates v52 with exp301-1-large-itpt10-f0."
+    },
+    {
+      "observation": "Does the active pipeline estimate cutoffs from validation predictions?",
+      "result": "no",
+      "evidence": "It directly uses [1.68702789, 2.59396091, 3.35737494, 4.41395307, 5.1408953]; the only validation fitting example is commented out."
+    },
+    {
+      "observation": "Does the code document a saved validation prediction artifact?",
+      "result": "yes",
+      "evidence": "The final commented cell reads pred_df_fold0.csv with raw_pred and score columns from an older experiment."
+    },
+    {
+      "observation": "Does submission assignment explicitly align predictions by essay_id?",
+      "result": "no",
+      "evidence": "The predictor assigns scores positionally to sample_submission.csv."
+    },
+    {
+      "observation": "Are model artifacts available in this workspace for inspection?",
+      "result": "no",
+      "evidence": "The directory listing contains current_code.py, history.md, prompt.txt and task.md, without data or model files."
+    },
+    {
+      "observation": "Does the supplied history provide the exact v52 cutoff values?",
+      "result": "no",
+      "evidence": "history.md describes changes to the five values but does not include their numeric values; restoration therefore cannot reproduce v52 exactly."
+    },
+    {
+      "observation": "Does every revised Python cell pass a syntax check after removing its writefile magic?",
+      "result": "yes",
+      "evidence": "Parsed all nine nonempty cells with ast.parse; removed only the first %%writefile line of the three generated-script cells. No training or inference was executed."
+    },
+    {
+      "observation": "Does the output report satisfy the requested JSON structure?",
+      "result": "yes",
+      "evidence": "Parsed report.json with json.loads; asserted the two top-level fields, the three fields of every observation, nonempty string values, and yes/no result membership."
+    }
+  ],
+  "action_summary": "Prefer the single-fold exp301-1-large-itpt10-f0 experiment associated with v52 (0.81978), with a file-checked fallback to the existing v54 four-fold ensemble. Treat --weights correctly as rounding cutoffs. Calibrate cutoffs from compatible saved held-out predictions in the selected experiment only, verify essay IDs and labels against train.csv, regularize cutoff movement, and select shrinkage using stratified cross-validation with a minimum improvement gate. Retain the existing cutoffs when evidence is unavailable or insufficient, since the exact v52 cutoffs are not supplied. Align the submission by essay_id, validate integer scores, load checkpoint tensors via CPU, and save raw predictions plus calibration metadata. No training or inference was run locally; improvements depend on the mounted artifacts and require leaderboard evaluation."
+}

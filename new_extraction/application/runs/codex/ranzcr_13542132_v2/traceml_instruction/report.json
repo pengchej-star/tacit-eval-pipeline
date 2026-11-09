@@ -1,0 +1,75 @@
+{
+  "observations": [
+    {
+      "observation": "Is the competition score the mean of 11 per-label ROC AUC values?",
+      "result": "yes",
+      "evidence": "task.md, Evaluation: AUC is calculated for each of the 11 labels, then averaged; higher is better."
+    },
+    {
+      "observation": "Did the recorded v2 change improve the leaderboard score?",
+      "result": "yes",
+      "evidence": "history.md reports v2 at 0.94363 with a gain of 0.00226 from the inference-pipeline refactor."
+    },
+    {
+      "observation": "Does the supplied history report an experiment with prediction-time augmentation?",
+      "result": "no",
+      "evidence": "history.md describes the single v1-to-v2 refactor, input-size adjustment, batch-size adjustment, and submission preparation; no TTA experiment is recorded."
+    },
+    {
+      "observation": "Does the current executable pipeline train a model?",
+      "result": "no",
+      "evidence": "current_code.py comments out model creation and training datasets, and loads Xception_750_TPU.h5 for prediction."
+    },
+    {
+      "observation": "Does the baseline ensemble multiple predictions for each test image?",
+      "result": "no",
+      "evidence": "current_code.py builds test_df with augment=False, then assigns a single model.predict(test_df) result to the submission."
+    },
+    {
+      "observation": "Does the existing decoder normalize images to the interval from zero to one?",
+      "result": "yes",
+      "evidence": "current_code.py build_decoder casts to float32, divides by 255.0, then resizes to TARGET_SIZE=750."
+    },
+    {
+      "observation": "Does the supplied augmentation helper include horizontal flipping?",
+      "result": "yes",
+      "evidence": "current_code.py build_augmenter calls tf.image.random_flip_left_right; this helper is not invoked by the current test dataset and does not establish the checkpoint's training provenance."
+    },
+    {
+      "observation": "Is an out-of-fold prediction artifact supplied by the existing code?",
+      "result": "no",
+      "evidence": "current_code.py contains a commented single train_test_split, no active fold loop, and no OOF artifact loading or saving. The pretrained checkpoint's patient split is not available in the supplied files."
+    },
+    {
+      "observation": "Does the baseline execute intermediate-activation visualization before final prediction?",
+      "result": "yes",
+      "evidence": "current_code.py invokes all_activations_vis(img_tensor, 3) before the final model.predict call."
+    },
+    {
+      "observation": "Does the task describe a hidden test set larger than the visible test set?",
+      "result": "yes",
+      "evidence": "task.md Dataset Description states that the hidden test set has approximately 14k images, about four times the visible test size."
+    },
+    {
+      "observation": "Does the existing pipeline derive test image order from the sample submission?",
+      "result": "yes",
+      "evidence": "current_code.py constructs test_images from ss['StudyInstanceUID'] and disables test shuffling."
+    },
+    {
+      "observation": "Is an AGENTS.md file present in the current directory tree?",
+      "result": "no",
+      "evidence": "A local find command returned no AGENTS.md paths."
+    },
+    {
+      "observation": "Does the revised script pass Python syntax validation?",
+      "result": "yes",
+      "evidence": "Parsed the complete output/revised_code.py with ast.parse without executing training or inference."
+    },
+    {
+      "observation": "Does the output report satisfy the required JSON schema?",
+      "result": "yes",
+      "evidence": "json.loads successfully parsed output/report.json; checked the top-level keys, observation fields, and that every result is yes or no."
+    }
+  ],
+  "action_summary": "Replace single-view inference with a fixed four-view probability ensemble: original and horizontal mirror at weight 0.40 each, plus full-image 0.96-scale reflected-padding views at weight 0.10 each. This gives a credible opportunity to reduce orientation/framing sensitivity while retaining all tube tips and keeping most weight on the checkpoint's original scale. Preserve the supplied checkpoint, Kaggle paths, 750-pixel input, zero-to-one normalization, sample-submission order, and submission.csv format. Decode images once with bounded buffering, evaluate views sequentially, save member predictions and metadata, and remove exploratory plots and activation inference. The planning checklist was applied to this inference-only setting: no new training, fabricated OOF scores, loss changes, or fitted ensemble weights are introduced without checkpoint split provenance. No training or inference was run, and a leaderboard improvement cannot be measured locally."
+}

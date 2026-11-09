@@ -1,0 +1,95 @@
+{
+  "observations": [
+    {
+      "observation": "Does the local taxonomy include restoration after a measured regression?",
+      "result": "yes",
+      "evidence": "memory/taxonomy.md, T.1.3.1 identifies Restore the proven configuration."
+    },
+    {
+      "observation": "Is quadratic weighted kappa the competition metric?",
+      "result": "yes",
+      "evidence": "task.md Evaluation and Summary from our notes specify QWK, higher is better."
+    },
+    {
+      "observation": "Does the required submission contain integer scores from 1 through 6?",
+      "result": "yes",
+      "evidence": "task.md Data specifies the 1-6 score scale; Submission File requires essay_id,score in submission.csv."
+    },
+    {
+      "observation": "Did v136 improve on v135?",
+      "result": "no",
+      "evidence": "history.md reports v135 0.80784 and v136 0.80526."
+    },
+    {
+      "observation": "Did a previous PET configuration outperform the current version?",
+      "result": "yes",
+      "evidence": "history.md v129 enabled predict_pet2 with the final cutpoint changed to 4.87535 and scored 0.82845, versus v136 0.80526."
+    },
+    {
+      "observation": "Did the recent simplified threshold configuration recover the earlier score?",
+      "result": "no",
+      "evidence": "history.md v133 scored 0.82503; v134 scored 0.80343; v135 reached only 0.80784. Scaling also changed in v134, so this is not an isolated threshold comparison."
+    },
+    {
+      "observation": "Does the restoration guidance prioritize evidence of a regression?",
+      "result": "yes",
+      "evidence": "memory/attention/t-1-3-choose-a-response-to-an-unsuccessful-searc.md lists E22 as its first check."
+    },
+    {
+      "observation": "Does compatibility guidance require consideration of checkpoint preprocessing?",
+      "result": "yes",
+      "evidence": "memory/attention/t-2-1-restore-model-and-input-compatibility.md identifies E31, inference transforms versus training transforms."
+    },
+    {
+      "observation": "Does discretization guidance call for representative held-out predictions?",
+      "result": "yes",
+      "evidence": "memory/attention/t-7-4-map-continuous-scores-to-discrete-labels.md identifies E151 before optimizing ordinal cutpoints."
+    },
+    {
+      "observation": "Is the active inference command using the small separated model?",
+      "result": "yes",
+      "evidence": "current_code.py lines 1081-1089 invoke predict_separated.py with four exp305_deberta-v3-small checkpoints."
+    },
+    {
+      "observation": "Is a complete PET invocation retained in the current code?",
+      "result": "yes",
+      "evidence": "current_code.py lines 1168-1176 retain exp320-large-last config, four stage2 last checkpoints, DeBERTa-v3-large path, vocab_size=128003 and five precise cutpoints."
+    },
+    {
+      "observation": "Are the five --weights values actually checkpoint blending coefficients?",
+      "result": "no",
+      "evidence": "predict_pet2.py averages checkpoints with np.mean; --weights is passed to OptimizedRounder.predict as ordinal thresholds. The other regression scripts do the same."
+    },
+    {
+      "observation": "Does PET inference use a mask-token prompt?",
+      "result": "yes",
+      "evidence": "current_code.py predict_pet2.py tokenize constructs Student Writing Evaluate, the mask token, separator and essay, then returns mask_token_indexes."
+    },
+    {
+      "observation": "Does PET inference map normalized predictions back to the score scale?",
+      "result": "yes",
+      "evidence": "current_code.py predict_pet2.py inference applies model output * 5 + 1 before checkpoint averaging."
+    },
+    {
+      "observation": "Does PET inference load model parameters strictly?",
+      "result": "yes",
+      "evidence": "current_code.py predict_pet2.py calls load_state_dict without a strict override, so strict=True is the default."
+    },
+    {
+      "observation": "Does the original PET output align predictions by essay_id?",
+      "result": "no",
+      "evidence": "current_code.py lines 470-474 read sample_submission.csv and assign predictions positionally, although the DataLoader follows test.csv order."
+    },
+    {
+      "observation": "Does the local artifact-selection guidance recommend comparing compatible saved runs?",
+      "result": "yes",
+      "evidence": "memory/attention/t-6-3-select-a-trained-artifact.md identifies E126 and Compare trained runs or folds."
+    },
+    {
+      "observation": "Can a PET-specific OOF calibration be verified from the supplied code?",
+      "result": "no",
+      "evidence": "The only active OOF loading logic shown in current_code.py is for exp306b_large_clean_last in predict_ordinal.py; predict_pet2.py uses supplied cutpoints. Competition data and artifacts are unavailable locally."
+    }
+  ],
+  "action_summary": "Restore the retained four-fold exp320 PET inference configuration associated with v129 (0.82845), replacing the active small separated model (v136: 0.80526). Restore its precise ordinal cutpoints together with its large backbone and vocabulary override; preserve PET tokenization, output scaling, equal fold averaging and validation length. Make the active invocation fail on subprocess errors, load checkpoint tensors through CPU while keeping strict parameter matching, and explicitly join PET predictions to submission essay IDs with schema checks. No new threshold fitting or speculative blending is introduced without matching held-out predictions. Historical performance gives a credible improvement path, but the new leaderboard score cannot be measured without data."
+}

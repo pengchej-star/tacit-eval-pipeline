@@ -1,0 +1,80 @@
+{
+  "observations": [
+    {
+      "observation": "Is lower KL divergence the competition objective?",
+      "result": "yes",
+      "evidence": "task.md Evaluation specifies KL divergence; its metric direction is lower is better."
+    },
+    {
+      "observation": "Does the submission require six class probabilities per EEG?",
+      "result": "yes",
+      "evidence": "task.md Submission File lists seizure_vote, lpd_vote, gpd_vote, lrda_vote, grda_vote, other_vote."
+    },
+    {
+      "observation": "Must each submission probability row sum to one?",
+      "result": "yes",
+      "evidence": "task.md explicitly states that rows must sum to one."
+    },
+    {
+      "observation": "Is v13 the best recorded leaderboard result?",
+      "result": "yes",
+      "evidence": "history.md reports v13 at 0.30219, lower than every other listed score including v11 at 0.30250."
+    },
+    {
+      "observation": "Did adding channel-flip TTA improve the recorded score?",
+      "result": "no",
+      "evidence": "history.md reports v13 at 0.30219 and v14 at 0.31017 after adding flips."
+    },
+    {
+      "observation": "Did the v15 spectrogram change improve the recorded score?",
+      "result": "no",
+      "evidence": "history.md reports v14 at 0.31017 and v15 at 0.43907."
+    },
+    {
+      "observation": "Is EEG model loading active in current_code.py?",
+      "result": "no",
+      "evidence": "The models_0 and models_1 loading loops are inside a triple-quoted string."
+    },
+    {
+      "observation": "Does the active v15 prediction path ensemble EEG models with spectrogram models?",
+      "result": "no",
+      "evidence": "gen_ensemble_pred has the EEG inference block inside a triple-quoted string; only the models_2 loop executes."
+    },
+    {
+      "observation": "Are the two EEG families supplied with distinct normalization schemes?",
+      "result": "yes",
+      "evidence": "proc_0 divides by the mean of lead standard deviations; proc_1 divides each lead by its own standard deviation."
+    },
+    {
+      "observation": "Does the existing TTA preserve the w1 input layout for every variant?",
+      "result": "no",
+      "evidence": "proc_0 returns (4, 4, 2500), but tta reshapes all flipped variants to (16, 1, -1)."
+    },
+    {
+      "observation": "Does EEG loading explicitly sanitize NaNs before filtering?",
+      "result": "no",
+      "evidence": "compute_eeg_from_file only calls fill_null(0); the disabled inference block replaces NaN/Inf after compute_eeg_chain has already run filtfilt."
+    },
+    {
+      "observation": "Does the script contain a patient-grouped OOF validation pipeline?",
+      "result": "no",
+      "evidence": "current_code.py loads pretrained checkpoints and performs test inference; it contains no fold construction or OOF evaluation. The planning guidance was considered, but pretrained fold provenance and data are unavailable, so no validation or training is fabricated."
+    },
+    {
+      "observation": "Is an AGENTS.md file present within the inspected workspace depth?",
+      "result": "no",
+      "evidence": "find . -maxdepth 2 -type f -name AGENTS.md returned no paths."
+    },
+    {
+      "observation": "Does the revised script pass Python syntax validation?",
+      "result": "yes",
+      "evidence": "ast.parse successfully parsed output/revised_code.py without importing or executing it."
+    },
+    {
+      "observation": "Does the output report satisfy the requested JSON schema?",
+      "result": "yes",
+      "evidence": "json.loads succeeded; assertions checked the top-level fields, observation fields, action_summary type, and yes/no result values."
+    }
+  ],
+  "action_summary": "Restore the two-family pretrained EEG ensemble behind the best recorded v13 result: load new_distil/new_fold w1 checkpoints plus baseline_eeg_diff model_best_val_g10.pt checkpoints, with the original family-specific preprocessing and equal checkpoint probability averaging. Remove the active spectrogram-only branch and the empirically harmful channel-flip TTA. Sanitize non-finite electrode values before filtering, set evaluation mode once, and validate finite normalized submission probabilities. Preserve Kaggle paths and submission.csv format. No training or inference was run; leaderboard improvement is supported by the supplied history, not a new measurement."
+}

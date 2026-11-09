@@ -1,0 +1,17 @@
+{
+  "observations": [
+    {"observation": "Is the leaderboard metric quadratic weighted kappa with higher being better?", "result": "yes", "evidence": "task.md Evaluation section and 'Metric direction: higher is better'."},
+    {"observation": "Did the score drop after v29 (0.81830) to the current v32 (0.80731)?", "result": "yes", "evidence": "history.md: v29 0.81830, v31 0.81098, v32 0.80731."},
+    {"observation": "Were topic downsampling and SMOTE oversampling introduced in v30, the version right before the drop began?", "result": "yes", "evidence": "history.md v29->v30 entry: 'applying SMOTE oversampling' and 'limited it to the first 4500 features'; the next scored version v31 fell to 0.81098."},
+    {"observation": "Does the current code still train on a downsampled + SMOTE-resampled dataset?", "result": "yes", "evidence": "current_code.py lines 919-958: downsample(), SMOTE per topic, X/y built from balanced_df."},
+    {"observation": "Does the current code cap the selected features at 4500?", "result": "yes", "evidence": "current_code.py line 911: feature_select = feature_select[0:4500]."},
+    {"observation": "Is the OOF array an integer array that truncates float fold predictions?", "result": "yes", "evidence": "current_code.py line 959: oof = balanced_df['score'].astype(int).values, then line 1136 assigns float predictions into it."},
+    {"observation": "Does the current code use plain rounding (fixed x.5 cut points) for the final submission?", "result": "yes", "evidence": "current_code.py line 1244: predictions = np.round(predictions.clip(1, 6))."},
+    {"observation": "Was OOF-based threshold optimisation already tried in any earlier version?", "result": "no", "evidence": "No history.md entry mentions threshold optimisation; code uses .round() throughout."},
+    {"observation": "Does the code already use K-fold CV (15 StratifiedKFold splits) with fold-averaged test predictions?", "result": "yes", "evidence": "current_code.py lines 1092-1103 and 1237-1242."},
+    {"observation": "Does the code already stack DeBERTa and fb3 transformer predictions as features into LightGBM?", "result": "yes", "evidence": "current_code.py lines 856-874 (deberta_oof_*, fb_oof columns) and 1224-1228 on test."},
+    {"observation": "Does the task note say the test set resembles the non-Persuade part with a different score distribution, making distribution-distorting resampling risky?", "result": "yes", "evidence": "task.md 'Summary from our notes'."},
+    {"observation": "Does the revised file pass a Python syntax check?", "result": "yes", "evidence": "python3 -m py_compile output/revised_code.py printed SYNTAX_OK."}
+  ],
+  "action_summary": "Reverted the regressions introduced in v30-v32: removed topic downsampling, per-topic SMOTE oversampling and the 4500-feature cap, so LightGBM again trains on the full original training set with the full saved selected-feature list (the configuration that scored 0.8183 in v29, versus 0.8073 now). Fixed the OOF array to be float so fold predictions are no longer truncated, and added an overall OOF QWK printout. Added QWK-optimal rounding: Nelder-Mead optimisation of the five class thresholds on the OOF predictions (multiple starts), used for the test predictions only if it beats plain rounding on OOF. Saved OOF/threshold and raw test predictions to disk for later blending. Submission format and Kaggle paths are unchanged."
+}

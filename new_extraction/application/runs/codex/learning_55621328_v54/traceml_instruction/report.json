@@ -1,0 +1,90 @@
+{
+  "observations": [
+    {
+      "observation": "The competition metric is quadratic weighted kappa.",
+      "result": "yes",
+      "evidence": "task.md Evaluation specifies quadratic weighted kappa, with higher values better."
+    },
+    {
+      "observation": "The valid essay scores are integers from 1 to 6.",
+      "result": "yes",
+      "evidence": "task.md Data describes scores on the 1\u20136 scale and requires essay_id,score in submission.csv."
+    },
+    {
+      "observation": "The most recent two revisions improved the leaderboard score.",
+      "result": "no",
+      "evidence": "history.md: v52 0.81978, v53 0.81104, v54 0.80482."
+    },
+    {
+      "observation": "Changing only the five numerical weights materially changed the reported score.",
+      "result": "yes",
+      "evidence": "history.md v52 -> v53 reports 0.81978 -> 0.81104 after only changing --weights."
+    },
+    {
+      "observation": "Earlier multi-seed averaging improved a reported score.",
+      "result": "yes",
+      "evidence": "history.md v45 -> v46: extra full-seed models raised 0.81599 to 0.81880."
+    },
+    {
+      "observation": "The active inference command averages four fold checkpoints.",
+      "result": "yes",
+      "evidence": "current_code.py active predict_exp302.py command lists model_fold0.pth through model_fold3.pth; predictions are averaged with np.mean."
+    },
+    {
+      "observation": "The --weights argument specifies checkpoint blend weights.",
+      "result": "no",
+      "evidence": "current_code.py passes json.loads(args.weights) to OptimizedRounder.predict after equal checkpoint averaging; the five values are ordinal thresholds."
+    },
+    {
+      "observation": "The active tokenizer truncates essays to the configured validation length.",
+      "result": "yes",
+      "evidence": "current_code.py tokenize uses truncation=True, max_length=config.train.validate_max_length at its call site."
+    },
+    {
+      "observation": "Active inference includes an essay-ending view for truncated inputs.",
+      "result": "no",
+      "evidence": "current_code.py constructs a single tokenized dataset and runs one inference pass per checkpoint."
+    },
+    {
+      "observation": "The active pipeline generates out-of-fold predictions.",
+      "result": "no",
+      "evidence": "current_code.py reads test.csv and performs inference only; it has no active held-out evaluation."
+    },
+    {
+      "observation": "The source provides an example validation-prediction artifact name.",
+      "result": "yes",
+      "evidence": "current_code.py final commented calibration cell reads pred_df_fold0.csv, with raw_pred and score columns."
+    },
+    {
+      "observation": "Validation exports are available in the supplied workspace.",
+      "result": "no",
+      "evidence": "The current directory listing contains current_code.py, task.md, history.md, and prompt.txt, without competition data or validation artifacts."
+    },
+    {
+      "observation": "A local AGENTS.md instruction file was found.",
+      "result": "no",
+      "evidence": "The current-directory file search to depth two found no AGENTS.md."
+    },
+    {
+      "observation": "The current code assigns scores using essay IDs.",
+      "result": "no",
+      "evidence": "current_code.py assigns predictions to sample_submission.csv rows positionally."
+    },
+    {
+      "observation": "Class weighting is directly supported by the existing inference-only pipeline.",
+      "result": "no",
+      "evidence": "The active code loads fixed regression checkpoints; no training loss is defined. QWK alignment can be addressed through guarded ordinal calibration."
+    },
+    {
+      "observation": "All executable Python cell bodies pass a syntax check.",
+      "result": "yes",
+      "evidence": "Parsed all eight Python cell bodies with ast.parse after removing %%writefile headers; the notebook shell-command cell was excluded."
+    },
+    {
+      "observation": "The report passes the requested JSON schema checks.",
+      "result": "yes",
+      "evidence": "json.loads succeeds; each observation has observation/result/evidence fields with result restricted to yes or no."
+    }
+  ],
+  "action_summary": "Retained the existing four-fold DeBERTa-large ensemble and Kaggle paths. Added an 85% prefix / 15% head-plus-ending view blend for truncated essays, with length-sorted batching and order restoration. When complete disjoint per-fold validation exports are available, the pipeline recomputes OOF predictions, rejects the extra view unless QWK improves consistently, and cross-fits bounded, shrunken ordinal cutpoints; absent exports, it retains the supplied cutpoints and conservative view blend. Cached raw predictions and joined integer submission scores by essay_id. This follows the planning guidance on fold averaging, prediction caching, and metric-aligned validation without introducing unavailable model families. Only syntax and JSON checks were run locally; no training or inference was run, and leaderboard improvement is unmeasured. Validation exports are identified by the existing pred_df_foldN.csv convention; pooled single-fold OOF calibration may not exactly match the variance of averaged test predictions."
+}

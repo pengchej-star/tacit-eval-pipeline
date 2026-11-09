@@ -1,0 +1,45 @@
+{
+  "observations": [
+    {
+      "observation": "Is the current version v54 (0.80482) below the best score reached in the history?",
+      "result": "yes",
+      "evidence": "history.md: v52 reached 0.81978 and v46 reached 0.81880; v54 is 0.80482."
+    },
+    {
+      "observation": "Did switching the large experiment from the single fold-0 checkpoint to the 4-fold 'all' checkpoints lower the score?",
+      "result": "yes",
+      "evidence": "history.md: v52 (exp301-1-large-itpt10-f0, one checkpoint) 0.81978 -> v54 (exp301-1-large-itpt10-all, four folds) 0.80482."
+    },
+    {
+      "observation": "Was the best DeBERTa-base ensemble (exp301d-base-all 4 folds + 2 full seeds) scored at about 0.819?",
+      "result": "yes",
+      "evidence": "history.md: v46 scored 0.81880 with the four fold checkpoints plus model_fold_full_seed308/626."
+    },
+    {
+      "observation": "Does the current code blend predictions from more than one model family or backbone?",
+      "result": "no",
+      "evidence": "current_code.py lines 328-336: a single predict_exp302.py call with one config and one model.path (deberta-v3-large)."
+    },
+    {
+      "observation": "Did changing only the rounding thresholds between v52 and v53 move the score by close to 0.01?",
+      "result": "yes",
+      "evidence": "history.md: v52 0.81978 -> v53 0.81104 after only the weights array changed, so thresholds are sensitive and should not be re-tuned blindly."
+    },
+    {
+      "observation": "Does the predict script already save raw regression outputs so they can be blended after inference?",
+      "result": "no",
+      "evidence": "current_code.py lines 92-101: preds are averaged and rounded in-process, nothing is written except submission.csv."
+    },
+    {
+      "observation": "Have the last several versions been a single-action loop of swapping checkpoints and tweaking weights?",
+      "result": "yes",
+      "evidence": "history.md v47-v54 all describe checkpoint/weight swaps with no new ensemble structure; scores oscillate between 0.80 and 0.82."
+    },
+    {
+      "observation": "Do the two candidate model families share the same regression output scale (1-6 score) so a raw average is meaningful?",
+      "result": "yes",
+      "evidence": "Both are run through the same predict_exp302.py AESRegressionModel path and the same OptimizedRounder thresholds on a 1-6 scale."
+    }
+  ],
+  "action_summary": "Replaced the single DeBERTa-v3-large 4-fold run (v54, the weakest recent configuration) with a two-family ensemble built from the two best-scoring setups in the history: the large fold-0 checkpoint from exp301-1-large-itpt10-f0 (v52, 0.81978) and the DeBERTa-v3-base exp301d-base-all 4-fold + 2 full-seed checkpoints (v46, 0.81880). predict_exp302.py got an optional --save-raw flag that dumps each checkpoint's raw regression output to .npy, and --weights became optional. A new blend cell averages the raw predictions of the two families (0.55 large / 0.45 base), applies the existing QWK-optimised thresholds once, clips to 1-6 and writes submission.csv. Thresholds were deliberately left as in v54 because the history shows blind threshold changes cost ~0.01."
+}

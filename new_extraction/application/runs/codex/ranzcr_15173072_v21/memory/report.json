@@ -1,0 +1,105 @@
+{
+  "observations": [
+    {
+      "observation": "Does the local taxonomy include restoring a proven configuration after regression?",
+      "result": "yes",
+      "evidence": "memory/taxonomy.md, T.1.3 and T.1.3.1 identify restoring the proven configuration as a response to an unsuccessful search."
+    },
+    {
+      "observation": "Is the competition evaluated by mean per-label ROC AUC?",
+      "result": "yes",
+      "evidence": "task.md Evaluation specifies AUC for each of 11 labels, averaged; higher is better."
+    },
+    {
+      "observation": "Does the submission require probabilities for each test image?",
+      "result": "yes",
+      "evidence": "task.md Submission File requires a probability for all target variables for each StudyInstanceUID."
+    },
+    {
+      "observation": "Does an earlier scored version outperform v21?",
+      "result": "yes",
+      "evidence": "history.md reports 0.96062 for v13 and v14 versus 0.95243 for v21."
+    },
+    {
+      "observation": "Did any scored normalization experiment after v14 exceed 0.96062?",
+      "result": "no",
+      "evidence": "history.md: v16 0.95220, v17 0.95712, v18 0.95760, v19 0.95672, v20 0.95319, v21 0.95243."
+    },
+    {
+      "observation": "Did the change to 512-pixel inputs improve the recorded score?",
+      "result": "yes",
+      "evidence": "history.md v12 to v13 changed 640 to 512 and batch size 12 to 64; score rose from 0.95987 to 0.96062. The resolution effect is not fully isolated from batch size."
+    },
+    {
+      "observation": "Did increasing batch size from 64 to 128 improve the recorded score?",
+      "result": "no",
+      "evidence": "history.md v13 to v14 changed only batch size; both scored 0.96062."
+    },
+    {
+      "observation": "Can the best-scoring normalization be reconstructed from history?",
+      "result": "yes",
+      "evidence": "history.md v9 introduced normalization; v16 explicitly changed means from [0.485, 0.456, 0.406]; v18 explicitly changed standard deviations from [0.229, 0.224, 0.225]. These identify the v13/v14 statistics."
+    },
+    {
+      "observation": "Does the current script use the best-scoring preprocessing?",
+      "result": "no",
+      "evidence": "current_code.py sets IMAGE_SIZE=640 and Normalize(mean=[0.5,0.5,0.5], std=[0.3,0.32,0.3]), unlike the reconstructed v13/v14 configuration."
+    },
+    {
+      "observation": "Does the current script already average horizontal-flip predictions?",
+      "result": "yes",
+      "evidence": "current_code.py inference averages sigmoid outputs from model(images) and model(images.flip(-1))."
+    },
+    {
+      "observation": "Does the current script put its checkpoint model in evaluation mode?",
+      "result": "yes",
+      "evidence": "current_code.py calls model.eval() before creating the models list."
+    },
+    {
+      "observation": "Does the current script configure more than one checkpoint?",
+      "result": "no",
+      "evidence": "current_code.py loads resnet200d_fold4_cv954.pth and sets models=[model.to(device)]."
+    },
+    {
+      "observation": "Does the script multiply its probability predictions by 100 before saving?",
+      "result": "yes",
+      "evidence": "current_code.py final cell assigns predictions *100 to the target columns."
+    },
+    {
+      "observation": "Can a positive constant multiplier improve ROC AUC by changing score order?",
+      "result": "no",
+      "evidence": "task.md uses per-label ROC AUC; current_code.py multiplies every prediction by the same positive constant, which preserves ordering in exact arithmetic."
+    },
+    {
+      "observation": "Does the script preserve sample-submission row order during inference?",
+      "result": "yes",
+      "evidence": "current_code.py constructs TestDataset from sample_submission.csv and uses a DataLoader with shuffle=False before assigning predictions to the same dataframe."
+    },
+    {
+      "observation": "Does the script import unused augmentation classes?",
+      "result": "yes",
+      "evidence": "current_code.py imports RandomBrightness, RandomContrast, Cutout, IAAAdditiveGaussianNoise and other augmentations, while get_transforms uses only Compose, Resize, Normalize and ToTensorV2."
+    },
+    {
+      "observation": "Do the relevant attention entries support restoring a prior working configuration?",
+      "result": "yes",
+      "evidence": "Read memory/attention/t-1-3-choose-a-response-to-an-unsuccessful-searc.md, t-2-1-restore-model-and-input-compatibility.md, t-3-3-represent-images-and-signals.md, and t-7-5-correct-output-semantics-or-bias.md. The unsuccessful-search entry prioritizes checking regressions against a prior working configuration; the history supplies such a configuration."
+    },
+    {
+      "observation": "Is the checkpoint training preprocessing explicitly documented in the supplied script?",
+      "result": "no",
+      "evidence": "current_code.py contains inference transforms and a checkpoint path, but no training transform definition or checkpoint preprocessing metadata. The restoration is supported by leaderboard history, not a verified training contract."
+    },
+    {
+      "observation": "Does the revised script pass Python syntax checking?",
+      "result": "yes",
+      "evidence": "Parsed output/revised_code.py with ast.parse and compiled its source with compile(..., mode=\"exec\"); neither operation executed the pipeline."
+    },
+    {
+      "observation": "Does the output report satisfy the requested JSON schema?",
+      "result": "yes",
+      "evidence": "Loaded output/report.json with json.loads; checked the top-level keys, string action_summary, observation fields, and yes/no result values."
+    }
+  ],
+  "action_summary": "Restore the best historically scored preprocessing: 512-pixel inputs with ImageNet mean [0.485, 0.456, 0.406] and standard deviation [0.229, 0.224, 0.225]. Return to batch size 64, which previously matched the score at 128 while requiring less peak memory. Preserve the checkpoint, architecture, horizontal-flip probability averaging, Kaggle paths and submission ordering. Remove the final factor of 100 to emit valid probabilities (this is not itself an expected AUC gain), trim unused imports, add unreadable-image detection and validate prediction shape, finiteness and range before saving. The credible gain is recovery toward v13/v14 performance (0.96062 versus v21 0.95243); no new leaderboard gain is claimed without data."
+}

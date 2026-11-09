@@ -1,0 +1,514 @@
+{
+ "nodes": {
+  "T": {
+   "groups": [
+    {
+     "under": "WHERE IS THE BOTTLENECK?",
+     "checks": [
+      {
+       "check": "The current best score came from a single model or a few near-identical members.",
+       "how": "Inspect submission history and ensemble config for number of distinct model families.",
+       "pushes": {
+        "T.1": 0.7
+       }
+      },
+      {
+       "check": "Blending is manual with few members and weight changes now move the score by <0.001.",
+       "how": "Read the log of past blend-weight changes and their score deltas.",
+       "pushes": {
+        "T.1": 0.4,
+        "T.3": 0.4,
+        "T.4": 0.3,
+        "T.2": -0.6
+       }
+      },
+      {
+       "check": "A recent change caused an unexplained score drop or errors.",
+       "how": "Compare last submissions' scores and diff of code versions.",
+       "pushes": {
+        "T.7": 0.9
+       }
+      },
+      {
+       "check": "Local validation disagrees with leaderboard or repeated runs give different scores.",
+       "how": "Re-run an unchanged submission and compare local CV vs leaderboard rankings.",
+       "pushes": {
+        "T.5": 0.8,
+        "T.7": 0.3
+       }
+      },
+      {
+       "check": "The metric is rank- or threshold-based (AUC, QWK, concordance) and predictions are raw continuous values.",
+       "how": "Read the task metric description.",
+       "pushes": {
+        "T.6": 0.6,
+        "T.2": 0.3
+       }
+      },
+      {
+       "check": "Training features are few/simple or raw inputs have untried representations.",
+       "how": "Inspect feature list and input pipeline.",
+       "pushes": {
+        "T.4": 0.6
+       }
+      },
+      {
+       "check": "Model hyperparameters/backbone have not been tuned from defaults.",
+       "how": "Check config against defaults in earlier versions.",
+       "pushes": {
+        "T.3": 0.6
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "T.1": {
+   "groups": [
+    {
+     "under": "ENSEMBLE STATE",
+     "checks": [
+      {
+       "check": "Existing members are all from the same family/representation.",
+       "how": "List members' model types, inputs and feature sets.",
+       "pushes": {
+        "T.1.1": 0.8,
+        "T.1.2": 0.2
+       }
+      },
+      {
+       "check": "Additional diverse models are not trainable or loadable within the compute budget.",
+       "how": "Check available checkpoints, GPU memory and runtime limit.",
+       "pushes": {
+        "T.1.1": -0.7,
+        "T.1.3": 0.4,
+        "T.1.2": 0.3
+       }
+      },
+      {
+       "check": "Several candidate checkpoints already exist but only some are in the blend.",
+       "how": "List saved checkpoints vs. those used.",
+       "pushes": {
+        "T.1.3": 0.8
+       }
+      },
+      {
+       "check": "Current members are fold or seed copies of one recipe and more are cheap to add.",
+       "how": "Count folds/seeds in use and available checkpoint files.",
+       "pushes": {
+        "T.1.2": 0.8,
+        "T.1.1": -0.2
+       }
+      },
+      {
+       "check": "One member scores far below others standalone or hurts the blend.",
+       "how": "Compare each member's individual score and ablate it.",
+       "pushes": {
+        "T.1.3": 0.8,
+        "T.1.1": -0.2
+       }
+      },
+      {
+       "check": "Gains from the last added same-family member were negligible.",
+       "how": "Score deltas of the last few additions.",
+       "pushes": {
+        "T.1.2": -0.7,
+        "T.1.1": 0.6
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "T.2": {
+   "groups": [
+    {
+     "under": "COMBINATION CONTEXT",
+     "checks": [
+      {
+       "check": "The metric depends only on ordering (AUC, rank correlation).",
+       "how": "Task metric definition.",
+       "pushes": {
+        "T.2.2": 0.8
+       }
+      },
+      {
+       "check": "Out-of-fold predictions exist for all members, enough rows to fit a meta-model.",
+       "how": "Check OOF files and dataset size.",
+       "pushes": {
+        "T.2.3": 0.8,
+        "T.2.1": -0.2
+       }
+      },
+      {
+       "check": "Members are cross-validation folds of the same model.",
+       "how": "Check whether blend items are folds.",
+       "pushes": {
+        "T.2.4": 0.8
+       }
+      },
+      {
+       "check": "Members differ widely in individual quality.",
+       "how": "Compare individual validation/LB scores.",
+       "pushes": {
+        "T.2.1": 0.7
+       }
+      },
+      {
+       "check": "Only leaderboard feedback (no OOF) is available.",
+       "how": "Check whether OOF predictions were saved.",
+       "pushes": {
+        "T.2.3": -0.8,
+        "T.2.1": 0.6
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "T.2.1": {
+   "groups": [
+    {
+     "under": "WEIGHTING SITUATION",
+     "checks": [
+      {
+       "check": "A new or changed member was just added and weights are stale.",
+       "how": "Compare version diffs for member list.",
+       "pushes": {
+        "T.2.1.3": 0.9
+       }
+      },
+      {
+       "check": "Members' standalone scores differ clearly.",
+       "how": "Score each member alone.",
+       "pushes": {
+        "T.2.1.2": 0.8,
+        "T.2.1.1": 0.2
+       }
+      },
+      {
+       "check": "Weights are free continuous values and submissions are limited.",
+       "how": "Count remaining submissions; check number of weights.",
+       "pushes": {
+        "T.2.1.1": 0.7
+       }
+      },
+      {
+       "check": "Equal weighting currently underperforms the best single member.",
+       "how": "Compare equal blend vs best member score.",
+       "pushes": {
+        "T.2.1.2": 0.7
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "T.3": {
+   "groups": [
+    {
+     "under": "WHAT LIMITS THE MODEL?",
+     "checks": [
+      {
+       "check": "The backbone has plateaued and a stronger pretrained variant is available.",
+       "how": "Check available pretrained weights and memory/time to run them.",
+       "pushes": {
+        "T.3.1": 0.8
+       }
+      },
+      {
+       "check": "Model is a gradient-boosted tree.",
+       "how": "Check model type in code.",
+       "pushes": {
+        "T.3.3": 0.9,
+        "T.3.1": -0.6,
+        "T.3.4": -0.5,
+        "T.3.2": -0.6
+       }
+      },
+      {
+       "check": "Model is a fine-tuned neural network with default optimisation settings.",
+       "how": "Inspect training config.",
+       "pushes": {
+        "T.3.4": 0.7,
+        "T.3.3": -0.8
+       }
+      },
+      {
+       "check": "The evaluation metric differs from the training loss.",
+       "how": "Compare loss function with competition metric.",
+       "pushes": {
+        "T.3.5": 0.8
+       }
+      },
+      {
+       "check": "Training shows overfitting (train\u226bval) on limited data.",
+       "how": "Training curves.",
+       "pushes": {
+        "T.3.6": 0.6,
+        "T.3.4": 0.4
+       }
+      },
+      {
+       "check": "Multiple input branches exist and one may be redundant or weak.",
+       "how": "Examine architecture and per-branch ablations.",
+       "pushes": {
+        "T.3.2": 0.7
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "T.4": {
+   "groups": [
+    {
+     "under": "DATA CONTEXT",
+     "checks": [
+      {
+       "check": "Raw data has repeated rows per entity or text with little engineering so far.",
+       "how": "Inspect data schema.",
+       "pushes": {
+        "T.4.1": 0.8
+       }
+      },
+      {
+       "check": "Feature count is large, sparse, or recent feature additions degraded the score.",
+       "how": "Feature count and score history.",
+       "pushes": {
+        "T.4.2": 0.8,
+        "T.4.1": -0.3
+       }
+      },
+      {
+       "check": "Inputs are signals/images converted to model inputs with tunable parameters.",
+       "how": "Inspect preprocessing code.",
+       "pushes": {
+        "T.4.3": 0.8
+       }
+      },
+      {
+       "check": "External or additional labelled data exists, or training set contains a different-distribution subset or noisy labels.",
+       "how": "Task rules on external data; train/test distribution comparison.",
+       "pushes": {
+        "T.4.4": 0.8
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "T.4.3": {
+   "groups": [
+    {
+     "under": "INPUT PIPELINE",
+     "checks": [
+      {
+       "check": "Input size/resolution or derived channels differ from what the pretrained model was trained on.",
+       "how": "Compare config with pretraining settings.",
+       "pushes": {
+        "T.4.3.1": 0.7
+       }
+      },
+      {
+       "check": "Normalisation statistics, filters or text cleaning are applied differently at train and inference.",
+       "how": "Diff train vs inference preprocessing.",
+       "pushes": {
+        "T.4.3.2": 0.9
+       }
+      },
+      {
+       "check": "Higher resolution is affordable memory-wise.",
+       "how": "Check GPU memory headroom.",
+       "pushes": {
+        "T.4.3.1": 0.5
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "T.5": {
+   "groups": [
+    {
+     "under": "VALIDATION STATE",
+     "checks": [
+      {
+       "check": "Entities/groups repeat across rows or distribution differs from test.",
+       "how": "Check ID columns and train/test comparison.",
+       "pushes": {
+        "T.5.1": 0.8
+       }
+      },
+      {
+       "check": "Small public score differences (<0.001) drive decisions or repeated runs differ.",
+       "how": "Resubmit unchanged pipeline; compare.",
+       "pushes": {
+        "T.5.2": 0.9
+       }
+      },
+      {
+       "check": "CV is already consistent with leaderboard.",
+       "how": "Correlate CV and LB over past submissions.",
+       "pushes": {
+        "T.5.1": -0.5,
+        "T.5.2": -0.3
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "T.6": {
+   "groups": [
+    {
+     "under": "PREDICTION OUTPUT",
+     "checks": [
+      {
+       "check": "The model sees images/signals with natural flip or crop symmetry.",
+       "how": "Task data type.",
+       "pushes": {
+        "T.6.1": 0.8
+       }
+      },
+      {
+       "check": "Target is ordinal/discrete or metric uses cutpoints while outputs are continuous.",
+       "how": "Target distribution and metric.",
+       "pushes": {
+        "T.6.2": 0.8
+       }
+      },
+      {
+       "check": "Inference time budget is tight.",
+       "how": "Runtime of last inference.",
+       "pushes": {
+        "T.6.1": -0.6
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "T.6.2": {
+   "groups": [
+    {
+     "under": "POST-PROCESSING TYPE",
+     "checks": [
+      {
+       "check": "Labels take few discrete values and metric needs discrete labels.",
+       "how": "Unique target values.",
+       "pushes": {
+        "T.6.2.1": 0.9
+       }
+      },
+      {
+       "check": "Predictions show systematic bias or out-of-range values.",
+       "how": "Plot prediction vs target distribution.",
+       "pushes": {
+        "T.6.2.2": 0.8
+       }
+      },
+      {
+       "check": "The model/ensemble changed since thresholds were tuned.",
+       "how": "Version history.",
+       "pushes": {
+        "T.6.2.1": 0.5
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "T.7": {
+   "groups": [
+    {
+     "under": "PROCESS PROBLEM",
+     "checks": [
+      {
+       "check": "Submission fails or scores near random.",
+       "how": "Submission logs.",
+       "pushes": {
+        "T.7.1": 0.9
+       }
+      },
+      {
+       "check": "Score dropped substantially after a change.",
+       "how": "Score history.",
+       "pushes": {
+        "T.7.2": 0.9
+       }
+      },
+      {
+       "check": "Several changes bundled or iteration budget unclear.",
+       "how": "Version diffs.",
+       "pushes": {
+        "T.7.3": 0.8
+       }
+      },
+      {
+       "check": "Notebook hits memory/time limits.",
+       "how": "Run logs.",
+       "pushes": {
+        "T.7.4": 0.9
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "T.7.1": {
+   "groups": [
+    {
+     "under": "INTEGRITY",
+     "checks": [
+      {
+       "check": "Error appeared after swapping a model file, checkpoint, or platform.",
+       "how": "Version diff and error log.",
+       "pushes": {
+        "T.7.1.2": 0.9
+       }
+      },
+      {
+       "check": "Predictions have wrong shape, order or constant values without errors.",
+       "how": "Inspect output array and row IDs.",
+       "pushes": {
+        "T.7.1.1": 0.9
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "T.7.2": {
+   "groups": [
+    {
+     "under": "REGRESSION",
+     "checks": [
+      {
+       "check": "Several components changed in the failing version.",
+       "how": "Diff versions.",
+       "pushes": {
+        "T.7.2.1": 0.9
+       }
+      },
+      {
+       "check": "The culprit is already known.",
+       "how": "Prior ablation.",
+       "pushes": {
+        "T.7.2.2": 0.8,
+        "T.7.2.1": -0.6
+       }
+      },
+      {
+       "check": "A previous best version is restorable.",
+       "how": "Check version history.",
+       "pushes": {
+        "T.7.2.2": 0.6
+       }
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

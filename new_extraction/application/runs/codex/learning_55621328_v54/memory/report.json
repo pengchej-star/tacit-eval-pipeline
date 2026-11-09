@@ -1,0 +1,110 @@
+{
+  "observations": [
+    {
+      "observation": "Does the supplied taxonomy identify restoring a proven configuration as a response to regression?",
+      "result": "yes",
+      "evidence": "memory/taxonomy.md, T.1.3.1 lists Restore the proven configuration."
+    },
+    {
+      "observation": "Is the competition metric quadratic weighted kappa?",
+      "result": "yes",
+      "evidence": "task.md Evaluation specifies QWK; the summary says higher is better."
+    },
+    {
+      "observation": "Does the submission require an integer score from 1 through 6 for each essay_id?",
+      "result": "yes",
+      "evidence": "task.md Data defines the 1\u20136 score scale; Submission File specifies essay_id,score and submission.csv."
+    },
+    {
+      "observation": "Does the history show that v52 outperformed v54?",
+      "result": "yes",
+      "evidence": "history.md reports v52=0.81978 and v54=0.80482."
+    },
+    {
+      "observation": "Did the threshold-only change from v52 to v53 improve the leaderboard score?",
+      "result": "no",
+      "evidence": "history.md reports a decline from 0.81978 to 0.81104 after changing the five values."
+    },
+    {
+      "observation": "Did the latest switch to four folds improve the leaderboard score?",
+      "result": "no",
+      "evidence": "history.md reports v53=0.81104 and v54=0.80482, with both checkpoint selection and thresholds changed."
+    },
+    {
+      "observation": "Does the active code use the five --weights values as ensemble coefficients?",
+      "result": "no",
+      "evidence": "current_code.py passes these values to OptimizedRounder.predict, whereas np.mean averages checkpoints uniformly."
+    },
+    {
+      "observation": "Does the active pipeline use a large DeBERTa backbone?",
+      "result": "yes",
+      "evidence": "current_code.py active command sets model.path to /kaggle/input/deberta-v3-large/deberta-v3-large."
+    },
+    {
+      "observation": "Does the current pipeline preserve the added newline tokenizer tokens?",
+      "result": "yes",
+      "evidence": "current_code.py adds both double-newline and newline AddedToken values and resizes token embeddings."
+    },
+    {
+      "observation": "Does the active pipeline fit its thresholds on held-out predictions?",
+      "result": "no",
+      "evidence": "current_code.py uses a fixed threshold array; the only OptimizedRounder.fit example is commented out."
+    },
+    {
+      "observation": "Does the original notebook document a held-out prediction filename convention?",
+      "result": "yes",
+      "evidence": "The commented calibration cell reads pred_df_fold0.csv with raw_pred and score from an older experiment directory."
+    },
+    {
+      "observation": "Does the current submission writer explicitly join predictions by essay_id?",
+      "result": "no",
+      "evidence": "current_code.py assigns predictions positionally to sample_submission.csv."
+    },
+    {
+      "observation": "Does the history provide the exact v52 threshold values?",
+      "result": "no",
+      "evidence": "history.md describes numeric threshold changes but never prints the v52 array."
+    },
+    {
+      "observation": "Does the history identify the single-fold checkpoint stopping variant preceding v52?",
+      "result": "yes",
+      "evidence": "v50 -> v51 names model_fold0_last.pth; v51 -> v52 reports changing its experiment directory and backbone without naming a new stopping variant."
+    },
+    {
+      "observation": "Does the restoration attention entry recommend checking a previous regression before reverting?",
+      "result": "yes",
+      "evidence": "memory/attention/t-1-3-choose-a-response-to-an-unsuccessful-searc.md prioritizes E22, a regression with a prior working configuration."
+    },
+    {
+      "observation": "Does the artifact attention entry emphasize architecture compatibility?",
+      "result": "yes",
+      "evidence": "memory/attention/t-6-3-select-a-trained-artifact.md first checks matching architecture and preprocessing."
+    },
+    {
+      "observation": "Does the cutpoint attention entry condition optimization on representative held-out predictions?",
+      "result": "yes",
+      "evidence": "memory/attention/t-7-4-map-continuous-scores-to-discrete-labels.md prioritizes E151."
+    },
+    {
+      "observation": "Can the previous model artifacts be confirmed from the supplied local materials?",
+      "result": "no",
+      "evidence": "Only source, descriptions and historical summaries are supplied; the competition data and Kaggle checkpoint mounts are unavailable here."
+    },
+    {
+      "observation": "Does the compatibility attention entry recommend preserving training-time preprocessing?",
+      "result": "yes",
+      "evidence": "memory/attention/t-2-1-restore-model-and-input-compatibility.md lists E31, comparing inference transforms with checkpoint training transforms; the revision retains the original tokenization and config-driven maximum length."
+    },
+    {
+      "observation": "Does each revised notebook cell pass Python syntax compilation after removing its writefile magic?",
+      "result": "yes",
+      "evidence": "Local ast.parse and compile checks passed for all 11 cells; no model code was executed."
+    },
+    {
+      "observation": "Does the output report satisfy the required JSON schema?",
+      "result": "yes",
+      "evidence": "json.loads and explicit assertions verified the top-level keys, observation fields, string values and yes/no results."
+    }
+  ],
+  "action_summary": "Prefer the historically stronger v52/v53 single-fold large-model experiment with its own config and the inferred model_fold0_last.pth artifact; retain the original v54 ensemble if that mount is absent. Keep v54 thresholds as an explicit initial mapping because the exact v52 values are unavailable. When the preferred run includes its own pred_df_fold0.csv, use its held-out essay IDs to recompute predictions with the selected checkpoint and fit bounded, shrunk QWK cutpoints, accepting them only after stratified cross-fitted improvement. This relies on that sidecar actually containing the run\u2019s held-out fold. Preserve tokenizer, architecture and Kaggle paths, join final scores by essay_id, and save raw predictions plus calibration and artifact manifests. No leaderboard gain is measured locally; if the preferred artifacts are absent, the fallback preserves v54 predictions."
+}

@@ -1,0 +1,90 @@
+{
+  "observations": [
+    {
+      "observation": "Is the competition score the mean AUC across 11 labels?",
+      "result": "yes",
+      "evidence": "task.md, Evaluation: AUC is calculated for each of the 11 labels and averaged; higher is better."
+    },
+    {
+      "observation": "Does the submission require a probability for each target?",
+      "result": "yes",
+      "evidence": "task.md, Submission File: predict a probability for all target variables; the required filename is submission.csv."
+    },
+    {
+      "observation": "Did rank conversion improve the latest single-head model score?",
+      "result": "no",
+      "evidence": "history.md: v17 scored 0.93993 with rank conversion disabled; v18 scored 0.93941 after enabling it."
+    },
+    {
+      "observation": "Did rank conversion improve the v15 model score?",
+      "result": "no",
+      "evidence": "history.md: v15 scored 0.94396; v16 enabled rank conversion and scored 0.94293."
+    },
+    {
+      "observation": "Did an earlier version exceed the current leaderboard score?",
+      "result": "yes",
+      "evidence": "history.md: v15 scored 0.94396 compared with current v18 at 0.93941."
+    },
+    {
+      "observation": "Was the historical 512-pixel experiment an isolated resolution change?",
+      "result": "no",
+      "evidence": "history.md, v10 to v11: image size increased to 512 while the hidden head layers were removed and rank conversion was disabled; score fell to 0.93722."
+    },
+    {
+      "observation": "Is the current script an inference-only pipeline?",
+      "result": "yes",
+      "evidence": "current_code.py loads existing best_model_fold{fold_id}.pth checkpoints; it contains no optimizer or training loop."
+    },
+    {
+      "observation": "Does the active inference path instantiate the multi-head model?",
+      "result": "no",
+      "evidence": "current_code.py: the MultiHeadResNeXt instantiation is commented out; SingleHeadModel is instantiated from each fold settings.yml before strict state-dict loading."
+    },
+    {
+      "observation": "Does the current ensemble use all five folds?",
+      "result": "yes",
+      "evidence": "current_code.py: FOLDS = [0, 1, 2, 3, 4], followed by a mean across the fold predictions."
+    },
+    {
+      "observation": "Does the current pipeline resize test images to 448 by 448?",
+      "result": "yes",
+      "evidence": "current_code.py: IMAGE_SIZE = (448, 448) is passed to resize_images before inference."
+    },
+    {
+      "observation": "Does the existing inference loop use test-time augmentation?",
+      "result": "no",
+      "evidence": "current_code.py, run_inference_loop: one model(x.to(device)) call per batch, followed directly by sigmoid and collection."
+    },
+    {
+      "observation": "Do any target names encode left versus right laterality?",
+      "result": "no",
+      "evidence": "current_code.py, CLASSES: all 11 targets describe tube placement categories or Swan Ganz presence, with no left/right target."
+    },
+    {
+      "observation": "Does the current code set the model to evaluation mode?",
+      "result": "yes",
+      "evidence": "current_code.py, run_inference_loop calls model.eval() before inference; head dropout is therefore disabled."
+    },
+    {
+      "observation": "Are the normalization constants currently represented as strings?",
+      "result": "yes",
+      "evidence": "current_code.py, get_dataloaders_for_inference: mean and std are single-element lists containing quoted numeric strings."
+    },
+    {
+      "observation": "Does the enabled rank postprocessing produce values bounded by one?",
+      "result": "no",
+      "evidence": "current_code.py: two argsort calls produce zero-based integer ranks across test rows; those ranks are averaged without normalization."
+    },
+    {
+      "observation": "Are test predictions stored with an explicit float32 dtype?",
+      "result": "no",
+      "evidence": "current_code.py: np.zeros((N_FOLD, len(smpl_sub), N_CLASSES)) omits dtype and thus defaults to float64."
+    },
+    {
+      "observation": "Does the original prediction array use the fold ID as its storage index?",
+      "result": "yes",
+      "evidence": "current_code.py: test_preds_arr[fold_id] = test_pred, which assumes contiguous zero-based selected folds."
+    }
+  ],
+  "action_summary": "Disable rank conversion, restoring probability averaging supported by the v17 versus v18 comparison. Add equal-weight original/horizontal-reflection test-time augmentation at the existing 448-pixel resolution to reduce view sensitivity while preserving all image content. Keep the five folds, checkpoint-compatible single-head architecture, Kaggle paths, and submission order. Use explicit numeric RGB normalization constants, float32 prediction storage, fold-position indexing, finite/probability output checks, and normalized tie-aware ranks for the optional disabled rank branch. No training or inference was run; any score improvement from augmentation remains unverified without data."
+}

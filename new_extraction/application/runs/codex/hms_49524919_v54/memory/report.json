@@ -1,0 +1,90 @@
+{
+  "observations": [
+    {
+      "observation": "Does the competition evaluate probability distributions using KL divergence?",
+      "result": "yes",
+      "evidence": "task.md, Evaluation and Summary from our notes: six-class KL divergence, lower is better."
+    },
+    {
+      "observation": "Must every submission probability row sum to one?",
+      "result": "yes",
+      "evidence": "task.md, Submission File: six vote columns for each eeg_id, with row sums equal to one."
+    },
+    {
+      "observation": "Does v54 beat the best score reported in the visible history?",
+      "result": "no",
+      "evidence": "history.md: v54 is 0.41624; v50 achieved 0.41016."
+    },
+    {
+      "observation": "Have the scored versions after v50 produced a new best score?",
+      "result": "no",
+      "evidence": "history.md: v51 through v54 scored 0.41096, 0.42095, 0.42162, and 0.41624, all worse than v50."
+    },
+    {
+      "observation": "Does the active inference pipeline load five raw EEG fold checkpoints?",
+      "result": "yes",
+      "evidence": "current_code.py: load_eegnet_model call lists five files in raw_eeg_1d_eegnet_19x10000_quality_2."
+    },
+    {
+      "observation": "Does the active submission include spectrogram predictions?",
+      "result": "no",
+      "evidence": "current_code.py: spectrogram loading is inside a triple-quoted string; submission uses only raw_eeg_1d_prediction_columns."
+    },
+    {
+      "observation": "Are the checkpoint models put into evaluation mode?",
+      "result": "yes",
+      "evidence": "current_code.py: load_eegnet_model calls model.eval() after loading each checkpoint."
+    },
+    {
+      "observation": "Are temporal dropout transforms active during inference?",
+      "result": "no",
+      "evidence": "current_code.py: inference_transforms contains ChannelDifference, InstanceNormalization1D, and ToTensor1D only."
+    },
+    {
+      "observation": "Does inference use four deterministic views per model?",
+      "result": "yes",
+      "evidence": "current_code.py: raw_eeg_1d_tta=True; the stack contains original, channel flip, time flip, and combined flip."
+    },
+    {
+      "observation": "Does the existing pipeline average TTA logits before activation?",
+      "result": "yes",
+      "evidence": "current_code.py: torch.mean(raw_eeg_1d_outputs, dim=0) runs before sigmoid or softmax."
+    },
+    {
+      "observation": "Does the existing pipeline average fold logits before activation?",
+      "result": "yes",
+      "evidence": "current_code.py: raw_eeg_1d_predictions accumulates raw outputs divided by len(models); activation follows the model loop."
+    },
+    {
+      "observation": "Does the active output conversion use normalized sigmoid?",
+      "result": "yes",
+      "evidence": "current_code.py: raw_eeg_1d_task_type='binary'; torch.sigmoid is followed by division by each row sum."
+    },
+    {
+      "observation": "Are probability operations explicitly promoted to float32 immediately after AMP inference?",
+      "result": "no",
+      "evidence": "current_code.py: outputs are moved to CPU and averaged without an explicit float conversion; model forward runs with float16 autocast."
+    },
+    {
+      "observation": "Does the script load held-out predictions for fitting ensemble weights?",
+      "result": "no",
+      "evidence": "current_code.py contains test-only inference; no out-of-fold prediction loader or blend-fitting stage is present."
+    },
+    {
+      "observation": "Does the visible history report a probability-space ensemble experiment?",
+      "result": "no",
+      "evidence": "history.md entries describe checkpoint, architecture, transform, TTA, and wiring changes; none describes independently normalizing model/view predictions before averaging."
+    },
+    {
+      "observation": "Does the recorded TTA expansion isolate its leaderboard effect?",
+      "result": "no",
+      "evidence": "history.md v51 to v52 changes checkpoints at the same time as adding horizontal and combined flips; the score regression cannot be attributed to TTA alone."
+    },
+    {
+      "observation": "Does the available history specify the exact five filenames needed to restore v50?",
+      "result": "no",
+      "evidence": "history.md identifies the v1.5 directory but only summarizes the checkpoint replacement; the actual five filenames are omitted."
+    }
+  ],
+  "action_summary": "Replaced logit pooling with an equal-weight arithmetic mixture of independently normalized model/view probabilities. The existing binary normalized-sigmoid semantics are preserved through float32 softmax(logsigmoid(logits)); the multiclass branch uses per-view float32 softmax. This targets KL divergence by reducing the influence of individual extreme logits while retaining all five checkpoints, four TTA views, architecture, preprocessing, and Kaggle paths for a focused comparison. Added a numerical probability floor and submission finiteness/row-sum checks. No training or inference was run, and improvement remains an unmeasured hypothesis without competition data."
+}

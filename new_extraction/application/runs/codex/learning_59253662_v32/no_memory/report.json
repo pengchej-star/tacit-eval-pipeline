@@ -1,0 +1,95 @@
+{
+  "observations": [
+    {
+      "observation": "Is quadratic weighted kappa the competition metric?",
+      "result": "yes",
+      "evidence": "task.md Evaluation specifies quadratic weighted kappa; higher is better."
+    },
+    {
+      "observation": "Does the submission require integer scores from 1 to 6?",
+      "result": "yes",
+      "evidence": "task.md Data describes scores on the 1\u20136 scale and Submission File specifies essay_id,score in submission.csv."
+    },
+    {
+      "observation": "Did a previous recorded version outperform v32?",
+      "result": "yes",
+      "evidence": "history.md: v26 scored 0.81897; current v32 scores 0.80731."
+    },
+    {
+      "observation": "Did the recorded score decline after introducing SMOTE?",
+      "result": "yes",
+      "evidence": "history.md: v29 scored 0.81830; v30 introduced imputation/SMOTE; next scored version v31 reached 0.81098. This is an association, not proof of causation."
+    },
+    {
+      "observation": "Does v32 resample data before creating cross-validation folds?",
+      "result": "yes",
+      "evidence": "current_code.py creates topic-wise SMOTE balanced_df before StratifiedKFold.split(X, y_split). Synthetic neighbours can consequently cross validation boundaries."
+    },
+    {
+      "observation": "Does v32 discard some genuine essays by downsampling?",
+      "result": "yes",
+      "evidence": "current_code.py downsample groups by topic and score, capping each group at 1500 before SMOTE."
+    },
+    {
+      "observation": "Does the final regressor apply balanced class weights?",
+      "result": "yes",
+      "evidence": "current_code.py final LGBMRegressor has class_weight='balanced' in addition to resampling."
+    },
+    {
+      "observation": "Does v32 retain continuous out-of-fold predictions without integer truncation?",
+      "result": "no",
+      "evidence": "current_code.py initializes oof with balanced_df['score'].astype(int).values and assigns floating regression predictions into it."
+    },
+    {
+      "observation": "Does v32 calibrate the final rounding rule using OOF predictions?",
+      "result": "no",
+      "evidence": "current_code.py ends with np.round(predictions.clip(1, 6)); there is no fitted rounding calibration."
+    },
+    {
+      "observation": "Does the custom objective use hardcoded score moments?",
+      "result": "yes",
+      "evidence": "current_code.py sets a=2.998 and b=1.092, which qwk_obj uses for its ratio objective."
+    },
+    {
+      "observation": "Are train/test feature rows always aligned explicitly by essay ID?",
+      "result": "no",
+      "evidence": "current_code.py attaches n-gram matrices and DeBERTa arrays positionally to feature frames; aggregations sort essay_id and final submission assigns scores positionally."
+    },
+    {
+      "observation": "Does v32 load a saved training feature table?",
+      "result": "yes",
+      "evidence": "current_code.py loads /kaggle/input/essay-scoring-features/train_df_30jun.pkl; expensive training feature extraction is commented out."
+    },
+    {
+      "observation": "Does the selected feature list include every available feature automatically?",
+      "result": "no",
+      "evidence": "current_code.py loads usefe_list_30jun.pkl and keeps only the first 4500 entries; newly added stacking columns are not explicitly guaranteed inclusion."
+    },
+    {
+      "observation": "Does v32 already use a local DeBERTa ensemble?",
+      "result": "yes",
+      "evidence": "current_code.py averages softmax probabilities from aes2-400-20240419134941 checkpoints and loads a six-column OOF array."
+    },
+    {
+      "observation": "Does v32 use identity tokenizers for its n-gram vectorizers?",
+      "result": "yes",
+      "evidence": "current_code.py sets tokenizer=lambda x:x with analyzer=word on full_text strings. These produce character-sequence features; their definitions are preserved to keep saved feature-selection names compatible."
+    },
+    {
+      "observation": "Does v32 train its final ensemble with 15 folds?",
+      "result": "yes",
+      "evidence": "current_code.py final n_splits=15; this ensemble structure is retained."
+    },
+    {
+      "observation": "Does the revised code pass Python syntax validation?",
+      "result": "yes",
+      "evidence": "Parsed output/revised_code.py with ast.parse and compiled it without executing any pipeline code."
+    },
+    {
+      "observation": "Does the report satisfy the required JSON schema?",
+      "result": "yes",
+      "evidence": "Loaded output/report.json using json.loads; checked top-level fields, each observation field, and yes/no result values."
+    }
+  ],
+  "action_summary": "Restore training on all original essays at natural score frequencies by removing topic downsampling, pre-CV SMOTE, and class balancing. Preserve the existing local transformer ensemble, cached features, selected n-grams, and 15-fold LightGBM pipeline; guarantee inclusion of the six transformer columns, derive objective moments from real labels, retain missing values consistently, and store floating-point OOF predictions. Add conservative two-parameter QWK rounding calibration, enabled only after cross-fitted improvement across at least four of five calibration splits. Align feature additions and final submission by essay_id. No training or inference was run; leaderboard improvement remains unverified without competition data. Checkpoint discovery is deterministic and restricted to model directories; QWK evaluation restores integer labels explicitly after target centering."
+}

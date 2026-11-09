@@ -1,0 +1,13 @@
+{
+  "observations": [
+    {"observation": "Has the leaderboard score declined over the last three scored versions?", "result": "yes", "evidence": "history.md: v29 0.81830 -> v31 0.81098 -> v32 0.80731."},
+    {"observation": "Was the best scoring version (v29, 0.81830) trained without SMOTE or downsampling?", "result": "yes", "evidence": "history.md: SMOTE/imputation introduced in v30, topic downsampling in v32; v29 used the plain feature matrix."},
+    {"observation": "Does the current code cap the selected feature list at 4500 features?", "result": "yes", "evidence": "current_code.py line 911: feature_select = feature_select[0:4500], introduced in v30."},
+    {"observation": "Does the current code train LightGBM on a topic-downsampled and per-topic SMOTE-resampled dataset?", "result": "yes", "evidence": "current_code.py lines 919-959: downsample() then SMOTE per topic, X/y taken from balanced_df."},
+    {"observation": "Does the current code use plain rounding of the averaged regression output to produce final scores?", "result": "yes", "evidence": "current_code.py line 1244: predictions = np.round(predictions.clip(1, 6))."},
+    {"observation": "Does the current code store out-of-fold predictions in a float array usable for threshold tuning?", "result": "no", "evidence": "current_code.py line 959: oof is an int array of scores, so assigning float predictions truncates them."},
+    {"observation": "Is QWK-optimised threshold rounding already used anywhere in the pipeline?", "result": "no", "evidence": "No threshold optimisation code in current_code.py; task.md notes that per-threshold rounding optimised for QWK is a standard improvement."},
+    {"observation": "Does the test-time inference still produce DeBERTa and fb3 stacked features matching the training columns?", "result": "yes", "evidence": "current_code.py lines 1224-1228 add deberta_oof_i and fb3 columns to test_feats, and train uses the same names (lines 859-874)."}
+  ],
+  "action_summary": "Reverted the training data path to the full training set: removed the topic-based downsampling and per-topic SMOTE resampling, and removed the 4500-feature cap so the full saved selected-feature list is used (the best version v29 at 0.8183 trained this way; v30-v32 with resampling fell to 0.811 and 0.807). Made the OOF array a float array so raw regression outputs are kept, and added Nelder-Mead optimisation of the five rounding thresholds on the OOF predictions to maximise QWK; the optimised thresholds are then applied to the averaged test predictions instead of plain rounding. The rest of the pipeline (DeBERTa and fb3 stacked features, TF-IDF/count features, 15-fold LightGBM with the custom QWK objective, submission format) is unchanged."
+}

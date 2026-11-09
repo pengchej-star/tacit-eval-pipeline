@@ -1,0 +1,80 @@
+{
+  "observations": [
+    {
+      "observation": "Does the taxonomy include restoration of a proven configuration?",
+      "result": "yes",
+      "evidence": "memory/taxonomy.md, T.1.3.1, names Restore the proven configuration; T.2.2.2 also covers restoring missing model contributions."
+    },
+    {
+      "observation": "Is the evaluation metric mean column-wise Spearman correlation?",
+      "result": "yes",
+      "evidence": "task.md Evaluation specifies the mean of target-wise Spearman correlations, with higher scores better."
+    },
+    {
+      "observation": "Must submission predictions lie in [0,1]?",
+      "result": "yes",
+      "evidence": "task.md Evaluation requires probabilities in [0,1] for each qa_id and target."
+    },
+    {
+      "observation": "Did the last recorded change reduce the leaderboard score?",
+      "result": "yes",
+      "evidence": "history.md: v21 scored 0.36763; v22 scored 0.35115, a decrease of 0.01648 after disabling four folds."
+    },
+    {
+      "observation": "Did the earlier post-processing experiments establish a gain on the corrected test pipeline?",
+      "result": "no",
+      "evidence": "history.md records unchanged -0.00372 scores for those experiments before the test-loading repair in v21; they do not measure post-processing on the corrected pipeline."
+    },
+    {
+      "observation": "Does v22 actively use only fold4?",
+      "result": "yes",
+      "evidence": "current_code.py activates model4 and predictor4, comments out folds 1, 2, 3, 5, and assigns result4 to the submission."
+    },
+    {
+      "observation": "Are all five checkpoint paths already specified in the code?",
+      "result": "yes",
+      "evidence": "current_code.py lists /kaggle/input/bert-fold1/ through /kaggle/input/bert-fold5/ in the final model-loading cell."
+    },
+    {
+      "observation": "Does the restoration memory identify regression after removing useful members as relevant evidence?",
+      "result": "yes",
+      "evidence": "memory/attention/t-1-3-choose-a-response-to-an-unsuccessful-searc.md E22 and t-6-2-choose-ensemble-membership.md E124 identify restoration after regression as a candidate intervention."
+    },
+    {
+      "observation": "Has the v21-versus-v22 regression been established by repeated runs in the supplied history?",
+      "result": "no",
+      "evidence": "history.md supplies one score for v21 and one for v22; repeatability of this particular comparison is not demonstrated."
+    },
+    {
+      "observation": "Does the current pipeline provide out-of-fold predictions for learning blend weights?",
+      "result": "no",
+      "evidence": "current_code.py reads training labels but only builds a test DataLoader and predicts test examples; no held-out prediction matrix is produced. The combination-rule memory E138 calls for leakage-free OOF predictions for a learned blender."
+    },
+    {
+      "observation": "Would simply uncommenting the old ensemble retain multiple models simultaneously?",
+      "result": "yes",
+      "evidence": "current_code.py defines model1 through model5 before the predictor calls and contains no deletion of models; memory/attention/t-8-1-control-peak-resource-use.md E174 identifies releasing sequential model state as relevant."
+    },
+    {
+      "observation": "Does the active prediction function already apply sigmoid?",
+      "result": "yes",
+      "evidence": "Predictor.predict in current_code.py applies torch.sigmoid(logits) before copying predictions to NumPy, supporting arithmetic probability averaging."
+    },
+    {
+      "observation": "Does feature construction recreate the same tokenizer for every example?",
+      "result": "yes",
+      "evidence": "current_code.py creates an identical BertTokenizer inside create_features despite the global tokenizer immediately above the feature classes."
+    },
+    {
+      "observation": "Does the active test DataLoader preserve input row order?",
+      "result": "yes",
+      "evidence": "current_code.py uses create_dataset(test_features) with is_sorted=False and SequentialSampler(test_dataset)."
+    },
+    {
+      "observation": "Does the original submission code explicitly join predictions by qa_id?",
+      "result": "no",
+      "evidence": "current_code.py assigns result4 positionally to sample_submission target columns; there is no ID-based reindexing."
+    }
+  ],
+  "action_summary": "Restore equal-weight sigmoid-probability averaging across all five existing BERT fold checkpoints, the configuration that scored 0.36763 before v22 fell to 0.35115 with fold4 alone. Run folds sequentially, release each model before loading the next, and accumulate predictions in float64. Reuse the identical tokenizer, preserve the existing model architecture and text preprocessing, validate each fold output, and align the final predictions to sample_submission by qa_id. No rank remapping or learned weighting is introduced without validation evidence. Training and inference were not run because competition data is unavailable; only static validation is performed."
+}

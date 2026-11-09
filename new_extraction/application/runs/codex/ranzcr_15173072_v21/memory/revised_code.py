@@ -1,0 +1,136 @@
+# %%
+import sys
+sys.path.append('../input/timm-pytorch-image-models/pytorch-image-models-master')
+import timm
+
+# %%
+import numpy as np # linear algebra
+import pandas as pd
+import os
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, Dataset
+import pandas as pd
+from albumentations import Compose, Normalize, Resize
+from albumentations.pytorch import ToTensorV2
+path = '../input/ranzcr-clip-catheter-line-classification/'
+train_labels = pd.read_csv(path+'train.csv')
+import timm
+import cv2
+from tqdm.notebook import tqdm
+# Restore the 512-pixel preprocessing used by the best scored versions (v13/v14).
+IMAGE_SIZE = 512
+BATCH_SIZE = 64
+TEST_PATH = '../input/ranzcr-clip-catheter-line-classification/test'
+#export CUDA_VISIBLE_DEVICES=""
+
+# %%
+if torch.cuda.is_available():
+    map_location=lambda storage, loc: storage.cuda()
+else:
+    map_location='cpu'
+
+# %%
+if torch.cuda.is_available():
+    device= 'cuda'
+else:
+    device='cpu'
+print(device)
+
+# %%
+class TestDataset(Dataset):
+    def __init__(self, df, transform=None):
+        self.df = df
+        self.file_names = df['StudyInstanceUID'].values
+        self.transform = transform
+        
+    def __len__(self):
+        return len(self.df)
+
+    def __getitem__(self, idx):
+        file_name = self.file_names[idx]
+        file_path = f'{TEST_PATH}/{file_name}.jpg'
+        image = cv2.imread(file_path)
+        if image is None:
+            raise FileNotFoundError(f'Could not read test image: {file_path}')
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        if self.transform:
+            augmented = self.transform(image=image)
+            image = augmented['image']
+        return image
+
+# %%
+def get_transforms():
+        return Compose([
+            Resize(IMAGE_SIZE, IMAGE_SIZE),
+           Normalize(
+             mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225],
+              ),
+    ToTensorV2()
+        ])
+
+# %%
+class ResNet200D(nn.Module):
+    def __init__(self, model_name='resnet200d'):
+        super().__init__()
+        self.model = timm.create_model(model_name, pretrained=False)
+        n_features = self.model.fc.in_features
+        self.model.global_pool = nn.Identity()
+        self.model.fc = nn.Identity()
+        self.pooling = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Linear(n_features, 11)
+
+    def forward(self, x):
+        bs = x.size(0)
+        features = self.model(x)
+        pooled_features = self.pooling(features).view(bs, -1)
+        output = self.fc(pooled_features)
+        return output
+
+# %%
+def inference(models, test_loader, device):
+    tk0 = tqdm(enumerate(test_loader), total=len(test_loader))
+    probs = []
+    for i, (images) in tk0:
+        images = images.to(device)
+        avg_preds = []
+        for model in models:
+            with torch.no_grad():
+                y_preds1 = model(images)
+                y_preds2 = model(images.flip(-1))
+            y_preds = (y_preds1.sigmoid().to('cpu').numpy() + y_preds2.sigmoid().to('cpu').numpy()) / 2
+            avg_preds.append(y_preds)
+        avg_preds = np.mean(avg_preds, axis=0)
+        probs.append(avg_preds)
+    probs = np.concatenate(probs)
+    return probs
+
+# %%
+MODEL_PATH = '../input/resnet200d-baseline-benchmark-public/resnet200d_fold4_cv954.pth'
+
+# %%
+
+model = ResNet200D() 
+#model = nn.DataParallel(model)
+model.load_state_dict(torch.load(MODEL_PATH,map_location=map_location),strict=False)
+model.eval()
+models = [model.to(device)]
+
+# %%
+test = pd.read_csv('../input/ranzcr-clip-catheter-line-classification/sample_submission.csv')
+test_dataset = TestDataset(test, transform=get_transforms())
+test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, 
+                         num_workers=4 , pin_memory=True)
+predictions = inference(models, test_loader, device)
+
+
+# %%
+target_cols = test.iloc[:, 1:12].columns.tolist()
+# AUC depends on ranking; keep the sigmoid probabilities in their native range.
+assert predictions.shape == (len(test), len(target_cols))
+assert np.isfinite(predictions).all()
+assert ((predictions >= 0) & (predictions <= 1)).all()
+test[target_cols] = predictions
+test[['StudyInstanceUID'] + target_cols].to_csv('submission.csv', index=False)
+test.head()

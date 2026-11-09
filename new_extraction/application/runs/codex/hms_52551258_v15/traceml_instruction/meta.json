@@ -1,0 +1,14 @@
+{
+ "agent": "codex",
+ "model": "gpt-6-astra",
+ "effort": "medium",
+ "case": "hms_52551258_v15",
+ "condition": "traceml_instruction",
+ "minutes": 10,
+ "elapsed_s": 89,
+ "timed_out": false,
+ "rc": 0,
+ "has_code": true,
+ "has_report": true,
+ "workdir": "/var/folders/6x/cr9vzp9n4zqfy_x5jcy_1h3h0000gq/T/app_codex_hms_52551258_v15_traceml_instruction_q9ga8l3l"
+}

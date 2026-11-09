@@ -1,0 +1,15 @@
+{
+  "observations": [
+    {"observation": "The current version v113 scored much worse than the previous version v112.", "result": "yes", "evidence": "history.md: v112 0.27837 -> v113 0.45086 (-0.17249)."},
+    {"observation": "The best leaderboard score in the history was reached by v111.", "result": "yes", "evidence": "history.md: v111 scored 0.25772, lower than every other listed version."},
+    {"observation": "The v111 ensemble consisted of the x3d member plus the eeg_raw member.", "result": "yes", "evidence": "history.md: v109 enabled eeg_raw alongside x3d (0.27038), v110 removed x3d (0.27637), v111 re-enabled x3d (0.25772)."},
+    {"observation": "The current code runs only the double-head model in the final ensemble.", "result": "yes", "evidence": "current_code.py lines 1345-1346 call run_weight_double_head(); all other run_weight_* calls are commented out."},
+    {"observation": "The double-head model has ever scored well on its own.", "result": "no", "evidence": "v113 runs it alone and scores 0.45086; v105 (dropping it) vs v104 shows no clear benefit either."},
+    {"observation": "The run_weight_x3d and run_weight_eeg_raw functions and the Netx3d / Net1d classes are still present and intact in the current code.", "result": "yes", "evidence": "current_code.py lines 763 (Netx3d), 812 (Net1d), 1181 (run_weight_eeg_raw), 1224 (run_weight_x3d)."},
+    {"observation": "The Net1d architecture in the current code is the v112 variant with a neck Linear layer and strict weight loading.", "result": "yes", "evidence": "current_code.py lines 827 (self.neck=nn.Linear(79*2,1)), 849 (view(bs,16,2500,4)), 1196 (load_state_dict strict=True)."},
+    {"observation": "Reverting Net1d to the v110 reshape is safe without the weight files.", "result": "no", "evidence": "strict=True loading at line 1196 would fail if the uploaded weights contain the neck parameters, so the architecture was left unchanged."},
+    {"observation": "The final predictions are explicitly renormalised to sum to one before writing the submission.", "result": "no", "evidence": "current_code.py lines 1361-1373 only take np.mean over members and assign to the DataFrame."},
+    {"observation": "The submission file format (eeg_id plus six vote columns, submission.csv) is kept.", "result": "yes", "evidence": "current_code.py lines 1371-1374 unchanged in the revision."}
+  ],
+  "action_summary": "v113 dropped to 0.45086 because the final ensemble ran only the restructured double-head model. I restored the ensemble to the best-known configuration from v111 (0.25772): run_weight_x3d() and run_weight_eeg_raw() with flip TTA, averaged equally, and left the double-head member commented out. The Net1d architecture was left as in v112 because the weights are loaded with strict=True and the trained neck layer must match. I also added a small clip to 1e-5 and row renormalisation of the blended probabilities so the submission always sums to one and avoids degenerate KL terms."
+}

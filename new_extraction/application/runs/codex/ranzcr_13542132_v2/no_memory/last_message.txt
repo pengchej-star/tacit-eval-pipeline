@@ -1,0 +1,6 @@
+Created both files in `output/`:
+
+- `revised_code.py`
+- `report.json`
+
+Python syntax and JSON structure validated. No training or inference was run.

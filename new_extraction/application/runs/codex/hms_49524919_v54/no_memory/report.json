@@ -1,0 +1,80 @@
+{
+  "observations": [
+    {
+      "observation": "The competition minimizes KL divergence.",
+      "result": "yes",
+      "evidence": "task.md, Evaluation and metric direction: predictions are scored by KL divergence, lower is better."
+    },
+    {
+      "observation": "Each submission row must sum to one.",
+      "result": "yes",
+      "evidence": "task.md, Submission File: six vote probabilities per eeg_id must sum to one; the required filename is submission.csv."
+    },
+    {
+      "observation": "v54 is the best scored version in the supplied history.",
+      "result": "no",
+      "evidence": "history.md: v54 scores 0.41624; v50 scores 0.41016."
+    },
+    {
+      "observation": "Recent checkpoint swaps have consistently improved the leaderboard score.",
+      "result": "no",
+      "evidence": "history.md: v50 0.41016, v51 0.41096, v52 0.42095, v53 0.42162, v54 0.41624."
+    },
+    {
+      "observation": "The supplied history documents a trial of probability-space ensemble averaging.",
+      "result": "no",
+      "evidence": "history.md describes checkpoint, architecture, preprocessing, TTA and naming changes, but no explicit conversion of every fold/view to a probability distribution before averaging. Older versions are omitted."
+    },
+    {
+      "observation": "The active pipeline uses a five-fold EEGNet ensemble.",
+      "result": "yes",
+      "evidence": "current_code.py: load_eegnet_model loads five listed checkpoints from raw_eeg_1d_eegnet_19x10000_quality_2."
+    },
+    {
+      "observation": "The spectrogram ensemble is active.",
+      "result": "no",
+      "evidence": "current_code.py: the spectrogram load_timm_model call is enclosed in a triple-quoted string; inference uses raw_eeg_1d_eegnet_models only."
+    },
+    {
+      "observation": "ClassificationHead returns unactivated logits.",
+      "result": "yes",
+      "evidence": "current_code.py: ClassificationHead.forward returns self.classifier(x), an nn.Linear output."
+    },
+    {
+      "observation": "Inference uses the four flip combinations.",
+      "result": "yes",
+      "evidence": "current_code.py, Inference: raw_eeg_1d_tta=True stacks the original, channel flip, time flip and combined flip."
+    },
+    {
+      "observation": "Flip augmentations are represented in the training transform definition.",
+      "result": "yes",
+      "evidence": "current_code.py, get_raw_eeg_1d_transforms: A.VerticalFlip and A.HorizontalFlip use configured probabilities; the actual external configuration is unavailable."
+    },
+    {
+      "observation": "The current pipeline averages TTA logits before activation.",
+      "result": "yes",
+      "evidence": "current_code.py, Inference: torch.mean(raw_eeg_1d_outputs, dim=0) precedes the sigmoid/softmax branch."
+    },
+    {
+      "observation": "The current pipeline averages fold logits before activation.",
+      "result": "yes",
+      "evidence": "current_code.py, Inference: raw_eeg_1d_predictions accumulates raw_eeg_1d_outputs / len(models); sigmoid is applied after the model loop."
+    },
+    {
+      "observation": "Binary output normalization is the selected inference convention.",
+      "result": "yes",
+      "evidence": "current_code.py: raw_eeg_1d_task_type='binary'; the active branch applies sigmoid followed by row normalization."
+    },
+    {
+      "observation": "The existing code explicitly promotes model outputs to float32 before the TTA mean.",
+      "result": "no",
+      "evidence": "current_code.py: AMP is enabled; outputs are moved with .cpu() without .float() before torch.mean."
+    },
+    {
+      "observation": "Local AGENTS.md instructions are present.",
+      "result": "no",
+      "evidence": "A find search restricted to the current directory returned no AGENTS.md files."
+    }
+  ],
+  "action_summary": "Replace logit averaging with equal-weight arithmetic averaging of the individually normalized probability distributions across all four TTA views and all five existing folds. Preserve the binary sigmoid convention using the mathematically equivalent, numerically stable softmax(logsigmoid(logits)) in float32. This targets excessive confidence caused by averaging logits and has a credible KL-loss benefit when ensemble members disagree, but improvement is unmeasured without data. Preserve checkpoints, architecture, preprocessing, augmentation views, Kaggle paths and submission columns; add a tiny numerical floor, probability validity assertions and an explicit submission DataFrame copy. No training or inference was run."
+}

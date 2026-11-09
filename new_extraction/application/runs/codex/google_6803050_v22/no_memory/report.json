@@ -1,0 +1,80 @@
+{
+  "observations": [
+    {
+      "observation": "Is the scoring metric mean column-wise Spearman correlation?",
+      "result": "yes",
+      "evidence": "task.md, Evaluation: Spearman correlation is calculated for each target, then averaged; higher is better."
+    },
+    {
+      "observation": "Must submission predictions lie within [0, 1]?",
+      "result": "yes",
+      "evidence": "task.md, Evaluation specifies probabilities in [0,1] and a submission.csv keyed by qa_id."
+    },
+    {
+      "observation": "Can the hidden test set contain up to 10,000 rows?",
+      "result": "yes",
+      "evidence": "task.md, Dataset Description states the rerun test set is no larger than 10,000 rows."
+    },
+    {
+      "observation": "Did the five-fold version outperform the current version?",
+      "result": "yes",
+      "evidence": "history.md: v21 scored 0.36763; v22 scored 0.35115, a decline of 0.01648."
+    },
+    {
+      "observation": "Was disabling the ensemble the recorded change from v21 to v22?",
+      "result": "yes",
+      "evidence": "history.md: folds 1, 2, 3, 5 were commented out, with submission changed to result4."
+    },
+    {
+      "observation": "Did historical quantile mapping demonstrate a score gain?",
+      "result": "no",
+      "evidence": "history.md: v12 to v13 added quantile mapping but remained at -0.00372; those runs preceded the v21 input fix, so they do not validate discretization for the repaired pipeline."
+    },
+    {
+      "observation": "Does the current code execute only the fold4 checkpoint?",
+      "result": "yes",
+      "evidence": "current_code.py: only model4 and predictor4 are active; submission_df[target_cols] is assigned result4."
+    },
+    {
+      "observation": "Are paths for all five fold checkpoints recorded in the current code?",
+      "result": "yes",
+      "evidence": "current_code.py model-loading cell lists /kaggle/input/bert-fold1/ through /kaggle/input/bert-fold5/; four loads are commented out. File availability cannot be checked without the Kaggle inputs."
+    },
+    {
+      "observation": "Does the current preprocessing concatenate title directly with question body?",
+      "result": "yes",
+      "evidence": "current_code.py read_data: sentence_a = test['question_title'] + test['question_body']; preserve this checkpoint input convention."
+    },
+    {
+      "observation": "Does current text preprocessing fill missing text values?",
+      "result": "no",
+      "evidence": "current_code.py read_data uses raw title, body, and answer Series without fillna."
+    },
+    {
+      "observation": "Does feature construction instantiate a tokenizer for every example?",
+      "result": "yes",
+      "evidence": "current_code.py create_features creates BertTokenizer inside the examples loop despite an existing global tokenizer."
+    },
+    {
+      "observation": "Does the current dataloader batch 32 padded examples?",
+      "result": "yes",
+      "evidence": "current_code.py creates 512-token padded features, then a DataLoader with batch_size=32."
+    },
+    {
+      "observation": "Does the predictor apply sigmoid to model logits?",
+      "result": "yes",
+      "evidence": "current_code.py Predictor.predict applies torch.sigmoid before converting to NumPy; equal averaging preserves the required range."
+    },
+    {
+      "observation": "Does prediction repeatedly concatenate growing arrays?",
+      "result": "yes",
+      "evidence": "current_code.py Predictor.predict calls np.concatenate on all_logits inside every batch after the first."
+    },
+    {
+      "observation": "Does the original submission assign predictions by explicit qa_id alignment?",
+      "result": "no",
+      "evidence": "current_code.py assigns result4 directly to sample submission target columns, relying on identical row order."
+    }
+  ],
+  "action_summary": "Restore the equal-weight five-fold probability ensemble that scored 0.36763 in v21 versus 0.35115 for the current fold4-only version. Load and release checkpoints sequentially, use batches of eight with per-batch right-padding removal, reuse the tokenizer, and concatenate batch predictions once to bound memory and reduce overhead. Preserve checkpoint architecture, tokenizer, text concatenation, truncation, Kaggle paths, and continuous sigmoid outputs; add missing-text handling and explicit qa_id submission alignment with shape, finiteness, and range checks. No training or inference was run, and a new leaderboard improvement cannot be verified without competition data."
+}

@@ -1,0 +1,95 @@
+{
+  "observations": [
+    {
+      "observation": "Is lower KL divergence the competition objective?",
+      "result": "yes",
+      "evidence": "task.md states that submissions are evaluated by KL divergence and lower is better."
+    },
+    {
+      "observation": "Must submitted probability rows sum to one?",
+      "result": "yes",
+      "evidence": "task.md Submission File requires six vote probabilities summing to one for every eeg_id."
+    },
+    {
+      "observation": "Did the latest revision improve the leaderboard score?",
+      "result": "no",
+      "evidence": "history.md reports v112 at 0.27837 and v113 at 0.45086 after the double-head feature-extractor redesign."
+    },
+    {
+      "observation": "Has adding X3D improved an earlier ensemble?",
+      "result": "yes",
+      "evidence": "history.md v103 -> v104 improved 0.28450 to 0.27115; v110 -> v111 improved 0.27637 to 0.25772 when X3D was enabled."
+    },
+    {
+      "observation": "Has adding the raw EEG model improved an earlier ensemble?",
+      "result": "yes",
+      "evidence": "history.md v108 -> v109 reports an improvement from 0.30242 to 0.27038 when run_weight_eeg_raw was enabled."
+    },
+    {
+      "observation": "Did increasing the EEG low-pass bound to 30 improve the recorded result?",
+      "result": "no",
+      "evidence": "history.md v105 scored 0.31083 with rr=30; restoring rr=20 in v106 scored 0.28677. The preceding v105 change also excluded a model, so only the v105 -> v106 reversal isolates the bound."
+    },
+    {
+      "observation": "Did the learned raw EEG neck revision beat v111?",
+      "result": "no",
+      "evidence": "history.md v111 -> v112 changed the neck/layout and disabled X3D; score worsened from 0.25772 to 0.27837. This does not isolate the architecture effect."
+    },
+    {
+      "observation": "Does the mixed-input dataset forward its hemisphere-flip flag?",
+      "result": "no",
+      "evidence": "current_code.py single_map_func calls get_mix(dp,is_training) without self.flip_eeg, unlike the EEG-only and spectrogram-only paths. The revised active ensemble uses the EEG-only path."
+    },
+    {
+      "observation": "Does Netx3d already average time-reversal predictions?",
+      "result": "yes",
+      "evidence": "current_code.py Netx3d.forward concatenates torch.flip(x, [-1]) when CFG[flip] is true and averages paired softmax probabilities."
+    },
+    {
+      "observation": "Does the current raw EEG model contain a learned spatial neck?",
+      "result": "yes",
+      "evidence": "current_code.py Net1d defines neck=nn.Linear(79*2,1) and reshapes EEG to a 64 by 2500 image. This layout is retained to preserve checkpoint compatibility."
+    },
+    {
+      "observation": "Do both selected family runners enforce strict checkpoint loading?",
+      "result": "yes",
+      "evidence": "current_code.py run_weight_eeg_raw and run_weight_x3d use load_state_dict(..., strict=True). Strict loading is retained."
+    },
+    {
+      "observation": "Do the selected runners reload each checkpoint for the mirrored view?",
+      "result": "yes",
+      "evidence": "current_code.py run_weight_eeg_raw and run_weight_x3d each construct and load the same model twice per checkpoint, once per hemisphere view."
+    },
+    {
+      "observation": "Do the selected runners use the historically restored EEG filter bounds?",
+      "result": "yes",
+      "evidence": "current_code.py both dataset constructions in run_weight_eeg_raw and run_weight_x3d specify ll=0, rr=20."
+    },
+    {
+      "observation": "Is the current final prediction solely from the double-head model?",
+      "result": "yes",
+      "evidence": "current_code.py final inference cell only executes run_weight_double_head and its append; X3D and raw EEG calls are commented out."
+    },
+    {
+      "observation": "Are the declared weights_by_score used for the current blend?",
+      "result": "no",
+      "evidence": "current_code.py declares [0.24,0.28,0.24,0.24], but the weighted expression is commented out and np.mean is applied to the single active prediction."
+    },
+    {
+      "observation": "Does the revised script pass Python syntax compilation?",
+      "result": "yes",
+      "evidence": "Compiled the complete output/revised_code.py source using Python compile(..., mode=\"exec\") without importing libraries or executing the pipeline."
+    },
+    {
+      "observation": "Does the report satisfy the requested JSON structure?",
+      "result": "yes",
+      "evidence": "Parsed output/report.json using json.loads and asserted its top-level keys, action_summary string, observation fields, and yes/no result values."
+    },
+    {
+      "observation": "Does the final diff preserve the model class implementations?",
+      "result": "yes",
+      "evidence": "Reviewed diff -u current_code.py output/revised_code.py: changes are confined to Python file copies, selected inference runners, and final ensemble aggregation; model classes and preprocessing remain unchanged."
+    }
+  ],
+  "action_summary": "Replace the sole v113 double-head prediction with an equal probability blend of the existing X3D and raw EEG families, averaging checkpoints and existing hemisphere views within each family. Historical improvements from adding these families motivate recovering ensemble diversity and excluding the sharply regressed double-head redesign; preserve trained architectures, strict checkpoint loading, filter bounds, and current time-reversal behavior. Reuse loaded models across hemisphere views, load checkpoint tensors on CPU, release models between checkpoints, and halve X3D loader batches to accommodate internal time-reversal TTA. Validate and normalize final probabilities, retain the required submission.csv schema and Kaggle paths, and replace notebook shell copies with Python equivalents. No training or inference was run; leaderboard improvement and checkpoint compatibility cannot be measured without the data and attached weights."
+}

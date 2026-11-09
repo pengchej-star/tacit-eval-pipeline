@@ -1,0 +1,89 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Tree compare: bottom-up vs merged</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font:13px/1.4 -apple-system,Segoe UI,sans-serif;color:#222;height:100vh;display:flex;flex-direction:column}
+#bar{padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #ccc;display:flex;gap:8px;align-items:center}
+#bar input{flex:1;padding:4px 8px}
+#wrap{flex:1;display:flex;min-height:0}
+.pane{flex:1 1 50%;width:50%;display:flex;flex-direction:column;min-width:0}
+.pane+.pane{border-left:3px solid #888}
+.head{padding:5px 10px;background:#e5e7eb;font-weight:600;display:flex;gap:6px;align-items:center}
+.head span.t{flex:1}
+.body{flex:1;overflow:auto;padding:6px 8px}
+button{cursor:pointer;padding:2px 8px}
+ul{list-style:none;margin:0;padding-left:16px;border-left:1px dotted #bbb}
+.body>ul{padding-left:0;border:0}
+.row{display:flex;gap:5px;align-items:baseline;padding:1px 2px;border-radius:3px}
+.row:hover{background:#eef2ff}
+.tog{width:12px;cursor:pointer;color:#666;flex:none;user-select:none}
+.name{font-weight:600;cursor:pointer}
+.sub{color:#666;font-size:12px}
+.b{font-size:10px;padding:0 5px;border-radius:8px;background:#e5e7eb;color:#333;white-space:nowrap}
+.b.top_down{background:#dbeafe}.b.bottom_up{background:#dcfce7}.b.both{background:#fde68a}
+.b.warn{background:#fecaca}
+.b.ds{background:#e9d5ff}
+.hit>.row .name{background:#fef08a}
+.det{margin:2px 0 4px 17px;padding:5px 8px;background:#fafafa;border:1px solid #ddd;font-size:12px;display:none;white-space:pre-wrap}
+.det.open{display:block}
+.it{margin:4px 0;padding-left:6px;border-left:3px solid #93c5fd}
+.hidden{display:none}
+</style></head><body>
+<div id="bar">
+ <input id="q" placeholder="Search names / questions / items / expert id (both trees)…">
+ <span id="cnt"></span>
+ Expand depth: <button onclick="depth(1)">1</button><button onclick="depth(2)">2</button><button onclick="depth(3)">3</button><button onclick="depth(99)">all</button><button onclick="depth(0)">collapse</button>
+</div>
+<div id="wrap">
+ <div class="pane"><div class="head"><span class="t">Bottom-up (2b_bottomup.json) — root at top level, leaves = actions</span></div><div class="body" id="L"></div></div>
+ <div class="pane"><div class="head"><span class="t">Merged tree (3_merged_tree.json) — skeleton + observed</span></div><div class="body" id="R"></div></div>
+</div>
+<script>
+const D=__DATA__;
+const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function count(n){n.size=1+n.children.reduce((a,c)=>a+count(c),0);return n.size}
+function leaves(n){return n.children.length?n.children.reduce((a,c)=>a+leaves(c),0):1}
+function itemsHtml(ids){return ids.map(i=>{const t=D.items[i];return t?`<div class="it"><b>${esc(i)}</b> <i>${esc(t.comp)}</i>\n<b>Q:</b> ${esc(t.goal)}\n<b>Did:</b> ${esc(t.what)}</div>`:`<div class="it">${esc(i)}</div>`}).join('')}
+function build(n,kind){
+ const li=document.createElement('li');li._n=n;
+ const hasK=n.children.length;
+ const row=document.createElement('div');row.className='row';
+ let badges=`<span class="b">${esc(n.id)}</span>`;
+ if(kind=='bu'){badges+=`<span class="b">L${n.level}</span><span class="b">${n.ne} experts</span>`;if(!hasK)badges+=`<span class="b">${n.items.length} items</span>`}
+ else{badges+=`<span class="b ${n.source}">${n.source}</span><span class="b">${n.ne} experts / ${n.ni} edits</span>`;if(n.actions.length)badges+=`<span class="b">${n.actions.length} actions</span>`;if(n.desid.length)badges+=`<span class="b ds">☑ ${n.desid.reduce((a,g)=>a+g.checks.length,0)} desiderata</span>`;if(n.empty)badges+=`<span class="b warn">empty (no expert edit)</span>`;if(n.issues.length)badges+=`<span class="b warn">⚠ ${n.issues.length} check issues</span>`}
+ if(hasK)badges+=`<span class="b">${hasK} ▸ ${leaves(n)} leaves</span>`;
+ row.innerHTML=`<span class="tog">${hasK?'▸':'·'}</span><span class="name">${esc(n.name)}</span>${badges}<span class="sub">${esc(n.sub)}</span>`;
+ li.appendChild(row);
+ const det=document.createElement('div');det.className='det';
+ let h='';if(n.experts&&n.experts.length&&n.experts.length<=30)h+=`<b>Experts:</b> ${esc(n.experts.join(', '))}\n`;if(n.text)h+=`<b>Summary:</b> ${esc(n.text)}\n`;if(n.sub)h+=`<b>Question:</b> ${esc(n.sub)}\n`;
+ if(n.issues&&n.issues.length)h+=`<b>Sibling check issues:</b>\n`+n.issues.map(x=>'• '+esc(x)).join('\n')+'\n';
+ if(n.desid&&n.desid.length){h+=`<b>Desiderata (${n.desid.reduce((a,g)=>a+g.checks.length,0)} checks):</b>\n`;n.desid.forEach(g=>{h+=`<div class="it" style="border-color:#c084fc"><b>${esc(g.under)}</b>`+g.checks.map(c=>`\n☐ ${esc(c.check)}\n    <i>how:</i> ${esc(c.how)}\n    <i>pushes:</i> ${c.pushes.map(p=>esc(p[0])+' '+(p[1]>0?'+':'')+p[1]).join('; ')}`).join('')+`</div>`})}
+ if(n.actions&&n.actions.length)h+=`<b>Actions:</b> ${esc(n.actions.join(', '))}\n`;
+ if(n.items&&n.items.length)h+=`<b>Items (${n.items.length}):</b>\n`+itemsHtml(n.items);
+ det.innerHTML=h;li.appendChild(det);
+ row.querySelector('.name').onclick=()=>det.classList.toggle('open');
+ let ul=null;
+ const tog=row.querySelector('.tog');
+ li.open=(v)=>{ if(!hasK)return; if(v&&!ul){ul=document.createElement('ul');n.children.forEach(c=>ul.appendChild(build(c,kind)));li.appendChild(ul)} if(ul)ul.classList.toggle('hidden',!v); tog.textContent=v?'▾':'▸'; li._o=v};
+ tog.onclick=()=>li.open(!li._o);
+ return li;
+}
+const roots={};
+function mount(id,n,kind){const ul=document.createElement('ul');const li=build(n,kind);ul.appendChild(li);document.getElementById(id).appendChild(ul);li.open(true);roots[id]=li}
+mount('L',D.bu,'bu');mount('R',D.mg,'mg');
+function depth(d){for(const id in roots){(function go(li,k){ if(!li._n.children.length)return; li.open(k<d); if(li._o&&li.lastChild.tagName=='UL')[...li.lastChild.children].forEach(c=>go(c,k+1))})(roots[id],0)}}
+// search: expand path to matches in both trees, highlight
+function match(n,q){return (n.name+' '+n.sub+' '+n.text+' '+(n.experts||[]).join(' ')+' '+(n.desid||[]).map(g=>g.under+' '+g.checks.map(c=>c.check).join(' ')).join(' ')).toLowerCase().includes(q)||(n.items||[]).some(i=>{const t=D.items[i];return t&&(t.goal+' '+t.what+' '+t.expert+' '+i).toLowerCase().includes(q)})}
+function search(q){let total=0;
+ for(const id in roots){
+  (function go(li){const n=li._n;let any=false;const self=q&&match(n,q);
+   if(li.firstChild.parentNode)li.classList.toggle('hit',!!self);
+   if(self)total++;
+   if(n.children.length){ if(q){ li.open(true); [...li.lastChild.children].forEach(c=>{if(go(c))any=true}); if(!any&&!self)li.open(false); else if(!any)li.open(false)} }
+   return self||any})(roots[id]);
+ }
+ document.getElementById('cnt').textContent=q?total+' matches':'';
+}
+// search needs lazily-built children to exist; expand-all first for completeness
+document.getElementById('q').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();if(q.length<2){search('');return}search(q)});
+</script></body></html>

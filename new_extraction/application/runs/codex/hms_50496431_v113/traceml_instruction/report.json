@@ -1,0 +1,115 @@
+{
+  "observations": [
+    {
+      "observation": "Does the competition minimize KL divergence?",
+      "result": "yes",
+      "evidence": "task.md Evaluation and summary identify KL divergence with lower scores better."
+    },
+    {
+      "observation": "Must each submission row contain six probabilities summing to one?",
+      "result": "yes",
+      "evidence": "task.md Submission File specifies eeg_id plus six vote columns and unit row sums."
+    },
+    {
+      "observation": "Did the latest revision substantially worsen the leaderboard score?",
+      "result": "yes",
+      "evidence": "history.md reports v112 at 0.27837 and v113 at 0.45086 after the double-head rewrite."
+    },
+    {
+      "observation": "Has adding X3D to an existing ensemble improved the recorded score?",
+      "result": "yes",
+      "evidence": "history.md v103->v104 improves 0.28450 to 0.27115; v110->v111 improves 0.27637 to 0.25772."
+    },
+    {
+      "observation": "Has adding the raw-EEG family improved the recorded score?",
+      "result": "yes",
+      "evidence": "history.md v108->v109 improves 0.30242 to 0.27038 after enabling run_weight_eeg_raw."
+    },
+    {
+      "observation": "Did the latest raw-EEG architecture revision outperform v111?",
+      "result": "no",
+      "evidence": "history.md v111->v112 changes the raw head/layout and removes X3D, worsening 0.25772 to 0.27837; the effects are confounded."
+    },
+    {
+      "observation": "Does the current submission use multiple model families?",
+      "result": "no",
+      "evidence": "current_code.py final inference cell only calls run_weight_double_head; X3D and raw-EEG calls are commented out."
+    },
+    {
+      "observation": "Are the displayed manual ensemble weights applied?",
+      "result": "no",
+      "evidence": "current_code.py defines weights_by_score but comments out the weighted sum and uses np.mean on the predictions list."
+    },
+    {
+      "observation": "Are the ll and rr dataset parameters actually filter cutoffs?",
+      "result": "yes",
+      "evidence": "AlaskaDataIter.get_eeg passes self.ll and self.rr to mne.filter.filter_data at 200 Hz; they do not select a time crop despite history descriptions."
+    },
+    {
+      "observation": "Does the existing EEG path use all 10000 samples?",
+      "result": "yes",
+      "evidence": "get_eeg slices from offset 0 through 10000; task.md describes 50-second test EEG at 200 Hz."
+    },
+    {
+      "observation": "Does the mixed-input path forward its configured flip flag?",
+      "result": "no",
+      "evidence": "single_map_func calls get_mix(dp,is_training) without self.flip_eeg, so the existing double-head mirrored pass repeats its base input."
+    },
+    {
+      "observation": "Does the supplied pipeline perform K-fold validation?",
+      "result": "no",
+      "evidence": "current_code.py loads test.csv and pretrained checkpoints for inference; it contains no training loop, validation split, or OOF predictions."
+    },
+    {
+      "observation": "Does X3D already average time-reversal probabilities?",
+      "result": "yes",
+      "evidence": "Netx3d.forward concatenates torch.flip(x, [-1]) when CFG[flip] is true, applies softmax, then averages paired outputs."
+    },
+    {
+      "observation": "Do the existing X3D and raw-EEG runners require strict checkpoint compatibility?",
+      "result": "yes",
+      "evidence": "run_weight_x3d and run_weight_eeg_raw both use model.load_state_dict(state_dict,strict=True)."
+    },
+    {
+      "observation": "Does the raw-EEG head require a specific feature layout?",
+      "result": "yes",
+      "evidence": "Net1d reshapes to 16x2500x4 and uses a Linear(79*2,1) neck; retaining this avoids an unsupported architecture rollback."
+    },
+    {
+      "observation": "Do the existing selected runners reload weights for mirrored inference?",
+      "result": "yes",
+      "evidence": "Each original X3D/raw runner constructs and loads a second identical model for its flip dataset, rereading and filtering the EEG files."
+    },
+    {
+      "observation": "Can left/right EEG mirroring be implemented by swapping bipolar chains?",
+      "result": "yes",
+      "evidence": "brain_lead builds LL, RL, LP, RP in four-lead blocks; mirror_eeg swaps corresponding left/right electrodes, giving the block permutation [RL, LL, RP, LP]. The same filter is applied independently per lead."
+    },
+    {
+      "observation": "Does the source contain notebook-only shell syntax?",
+      "result": "yes",
+      "evidence": "The second cell contains two !cp commands for the Kaggle torchvideo modules."
+    },
+    {
+      "observation": "Does the revised script pass Python syntax validation?",
+      "result": "yes",
+      "evidence": "python -m py_compile output/revised_code.py and ast.parse succeeded without executing the pipeline."
+    },
+    {
+      "observation": "Does the report satisfy the requested JSON schema?",
+      "result": "yes",
+      "evidence": "json.loads succeeded; checked top-level keys, per-observation keys, string action_summary, and yes/no result values."
+    },
+    {
+      "observation": "Does the revised script retain the required submission output?",
+      "result": "yes",
+      "evidence": "Static inspection confirms the original six TARGETS, test_df eeg_id ordering, and sub.to_csv('submission.csv',index=False)."
+    },
+    {
+      "observation": "Was training or inference executed locally?",
+      "result": "no",
+      "evidence": "Only source rewriting, static assertions, JSON validation, and Python syntax compilation were run; no competition data or checkpoints were loaded."
+    }
+  ],
+  "action_summary": "Replace the regressed double-head-only submission with an equal probability blend of X3D and raw-EEG families, averaging every supplied checkpoint within each family. History supports their complementarity, but the exact new blend has not been validated and no score improvement is claimed. Preserve current strict checkpoint-compatible architectures, 0\u201320 Hz filtering, hemisphere TTA, and X3D time-reversal TTA. Reuse each loaded model for both hemisphere views, apply the equivalent bipolar-chain permutation after filtering to avoid duplicate I/O, halve the X3D batch for memory headroom, and save per-checkpoint/family test predictions. Discover only active checkpoints, convert shell copies to Python, check finite probabilities, normalize submission rows, and retain Kaggle paths and submission.csv. The strategy checklist was applied to this inference-only setting: no training data or OOF predictions are available, so no invented CV, stacking fit, loss tuning, or unvalidated architecture retraining was added."
+}

@@ -1,0 +1,14 @@
+{
+  "observations": [
+    {"observation": "Is the metric a macro-averaged AUC over 11 labels, so monotone rescaling of predictions (e.g. *100 or *50) cannot change the score?", "result": "yes", "evidence": "task.md Evaluation section: AUC per label then averaged; v12->v15 scaling changes are rank-preserving."},
+    {"observation": "Was the best leaderboard score (0.96062) reached with IMAGE_SIZE=512 and ImageNet normalization stats?", "result": "yes", "evidence": "history.md v13/v14: IMAGE_SIZE 512, mean [0.485,0.456,0.406], std [0.229,0.224,0.225], score 0.96062."},
+    {"observation": "Did every subsequent change to the Normalize mean/std (v16-v21) score below 0.96062?", "result": "yes", "evidence": "history.md: v16 0.95220, v17 0.95712, v18 0.95760, v19 0.95672, v20 0.95319, v21 0.95243."},
+    {"observation": "Does the current code use non-ImageNet normalization (mean 0.5, std [0.3,0.32,0.3]) at 640 resolution?", "result": "yes", "evidence": "current_code.py lines 31, 75-76."},
+    {"observation": "Does the current code ensemble more than one checkpoint?", "result": "no", "evidence": "current_code.py lines 118-126: a single fold4 checkpoint is loaded into a one-element models list."},
+    {"observation": "Does the inference function already support a list of models and horizontal-flip TTA?", "result": "yes", "evidence": "current_code.py lines 100-115 loop over models and average sigmoid of image and flipped image."},
+    {"observation": "Does the checkpoint filename pattern (resnet200d_fold4_cv954.pth) suggest other fold checkpoints exist in the same public dataset?", "result": "yes", "evidence": "MODEL_PATH on line 118 names a fold index; the dataset is a 5-fold ResNet200D baseline so fold0..fold3 files are plausible."},
+    {"observation": "Is the model loaded with strict=False, which would silently hide key mismatches (e.g. a 'module.' prefix)?", "result": "yes", "evidence": "current_code.py line 124."},
+    {"observation": "Was a multi-fold ensemble tried in any earlier version?", "result": "no", "evidence": "history.md: no version lists adding checkpoints; v7->v8 only added a trivial self-blend line."}
+  ],
+  "action_summary": "Reverted preprocessing to the configuration that produced the best score in the history: IMAGE_SIZE 512 and ImageNet Normalize mean/std, undoing the v16-v21 normalization tweaks that each lowered the score. Added a true ensemble: glob all resnet200d_fold*.pth checkpoints in the public baseline dataset (falling back to the single fold4 checkpoint), load each via a helper that unwraps 'model' dicts and strips 'module.' prefixes and prints missing/unexpected keys, and average the flip-TTA probabilities across all folds in the existing inference loop. Reduced batch size to 64 to keep memory in check with several models resident. Prediction scaling (*100) is kept since it is rank-preserving for AUC."
+}

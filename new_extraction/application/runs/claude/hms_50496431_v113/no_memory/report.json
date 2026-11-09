@@ -1,0 +1,13 @@
+{
+  "observations": [
+    {"observation": "The current version v113 scores much worse than the previous version.", "result": "yes", "evidence": "history.md: v113 scored 0.45086, a change of -0.17249 from v112 (0.27837)."},
+    {"observation": "The current code uses only the double_head model in the final ensemble.", "result": "yes", "evidence": "current_code.py lines 1345-1346 call run_weight_double_head() while all other run_weight_* calls are commented out."},
+    {"observation": "The double_head model architecture was rewritten in v113.", "result": "yes", "evidence": "history.md v112 -> v113: Modeleeg reimplemented with efficientnet_b5, Modelspec refactored; this is the member that produced the 0.45 score."},
+    {"observation": "The best historical score came from an ensemble of the x3d and eeg_raw members.", "result": "yes", "evidence": "history.md v111: uncommenting run_weight_x3d alongside run_weight_eeg_raw gave 0.25772, the lowest score in the history."},
+    {"observation": "Removing the x3d member from the ensemble has consistently hurt the score.", "result": "yes", "evidence": "history.md: v109->v110 (-0.00598), v111->v112 (-0.02065), v107->v108 after swapping also worse; adding it back improved in v104, v109, v111."},
+    {"observation": "The current Net1d (eeg_raw) code matches the weights it loads with strict=True.", "result": "yes", "evidence": "run_weight_eeg_raw uses load_state_dict(strict=True) at line 1196 and v112 (which introduced the current Net1d reshape/neck) ran successfully with score 0.27837."},
+    {"observation": "The final predictions are explicitly renormalized to sum to one.", "result": "no", "evidence": "current_code.py lines 1361-1362 only take np.mean over members; no clipping or row normalization before writing submission.csv."},
+    {"observation": "A weighted blend was previously tried and beat a simple mean.", "result": "no", "evidence": "history.md v101 weighted sum scored 0.27434 while later simple-mean ensembles (v111) reached 0.25772."}
+  ],
+  "action_summary": "Reverted the ensemble composition to the best-known configuration: enabled run_weight_x3d and run_weight_eeg_raw and disabled the v113-rewritten run_weight_double_head member, which alone scored 0.45. Kept a simple mean over the two members (the v111 setup that reached 0.25772) and added a clip plus per-row renormalization so the submission always sums to one. All model classes and Kaggle paths are left unchanged."
+}

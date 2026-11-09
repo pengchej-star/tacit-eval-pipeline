@@ -1,0 +1,100 @@
+{
+  "observations": [
+    {
+      "observation": "The evaluation metric is an equally weighted mean of 11 label AUCs.",
+      "result": "yes",
+      "evidence": "task.md, Evaluation: AUC is calculated for each of the 11 labels, then averaged; higher is better."
+    },
+    {
+      "observation": "The competition requires submission probabilities.",
+      "result": "yes",
+      "evidence": "task.md, Submission File: predict a probability for all target variables; the required output filename is submission.csv."
+    },
+    {
+      "observation": "The history contains a score higher than v21.",
+      "result": "yes",
+      "evidence": "history.md: v13 and v14 scored 0.96062, compared with v21 at 0.95243."
+    },
+    {
+      "observation": "The documented switch from 640 to 512 improved the score.",
+      "result": "yes",
+      "evidence": "history.md, v12 to v13: IMAGE_SIZE 640 to 512, with batch size 12 to 64, accompanied a score increase from 0.95987 to 0.96062. This is historical evidence, not an isolated controlled experiment."
+    },
+    {
+      "observation": "Increasing batch size from 64 to 128 changed the recorded score.",
+      "result": "no",
+      "evidence": "history.md, v13 to v14: both scored 0.96062."
+    },
+    {
+      "observation": "The later normalization experiments surpassed the documented best score.",
+      "result": "no",
+      "evidence": "history.md: v16 through v21 scored between 0.95220 and 0.95760, all below 0.96062; v20 also changed resolution."
+    },
+    {
+      "observation": "The best documented versions used standard ImageNet normalization.",
+      "result": "yes",
+      "evidence": "history.md: v9 introduced normalization, v16 first changed means from [0.485, 0.456, 0.406], and v18 first changed standard deviations from [0.229, 0.224, 0.225]. Thus these standard values were still used in v13/v14."
+    },
+    {
+      "observation": "The current script is an inference-only pipeline.",
+      "result": "yes",
+      "evidence": "current_code.py loads resnet200d_fold4_cv954.pth and predicts test images; no optimizer steps or training loop are present. train_labels is read but unused."
+    },
+    {
+      "observation": "The current script uses the historically best preprocessing.",
+      "result": "no",
+      "evidence": "current_code.py sets IMAGE_SIZE=640, Normalize mean=[0.5, 0.5, 0.5], std=[0.3, 0.32, 0.3]."
+    },
+    {
+      "observation": "The current script already uses horizontal-flip TTA.",
+      "result": "yes",
+      "evidence": "current_code.py, inference: averages sigmoid outputs of model(images) and model(images.flip(-1))."
+    },
+    {
+      "observation": "The current script averages predictions across image scales.",
+      "result": "no",
+      "evidence": "current_code.py creates one TestDataset with a single Resize(IMAGE_SIZE, IMAGE_SIZE)."
+    },
+    {
+      "observation": "The current script actually ensembles multiple checkpoints.",
+      "result": "no",
+      "evidence": "current_code.py sets models=[model.to(device)] after loading only resnet200d_fold4_cv954.pth."
+    },
+    {
+      "observation": "The current checkpoint loader enforces complete parameter matching.",
+      "result": "no",
+      "evidence": "current_code.py calls model.load_state_dict(..., strict=False), allowing missing parameters to go unnoticed."
+    },
+    {
+      "observation": "The current script multiplies probabilities before export.",
+      "result": "yes",
+      "evidence": "current_code.py assigns test[target_cols] = predictions *100. Positive constant scaling leaves within-label rankings unchanged and is not an AUC improvement."
+    },
+    {
+      "observation": "K-fold model training can be validated with the supplied workspace data.",
+      "result": "no",
+      "evidence": "The task explicitly states competition data is unavailable and forbids running training/inference. The strategy block was considered once; its training, OOF and loss-weighting recommendations cannot be tested in this inference-only revision."
+    },
+    {
+      "observation": "Additional checkpoint files are supplied in the current workspace.",
+      "result": "no",
+      "evidence": "The local directory listing contains current_code.py, history.md, task.md and prompt.txt, with no checkpoint files. No additional ensemble weights are assumed."
+    },
+    {
+      "observation": "Repository-specific AGENTS.md instructions are present.",
+      "result": "no",
+      "evidence": "A find restricted to the current directory returned no AGENTS.md files."
+    },
+    {
+      "observation": "The revised script passes Python syntax validation.",
+      "result": "yes",
+      "evidence": "ast.parse successfully parsed output/revised_code.py without importing its dependencies or executing training/inference."
+    },
+    {
+      "observation": "The output report passes the requested JSON structure checks.",
+      "result": "yes",
+      "evidence": "json.loads parsed output/report.json; assertions checked the two top-level fields, all observation fields, string values, and results restricted to yes/no."
+    }
+  ],
+  "action_summary": "Restore the strongest documented preprocessing: 512-pixel images and standard ImageNet normalization. Preserve horizontal-flip probability averaging and add a conservative full-frame scale ensemble weighted 80% at 512 and 20% at 640, retaining most of the historically stronger scale while adding resolution diversity. This blend is an unvalidated hypothesis; the historical normalization recovery is the main evidence-backed improvement. Keep the supplied checkpoint, model architecture and Kaggle paths; use smaller sequential inference batches, remove unused version-sensitive imports, require complete checkpoint loading, cache scale predictions, and export unscaled probabilities in sample-submission order. No training, inference, external data access or internet use was performed."
+}

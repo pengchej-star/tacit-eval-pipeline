@@ -1,0 +1,135 @@
+{
+  "observations": [
+    {
+      "observation": "Does the supplied memory identify restoration after a regression as a candidate decision?",
+      "result": "yes",
+      "evidence": "memory/taxonomy.md, T.1.3, lists restoring the proven configuration following regression."
+    },
+    {
+      "observation": "Does the competition reward higher quadratic weighted kappa?",
+      "result": "yes",
+      "evidence": "task.md Evaluation and summary specify QWK, higher is better."
+    },
+    {
+      "observation": "Does the required submission contain integer scores from 1 to 6?",
+      "result": "yes",
+      "evidence": "task.md Data describes the 1-6 scale; Submission File specifies essay_id,score."
+    },
+    {
+      "observation": "Has the current score fallen below an earlier scored version?",
+      "result": "yes",
+      "evidence": "history.md: v26 scored 0.81897; v32 scored 0.80731."
+    },
+    {
+      "observation": "Did the score fall after the introduction of resampling?",
+      "result": "yes",
+      "evidence": "history.md: v29 0.81830; v30 introduced imputation/SMOTE; v31 0.81098. This is an association, not an isolated causal comparison."
+    },
+    {
+      "observation": "Did v32 restore the earlier feature extraction pipeline?",
+      "result": "no",
+      "evidence": "history.md v31 -> v32 says heavy feature extraction blocks were disabled; score fell by 0.00367."
+    },
+    {
+      "observation": "Does the current model consume DeBERTa probability features?",
+      "result": "yes",
+      "evidence": "current_code.py lines 94-116 average softmax predictions; lines 853-863 attach OOF probabilities."
+    },
+    {
+      "observation": "Is SMOTE applied before the validation folds are assigned?",
+      "result": "yes",
+      "evidence": "current_code.py lines 934-950 resample topic groups; line 1094 constructs StratifiedKFold afterward."
+    },
+    {
+      "observation": "Does the current code impute training features globally before splitting?",
+      "result": "yes",
+      "evidence": "current_code.py lines 937-938 fit SimpleImputer on each full topic subset before cross-validation."
+    },
+    {
+      "observation": "Does the current OOF buffer have a floating-point dtype?",
+      "result": "no",
+      "evidence": "current_code.py line 960 initializes oof from score.astype(int), truncating continuous assignments at line 1136."
+    },
+    {
+      "observation": "Does the current submission optimize ordinal cutpoints?",
+      "result": "no",
+      "evidence": "current_code.py line 1244 applies fixed clip-and-round."
+    },
+    {
+      "observation": "Does the memory favor checking data flow before further modeling changes?",
+      "result": "yes",
+      "evidence": "memory/attention/t-2-2-locate-a-data-flow-defect.md prioritizes tracing input/prediction signal and checking identifier alignment."
+    },
+    {
+      "observation": "Does the memory support cutpoint optimization using held-out predictions?",
+      "result": "yes",
+      "evidence": "memory/attention/t-7-4-map-continuous-scores-to-discrete-labels.md lists optimizing ordinal cutpoints when the ordinal metric is sensitive to them."
+    },
+    {
+      "observation": "Does the test feature pipeline load a static test dataframe?",
+      "result": "yes",
+      "evidence": "current_code.py lines 1166-1169 load /kaggle/input/essay-scoring-features/df_test.pkl, later merged into live test features. Private-test coverage cannot be verified without data."
+    },
+    {
+      "observation": "Are all essay-part test feature blocks active?",
+      "result": "no",
+      "evidence": "current_code.py lines 1172-1191 disable introduction/body/conclusion feature construction; only paragraph construction remains active."
+    },
+    {
+      "observation": "Does the original vectorizer tokenize text into words?",
+      "result": "no",
+      "evidence": "current_code.py lines 812-819 use tokenizer=lambda x:x on strings, so word-analyzer n-grams are effectively character sequences. The revision preserves this feature-index contract."
+    },
+    {
+      "observation": "Are sparse features attached using their source CSV identifiers?",
+      "result": "no",
+      "evidence": "current_code.py lines 828, 850, 1210, 1220 assign feature-frame essay_id from train_feats/test_feats instead of the raw text rows used to produce the matrix."
+    },
+    {
+      "observation": "Does the test aggregation sort essay identifiers?",
+      "result": "yes",
+      "evidence": "current_code.py Essay_Parts_Eng, Sentence_Eng, and Word_Eng call sort(\"essay_id\"). Positional prediction assignment therefore relies on matching input order."
+    },
+    {
+      "observation": "Does the two-paragraph condition use a logical conjunction?",
+      "result": "no",
+      "evidence": "current_code.py line 193 uses a bitwise & within chained comparisons; the revision uses len(paragraphs) == 2."
+    },
+    {
+      "observation": "Does the LightGBM configuration also request balanced class weights?",
+      "result": "yes",
+      "evidence": "current_code.py line 1123 sets class_weight=\"balanced\" after synthetic balancing."
+    },
+    {
+      "observation": "Are custom-objective target moments fixed constants?",
+      "result": "yes",
+      "evidence": "current_code.py lines 902-903 set a=2.998 and b=1.092; the revision derives moments from the actual unresampled labels."
+    },
+    {
+      "observation": "Can the row identity of the external OOF ndarray be independently verified here?",
+      "result": "no",
+      "evidence": "current_code.py loads oof.pkl as a six-column array without IDs; competition artifacts are unavailable. The existing train.csv ordering assumption is retained explicitly."
+    },
+    {
+      "observation": "Does the task note a training-to-test source shift?",
+      "result": "yes",
+      "evidence": "task.md summary says the test resembles non-Persuade data; no source labels are available locally, so calibration shifts are bounded and cross-checked."
+    },
+    {
+      "observation": "Does the original essay linguistic extractor retain all spaCy documents at once?",
+      "result": "yes",
+      "evidence": "current_code.py line 266 wraps nlp.pipe in list; the revision streams documents during essay-level extraction to limit memory use."
+    },
+    {
+      "observation": "Does the revised script pass Python syntax validation?",
+      "result": "yes",
+      "evidence": "python -m py_compile output/revised_code.py passed; final source also passed ast.parse and compile without running the pipeline."
+    },
+    {
+      "observation": "Does the report satisfy the required JSON structure?",
+      "result": "yes",
+      "evidence": "Parsed with json.loads; checked top-level fields, per-observation fields, string types, and yes/no result values."
+    }
+  ],
+  "action_summary": "Remove pre-CV topic downsampling, SMOTE, mean imputation, and inverse-class weighting to restore the natural training distribution after the documented regression. Repair floating-point OOF storage and identifier alignment; generate live test features instead of merging a static public-test cache, retaining only reproducible ranked features and transformer stacking outputs. Keep the established LightGBM ensemble, derive QWK objective moments from the real labels, and adopt bounded ordinal cutpoints only when cross-fitted calibration improves QWK. No training or inference was run; leaderboard improvement remains unmeasured."
+}

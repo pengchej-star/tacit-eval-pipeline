@@ -1,0 +1,14 @@
+{
+  "observations": [
+    {"observation": "Is the leaderboard metric rank based (mean column-wise Spearman correlation)?", "result": "yes", "evidence": "task.md Evaluation section: mean column-wise Spearman's correlation coefficient, higher is better."},
+    {"observation": "Did the current version v46 drop sharply in score compared with v45?", "result": "yes", "evidence": "history.md: v45 scored 0.42580, v46 scored 0.38762 (-0.03819)."},
+    {"observation": "Did the v45 -> v46 change remove the KBinsDiscretizer post-processing?", "result": "yes", "evidence": "history.md v45 -> v46 summary: 'removed post-processing discretization (KBins...' and current_code.py has no post-processing between evaluator.run and writing submission.csv."},
+    {"observation": "Were all versions with the discretization post-processing (v38-v45) scored above 0.42?", "result": "yes", "evidence": "history.md: v38 0.42704, v39 0.42442, v45 0.42580; v40 which disabled the blending/postprocessing dropped to 0.38139."},
+    {"observation": "Do versions without any post-processing all score around 0.38 or lower?", "result": "yes", "evidence": "history.md: v29 0.38186, v30 0.38503, v35 0.38061, v40 0.38139, v46 0.38762."},
+    {"observation": "Does the current code include a guard for columns that collapse to a constant after discretization?", "result": "no", "evidence": "current_code.py lines 47-65: y_pred is written directly to out_df with no post-processing."},
+    {"observation": "Does the current code rescale predictions to the [0,1] range before writing the submission?", "result": "no", "evidence": "current_code.py line 64 assigns raw y_pred to out_df."},
+    {"observation": "Is the training data unavailable so that fitting a new model or tuning bins on OOF is impossible here?", "result": "yes", "evidence": "Task instructions state competition data is not available; the notebook only runs inference from saved fold checkpoints."},
+    {"observation": "Was switching blend_strategy from mean to rank already tried?", "result": "yes", "evidence": "history.md v33: blend_strategy 'rank' scored 0.38345, no gain over 'mean', so I kept 'mean'."}
+  ],
+  "action_summary": "Kept the v46 inference pipeline (new checkpoint snapshot, NER model, process_math) unchanged, and restored the rank-aware post-processing that v46 had removed and that accounted for the ~0.04 gap between v45 (0.4258) and v46 (0.3876): each predicted column is discretized with KBinsDiscretizer (quantile strategy, up to 20 bins, capped at the number of unique values) to create ties where the model is uncertain, columns that collapse to a single bin revert to the original continuous predictions, and each column is min-max scaled to [0,1] with a rank-based fallback so no column is constant. Predictions are clipped to [0,1] before writing submission.csv."
+}

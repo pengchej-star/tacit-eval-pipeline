@@ -1,0 +1,13 @@
+{
+  "observations": [
+    {"observation": "Did the score get worse from v14 (0.31017) to v15 (0.43907)?", "result": "yes", "evidence": "history.md: v14 0.31017, v15 0.43907 (-0.12890), lower is better."},
+    {"observation": "Does v15 comment out loading and inference of the two raw-EEG model families (models_0, models_1)?", "result": "yes", "evidence": "current_code.py lines 62-77 and 383-416 wrap the models_0/models_1 code in triple-quoted strings; only models_2 (SpectrogramModel) is used."},
+    {"observation": "Is the v15 submission produced only by the spectrogram model?", "result": "yes", "evidence": "current_code.py lines 418-420: only the `for model in models_2` loop appends to preds."},
+    {"observation": "Was the best historical score (0.30219, v13) achieved by averaging the two EEG families without TTA?", "result": "yes", "evidence": "history.md v13 entry: models_0 (new_distil + new_fold) + models_1 (baseline_eeg_diff) averaged, score 0.30219."},
+    {"observation": "Did adding flip TTA in v14 improve the score?", "result": "no", "evidence": "history.md: v13 0.30219 -> v14 0.31017 (-0.00798)."},
+    {"observation": "Does the current code clip predicted probabilities away from zero before writing the submission?", "result": "no", "evidence": "current_code.py lines 425-426 only take the mean and renormalize; KL divergence penalizes near-zero probabilities heavily."},
+    {"observation": "Has a weighted blend of EEG and spectrogram families been tried in an earlier version?", "result": "no", "evidence": "history.md: v15 replaced the EEG models with the spectrogram model rather than blending; earlier versions used equal averaging."},
+    {"observation": "Does the spectrogram pipeline handle NaN/inf values before feeding the model?", "result": "no", "evidence": "current_code.py lines 379-381: compute_spec_from_file -> proc_2 -> tensor, with no NaN handling (the EEG path had it at line 385)."}
+  ],
+  "action_summary": "Restored the v13 ensemble configuration, which had the best leaderboard score: both raw-EEG model families (new_distil + new_fold with EegModel0, baseline_eeg_diff with EegModel1) are loaded and run again without the flip TTA that hurt in v14. Instead of discarding the new spectrogram model, it is kept as a diversifying ensemble member with a small weight (0.15 vs 0.85 for the averaged EEG families), since on its own it scored much worse (0.439 vs 0.302). Added NaN/inf cleaning for the spectrogram input, and clipped final probabilities to a 1e-4 floor before renormalizing to avoid unbounded KL penalties. Removed the per-prediction debug printing."
+}

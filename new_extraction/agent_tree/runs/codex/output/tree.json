@@ -1,0 +1,3304 @@
+{
+  "id": "T",
+  "name": "Improve the solution",
+  "decision": "what can I change to improve my solution?",
+  "description": "Choose the next concrete intervention using the available evidence, then revisit the tree after measuring its effect.",
+  "source": "data",
+  "children": [
+    {
+      "name": "Improve the evidence for choosing changes",
+      "decision": "Which uncertainty should I resolve before another performance change?",
+      "description": "Choose the next measurement or comparison when existing scores cannot reliably guide improvement.",
+      "children": [
+        {
+          "name": "Choose a validation design",
+          "decision": "Which split design should I test for this data?",
+          "description": "Select the split constraint that best represents the intended unseen examples.",
+          "children": [
+            {
+              "name": "Preserve target proportions",
+              "description": "Use stratified folds, binning a continuous target when needed, to stabilize target distributions.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18851026:e8#2",
+                "55431616:e3#2",
+                "55987255:e20#2"
+              ],
+              "id": "T.1.1.1"
+            },
+            {
+              "name": "Hold related examples together",
+              "description": "Use entity, source, topic, or defensible inferred groups to keep related examples out of opposing folds.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27656049:e2#2",
+                "49576186:e20#2",
+                "58130512:e25#2",
+                "55987255:e19#1",
+                "55987255:e21#1",
+                "55987255:e22#2"
+              ],
+              "id": "T.1.1.2"
+            },
+            {
+              "name": "Probe subgroup allocation",
+              "description": "Compare subgroup allocation schemes with a separate disjoint evaluation set; overlapping train and validation rows in the source trajectories do not provide an unbiased score.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "58130512:e7#1",
+                "58130512:e7#2",
+                "58130512:e9#1",
+                "58130512:e20#2",
+                "58130512:e35#2"
+              ],
+              "id": "T.1.1.3"
+            },
+            {
+              "name": "Change holdout allocation",
+              "description": "Compare holdout fractions or cross-validation against full-data fitting while preserving an independent selection signal.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "29588171:e3#3",
+                "29588171:e5#1",
+                "28093671:e4#2",
+                "7670859:e4#3"
+              ],
+              "id": "T.1.1.4"
+            }
+          ],
+          "source": "data",
+          "id": "T.1.1"
+        },
+        {
+          "name": "Choose a trustworthy comparison",
+          "decision": "Which measurement would resolve the uncertainty in the apparent gain?",
+          "description": "Distinguish score noise, misleading validation, confounded edits, and incorrect metric computation.",
+          "children": [
+            {
+              "name": "Measure repeat-run variability",
+              "description": "Repeat an unchanged configuration with pinned artifacts and compare score distributions rather than single best runs.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "28834369:e1#1",
+                "27389424:e10#1",
+                "27825577:e4#2",
+                "17616127:e8#2",
+                "18426209:e4#1",
+                "75924487:e1#2",
+                "53424936:e3#2",
+                "50376011:e1#3",
+                "50376011:e5#2",
+                "50376011:e10#1",
+                "50376011:e10#2",
+                "50376011:e11#2",
+                "50376011:e14#2",
+                "50376011:e16#2",
+                "50376011:e19#1",
+                "50376011:e19#2",
+                "50376011:e21#1",
+                "50376011:e23#2",
+                "50376011:e24#1",
+                "50376011:e24#2",
+                "50376011:e25#2",
+                "50376011:e26#1",
+                "50376011:e26#2",
+                "50376011:e27#1",
+                "50376011:e27#2",
+                "50376011:e28#2",
+                "50376011:e31#1",
+                "50376011:e34#2",
+                "50376011:e35#1",
+                "50376011:e37#1",
+                "50376011:e40#2",
+                "50376011:e42#1",
+                "52860091:e4#2",
+                "59253662:e4#2",
+                "13702907:e3#2",
+                "13702907:e5#2",
+                "13702907:e6#2",
+                "13702907:e7#2",
+                "13577502:e1#1",
+                "13577502:e2#2",
+                "13577502:e3#2",
+                "13542132:e2#1",
+                "50496431:e10#2",
+                "50496431:e14#1",
+                "50496431:e17#3",
+                "50496431:e21#2",
+                "50496431:e23#2",
+                "50496431:e35#2",
+                "50496431:e37#2",
+                "50496431:e38#2",
+                "50496431:e47#2"
+              ],
+              "id": "T.1.2.1"
+            },
+            {
+              "name": "Check local and external score agreement",
+              "description": "Compare local validation with earlier external evaluations and use local selection when leaderboard resolution or sample size is inadequate.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27799930:e5#2",
+                "27825577:e3#2",
+                "17616127:e1#2",
+                "17616127:e3#2",
+                "17616127:e29#2",
+                "17616127:e30#2",
+                "18550705:e1#2",
+                "52200959:e3#1",
+                "15082684:e2#1",
+                "15082684:e3#2",
+                "15082684:e7#2"
+              ],
+              "id": "T.1.2.2"
+            },
+            {
+              "name": "Isolate one change",
+              "description": "Compare configurations differing in one meaningful factor, or use a small factorial comparison for an interaction.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "13848868:e3#3",
+                "29588171:e7#1",
+                "27389424:e9#3",
+                "27836972:e5#2",
+                "27836972:e8#2",
+                "27836972:e10#2",
+                "27836972:e13#2",
+                "28984551:e2#2",
+                "28984551:e3#2",
+                "27825577:e1#2",
+                "27825577:e5#2",
+                "28093671:e7#3",
+                "27656049:e8#2",
+                "17616127:e35#2",
+                "18523075:e3#2",
+                "18423958:e2#2",
+                "17371717:e6#2",
+                "17371717:e8#2",
+                "17371717:e10#2",
+                "17371717:e12#2",
+                "17371717:e14#1",
+                "77450317:e5#2",
+                "77450317:e11#2",
+                "77129691:e3#2",
+                "75145694:e3#2",
+                "75145694:e18#2",
+                "77276039:e5#1",
+                "77276039:e5#2",
+                "73937748:e23#2",
+                "7823861:e4#1",
+                "7823861:e5#2",
+                "7018718:e8#1",
+                "7018718:e10#1",
+                "7018718:e11#3",
+                "7018718:e12#2",
+                "7670859:e5#2",
+                "6803050:e15#1",
+                "7606235:e2#2",
+                "7253130:e2#2",
+                "53747598:e8#2",
+                "53424936:e6#1",
+                "50376011:e14#3",
+                "50376011:e17#2",
+                "50376011:e18#1",
+                "49524919:e5#1",
+                "49524919:e17#2",
+                "49576186:e5#2",
+                "49576186:e6#1",
+                "49576186:e8#1",
+                "49576186:e9#1",
+                "49576186:e11#2",
+                "49576186:e15#2",
+                "49576186:e29#2",
+                "52551258:e8#2",
+                "52551258:e13#2",
+                "53762022:e2#2",
+                "60264017:e4#2",
+                "60264017:e5#2",
+                "55621328:e6#2",
+                "55621328:e10#1",
+                "55621328:e11#2",
+                "55621328:e14#2",
+                "55621328:e48#1",
+                "55431616:e2#2",
+                "59253662:e6#2",
+                "59253662:e8#2",
+                "59253662:e12#1",
+                "60759531:e3#2",
+                "60759531:e4#2",
+                "58130512:e2#3",
+                "58130512:e8#2",
+                "58130512:e9#2",
+                "58130512:e13#2",
+                "58130512:e18#2",
+                "58130512:e23#1",
+                "58130512:e26#2",
+                "58130512:e27#1",
+                "60197293:e7#2",
+                "60197293:e8#2",
+                "60197293:e17#3",
+                "60197293:e18#3",
+                "55987255:e7#2",
+                "55987255:e17#2",
+                "55987255:e23#2",
+                "55987255:e25#1",
+                "55987255:e26#2",
+                "55591012:e11#3",
+                "55591012:e14#2",
+                "15372370:e5#2",
+                "15173072:e4#3",
+                "15173072:e5#2",
+                "13542132:e2#2",
+                "50496431:e5#2",
+                "50496431:e9#2",
+                "50496431:e14#2",
+                "50496431:e15#2",
+                "50496431:e26#1",
+                "50496431:e26#2",
+                "50496431:e29#1",
+                "50496431:e32#1",
+                "50496431:e34#2",
+                "50496431:e35#3",
+                "50496431:e36#2",
+                "50496431:e37#1",
+                "50496431:e40#1",
+                "50496431:e41#1",
+                "50496431:e42#2",
+                "50496431:e43#2",
+                "50496431:e45#1",
+                "50496431:e45#3",
+                "50496431:e46#1",
+                "50496431:e49#1"
+              ],
+              "id": "T.1.2.3"
+            },
+            {
+              "name": "Align the evaluation callback",
+              "description": "Implement and verify the task metric and its optimization direction in validation and early stopping.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "29588171:e2#1",
+                "27389424:e6#2",
+                "27389424:e7#2",
+                "27389424:e12#1",
+                "27502740:e2#2",
+                "27502740:e4#2",
+                "27799930:e7#2",
+                "27825577:e2#2",
+                "27825577:e6#1",
+                "28093671:e3#2",
+                "28093671:e8#3",
+                "27656049:e5#1",
+                "55431616:e6#2",
+                "60197293:e1#1"
+              ],
+              "id": "T.1.2.4"
+            },
+            {
+              "name": "Inspect data structure",
+              "description": "Inspect entity counts, ordering, feature types, missingness, and target distributions before selecting a representation.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "28093671:e1#1"
+              ],
+              "id": "T.1.2.5"
+            }
+          ],
+          "source": "data",
+          "id": "T.1.2"
+        },
+        {
+          "name": "Choose a response to an unsuccessful search",
+          "decision": "Should I restore, narrow, or redirect the current experiment?",
+          "description": "Use the size and attribution of regressions to choose the next experiment.",
+          "children": [
+            {
+              "name": "Restore the proven configuration",
+              "description": "Recover the exact known-good configuration before reintroducing changes separately.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "13848868:e3#2",
+                "13848868:e4#1",
+                "27836972:e12#1",
+                "28093671:e9#2",
+                "28093671:e10#2",
+                "27656049:e6#1",
+                "17616127:e34#1",
+                "18550705:e5#2",
+                "77450317:e6#1",
+                "77129691:e4#1",
+                "73671444:e10#1",
+                "77347591:e5#2",
+                "75145694:e8#2",
+                "73937748:e19#1",
+                "7823861:e3#2",
+                "7823861:e4#2",
+                "7670859:e7#1",
+                "6803050:e8#2",
+                "53747598:e6#1",
+                "53424936:e11#2",
+                "49524919:e8#2",
+                "49524919:e25#1",
+                "49576186:e3#1",
+                "49576186:e9#2",
+                "49576186:e10#1",
+                "49576186:e12#2",
+                "49576186:e20#1",
+                "53762022:e6#1",
+                "55621328:e37#1",
+                "55621328:e38#2",
+                "55621328:e45#1",
+                "59253662:e8#1",
+                "59253662:e9#1",
+                "58130512:e14#2",
+                "58130512:e16#1",
+                "58130512:e36#1",
+                "60197293:e19#2",
+                "55591012:e8#2"
+              ],
+              "id": "T.1.3.1"
+            },
+            {
+              "name": "Move to a different improvement lever",
+              "description": "Stop a saturated local sweep and test a qualitatively different source of signal or modeling change.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "29588171:e3#1",
+                "29588171:e5#2",
+                "29588171:e7#2",
+                "27389424:e16#2",
+                "27389424:e17#1",
+                "27836972:e13#1",
+                "17616127:e2#2",
+                "17616127:e13#2",
+                "17616127:e26#2",
+                "18523075:e1#2",
+                "18837555:e5#2",
+                "18350823:e4#2",
+                "77450317:e11#1",
+                "73671444:e2#2",
+                "77347591:e9#1",
+                "77347591:e9#2",
+                "75145694:e15#1",
+                "75145694:e16#2",
+                "77386286:e2#2",
+                "7670859:e1#2",
+                "7253130:e3#2",
+                "50376011:e21#2",
+                "49524919:e9#1",
+                "49524919:e12#2",
+                "49576186:e7#1",
+                "49576186:e11#3",
+                "49576186:e25#3",
+                "52200959:e5#2",
+                "55621328:e19#2",
+                "55621328:e24#2",
+                "55621328:e42#2",
+                "60759531:e2#1",
+                "60759531:e4#1",
+                "58130512:e27#2",
+                "58130512:e34#2",
+                "58527792:e2#2",
+                "55987255:e29#2",
+                "55591012:e3#2",
+                "55591012:e5#2",
+                "15082684:e2#2",
+                "15164527:e6#2",
+                "15164527:e8#1",
+                "13542132:e3#1"
+              ],
+              "id": "T.1.3.2"
+            },
+            {
+              "name": "Narrow the parameter search",
+              "description": "Bracket a promising continuous parameter range and refine it with controlled local comparisons.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27389424:e5#2",
+                "75584724:e6#2",
+                "60759531:e3#1",
+                "55591012:e12#2"
+              ],
+              "id": "T.1.3.3"
+            },
+            {
+              "name": "Establish a working baseline",
+              "description": "Build and evaluate a minimal end-to-end solution before adding further complexity.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27799930:e6#2",
+                "28093671:e3#1",
+                "28093671:e6#1",
+                "27656049:e1#1",
+                "75145694:e1#1",
+                "77386286:e1#1",
+                "6803050:e1#2",
+                "53747598:e2#1",
+                "50376011:e32#1",
+                "49576186:e12#1",
+                "53762022:e4#1"
+              ],
+              "id": "T.1.3.4"
+            },
+            {
+              "name": "Test a coordinated bundle",
+              "description": "Compare a jointly changed configuration with a saved baseline when the changes are coupled, then ablate the bundle before attributing its gain.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "77129691:e11#2",
+                "73937748:e2#2",
+                "52551258:e2#2",
+                "50496431:e22#2"
+              ],
+              "id": "T.1.3.5"
+            }
+          ],
+          "source": "data",
+          "id": "T.1.3"
+        }
+      ],
+      "source": "data",
+      "id": "T.1"
+    },
+    {
+      "name": "Repair incorrect or mismatched predictions",
+      "decision": "Which failure mechanism should I investigate first?",
+      "description": "Choose a correctness repair when predictions, scores, or execution contradict the intended pipeline.",
+      "children": [
+        {
+          "name": "Restore model and input compatibility",
+          "decision": "Which training-to-inference contract is broken?",
+          "description": "Match artifacts and transformations to the configuration that produced the learned weights.",
+          "children": [
+            {
+              "name": "Match architecture and weights",
+              "description": "Reconstruct the trained architecture and inspect strict checkpoint loading, tensor dimensions, and missing or prefixed state keys.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18426209:e2#1",
+                "18426209:e2#2",
+                "18423958:e1#1",
+                "17371717:e5#1",
+                "49524919:e10#2",
+                "49524919:e11#2",
+                "49524919:e12#1",
+                "53762022:e2#1",
+                "55621328:e3#1",
+                "55621328:e14#1",
+                "55621328:e22#1",
+                "55621328:e39#1",
+                "55621328:e41#1",
+                "55621328:e41#2",
+                "55621328:e47#1",
+                "15082684:e6#1",
+                "15173072:e1#2",
+                "13521245:e4#2",
+                "13702907:e5#1",
+                "13702907:e7#1",
+                "13702907:e8#2",
+                "50496431:e20#3",
+                "50496431:e24#1"
+              ],
+              "id": "T.2.1.1"
+            },
+            {
+              "name": "Match input preprocessing",
+              "description": "Restore the training-time resolution, filtering, normalization, feature extraction, and input format at inference.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "50376011:e6#1",
+                "50376011:e12#2",
+                "49524919:e2#2",
+                "49524919:e9#2",
+                "49524919:e16#2",
+                "49524919:e21#2",
+                "52551258:e1#1",
+                "52551258:e4#2",
+                "52551258:e5#2",
+                "52551258:e11#2",
+                "52200959:e6#2",
+                "55621328:e35#2",
+                "55621328:e38#1",
+                "15082684:e4#1",
+                "13521245:e1#2",
+                "50496431:e16#1",
+                "50496431:e25#2",
+                "50496431:e29#2",
+                "50496431:e51#2",
+                "50496431:e52#2"
+              ],
+              "id": "T.2.1.2"
+            },
+            {
+              "name": "Match tokenizer and vocabulary",
+              "description": "Use the training tokenizer, special-token definitions, vocabulary size, and token-index logic with the checkpoint.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18837555:e1#2",
+                "7240226:e1#2",
+                "55621328:e5#2",
+                "55621328:e10#2",
+                "55621328:e11#1",
+                "55621328:e36#2"
+              ],
+              "id": "T.2.1.3"
+            },
+            {
+              "name": "Match feature schema and encoders",
+              "description": "Reuse fitted encoders and the exact feature names, ordering, and dimensions expected by the downstream model.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18851026:e3#1",
+                "77450317:e13#1",
+                "77129691:e5#2",
+                "77129691:e7#2",
+                "75924487:e7#2",
+                "75145694:e6#2",
+                "75145694:e17#2",
+                "73937748:e7#1",
+                "7823861:e2#2",
+                "7823861:e3#1",
+                "55621328:e46#2",
+                "58130512:e22#1",
+                "58130512:e28#2",
+                "60197293:e11#1",
+                "55987255:e10#1"
+              ],
+              "id": "T.2.1.4"
+            }
+          ],
+          "source": "data",
+          "id": "T.2.1"
+        },
+        {
+          "name": "Locate a data-flow defect",
+          "decision": "Where should I check for lost or corrupted signal?",
+          "description": "Trace data and predictions through the stage most consistent with the observed failure.",
+          "children": [
+            {
+              "name": "Restore row and identifier alignment",
+              "description": "Join auxiliary features and prediction files by explicit identifiers and reverse any sorting before output.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18851026:e5#1",
+                "7670859:e7#2",
+                "55621328:e26#1",
+                "60197293:e11#2",
+                "60197293:e12#1",
+                "55591012:e8#1"
+              ],
+              "id": "T.2.2.1"
+            },
+            {
+              "name": "Restore missing model contributions",
+              "description": "Verify every intended fold, branch, and model executes and contributes the intended prediction array.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18423958:e4#2",
+                "75145694:e4#1",
+                "75145694:e10#3",
+                "75145694:e11#3",
+                "75145694:e19#2",
+                "49524919:e22#2",
+                "49524919:e24#2",
+                "49524919:e25#2",
+                "49524919:e26#3",
+                "49524919:e30#2",
+                "52860091:e5#2",
+                "52200959:e7#1",
+                "55987255:e12#1",
+                "50496431:e3#2"
+              ],
+              "id": "T.2.2.2"
+            },
+            {
+              "name": "Correct aggregation arithmetic",
+              "description": "Check numeric array types, axes, divisors, group normalization, weights, and shapes in ensemble calculations.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e12#2",
+                "17616127:e20#2",
+                "17616127:e23#1",
+                "17616127:e25#1",
+                "17616127:e28#3",
+                "18523075:e5#2",
+                "18851026:e6#1",
+                "18851026:e6#2",
+                "18851026:e7#2",
+                "18423958:e8#2",
+                "77347591:e8#2",
+                "77276039:e6#1",
+                "73937748:e15#2",
+                "55621328:e5#1",
+                "55621328:e13#2"
+              ],
+              "id": "T.2.2.3"
+            },
+            {
+              "name": "Trace inputs and prediction signal",
+              "description": "Inspect small examples, stage outputs, variance, and data sources to locate placeholders, constant predictions, or wrong inputs.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "28093671:e5#2",
+                "18757376:e5#3",
+                "17371717:e3#2",
+                "77450317:e13#2",
+                "73671444:e3#2",
+                "73671444:e6#1",
+                "73937748:e8#2",
+                "7823861:e2#1",
+                "7548275:e4#1",
+                "6803050:e3#1",
+                "6803050:e4#1",
+                "6803050:e5#1",
+                "6803050:e5#2",
+                "53424936:e5#1",
+                "53424936:e5#2",
+                "49524919:e32#1",
+                "49524919:e32#2",
+                "49576186:e7#2",
+                "52860091:e1#1",
+                "60197293:e7#1",
+                "60197293:e12#2",
+                "60197293:e13#2",
+                "55591012:e6#1",
+                "15082684:e5#2",
+                "15173072:e2#3",
+                "13702907:e3#1",
+                "50496431:e12#2",
+                "50496431:e54#2"
+              ],
+              "id": "T.2.2.4"
+            },
+            {
+              "name": "Repair invalid numerical values",
+              "description": "Check inputs and intermediate tensors for NaNs or infinities and apply model-appropriate handling.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "75145694:e20#2"
+              ],
+              "id": "T.2.2.5"
+            },
+            {
+              "name": "Correct the custom objective implementation",
+              "description": "Audit custom-loss gradients, Hessians, shapes, and callback inputs before attributing a score collapse to modeling.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "58130512:e3#1"
+              ],
+              "id": "T.2.2.6"
+            }
+          ],
+          "source": "data",
+          "id": "T.2.2"
+        },
+        {
+          "name": "Resolve the first execution failure",
+          "decision": "What dependency failure prevents the intended computation?",
+          "description": "Repair the concrete failing contract before running a full experiment.",
+          "children": [
+            {
+              "name": "Resolve artifact paths",
+              "description": "List available artifacts and fix checkpoint, configuration, and preprocessing paths before loading.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "7018718:e1#1",
+                "7018718:e3#2",
+                "7018718:e5#2",
+                "7613444:e5#2",
+                "6803050:e9#1",
+                "7606235:e1#1",
+                "7606235:e3#2",
+                "52860091:e2#2",
+                "60197293:e10#2",
+                "60197293:e15#1",
+                "55987255:e21#2",
+                "15372370:e1#2"
+              ],
+              "id": "T.2.3.1"
+            },
+            {
+              "name": "Resolve package compatibility",
+              "description": "Correct imports, offline dependencies, versions, and module search paths to load the intended implementation.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e36#2",
+                "53747598:e6#2",
+                "58527792:e1#1",
+                "15164527:e9#3",
+                "15203842:e2#2",
+                "15173072:e1#1"
+              ],
+              "id": "T.2.3.2"
+            },
+            {
+              "name": "Match computation devices",
+              "description": "Align model and tensor devices or use a supported CPU backend before re-enabling acceleration.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "77347591:e4#2",
+                "77276039:e1#1",
+                "55621328:e2#1",
+                "55621328:e43#2",
+                "55987255:e4#2",
+                "55591012:e4#2"
+              ],
+              "id": "T.2.3.3"
+            },
+            {
+              "name": "Repair syntax or API contracts",
+              "description": "Use a minimal failing example to correct variable scope, parameter names, dataframe semantics, or function signatures.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "29588171:e3#2",
+                "27836972:e1#2",
+                "27836972:e9#2",
+                "28984551:e4#2",
+                "27799930:e1#2",
+                "27825577:e6#2",
+                "28093671:e4#1",
+                "28093671:e7#2",
+                "27656049:e7#3",
+                "17616127:e31#2",
+                "17616127:e38#2",
+                "18837555:e3#2",
+                "18423958:e7#2",
+                "7548275:e2#2",
+                "7670859:e1#1",
+                "7573212:e1#1",
+                "7253130:e1#2",
+                "49576186:e2#2",
+                "52200959:e1#2",
+                "55621328:e33#2",
+                "55431616:e5#2",
+                "59253662:e1#1",
+                "58130512:e12#3",
+                "55987255:e6#2",
+                "55987255:e20#1",
+                "55591012:e1#2",
+                "15082684:e1#2",
+                "15164527:e1#2"
+              ],
+              "id": "T.2.3.4"
+            },
+            {
+              "name": "Write the intended submission",
+              "description": "Validate output columns, row count, final prediction variable, filename, and file-writing execution.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "73671444:e4#2",
+                "7823861:e7#2",
+                "55431616:e5#1",
+                "55591012:e13#2",
+                "13702907:e1#1"
+              ],
+              "id": "T.2.3.5"
+            }
+          ],
+          "source": "data",
+          "id": "T.2.3"
+        }
+      ],
+      "source": "data",
+      "id": "T.2"
+    },
+    {
+      "name": "Change the information presented to the model",
+      "decision": "Which input representation should I change next?",
+      "description": "Choose a concrete feature or preprocessing experiment based on missing signal or excess noise.",
+      "children": [
+        {
+          "name": "Represent repeated or structured records",
+          "decision": "Which structured feature construction should I test?",
+          "description": "Choose a representation that captures the kind of information missing from the current features.",
+          "children": [
+            {
+              "name": "Add entity-level summary statistics",
+              "description": "Aggregate repeated records with controlled additions of location, spread, extrema, counts, or last values.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27836972:e1#1",
+                "27836972:e2#1",
+                "27799930:e1#1",
+                "27825577:e5#1",
+                "28093671:e8#1",
+                "27656049:e4#1"
+              ],
+              "id": "T.3.1.1"
+            },
+            {
+              "name": "Add temporal changes or recent windows",
+              "description": "Compute lags, first-to-last changes, or recent-window statistics to represent temporal dynamics.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27836972:e4#1",
+                "27836972:e8#1",
+                "27836972:e10#1",
+                "27836972:e11#1"
+              ],
+              "id": "T.3.1.2"
+            },
+            {
+              "name": "Add domain interactions",
+              "description": "Construct semantically justified differences, ratios, products, or composite features and test their marginal value.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27836972:e6#2",
+                "27836972:e9#1",
+                "27836972:e12#2",
+                "27799930:e10#1",
+                "73937748:e4#2"
+              ],
+              "id": "T.3.1.3"
+            },
+            {
+              "name": "Change numeric precision or scaling",
+              "description": "Compare rounding, precision, or scaling choices without changing the underlying observations.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27836972:e4#2",
+                "27502740:e3#1",
+                "28093671:e8#2",
+                "73937748:e6#2"
+              ],
+              "id": "T.3.1.4"
+            },
+            {
+              "name": "Change missing-value handling",
+              "description": "Compare native missing-value support with explicit model-appropriate imputation.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27836972:e3#2",
+                "28093671:e7#1",
+                "28093671:e9#1",
+                "75145694:e12#1"
+              ],
+              "id": "T.3.1.5"
+            },
+            {
+              "name": "Add structured metadata",
+              "description": "Encode relevant source, category, time, or other available metadata as features.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27836972:e3#1",
+                "7240226:e3#1",
+                "58130512:e32#1"
+              ],
+              "id": "T.3.1.6"
+            }
+          ],
+          "source": "data",
+          "id": "T.3.1"
+        },
+        {
+          "name": "Represent text for the model",
+          "decision": "Which text representation should I test next?",
+          "description": "Select the representation whose information is absent or poorly captured in the current pipeline.",
+          "children": [
+            {
+              "name": "Change text normalization",
+              "description": "Compare minimal tokenizer-compatible processing with domain-specific cleaning, cropping, or spelling normalization.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17371717:e1#2",
+                "7018718:e7#1",
+                "7018718:e9#1",
+                "7018718:e9#2",
+                "7670859:e6#1",
+                "55621328:e48#2",
+                "60197293:e17#1"
+              ],
+              "id": "T.3.2.1"
+            },
+            {
+              "name": "Change text input structure",
+              "description": "Test metadata prompts, paired inputs, separate text streams, or explicit formatting with matching training support.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17371717:e10#1",
+                "7613444:e2#1",
+                "60264017:e3#1",
+                "55621328:e40#2",
+                "55621328:e46#1"
+              ],
+              "id": "T.3.2.2"
+            },
+            {
+              "name": "Tune sparse n-gram features",
+              "description": "Compare word and character n-grams, frequency cutoffs, and vocabulary ranges.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "59253662:e2#1",
+                "58130512:e4#2",
+                "55987255:e22#1"
+              ],
+              "id": "T.3.2.3"
+            },
+            {
+              "name": "Add linguistic or structural statistics",
+              "description": "Extract text counts, readability, syntax, sentiment, or section and sentence summaries as candidate features.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "7573212:e3#1",
+                "55431616:e4#2",
+                "59253662:e3#1",
+                "59253662:e4#1",
+                "59253662:e5#1",
+                "58130512:e2#1",
+                "58130512:e4#1",
+                "58130512:e34#1",
+                "55987255:e5#1",
+                "55987255:e14#1",
+                "55987255:e30#1"
+              ],
+              "id": "T.3.2.4"
+            },
+            {
+              "name": "Add pretrained dense representations",
+              "description": "Extract pooled pretrained embeddings or low-dimensional semantic representations and validate their added signal.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "59253662:e1#2",
+                "58130512:e5#1",
+                "58130512:e21#1",
+                "58130512:e36#2",
+                "58130512:e37#1",
+                "58130512:e38#2",
+                "58527792:e3#1",
+                "55987255:e1#1",
+                "55987255:e2#1",
+                "55987255:e4#1",
+                "55987255:e6#1",
+                "55987255:e8#2",
+                "55987255:e9#1"
+              ],
+              "id": "T.3.2.5"
+            },
+            {
+              "name": "Add similarity or auxiliary-task features",
+              "description": "Use training-neighbor labels or predictions from related-data models as carefully aligned auxiliary features.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e36#1",
+                "7670859:e2#1",
+                "7670859:e4#1",
+                "52551258:e5#1",
+                "55987255:e8#1",
+                "55987255:e15#1",
+                "55987255:e24#1"
+              ],
+              "id": "T.3.2.6"
+            }
+          ],
+          "source": "data",
+          "id": "T.3.2"
+        },
+        {
+          "name": "Represent images and signals",
+          "decision": "Which spatial or signal representation should I test?",
+          "description": "Choose a representation change that addresses lost detail, unwanted variation, or missing channels.",
+          "children": [
+            {
+              "name": "Sweep input resolution",
+              "description": "Compare nearby input resolutions with compatible checkpoints while holding other model settings fixed.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "13848868:e1#2",
+                "13848868:e3#1",
+                "13848868:e8#1",
+                "13848868:e9#1",
+                "15082684:e8#2",
+                "15173072:e3#1",
+                "13521245:e2#2",
+                "13521245:e3#1",
+                "13521245:e4#1",
+                "13702907:e4#1",
+                "13702907:e8#1",
+                "13577502:e2#1",
+                "13577502:e3#1"
+              ],
+              "id": "T.3.3.1"
+            },
+            {
+              "name": "Change time-frequency resolution",
+              "description": "Compare spectral transforms, window sizes, hop lengths, or frequency bands using compatible training and inference.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "50376011:e12#1",
+                "49576186:e3#3",
+                "49576186:e20#3",
+                "49576186:e25#1",
+                "50496431:e5#1",
+                "50496431:e16#2",
+                "50496431:e17#1",
+                "50496431:e19#1"
+              ],
+              "id": "T.3.3.2"
+            },
+            {
+              "name": "Change the observed window",
+              "description": "Test spatial crops or temporal context windows against the label scope and training configuration.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e2#1",
+                "49524919:e23#1",
+                "50496431:e9#1",
+                "50496431:e21#1",
+                "50496431:e25#1",
+                "50496431:e27#2",
+                "50496431:e29#3",
+                "50496431:e39#3"
+              ],
+              "id": "T.3.3.3"
+            },
+            {
+              "name": "Change signal filtering or clipping",
+              "description": "Compare justified filtering, noise suppression, clipping, or sampling settings and validate their consistency with training.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "49576186:e1#2",
+                "49576186:e8#2",
+                "50496431:e11#1",
+                "50496431:e28#3",
+                "50496431:e45#2",
+                "50496431:e48#1",
+                "50496431:e53#3"
+              ],
+              "id": "T.3.3.4"
+            },
+            {
+              "name": "Change input normalization",
+              "description": "Compare channel or instance normalization and dynamic-range transforms using training-supported settings.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "49524919:e8#1",
+                "49576186:e4#2",
+                "52200959:e7#2",
+                "15082684:e4#2",
+                "15173072:e4#1",
+                "15173072:e5#3",
+                "50496431:e53#1"
+              ],
+              "id": "T.3.3.5"
+            },
+            {
+              "name": "Change channel layout or rendering",
+              "description": "Test added channels, pseudo-image shapes, or color representations while preserving sample and channel identity.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "49576186:e2#1",
+                "49576186:e4#1",
+                "49576186:e6#2",
+                "52551258:e10#1",
+                "50496431:e33#2",
+                "50496431:e34#1",
+                "50496431:e55#2"
+              ],
+              "id": "T.3.3.6"
+            }
+          ],
+          "source": "data",
+          "id": "T.3.3"
+        },
+        {
+          "name": "Control the feature set",
+          "decision": "Which feature-set reduction or refresh should I perform?",
+          "description": "Choose how to remove noise or repair stale selection without silently excluding new useful features.",
+          "children": [
+            {
+              "name": "Ablate a feature family",
+              "description": "Remove or restore one candidate feature group and measure its incremental contribution.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27389424:e9#1",
+                "27389424:e15#1",
+                "27836972:e5#1",
+                "27836972:e6#1",
+                "27799930:e4#1",
+                "27799930:e5#1",
+                "27799930:e7#1",
+                "27799930:e9#2",
+                "27799930:e11#2",
+                "28093671:e10#1",
+                "27656049:e4#2",
+                "77347591:e3#2",
+                "75145694:e7#1",
+                "7613444:e4#2",
+                "53424936:e1#1",
+                "50376011:e6#2",
+                "49576186:e17#2",
+                "49576186:e19#1",
+                "49576186:e22#1",
+                "49576186:e23#1",
+                "58130512:e2#2",
+                "58130512:e8#1",
+                "58130512:e10#1",
+                "58130512:e17#1",
+                "58130512:e35#1",
+                "60197293:e2#2",
+                "60197293:e4#2",
+                "55987255:e1#2",
+                "55987255:e5#2",
+                "55987255:e17#1",
+                "55987255:e19#2",
+                "55987255:e24#2"
+              ],
+              "id": "T.3.4.1"
+            },
+            {
+              "name": "Estimate feature relevance",
+              "description": "Aggregate importance estimates across folds or compare importance methods before choosing a subset.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27799930:e2#3",
+                "28093671:e6#2",
+                "27656049:e5#2",
+                "58130512:e11#1",
+                "60197293:e2#1",
+                "60197293:e3#2"
+              ],
+              "id": "T.3.4.2"
+            },
+            {
+              "name": "Tune the retained feature count",
+              "description": "Sweep feature-selection thresholds or count limits against held-out performance.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27389424:e3#1",
+                "27389424:e5#1",
+                "27389424:e6#1",
+                "27389424:e7#1",
+                "27799930:e9#1",
+                "27656049:e4#3",
+                "55431616:e4#1",
+                "59253662:e3#2",
+                "59253662:e9#2",
+                "58130512:e1#1",
+                "58130512:e5#2",
+                "58130512:e21#2",
+                "58130512:e26#1"
+              ],
+              "id": "T.3.4.3"
+            },
+            {
+              "name": "Recompute feature selection",
+              "description": "Regenerate and version the selected feature list whenever the candidate feature space changes.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "59253662:e5#2",
+                "59253662:e12#2",
+                "58130512:e10#2",
+                "58130512:e19#3",
+                "60197293:e6#2",
+                "60197293:e18#2"
+              ],
+              "id": "T.3.4.4"
+            },
+            {
+              "name": "Reduce dense representation dimensions",
+              "description": "Prune embedding sources or dimensions when expanded dense features introduce noise or exceed resources.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "58130512:e23#2",
+                "55987255:e9#2",
+                "55987255:e13#1",
+                "55987255:e16#1"
+              ],
+              "id": "T.3.4.5"
+            }
+          ],
+          "source": "data",
+          "id": "T.3.4"
+        }
+      ],
+      "source": "data",
+      "id": "T.3"
+    },
+    {
+      "name": "Change training examples or targets",
+      "decision": "Which data or target intervention should I test?",
+      "description": "Choose a change to supervision or sample exposure based on noise, imbalance, censoring, or distribution shift.",
+      "children": [
+        {
+          "name": "Choose training examples",
+          "decision": "Which change to the training population is justified?",
+          "description": "Compare data additions, removals, and reweighting according to their likely relevance to unseen examples.",
+          "children": [
+            {
+              "name": "Filter or deduplicate training data",
+              "description": "Test removing noisy, redundant, overlapping, or distribution-mismatched samples against an unchanged validation set.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "77450317:e9#1",
+                "77129691:e12#1",
+                "49576186:e14#1",
+                "49576186:e15#1",
+                "49576186:e16#2",
+                "49576186:e21#1",
+                "49576186:e21#2",
+                "60264017:e1#2",
+                "58130512:e15#1"
+              ],
+              "id": "T.4.1.1"
+            },
+            {
+              "name": "Add labeled auxiliary data",
+              "description": "Integrate relevant external labeled examples and compare joint versus staged use.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "49576186:e24#1",
+                "49576186:e24#2",
+                "49576186:e26#2",
+                "49576186:e27#1"
+              ],
+              "id": "T.4.1.2"
+            },
+            {
+              "name": "Use pseudo-labeled examples",
+              "description": "Evaluate models trained with unlabeled-data pseudo-labels against supervised counterparts.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "49524919:e31#1",
+                "52860091:e7#3",
+                "52860091:e8#3"
+              ],
+              "id": "T.4.1.3"
+            },
+            {
+              "name": "Reweight or resample subpopulations",
+              "description": "Change class or source exposure through appropriate sample weights or resampling.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27389424:e2#1",
+                "27502740:e2#1",
+                "27656049:e3#1",
+                "27656049:e8#1",
+                "58130512:e12#1",
+                "58130512:e13#1",
+                "60197293:e14#1",
+                "60197293:e14#2"
+              ],
+              "id": "T.4.1.4"
+            },
+            {
+              "name": "Interpolate training examples",
+              "description": "Test synthetic within-class neighbors or mixup-style feature interpolation and ablate it if harmful.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "59253662:e7#1",
+                "58130512:e28#1",
+                "58130512:e29#1"
+              ],
+              "id": "T.4.1.5"
+            }
+          ],
+          "source": "data",
+          "id": "T.4.1"
+        },
+        {
+          "name": "Choose a target formulation",
+          "decision": "Which supervision representation should I test?",
+          "description": "Select a target formulation that reflects censoring, ordering, or group-specific evaluation.",
+          "children": [
+            {
+              "name": "Transform censored outcomes",
+              "description": "Compare regression-friendly survival probabilities, hazards, or rank-based targets with consistent risk direction.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "73671444:e8#2",
+                "75145694:e1#2",
+                "77276039:e3#1"
+              ],
+              "id": "T.4.2.1"
+            },
+            {
+              "name": "Construct targets within evaluation groups",
+              "description": "Estimate target transforms separately within the groups used by the evaluation criterion.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "77450317:e4#1",
+                "77129691:e7#1"
+              ],
+              "id": "T.4.2.2"
+            },
+            {
+              "name": "Tune target centering or transformation strength",
+              "description": "Sweep target offsets, nonlinear strength parameters, or centering conventions while preserving inverse transforms.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "77129691:e4#2",
+                "77129691:e8#1",
+                "58130512:e33#1"
+              ],
+              "id": "T.4.2.3"
+            },
+            {
+              "name": "Use ordinal or classification supervision",
+              "description": "Compare regression with ordinal cumulative outputs or multiclass supervision for discrete ordered labels.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "55621328:e13#1",
+                "55621328:e31#1",
+                "55621328:e35#1"
+              ],
+              "id": "T.4.2.4"
+            }
+          ],
+          "source": "data",
+          "id": "T.4.2"
+        },
+        {
+          "name": "Choose training augmentation",
+          "decision": "Which augmentation should I test against the unaugmented baseline?",
+          "description": "Choose perturbations consistent with label invariances and observed overfitting.",
+          "children": [
+            {
+              "name": "Use mild image perturbations",
+              "description": "Compare controlled brightness, contrast, or geometric augmentation strengths and remove harmful additions.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "13542132:e1#2",
+                "13542132:e3#2"
+              ],
+              "id": "T.4.3.1"
+            },
+            {
+              "name": "Mask signal regions",
+              "description": "Test random time-frequency masking to reduce reliance on particular signal regions.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "49576186:e25#2"
+              ],
+              "id": "T.4.3.2"
+            },
+            {
+              "name": "Mix labeled examples",
+              "description": "Compare standard and multi-example mixup with label mixing appropriate to the task.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "49576186:e10#2"
+              ],
+              "id": "T.4.3.3"
+            }
+          ],
+          "source": "data",
+          "id": "T.4.3"
+        }
+      ],
+      "source": "data",
+      "id": "T.4"
+    },
+    {
+      "name": "Change the learned model",
+      "decision": "Which model-fitting change is the most plausible next intervention?",
+      "description": "Choose an architecture, objective, or optimization experiment based on observed fit limitations.",
+      "children": [
+        {
+          "name": "Choose a model family or initialization",
+          "decision": "Which replacement model should I test as a standalone candidate?",
+          "description": "Compare alternatives while preserving data, validation, and inference correctness.",
+          "children": [
+            {
+              "name": "Change pretrained backbone or capacity",
+              "description": "Compare backbone families or sizes with their matching tokenizer, head dimensions, and trained checkpoints.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18423958:e2#1",
+                "7018718:e7#2",
+                "53424936:e12#2",
+                "49524919:e2#1",
+                "49524919:e7#1",
+                "49524919:e11#1",
+                "49524919:e17#1",
+                "49524919:e18#1",
+                "49576186:e5#1",
+                "52860091:e4#1",
+                "55621328:e6#1",
+                "55621328:e12#1",
+                "55621328:e16#3",
+                "55621328:e17#1",
+                "55621328:e20#1",
+                "55621328:e45#2",
+                "15082684:e8#1",
+                "50496431:e13#1",
+                "50496431:e34#3",
+                "50496431:e47#1"
+              ],
+              "id": "T.5.1.1"
+            },
+            {
+              "name": "Use domain-adapted pretraining",
+              "description": "Test pretrained weights adapted to the task domain against a general-pretraining baseline.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "13848868:e10#1",
+                "55621328:e18#1"
+              ],
+              "id": "T.5.1.2"
+            },
+            {
+              "name": "Change tree learner or boosting variant",
+              "description": "Compare tree libraries, standard versus dropout boosting, or equivalent model implementations on the same features.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27389424:e14#1",
+                "28984551:e2#1",
+                "28984551:e3#1",
+                "27799930:e8#3",
+                "27656049:e1#3",
+                "27656049:e7#1",
+                "73671444:e2#1",
+                "73671444:e3#1",
+                "55431616:e6#1",
+                "58130512:e16#2",
+                "58130512:e38#1"
+              ],
+              "id": "T.5.1.3"
+            },
+            {
+              "name": "Fit a model for a different representation",
+              "description": "Build a standalone model suited to raw signals, spectral inputs, fixed embeddings, or another complementary representation.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "49524919:e10#1",
+                "52551258:e2#1",
+                "52200959:e6#1"
+              ],
+              "id": "T.5.1.4"
+            }
+          ],
+          "source": "data",
+          "id": "T.5.1"
+        },
+        {
+          "name": "Change the prediction architecture",
+          "decision": "Which architectural component should I alter?",
+          "description": "Target the representational bottleneck while retaining compatibility between learned weights and inference code.",
+          "children": [
+            {
+              "name": "Change head capacity or attention",
+              "description": "Compare shared versus separate heads, hidden layers, and attention blocks on a fixed backbone.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "13848868:e2#1",
+                "13848868:e5#1",
+                "13848868:e6#1",
+                "13848868:e7#1",
+                "49576186:e22#2",
+                "15082684:e3#1"
+              ],
+              "id": "T.5.2.1"
+            },
+            {
+              "name": "Change pooling or representation normalization",
+              "description": "Compare sequence or hidden-layer pooling and normalization before the prediction layer.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18550705:e1#1",
+                "18757376:e2#1",
+                "18757376:e5#1",
+                "17371717:e1#1",
+                "17371717:e13#1",
+                "7240226:e3#2",
+                "49576186:e18#1"
+              ],
+              "id": "T.5.2.2"
+            },
+            {
+              "name": "Add auxiliary supervision",
+              "description": "Train a parallel classification or summary head and compare its effect on the main prediction.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17371717:e9#1",
+                "17371717:e14#2",
+                "6803050:e8#1"
+              ],
+              "id": "T.5.2.3"
+            },
+            {
+              "name": "Change feature-level modality fusion",
+              "description": "Compare separate input branches, concatenation, and averaging using a correspondingly trained prediction head.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "53424936:e2#2",
+                "53424936:e4#2",
+                "53424936:e12#1",
+                "49576186:e1#1",
+                "49576186:e17#1",
+                "49576186:e29#1",
+                "50496431:e30#2",
+                "50496431:e38#1",
+                "50496431:e39#2",
+                "50496431:e40#2"
+              ],
+              "id": "T.5.2.4"
+            },
+            {
+              "name": "Change training-time dropout",
+              "description": "Tune head dropout or multisample dropout to control variance during fitting.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18350823:e1#1",
+                "7613444:e3#1",
+                "7253130:e5#1",
+                "13702907:e6#1"
+              ],
+              "id": "T.5.2.5"
+            }
+          ],
+          "source": "data",
+          "id": "T.5.2"
+        },
+        {
+          "name": "Tune a tree learner",
+          "decision": "Which tree-fitting constraint should I adjust?",
+          "description": "Choose the parameter family indicated by underfitting, overfitting, or incomplete optimization.",
+          "children": [
+            {
+              "name": "Tune tree depth and leaves",
+              "description": "Sweep depth and leaf limits to balance representational capacity and generalization.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "29588171:e4#1",
+                "29588171:e6#1",
+                "27389424:e11#1",
+                "27836972:e7#1",
+                "27825577:e1#1",
+                "27656049:e1#2",
+                "27656049:e3#2",
+                "60759531:e2#2",
+                "58130512:e20#1",
+                "58527792:e2#1",
+                "60197293:e4#1",
+                "55987255:e27#1",
+                "55987255:e28#1",
+                "55591012:e14#1"
+              ],
+              "id": "T.5.3.1"
+            },
+            {
+              "name": "Tune penalties and subsampling",
+              "description": "Compare leaf penalties and row or column sampling while fixing other capacity settings.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27389424:e4#1",
+                "27389424:e4#2",
+                "27389424:e8#1",
+                "27389424:e11#2",
+                "60197293:e8#1",
+                "60197293:e16#1",
+                "55987255:e3#1",
+                "55591012:e3#1",
+                "55591012:e11#1"
+              ],
+              "id": "T.5.3.2"
+            },
+            {
+              "name": "Coordinate boosting rate and rounds",
+              "description": "Adjust learning rate together with sufficient boosting rounds and verify convergence.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27389424:e8#2",
+                "27389424:e9#2",
+                "28984551:e1#1",
+                "27799930:e2#1",
+                "27799930:e13#1",
+                "27825577:e3#1",
+                "77347591:e2#1",
+                "73937748:e2#3",
+                "73937748:e5#1",
+                "55987255:e11#1"
+              ],
+              "id": "T.5.3.3"
+            },
+            {
+              "name": "Change stopping patience or criterion",
+              "description": "Compare stopping patience, monitored validation sets, and fixed-round training using observed learning curves.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27389424:e16#1",
+                "27799930:e4#2",
+                "27825577:e4#1",
+                "60197293:e9#2",
+                "60197293:e16#2"
+              ],
+              "id": "T.5.3.4"
+            },
+            {
+              "name": "Reset uncertain tree parameters",
+              "description": "Compare an extensively hand-tuned configuration with a controlled library-default baseline.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27799930:e1#3",
+                "27799930:e2#2"
+              ],
+              "id": "T.5.3.5"
+            }
+          ],
+          "source": "data",
+          "id": "T.5.3"
+        },
+        {
+          "name": "Tune neural optimization or loss",
+          "decision": "Which training change should I test?",
+          "description": "Use convergence and objective mismatch to choose an optimization intervention.",
+          "children": [
+            {
+              "name": "Tune learning rate",
+              "description": "Bracket the fine-tuning learning rate while checking convergence and instability.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "7240226:e1#1",
+                "7240226:e2#1",
+                "7253130:e2#1",
+                "7253130:e3#1",
+                "7253130:e4#1",
+                "7253130:e4#2",
+                "13542132:e4#2"
+              ],
+              "id": "T.5.4.1"
+            },
+            {
+              "name": "Change optimizer or learning-rate schedule",
+              "description": "Compare optimizer or decay schedule choices under a matched training budget.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "77450317:e8#1",
+                "77129691:e11#1"
+              ],
+              "id": "T.5.4.2"
+            },
+            {
+              "name": "Change training duration or stages",
+              "description": "Compare epoch budgets, staged fine-tuning, or batch size using held-out learning behavior.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "73937748:e15#3",
+                "7613444:e2#2",
+                "7573212:e3#2"
+              ],
+              "id": "T.5.4.3"
+            },
+            {
+              "name": "Change the training objective",
+              "description": "Compare metric-aligned losses or custom objective shapes against the standard objective.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27389424:e13#1",
+                "75145694:e11#2",
+                "49576186:e11#1",
+                "59253662:e10#1",
+                "58130512:e24#1",
+                "58130512:e24#2",
+                "58130512:e32#2",
+                "13542132:e4#1"
+              ],
+              "id": "T.5.4.4"
+            },
+            {
+              "name": "Make component training cross-validated",
+              "description": "Train and persist a component on consistent folds with valid held-out predictions and data loaders.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "77450317:e3#1",
+                "75584724:e3#1",
+                "75924487:e5#1",
+                "73937748:e22#1",
+                "73937748:e22#2"
+              ],
+              "id": "T.5.4.5"
+            }
+          ],
+          "source": "data",
+          "id": "T.5.4"
+        }
+      ],
+      "source": "data",
+      "id": "T.5"
+    },
+    {
+      "name": "Change the prediction pool",
+      "decision": "How should I change which trained predictors contribute?",
+      "description": "Choose a candidate addition, replacement, reduction, or repetition before tuning the blend.",
+      "children": [
+        {
+          "name": "Choose the source of ensemble diversity",
+          "decision": "What kind of additional predictor should I test?",
+          "description": "Add one source whose errors may complement the current pool and verify its marginal contribution.",
+          "children": [
+            {
+              "name": "Add a different model family",
+              "description": "Add predictions from a distinct architecture or algorithm family and test them alongside the intact baseline.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e21#1",
+                "18550705:e3#1",
+                "18550705:e3#2",
+                "18523075:e1#1",
+                "18523075:e2#2",
+                "18523075:e4#1",
+                "18350823:e5#1",
+                "18350823:e14#1",
+                "17371717:e2#1",
+                "77129691:e5#1",
+                "75584724:e2#1",
+                "73671444:e4#1",
+                "73671444:e6#2",
+                "73671444:e7#1",
+                "75145694:e2#1",
+                "75145694:e9#2",
+                "75145694:e11#1",
+                "75145694:e17#1",
+                "75145694:e18#1",
+                "75145694:e20#1",
+                "73937748:e2#1",
+                "73937748:e4#1",
+                "73937748:e9#1",
+                "73937748:e15#1",
+                "7548275:e7#1",
+                "53747598:e3#1",
+                "53424936:e2#1",
+                "50376011:e29#1",
+                "49524919:e18#2",
+                "49524919:e19#1",
+                "49524919:e20#2",
+                "49524919:e24#1",
+                "52860091:e7#1",
+                "52551258:e6#1",
+                "52551258:e8#1",
+                "52551258:e10#2",
+                "52551258:e12#1",
+                "52551258:e12#2",
+                "59253662:e11#2",
+                "55591012:e4#1",
+                "15203842:e2#1",
+                "50496431:e20#2",
+                "50496431:e49#2",
+                "50496431:e53#2"
+              ],
+              "id": "T.6.1.1"
+            },
+            {
+              "name": "Add an alternative input representation",
+              "description": "Add a model trained with a different modality, preprocessing, feature set, or input window.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "75924487:e2#1",
+                "73937748:e9#2",
+                "73937748:e21#2",
+                "7573212:e6#1",
+                "49524919:e14#1",
+                "49524919:e21#1",
+                "49524919:e27#1",
+                "49524919:e30#1",
+                "49524919:e35#1",
+                "50496431:e3#1",
+                "50496431:e7#1",
+                "50496431:e7#2",
+                "50496431:e10#1",
+                "50496431:e11#2",
+                "50496431:e48#2",
+                "50496431:e50#2"
+              ],
+              "id": "T.6.1.2"
+            },
+            {
+              "name": "Add an alternative supervision recipe",
+              "description": "Add models trained with different target transformations or complementary training recipes.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e12#1",
+                "17616127:e13#1",
+                "75584724:e1#2",
+                "73671444:e5#2",
+                "73671444:e10#2",
+                "75924487:e3#1",
+                "75145694:e2#2",
+                "75145694:e10#1",
+                "77276039:e3#2",
+                "73937748:e6#1",
+                "73937748:e17#1",
+                "53747598:e7#1"
+              ],
+              "id": "T.6.1.3"
+            },
+            {
+              "name": "Average more fold or snapshot predictions",
+              "description": "Compare incremental fold or checkpoint averaging with the current single or smaller predictor pool.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27799930:e3#2",
+                "27799930:e8#1",
+                "27799930:e10#2",
+                "27799930:e12#2",
+                "27656049:e2#1",
+                "17616127:e4#1",
+                "17616127:e10#2",
+                "17616127:e21#2",
+                "17616127:e22#2",
+                "18837555:e1#1",
+                "18350823:e2#2",
+                "17371717:e6#1",
+                "17371717:e13#2",
+                "77347591:e4#1",
+                "73937748:e3#1",
+                "7018718:e13#2",
+                "7613444:e5#1",
+                "7670859:e5#1",
+                "7573212:e7#1",
+                "6803050:e4#2",
+                "7606235:e3#1",
+                "7253130:e5#2",
+                "50376011:e2#1",
+                "50376011:e9#1",
+                "50376011:e11#1",
+                "50376011:e13#1",
+                "50376011:e16#1",
+                "50376011:e20#1",
+                "50376011:e22#3",
+                "50376011:e23#1",
+                "50376011:e28#1",
+                "50376011:e33#1",
+                "50376011:e37#2",
+                "50376011:e39#1",
+                "50376011:e42#2",
+                "50376011:e43#1",
+                "49576186:e3#2",
+                "52860091:e3#1",
+                "60264017:e6#1",
+                "55621328:e7#1",
+                "55621328:e19#1",
+                "55621328:e27#1",
+                "55621328:e28#1",
+                "55621328:e32#1",
+                "58130512:e29#2",
+                "58130512:e30#1",
+                "60197293:e5#2",
+                "55987255:e7#1",
+                "55591012:e2#1",
+                "55591012:e11#2",
+                "55591012:e13#1",
+                "15082684:e5#1",
+                "15372370:e3#1",
+                "15164527:e3#1",
+                "15173072:e5#1",
+                "50496431:e1#1"
+              ],
+              "id": "T.6.1.4"
+            },
+            {
+              "name": "Average independently seeded models",
+              "description": "Train or load independent seed checkpoints and measure the marginal value of additional runs.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27799930:e8#2",
+                "27799930:e11#1",
+                "18350823:e13#1",
+                "18757376:e5#2",
+                "17371717:e4#1",
+                "17371717:e9#2",
+                "77129691:e2#2",
+                "77129691:e3#1",
+                "77129691:e6#1",
+                "77129691:e6#2",
+                "77129691:e10#1",
+                "77129691:e13#1",
+                "53747598:e1#2",
+                "55621328:e16#2"
+              ],
+              "id": "T.6.1.5"
+            },
+            {
+              "name": "Average checkpoint weights",
+              "description": "Test stochastic weight averaging of compatible checkpoints before inference.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18550705:e4#2"
+              ],
+              "id": "T.6.1.6"
+            }
+          ],
+          "source": "data",
+          "id": "T.6.1"
+        },
+        {
+          "name": "Choose ensemble membership",
+          "decision": "Which membership experiment should I run next?",
+          "description": "Use standalone and marginal evidence to decide whether to add, remove, replace, or restore predictors.",
+          "children": [
+            {
+              "name": "Measure a candidate in isolation",
+              "description": "Evaluate a candidate alone with its correct inference pipeline before interpreting its blend contribution.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e5#1",
+                "17616127:e17#1",
+                "17616127:e24#1",
+                "17616127:e24#2",
+                "17616127:e32#1",
+                "17616127:e40#2",
+                "18423958:e5#1",
+                "18423958:e6#1",
+                "18350823:e5#2",
+                "18350823:e6#2",
+                "18350823:e7#1",
+                "18350823:e7#2",
+                "17371717:e3#1",
+                "17371717:e7#1",
+                "75145694:e5#1",
+                "75145694:e5#2",
+                "6803050:e6#1",
+                "53424936:e11#1",
+                "50376011:e8#2",
+                "50376011:e17#1",
+                "50376011:e25#1",
+                "50376011:e39#2",
+                "50376011:e40#1",
+                "49524919:e19#2",
+                "49524919:e20#1",
+                "49524919:e21#3",
+                "49524919:e26#1",
+                "49524919:e27#2",
+                "49524919:e35#2",
+                "52860091:e5#1",
+                "52860091:e8#1",
+                "52860091:e8#2",
+                "52860091:e9#1",
+                "52551258:e6#2",
+                "52551258:e9#1",
+                "52551258:e11#1",
+                "53762022:e3#1",
+                "53762022:e3#2",
+                "53762022:e4#2",
+                "52200959:e2#1",
+                "52200959:e2#2",
+                "52200959:e4#1",
+                "55621328:e32#2",
+                "60197293:e5#1",
+                "55987255:e11#2",
+                "55987255:e12#2",
+                "55987255:e23#1",
+                "15164527:e9#2",
+                "15164527:e10#2",
+                "13702907:e2#1",
+                "50496431:e12#1",
+                "50496431:e28#2",
+                "50496431:e30#1",
+                "50496431:e33#1",
+                "50496431:e55#1"
+              ],
+              "id": "T.6.2.1"
+            },
+            {
+              "name": "Test one additional member",
+              "description": "Add a candidate to the unchanged baseline and retain it only if its marginal contribution is supported.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e22#1",
+                "17616127:e28#2",
+                "18550705:e2#2",
+                "18523075:e4#2",
+                "18523075:e6#2",
+                "18426209:e3#1",
+                "18837555:e2#1",
+                "18837555:e3#1",
+                "18837555:e4#1",
+                "18851026:e3#2",
+                "18851026:e5#2",
+                "18851026:e9#1",
+                "18350823:e9#1",
+                "18350823:e15#2",
+                "75924487:e7#1",
+                "75145694:e3#1",
+                "75145694:e7#2",
+                "75145694:e10#2",
+                "75145694:e19#1",
+                "77276039:e4#1",
+                "77276039:e4#2",
+                "73937748:e10#2",
+                "73937748:e24#1",
+                "53424936:e8#1",
+                "50376011:e41#2",
+                "55431616:e2#1",
+                "50496431:e4#1",
+                "50496431:e44#1",
+                "50496431:e44#2"
+              ],
+              "id": "T.6.2.2"
+            },
+            {
+              "name": "Remove a harmful or redundant member",
+              "description": "Perform controlled leave-one-out or subset ablations and retain the smaller pool when it improves held-out performance.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e28#1",
+                "18550705:e2#1",
+                "18550705:e5#1",
+                "18523075:e6#1",
+                "18426209:e5#1",
+                "18851026:e7#1",
+                "18851026:e9#2",
+                "18423958:e9#1",
+                "18757376:e4#1",
+                "77276039:e6#2",
+                "7018718:e4#2",
+                "7548275:e5#1",
+                "7573212:e4#1",
+                "53747598:e3#2",
+                "53424936:e7#1",
+                "53424936:e8#2",
+                "53424936:e13#1",
+                "50376011:e3#1",
+                "50376011:e3#2",
+                "50376011:e4#1",
+                "50376011:e7#1",
+                "50376011:e8#1",
+                "50376011:e13#2",
+                "50376011:e29#2",
+                "50376011:e30#1",
+                "50376011:e30#2",
+                "50376011:e32#2",
+                "50376011:e33#2",
+                "50376011:e34#1",
+                "49524919:e28#1",
+                "49524919:e28#2",
+                "49524919:e29#2",
+                "49524919:e32#3",
+                "49524919:e33#1",
+                "49524919:e34#1",
+                "52860091:e6#2",
+                "53762022:e1#2",
+                "60264017:e4#1",
+                "60264017:e5#1",
+                "55621328:e17#3",
+                "55431616:e3#1",
+                "55591012:e6#2",
+                "50496431:e8#1",
+                "50496431:e15#1",
+                "50496431:e22#1",
+                "50496431:e32#2",
+                "50496431:e43#1"
+              ],
+              "id": "T.6.2.3"
+            },
+            {
+              "name": "Replace one fixed ensemble slot",
+              "description": "Swap one component checkpoint or model while holding other members and blend settings fixed.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e4#2",
+                "17616127:e6#1",
+                "17616127:e14#2",
+                "17616127:e34#2",
+                "18523075:e2#1",
+                "18523075:e5#1",
+                "18426209:e6#1",
+                "18350823:e10#1",
+                "77450317:e10#2",
+                "77129691:e14#1",
+                "75145694:e14#2",
+                "73937748:e13#2",
+                "73937748:e25#1",
+                "52860091:e3#2",
+                "60264017:e1#1",
+                "60264017:e2#2",
+                "55591012:e9#1",
+                "55591012:e10#2",
+                "50496431:e39#1",
+                "50496431:e41#2",
+                "50496431:e42#1"
+              ],
+              "id": "T.6.2.4"
+            },
+            {
+              "name": "Restore complementary members",
+              "description": "Reassemble previously beneficial predictors after an isolation test or excessive pruning.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e25#2",
+                "17616127:e33#1",
+                "17616127:e39#1",
+                "18423958:e3#1",
+                "18423958:e7#1",
+                "18350823:e8#2",
+                "77129691:e14#2",
+                "75145694:e6#1",
+                "73937748:e18#2",
+                "50376011:e5#1",
+                "50376011:e15#2",
+                "49524919:e33#2",
+                "55621328:e27#2",
+                "15164527:e7#2",
+                "50496431:e13#2",
+                "50496431:e27#1",
+                "50496431:e50#1"
+              ],
+              "id": "T.6.2.5"
+            },
+            {
+              "name": "Retest membership after upstream changes",
+              "description": "Re-evaluate prior inclusions and exclusions when other components or aggregation rules change.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17371717:e5#2",
+                "75145694:e15#2",
+                "50376011:e9#2",
+                "49524919:e34#2",
+                "50496431:e24#2"
+              ],
+              "id": "T.6.2.6"
+            }
+          ],
+          "source": "data",
+          "id": "T.6.2"
+        },
+        {
+          "name": "Select a trained artifact",
+          "decision": "Which checkpoint comparison should I perform?",
+          "description": "Choose checkpoint candidates according to available training runs, stages, and validation evidence.",
+          "children": [
+            {
+              "name": "Compare trained runs or folds",
+              "description": "Evaluate candidate checkpoint artifacts one at a time under a fixed compatible inference pipeline.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e3#1",
+                "18350823:e2#1",
+                "18350823:e6#1",
+                "17371717:e7#2",
+                "17371717:e11#1",
+                "7018718:e1#2",
+                "7018718:e3#1",
+                "7018718:e6#1",
+                "7018718:e8#2",
+                "7573212:e7#2",
+                "6803050:e10#1",
+                "7606235:e2#1",
+                "53424936:e10#1",
+                "50376011:e41#1",
+                "49524919:e1#1",
+                "49524919:e3#1",
+                "49524919:e6#2",
+                "49524919:e15#1",
+                "49524919:e16#1",
+                "49524919:e31#2",
+                "49576186:e13#1",
+                "49576186:e27#2",
+                "52860091:e2#1",
+                "52551258:e13#1",
+                "55621328:e16#1",
+                "55621328:e23#1",
+                "55621328:e33#1",
+                "55621328:e37#2",
+                "15082684:e7#1",
+                "15164527:e7#1",
+                "13521245:e2#1",
+                "50496431:e2#2"
+              ],
+              "id": "T.6.3.1"
+            },
+            {
+              "name": "Compare training stages or stopping rules",
+              "description": "Compare final, best-validation, clean-subset, or multi-stage snapshots rather than assuming the latest is best.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "6803050:e7#1",
+                "49576186:e16#1",
+                "49576186:e26#1",
+                "49576186:e28#1",
+                "52551258:e3#1",
+                "52551258:e4#1",
+                "55621328:e17#2",
+                "55621328:e35#3",
+                "55621328:e42#1"
+              ],
+              "id": "T.6.3.2"
+            },
+            {
+              "name": "Compare full-data and fold-trained weights",
+              "description": "Compare full-data, fold-only, and mixed checkpoint pools using independent evaluation.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "73671444:e1#1",
+                "55621328:e40#1"
+              ],
+              "id": "T.6.3.3"
+            }
+          ],
+          "source": "data",
+          "id": "T.6.3"
+        }
+      ],
+      "source": "data",
+      "id": "T.6"
+    },
+    {
+      "name": "Change prediction combination or output mapping",
+      "decision": "Which operation on valid predictions should I change?",
+      "description": "Choose a blend or post-processing intervention that matches the task metric and prediction semantics.",
+      "children": [
+        {
+          "name": "Choose a combination rule",
+          "decision": "Which rule should I compare against the current aggregation?",
+          "description": "Select an aggregation trial based on score scales, calibration, and available out-of-fold training data.",
+          "children": [
+            {
+              "name": "Compare rank and raw-score averaging",
+              "description": "Test per-model rank normalization against raw averaging under the current ranking metric and model configuration.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "13848868:e1#1",
+                "13848868:e2#2",
+                "13848868:e4#2",
+                "13848868:e5#2",
+                "13848868:e6#2",
+                "13848868:e7#2",
+                "13848868:e8#2",
+                "13848868:e9#2",
+                "13848868:e10#2",
+                "77450317:e2#1",
+                "75145694:e8#1",
+                "75145694:e9#1",
+                "77276039:e1#2",
+                "77276039:e2#2",
+                "73937748:e10#1",
+                "73937748:e14#2",
+                "7018718:e2#1",
+                "7018718:e4#1",
+                "7018718:e5#1",
+                "7018718:e10#2",
+                "15164527:e4#1",
+                "15164527:e10#1"
+              ],
+              "id": "T.7.1.1"
+            },
+            {
+              "name": "Compare probability and logit aggregation",
+              "description": "Compare averaging normalized probabilities with averaging logits followed by the required output activation.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "53747598:e4#1",
+                "50376011:e22#2",
+                "50496431:e6#1"
+              ],
+              "id": "T.7.1.2"
+            },
+            {
+              "name": "Group before averaging",
+              "description": "Average homogeneous folds or model families first, then combine groups to control their effective contribution.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e7#1",
+                "17616127:e16#2",
+                "17616127:e23#2",
+                "17616127:e39#2",
+                "18837555:e5#1"
+              ],
+              "id": "T.7.1.3"
+            },
+            {
+              "name": "Fit a regularized prediction stacker",
+              "description": "Train a simple meta-learner on aligned out-of-fold predictions and compare it against direct averaging.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "28984551:e4#1",
+                "27502740:e4#1",
+                "27502740:e5#1",
+                "17616127:e6#2",
+                "17616127:e7#2",
+                "17616127:e8#1",
+                "17616127:e9#1",
+                "17616127:e11#1",
+                "17616127:e18#1",
+                "17616127:e19#1",
+                "17616127:e26#1",
+                "17616127:e33#2",
+                "18757376:e1#1",
+                "73937748:e11#1",
+                "73937748:e16#1"
+              ],
+              "id": "T.7.1.4"
+            },
+            {
+              "name": "Change the meta-learner",
+              "description": "Compare linear, kernel, Bayesian, or tree meta-learners with controlled regularization and held-out evaluation.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e38#1",
+                "18851026:e1#1",
+                "18851026:e2#2",
+                "18757376:e3#2",
+                "73937748:e10#3",
+                "73937748:e11#2",
+                "73937748:e14#1",
+                "73937748:e18#1",
+                "73937748:e19#2",
+                "73937748:e20#2",
+                "73937748:e25#2",
+                "73937748:e26#1"
+              ],
+              "id": "T.7.1.5"
+            },
+            {
+              "name": "Try a nonlinear probability blend",
+              "description": "Compare a power transform or power mean with arithmetic averaging on unchanged component predictions.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "15164527:e2#1",
+                "15164527:e4#3",
+                "15203842:e3#1"
+              ],
+              "id": "T.7.1.6"
+            }
+          ],
+          "source": "data",
+          "id": "T.7.1"
+        },
+        {
+          "name": "Choose how to weight predictors",
+          "decision": "Which weighting strategy should I use as the next comparison?",
+          "description": "Choose weight constraints and search scope according to evidence about component quality and validation stability.",
+          "children": [
+            {
+              "name": "Tune nonuniform blend weights",
+              "description": "Optimize or sweep relative weights on fixed aligned predictions and compare with equal weighting.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "29588171:e1#1",
+                "29588171:e2#2",
+                "27502740:e5#2",
+                "27825577:e2#1",
+                "28093671:e11#1",
+                "17616127:e1#1",
+                "17616127:e9#2",
+                "17616127:e10#1",
+                "17616127:e16#1",
+                "17616127:e17#2",
+                "17616127:e20#1",
+                "17616127:e30#1",
+                "17616127:e32#2",
+                "17616127:e35#1",
+                "17616127:e37#1",
+                "17616127:e40#1",
+                "18523075:e7#1",
+                "18426209:e1#1",
+                "18426209:e3#2",
+                "18426209:e7#1",
+                "18851026:e4#2",
+                "18423958:e3#2",
+                "18423958:e4#1",
+                "18423958:e5#2",
+                "18423958:e6#2",
+                "18423958:e8#1",
+                "18423958:e9#2",
+                "18350823:e8#1",
+                "18350823:e10#2",
+                "18350823:e12#1",
+                "18350823:e13#3",
+                "18757376:e4#2",
+                "77450317:e1#1",
+                "77450317:e5#1",
+                "77450317:e10#1",
+                "73671444:e5#1",
+                "73671444:e7#2",
+                "73671444:e8#1",
+                "77347591:e5#1",
+                "77347591:e7#1",
+                "77347591:e7#2",
+                "75145694:e14#1",
+                "77386286:e2#1",
+                "7823861:e7#1",
+                "7573212:e2#1",
+                "6803050:e11#1",
+                "53747598:e5#1",
+                "53747598:e7#2",
+                "53747598:e8#1",
+                "53424936:e13#2",
+                "50376011:e7#2",
+                "50376011:e43#2",
+                "49524919:e22#1",
+                "49524919:e25#3",
+                "52860091:e6#1",
+                "52860091:e7#2",
+                "53762022:e1#1",
+                "53762022:e5#1",
+                "53762022:e5#2",
+                "53762022:e6#2",
+                "53762022:e7#1",
+                "53762022:e7#2",
+                "52200959:e4#2",
+                "52200959:e5#1",
+                "52200959:e8#1",
+                "52200959:e8#2",
+                "55621328:e18#2",
+                "55621328:e28#2",
+                "58130512:e30#2",
+                "58130512:e32#3",
+                "60197293:e19#1",
+                "55987255:e27#2",
+                "55987255:e29#1",
+                "55591012:e5#1",
+                "55591012:e10#1",
+                "55591012:e12#1",
+                "15372370:e3#2",
+                "15164527:e4#2",
+                "15164527:e11#1",
+                "15164527:e11#2",
+                "15203842:e1#1",
+                "50496431:e28#1",
+                "50496431:e35#1",
+                "50496431:e36#1",
+                "50496431:e46#2",
+                "50496431:e51#1",
+                "50496431:e52#1",
+                "50496431:e56#1",
+                "50496431:e56#2"
+              ],
+              "id": "T.7.2.1"
+            },
+            {
+              "name": "Use a uniform-weight baseline",
+              "description": "Restore or establish equal weights when quality differences or tuned-weight gains are not reliable.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e5#2",
+                "18523075:e3#1",
+                "18837555:e2#2",
+                "18837555:e4#2",
+                "7670859:e3#1",
+                "7573212:e5#2",
+                "15372370:e4#1",
+                "50496431:e31#1"
+              ],
+              "id": "T.7.2.2"
+            },
+            {
+              "name": "Allow signed blend coefficients",
+              "description": "Test negative coefficients when correlated errors may benefit from subtraction and the output semantics permit it.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "29588171:e1#2",
+                "75584724:e1#1",
+                "73937748:e16#2"
+              ],
+              "id": "T.7.2.3"
+            },
+            {
+              "name": "Compare conditional and global weights",
+              "description": "Test per-class or sample-dependent weighting against a fixed global blend.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18350823:e4#1",
+                "49524919:e15#2"
+              ],
+              "id": "T.7.2.4"
+            },
+            {
+              "name": "Retune after component changes",
+              "description": "Re-optimize weights after changing model quality, member count, normalization, or augmentation.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "77450317:e7#2",
+                "77347591:e3#1",
+                "75145694:e4#2",
+                "49524919:e23#2",
+                "60264017:e2#1",
+                "55591012:e7#1",
+                "15164527:e6#1"
+              ],
+              "id": "T.7.2.5"
+            },
+            {
+              "name": "Normalize component scales",
+              "description": "Compare raw, standardized, or robustly scaled component predictions before fitting blend weights.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "75584724:e5#1",
+                "75584724:e6#1",
+                "75584724:e7#2"
+              ],
+              "id": "T.7.2.6"
+            }
+          ],
+          "source": "data",
+          "id": "T.7.2"
+        },
+        {
+          "name": "Choose meta-model inputs",
+          "decision": "Which stacking feature change should I test?",
+          "description": "Choose an input modification while preserving the out-of-fold training and test schema.",
+          "children": [
+            {
+              "name": "Generate valid out-of-fold meta-features",
+              "description": "Build aligned held-out base predictions with shared fold indices before fitting a downstream learner.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "75924487:e5#2",
+                "73937748:e8#1",
+                "55431616:e7#1",
+                "59253662:e6#1",
+                "58130512:e12#2",
+                "58130512:e15#2",
+                "60197293:e6#1",
+                "55987255:e25#2",
+                "55987255:e26#1"
+              ],
+              "id": "T.7.3.1"
+            },
+            {
+              "name": "Add auxiliary stacking features",
+              "description": "Test extra base outputs, embeddings, or auxiliary head predictions and retrain the meta-learner on the expanded schema.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e11#2",
+                "17616127:e27#1",
+                "17616127:e29#1",
+                "18851026:e2#1",
+                "18851026:e4#1",
+                "18851026:e6#3",
+                "18757376:e3#1",
+                "77450317:e8#2",
+                "73937748:e12#1",
+                "73937748:e20#1"
+              ],
+              "id": "T.7.3.2"
+            },
+            {
+              "name": "Select a smaller meta-feature set",
+              "description": "Compare curated subsets of base predictions or auxiliary features against the full stack.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18757376:e6#1",
+                "75924487:e1#1",
+                "75924487:e4#1",
+                "73937748:e21#1",
+                "60197293:e13#1"
+              ],
+              "id": "T.7.3.3"
+            }
+          ],
+          "source": "data",
+          "id": "T.7.3"
+        },
+        {
+          "name": "Map continuous scores to discrete labels",
+          "decision": "Which discretization rule should I compare?",
+          "description": "Choose a mapping compatible with the target levels, metric, and calibration sample.",
+          "children": [
+            {
+              "name": "Optimize ordinal cutpoints",
+              "description": "Fit ordered cutpoints on held-out predictions, retuning them after model changes.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "7823861:e5#1",
+                "7823861:e6#2",
+                "55621328:e4#1",
+                "55621328:e4#2",
+                "55621328:e7#2",
+                "55621328:e9#1",
+                "55621328:e12#2",
+                "55621328:e15#1",
+                "55621328:e15#2",
+                "55621328:e20#2",
+                "55621328:e34#2",
+                "55621328:e44#2",
+                "55621328:e49#1",
+                "55431616:e8#2",
+                "59253662:e10#2",
+                "58130512:e6#1",
+                "58130512:e6#2",
+                "58130512:e11#2",
+                "58130512:e25#1"
+              ],
+              "id": "T.7.4.1"
+            },
+            {
+              "name": "Use simple clip-and-round",
+              "description": "Compare simple rounding and clipping against learned cutpoints to detect calibration overfitting.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "58130512:e3#2",
+                "58130512:e31#2",
+                "60197293:e18#1"
+              ],
+              "id": "T.7.4.2"
+            },
+            {
+              "name": "Match empirical target frequencies",
+              "description": "Compare quantile or distribution-based label mapping with per-example thresholding.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "7548275:e6#1",
+                "6803050:e3#2",
+                "6803050:e6#2",
+                "55621328:e21#1"
+              ],
+              "id": "T.7.4.3"
+            },
+            {
+              "name": "Merge or threshold near-equal scores",
+              "description": "Test per-target binning or thresholding for quasi-discrete labels with explicit tie handling.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "7018718:e11#1",
+                "7018718:e13#1",
+                "7573212:e5#1",
+                "6803050:e13#2",
+                "6803050:e14#1",
+                "6803050:e14#2"
+              ],
+              "id": "T.7.4.4"
+            },
+            {
+              "name": "Compare group-specific cutpoints",
+              "description": "Use observable or independently predicted subgroups to compare separate calibration with a global mapping.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "55621328:e24#1",
+                "55621328:e25#1"
+              ],
+              "id": "T.7.4.5"
+            },
+            {
+              "name": "Handle degenerate bins and ties",
+              "description": "Check constant output columns and tie behavior, restoring continuous outputs where binning destroys useful order.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "7018718:e11#2",
+                "7018718:e13#3",
+                "7548275:e3#2",
+                "6803050:e9#2"
+              ],
+              "id": "T.7.4.6"
+            }
+          ],
+          "source": "data",
+          "id": "T.7.4"
+        },
+        {
+          "name": "Correct output semantics or bias",
+          "decision": "Which output correction should I test or repair?",
+          "description": "Distinguish invalid output conventions from residual bias in otherwise valid predictions.",
+          "children": [
+            {
+              "name": "Restore prediction units and activation",
+              "description": "Apply the correct inverse target scaling, sigmoid, softmax, label offset, or probability normalization.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27389424:e1#2",
+                "28984551:e5#1",
+                "6803050:e1#1",
+                "6803050:e2#1",
+                "7253130:e1#1",
+                "50376011:e1#1",
+                "52551258:e3#2",
+                "55621328:e31#2",
+                "15173072:e2#2",
+                "15173072:e4#2"
+              ],
+              "id": "T.7.5.1"
+            },
+            {
+              "name": "Align risk-score direction",
+              "description": "Check whether larger scores mean greater risk and reverse inconsistent component signs before blending.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "77129691:e1#1",
+                "75145694:e7#3",
+                "75145694:e13#1",
+                "75145694:e13#3"
+              ],
+              "id": "T.7.5.2"
+            },
+            {
+              "name": "Rescale probabilities or logits",
+              "description": "Compare temperature or per-class scaling with unmodified probabilities and renormalize as required.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "77450317:e7#1",
+                "77129691:e9#1",
+                "49524919:e4#1",
+                "49524919:e5#2",
+                "49524919:e6#1"
+              ],
+              "id": "T.7.5.3"
+            },
+            {
+              "name": "Correct systematic prediction bias",
+              "description": "Test a held-out mean shift, reference-example correction, or small additive offset.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18523075:e7#2",
+                "17371717:e12#1",
+                "6803050:e7#2",
+                "55621328:e44#1",
+                "55987255:e18#1"
+              ],
+              "id": "T.7.5.4"
+            },
+            {
+              "name": "Apply auxiliary or metadata corrections",
+              "description": "Test confidence-gated classifier or high-precision metadata corrections on the relevant output subset.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e31#1",
+                "73671444:e9#1",
+                "77347591:e1#1",
+                "77347591:e6#1",
+                "77347591:e8#1",
+                "75145694:e13#2",
+                "75145694:e16#1",
+                "77276039:e2#1",
+                "6803050:e11#2",
+                "6803050:e12#1",
+                "6803050:e12#2",
+                "6803050:e13#1"
+              ],
+              "id": "T.7.5.5"
+            },
+            {
+              "name": "Ablate an existing output transform",
+              "description": "Toggle the current post-processing step without changing the model to verify it still helps.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "73671444:e9#2",
+                "7823861:e6#1",
+                "7018718:e12#1",
+                "7548275:e6#2",
+                "7548275:e8#1",
+                "6803050:e10#2",
+                "60197293:e15#2"
+              ],
+              "id": "T.7.5.6"
+            }
+          ],
+          "source": "data",
+          "id": "T.7.5"
+        },
+        {
+          "name": "Choose inference-time averaging",
+          "decision": "Which repeated-view inference strategy should I test?",
+          "description": "Select only transformations compatible with the task and evaluate their incremental contribution.",
+          "children": [
+            {
+              "name": "Average deterministic symmetry views",
+              "description": "Compare original predictions with fixed flips or domain-specific channel symmetries.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "49524919:e3#2",
+                "52551258:e7#1",
+                "52551258:e9#2",
+                "15372370:e1#1",
+                "15372370:e2#1",
+                "15372370:e4#2",
+                "15164527:e5#1",
+                "15164527:e5#2",
+                "50496431:e2#1",
+                "50496431:e8#2",
+                "50496431:e17#2",
+                "50496431:e18#1",
+                "50496431:e19#2",
+                "50496431:e23#1"
+              ],
+              "id": "T.7.6.1"
+            },
+            {
+              "name": "Average windows or resolutions",
+              "description": "Average predictions across valid temporal crops or spatial resolutions.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "53424936:e3#1",
+                "53424936:e9#1",
+                "15372370:e6#1"
+              ],
+              "id": "T.7.6.2"
+            },
+            {
+              "name": "Compare stochastic forward-pass averaging",
+              "description": "Test random transformations or active-dropout averaging against deterministic inference.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18350823:e3#1",
+                "18350823:e11#1",
+                "17371717:e8#1",
+                "50376011:e14#1",
+                "50376011:e18#2",
+                "15372370:e5#1"
+              ],
+              "id": "T.7.6.3"
+            },
+            {
+              "name": "Disable unintended stochastic inference",
+              "description": "Use evaluation mode and controlled randomness, checking whether repeated passes actually differ.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "18350823:e9#2",
+                "18350823:e12#2",
+                "18350823:e13#2",
+                "77129691:e2#1",
+                "75924487:e2#2",
+                "50376011:e4#2",
+                "50376011:e31#2",
+                "15173072:e2#1",
+                "13521245:e1#1"
+              ],
+              "id": "T.7.6.4"
+            }
+          ],
+          "source": "data",
+          "id": "T.7.6"
+        }
+      ],
+      "source": "data",
+      "id": "T.7"
+    },
+    {
+      "name": "Make useful experiments feasible",
+      "decision": "Which execution change removes the current bottleneck?",
+      "description": "Choose a resource or engineering intervention that enables valid evaluation or full-strength inference.",
+      "children": [
+        {
+          "name": "Control peak resource use",
+          "decision": "Which resource intervention fits the observed bottleneck?",
+          "description": "Use measured memory or throughput behavior to choose a concrete implementation change.",
+          "children": [
+            {
+              "name": "Stream complete entities or prediction batches",
+              "description": "Partition large data by safe boundaries and concatenate validated predictions without loading everything at once.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27389424:e1#3",
+                "27502740:e1#1",
+                "27799930:e3#1",
+                "27799930:e7#3",
+                "28093671:e5#1"
+              ],
+              "id": "T.8.1.1"
+            },
+            {
+              "name": "Release sequential model state",
+              "description": "Free models and intermediate arrays after their last use before loading the next component.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17616127:e17#3",
+                "17616127:e18#2",
+                "17616127:e19#2",
+                "17616127:e37#2",
+                "18350823:e15#1",
+                "75924487:e3#2",
+                "73937748:e12#2",
+                "7670859:e4#2",
+                "58130512:e18#1",
+                "58130512:e19#1",
+                "55987255:e2#2",
+                "55987255:e3#2",
+                "15164527:e1#1",
+                "15164527:e3#2"
+              ],
+              "id": "T.8.1.2"
+            },
+            {
+              "name": "Reduce stored feature precision",
+              "description": "Downcast intermediate feature matrices where their ranges and precision permit it.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27799930:e6#1",
+                "55987255:e14#2"
+              ],
+              "id": "T.8.1.3"
+            },
+            {
+              "name": "Tune inference batch size",
+              "description": "Reduce batches to resolve memory failures or increase them for throughput while checking output invariance.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "7823861:e1#1",
+                "7670859:e3#2",
+                "50376011:e38#1",
+                "55621328:e26#2",
+                "15372370:e2#2",
+                "15173072:e3#2",
+                "50496431:e20#1",
+                "50496431:e31#2",
+                "50496431:e54#1"
+              ],
+              "id": "T.8.1.4"
+            },
+            {
+              "name": "Compare inference precision",
+              "description": "Test half or mixed precision against full precision with unchanged model and inputs.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "17371717:e4#2",
+                "50376011:e36#1",
+                "55621328:e36#1"
+              ],
+              "id": "T.8.1.5"
+            },
+            {
+              "name": "Optimize expensive computation",
+              "description": "Replace bottleneck operations with verified vectorized, compiled, or suitable backend implementations.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27836972:e11#2",
+                "75924487:e6#1",
+                "73937748:e23#1",
+                "49576186:e23#2"
+              ],
+              "id": "T.8.1.6"
+            }
+          ],
+          "source": "data",
+          "id": "T.8.1"
+        },
+        {
+          "name": "Shorten experiment turnaround",
+          "decision": "What can I reduce or reuse without invalidating the experiment?",
+          "description": "Choose between cheaper trial execution and reusing unchanged computation.",
+          "children": [
+            {
+              "name": "Run a reduced end-to-end smoke test",
+              "description": "Use a small data slice, fold count, or training budget to verify correctness before a full run.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27389424:e1#1",
+                "27389424:e2#2",
+                "27389424:e3#2",
+                "27389424:e12#2",
+                "27389424:e17#2",
+                "27836972:e4#3",
+                "28984551:e5#2",
+                "27799930:e3#3",
+                "27799930:e13#2",
+                "28093671:e1#2",
+                "28093671:e2#1",
+                "27656049:e6#2",
+                "27656049:e7#2",
+                "18851026:e8#3",
+                "7548275:e1#1",
+                "7548275:e1#2",
+                "7606235:e1#2",
+                "49576186:e19#2",
+                "60264017:e3#2",
+                "55621328:e2#2",
+                "55621328:e21#2",
+                "55621328:e22#2",
+                "55621328:e29#1",
+                "59253662:e2#2",
+                "58130512:e22#2",
+                "58130512:e31#1",
+                "58130512:e37#2",
+                "58527792:e3#3",
+                "60197293:e11#3",
+                "60197293:e17#2",
+                "55987255:e14#3",
+                "55987255:e15#2",
+                "55987255:e16#2",
+                "55987255:e27#3",
+                "55987255:e30#2",
+                "15372370:e6#2",
+                "15164527:e9#1"
+              ],
+              "id": "T.8.2.1"
+            },
+            {
+              "name": "Cache expensive reusable artifacts",
+              "description": "Persist features, embeddings, predictions, or fitted preprocessing so downstream trials reuse unchanged work.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27799930:e12#1",
+                "18851026:e1#2",
+                "18851026:e8#1",
+                "75584724:e2#2",
+                "73937748:e26#2",
+                "7548275:e2#1",
+                "53747598:e4#2",
+                "55431616:e8#1",
+                "59253662:e11#1",
+                "58130512:e16#3",
+                "58527792:e3#2",
+                "60197293:e10#1",
+                "55987255:e18#2",
+                "55591012:e1#1",
+                "55591012:e9#2",
+                "50496431:e10#3"
+              ],
+              "id": "T.8.2.2"
+            },
+            {
+              "name": "Resume only unfinished training",
+              "description": "Save fold or stage artifacts and run only missing work across sessions.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "7613444:e4#1",
+                "7613444:e6#1",
+                "49576186:e14#2"
+              ],
+              "id": "T.8.2.3"
+            },
+            {
+              "name": "Restore full production execution",
+              "description": "Verify debug guards, fold limits, and training shortcuts are disabled when generating the final evaluated prediction.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "7548275:e3#3",
+                "50376011:e1#2"
+              ],
+              "id": "T.8.2.4"
+            }
+          ],
+          "source": "data",
+          "id": "T.8.2"
+        },
+        {
+          "name": "Make pipeline changes reproducible",
+          "decision": "Which code-organization change addresses the observed fragility?",
+          "description": "Choose an explicit reproducibility intervention and verify it preserves intended outputs.",
+          "children": [
+            {
+              "name": "Parameterize and separate model pipelines",
+              "description": "Use explicit configurations and reusable or model-specific inference components to prevent integration drift.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27799930:e6#3",
+                "17616127:e14#1",
+                "18757376:e2#2",
+                "77450317:e2#2",
+                "77450317:e6#2",
+                "77450317:e12#1",
+                "7670859:e2#2",
+                "53747598:e1#1",
+                "53424936:e1#2",
+                "52860091:e9#2",
+                "60264017:e6#2",
+                "55621328:e3#2",
+                "55621328:e8#1",
+                "55621328:e34#1",
+                "55621328:e47#2",
+                "55621328:e49#2",
+                "55431616:e1#1",
+                "55431616:e7#2",
+                "58130512:e19#2",
+                "60197293:e1#2",
+                "60197293:e3#1",
+                "60197293:e9#1",
+                "15082684:e6#2"
+              ],
+              "id": "T.8.3.1"
+            },
+            {
+              "name": "Verify a cleanup or inference-only refactor",
+              "description": "Remove obsolete code incrementally and compare predictions with a saved reference.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "28093671:e2#2",
+                "28093671:e4#3",
+                "18550705:e4#1",
+                "18851026:e10#1",
+                "77450317:e12#2",
+                "75924487:e6#2",
+                "73937748:e13#1",
+                "53424936:e4#1",
+                "53424936:e6#2",
+                "53424936:e9#2",
+                "50376011:e35#2",
+                "49524919:e13#1",
+                "49524919:e13#2",
+                "49524919:e26#2",
+                "49524919:e29#1",
+                "49576186:e18#2",
+                "52200959:e1#1",
+                "55621328:e8#2",
+                "55621328:e29#2",
+                "55621328:e30#1",
+                "55621328:e43#1",
+                "58130512:e1#2",
+                "15082684:e1#1",
+                "13542132:e1#1",
+                "50496431:e1#2"
+              ],
+              "id": "T.8.3.2"
+            },
+            {
+              "name": "Pin configurations and artifacts",
+              "description": "Record exact settings, checkpoint manifests, seeds, and selected weights to reproduce a result.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "27836972:e7#2",
+                "18426209:e6#2",
+                "75584724:e7#1",
+                "50376011:e15#1",
+                "50376011:e20#2",
+                "50376011:e22#1",
+                "50376011:e38#2",
+                "52200959:e3#2",
+                "58130512:e14#1",
+                "50496431:e4#2"
+              ],
+              "id": "T.8.3.3"
+            },
+            {
+              "name": "Make missing-component behavior explicit",
+              "description": "Detect missing prediction artifacts and validate any fallback or reduced ensemble rather than silently emitting placeholders.",
+              "source": "data",
+              "children": [],
+              "items": [
+                "7548275:e3#1",
+                "7548275:e4#2",
+                "7548275:e5#2"
+              ],
+              "id": "T.8.3.4"
+            }
+          ],
+          "source": "data",
+          "id": "T.8.3"
+        }
+      ],
+      "source": "data",
+      "id": "T.8"
+    }
+  ],
+  "unassigned": []
+}

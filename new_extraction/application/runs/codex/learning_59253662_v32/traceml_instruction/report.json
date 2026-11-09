@@ -1,0 +1,110 @@
+{
+  "observations": [
+    {
+      "observation": "Does the competition use quadratic weighted kappa?",
+      "result": "yes",
+      "evidence": "task.md Evaluation specifies QWK, with higher scores better."
+    },
+    {
+      "observation": "Are the target scores integers from 1 through 6?",
+      "result": "yes",
+      "evidence": "task.md Data describes the six-point holistic score and essay_id,score submission."
+    },
+    {
+      "observation": "Is v32 below the best scored version shown in history?",
+      "result": "yes",
+      "evidence": "history.md records v26 at 0.81897 and v32 at 0.80731."
+    },
+    {
+      "observation": "Did the first scored version after the SMOTE change improve over v29?",
+      "result": "no",
+      "evidence": "history.md: v29 0.81830; SMOTE added in v30; v31 scored 0.81098."
+    },
+    {
+      "observation": "Does v32 perform resampling before constructing CV folds?",
+      "result": "yes",
+      "evidence": "current_code.py builds balanced_df with topic downsampling and SMOTE before StratifiedKFold."
+    },
+    {
+      "observation": "Does v32 use K-fold validation?",
+      "result": "yes",
+      "evidence": "current_code.py uses 15-fold StratifiedKFold for LightGBM."
+    },
+    {
+      "observation": "Does v32 initialize its OOF buffer with integer labels?",
+      "result": "yes",
+      "evidence": "current_code.py assigns oof = balanced_df['score'].astype(int).values before writing continuous predictions."
+    },
+    {
+      "observation": "Does v32 apply balanced class weights to its regressor?",
+      "result": "yes",
+      "evidence": "current_code.py LGBMRegressor has class_weight='balanced'; the competition metric has no class reweighting."
+    },
+    {
+      "observation": "Does the QWK surrogate use fixed label moments?",
+      "result": "yes",
+      "evidence": "current_code.py defines a=2.998 and b=1.092 outside its objective."
+    },
+    {
+      "observation": "Does v32 already use pretrained transformer predictions?",
+      "result": "yes",
+      "evidence": "current_code.py averages DeBERTa checkpoint softmax outputs, loads oof.pkl, and merges fb3 predictions."
+    },
+    {
+      "observation": "Does v32 explicitly align cached training rows to train.csv before positional feature assignment?",
+      "result": "no",
+      "evidence": "current_code.py loads train_df_30jun.pkl and immediately assigns n-grams and DeBERTa arrays positionally."
+    },
+    {
+      "observation": "Are vectorized test rows labeled using their source CSV IDs?",
+      "result": "no",
+      "evidence": "current_code.py assigns df['essay_id'] = test_feats['essay_id'] after sorted feature aggregations."
+    },
+    {
+      "observation": "Does v32 merge transformer OOF features by essay ID?",
+      "result": "no",
+      "evidence": "oof.pkl is assigned column by column without IDs; the existing train.csv order convention cannot be verified without the artifact."
+    },
+    {
+      "observation": "Does v32 fit a complementary squared-error LightGBM family?",
+      "result": "no",
+      "evidence": "Its active fold loop uses only objective=qwk_obj."
+    },
+    {
+      "observation": "Does v32 save per-family OOF predictions?",
+      "result": "no",
+      "evidence": "No active OOF array persistence appears in current_code.py."
+    },
+    {
+      "observation": "Does v32 use ordinary rounding for final scores?",
+      "result": "yes",
+      "evidence": "Final predictions are clipped to 1..6 then rounded."
+    },
+    {
+      "observation": "Does v32 write the final scores by matching submission IDs?",
+      "result": "no",
+      "evidence": "current_code.py assigns submission['score']=predictions positionally."
+    },
+    {
+      "observation": "Does v32 rely on precomputed test feature data?",
+      "result": "yes",
+      "evidence": "It loads essay-scoring-features/df_test.pkl; cached coverage of rerun test IDs cannot be verified without data."
+    },
+    {
+      "observation": "Does v32 average softmax probabilities for test-time DeBERTa outputs?",
+      "result": "yes",
+      "evidence": "The checkpoint inference loop applies softmax(preds, axis=-1). The revised probability helper conditionally normalizes OOF logits to the same scale because artifact contents are unavailable."
+    },
+    {
+      "observation": "Does the revised script pass Python syntax validation?",
+      "result": "yes",
+      "evidence": "python -m py_compile output/revised_code.py succeeded; ast.parse also succeeded after the final literal cleanup. No model code was executed."
+    },
+    {
+      "observation": "Does the report conform to the requested JSON schema?",
+      "result": "yes",
+      "evidence": "Loaded output/report.json with json.loads and checked top-level fields, observation fields, and yes/no result values."
+    }
+  ],
+  "action_summary": "Remove pre-CV topic downsampling and SMOTE, plus balanced regression weights, to recover natural score marginals and validation without synthetic-neighbor leakage. Keep the existing checkpoints, feature pipeline and Kaggle paths; align rows by essay ID, preserve floating-point OOF, use fold-local QWK moments, and add compact transformer ordinal summaries. Train two seeds of five-fold QWK and squared-error LightGBM, cache models/OOF, and accept a small transformer/booster blend only when cross-fitted meta-validation improves; retain fixed rounding. Preserve the supplied anonymous OOF ordering assumption and cached feature dependency; no training or inference was run."
+}

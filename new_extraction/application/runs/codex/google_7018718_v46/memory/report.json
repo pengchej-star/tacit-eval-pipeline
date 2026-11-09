@@ -1,0 +1,130 @@
+{
+  "observations": [
+    {
+      "observation": "Does the taxonomy include restoring a proven configuration?",
+      "result": "yes",
+      "evidence": "memory/taxonomy.md, T.1.3.1, lists Restore the proven configuration."
+    },
+    {
+      "observation": "Is the competition scored by mean column-wise Spearman correlation?",
+      "result": "yes",
+      "evidence": "task.md Evaluation specifies mean column-wise Spearman; higher is better."
+    },
+    {
+      "observation": "Are target labels aggregated ratings with repeated discrete levels?",
+      "result": "yes",
+      "evidence": "task.md describes aggregated crowd ratings in [0,1]; its summary says labels take a few discrete values."
+    },
+    {
+      "observation": "Must submission predictions be in the interval [0,1]?",
+      "result": "yes",
+      "evidence": "task.md Evaluation requires probabilities in [0,1] for each qa_id."
+    },
+    {
+      "observation": "Did v46 score below v45?",
+      "result": "yes",
+      "evidence": "history.md gives v45=0.42580, v46=0.38762, a decrease of 0.03819."
+    },
+    {
+      "observation": "Did v46 remove discretization postprocessing?",
+      "result": "yes",
+      "evidence": "history.md v45 -> v46 explicitly records removal of discretization."
+    },
+    {
+      "observation": "Was removal of discretization the only change in v46?",
+      "result": "no",
+      "evidence": "history.md also records a different checkpoint source and replacement of local evaluator implementations."
+    },
+    {
+      "observation": "Did an earlier removal of postprocessing coincide with a large regression?",
+      "result": "yes",
+      "evidence": "history.md v39 -> v40 records disabling per-column quantized postprocessing and a score decrease from 0.42442 to 0.38139; the checkpoint also changed."
+    },
+    {
+      "observation": "Did successful discretized versions protect against constant output columns?",
+      "result": "yes",
+      "evidence": "history.md v38 used continuous fallback for constant adjusted columns and scored 0.42704; v45 restored an exact constant check and scored 0.42580."
+    },
+    {
+      "observation": "Did the recorded rank-blending trial clearly improve the score?",
+      "result": "no",
+      "evidence": "history.md v31/v32 baseline was 0.38356; v33 rank blending scored 0.38345."
+    },
+    {
+      "observation": "Does current_code.py already discretize the ensemble output?",
+      "result": "no",
+      "evidence": "The result of evaluator.run(test_df) is assigned directly to the submission target columns."
+    },
+    {
+      "observation": "Does current_code.py use mean fold blending?",
+      "result": "yes",
+      "evidence": "BiEncoderEvaluator is instantiated with blend_strategy='mean'."
+    },
+    {
+      "observation": "Does current_code.py enable NER preprocessing?",
+      "result": "yes",
+      "evidence": "NERDetector.from_model_dir is active and passed to the evaluator."
+    },
+    {
+      "observation": "Does current_code.py enable mathematical-text preprocessing?",
+      "result": "yes",
+      "evidence": "process_math = True is passed to the evaluator."
+    },
+    {
+      "observation": "Does current_code.py expose held-out predictions for threshold optimization?",
+      "result": "no",
+      "evidence": "It loads test.csv and sample_submission.csv and runs test inference; no validation predictions or scoring loop are present."
+    },
+    {
+      "observation": "Does the local workspace contain the competition data?",
+      "result": "no",
+      "evidence": "The current-directory listing contains the task, code, history, prompt, and memory directory; the user also explicitly states the data is unavailable."
+    },
+    {
+      "observation": "Does the relevant memory guidance recommend considering degenerate bins?",
+      "result": "yes",
+      "evidence": "memory/taxonomy.md T.7.4 lists Handle degenerate bins and ties; memory/attention/t-7-4-map-continuous-scores-to-discrete-labels.md includes that option."
+    },
+    {
+      "observation": "Does the memory guidance support restoring a successful configuration after regression?",
+      "result": "yes",
+      "evidence": "memory/attention/t-1-3-choose-a-response-to-an-unsuccessful-searc.md prioritizes checking a regression before restoring the proven configuration; here the regression is documented but confounded."
+    },
+    {
+      "observation": "Are stable test target frequencies demonstrated by the supplied files?",
+      "result": "no",
+      "evidence": "The discretization attention file suggests checking frequency stability; neither task.md nor history.md provides train/test frequency comparisons, so empirical frequency matching is not justified here."
+    },
+    {
+      "observation": "Are the previous KBinsDiscretizer settings fully documented?",
+      "result": "no",
+      "evidence": "history.md names KBinsDiscretizer and the constant fallback but does not specify n_bins or strategy; current_code.py has removed that block."
+    },
+    {
+      "observation": "Would a strictly increasing rescaling alone change Spearman rankings?",
+      "result": "no",
+      "evidence": "The metric in task.md depends on ranks; a monotone rescaling preserves order. The proposed discretization intentionally creates ties instead."
+    },
+    {
+      "observation": "Does the original submission writer explicitly reorder by sample-submission IDs?",
+      "result": "no",
+      "evidence": "current_code.py inserts test_df qa_id values directly; the revised writer explicitly reindexes by subm_df qa_id."
+    },
+    {
+      "observation": "Does the revised script pass Python syntax validation apart from notebook shell escapes?",
+      "result": "yes",
+      "evidence": "ast.parse and compile succeeded after replacing the four original !cp lines with pass; no script code was executed."
+    },
+    {
+      "observation": "Does the report pass the required JSON schema checks?",
+      "result": "yes",
+      "evidence": "json.loads succeeded; checked the exact top-level keys, observation fields, string values, and yes/no result values."
+    },
+    {
+      "observation": "Does the revised script retain the original notebook cell count?",
+      "result": "yes",
+      "evidence": "Static comparison of # %% counts in current_code.py and output/revised_code.py passed."
+    }
+  ],
+  "action_summary": "Restore tie-producing postprocessing after the existing v46 mean ensemble, using five equal-width bins independently per target, ordinal min-max normalization to [0,1], and continuous fallback for degenerate columns. This follows the strongest historical evidence: discretized versions reached about 0.425-0.427 while raw-output versions were about 0.381-0.388. The old exact bin settings are unavailable, so five uniform bins are an explicit unvalidated candidate rather than a claim to reproduce v45; the historical comparisons also changed checkpoints. Keep the existing Kaggle paths, checkpoint, NER/math preprocessing, and evaluator unchanged to isolate the output-mapping change. Save raw predictions as a diagnostic CSV and add shape, finite-value, ID, range checks with sample-submission row alignment. No training or inference was run; only static syntax and JSON checks were performed."
+}

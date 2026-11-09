@@ -1,0 +1,9 @@
+pandas
+pyarrow
+ipywidgets
+plotly
+openai
+huggingface_hub
+datasets
+notebook
+jupyterlab

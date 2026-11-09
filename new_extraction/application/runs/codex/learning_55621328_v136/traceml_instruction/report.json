@@ -1,0 +1,90 @@
+{
+  "observations": [
+    {
+      "observation": "Is the leaderboard metric quadratic weighted kappa?",
+      "result": "yes",
+      "evidence": "task.md Evaluation defines quadratic weighted kappa; metric direction is higher is better."
+    },
+    {
+      "observation": "Does the submission require integer scores from 1 through 6?",
+      "result": "yes",
+      "evidence": "task.md Data describes the 1\u20136 scale; Submission File specifies essay_id,score and submission.csv."
+    },
+    {
+      "observation": "Does the supplied history contain a score higher than v136?",
+      "result": "yes",
+      "evidence": "history.md reports v129 at 0.82845 versus current v136 at 0.80526."
+    },
+    {
+      "observation": "Did replacing experiment-specific cutpoints with half-integer cutpoints improve the reported score?",
+      "result": "no",
+      "evidence": "history.md v133 -> v134 reports 0.82503 -> 0.80343; that change also disabled scaling, so it does not isolate cutpoints."
+    },
+    {
+      "observation": "Did the latest switch to the small backbone improve the reported score?",
+      "result": "no",
+      "evidence": "history.md v135 -> v136 reports 0.80784 -> 0.80526."
+    },
+    {
+      "observation": "Is there an AGENTS.md in the current directory?",
+      "result": "no",
+      "evidence": "The current-directory ls -a listing contains current_code.py, history.md, prompt.txt and task.md, with no AGENTS.md."
+    },
+    {
+      "observation": "Is the active submission command a four-fold small-model ensemble?",
+      "result": "yes",
+      "evidence": "current_code.py active predict_separated.py invocation lists model_fold0.pth through model_fold3.pth under aes2-deberta-v3-small-fit-v5."
+    },
+    {
+      "observation": "Does the original code retain a complete PET inference implementation?",
+      "result": "yes",
+      "evidence": "The predict_pet2.py writefile cell imports training.pet.models, tokenizes a masked scoring prompt, loads checkpoints and writes scores."
+    },
+    {
+      "observation": "Does the original code retain the historical PET invocation?",
+      "result": "yes",
+      "evidence": "The commented predict_pet2.py cell specifies exp320-large-last, four stage2 checkpoints, the large backbone and cutpoints ending in 4.875353957753833, consistent with the v129 history."
+    },
+    {
+      "observation": "Are the five values called weights actually rounding thresholds?",
+      "result": "yes",
+      "evidence": "predict_pet2.py passes args.weights to OptimizedRounder.predict; checkpoint predictions are independently averaged with np.mean."
+    },
+    {
+      "observation": "Does PET inference already move input tensors to CUDA?",
+      "result": "yes",
+      "evidence": "predict_pet2.py inference calls model({k: v.to(\"cuda\") ...}); ModelClass(config) also moves to CUDA."
+    },
+    {
+      "observation": "Does PET inference rescale its outputs to the scoring range?",
+      "result": "yes",
+      "evidence": "predict_pet2.py multiplies model outputs by 5 and adds 1 before averaging checkpoints."
+    },
+    {
+      "observation": "Does PET originally align its submission predictions by essay_id?",
+      "result": "no",
+      "evidence": "predict_pet2.py assigns predictions positionally to the sample submission; predict_separated.py uses a sorted-ID merge instead."
+    },
+    {
+      "observation": "Does the active pipeline generate out-of-fold validation predictions?",
+      "result": "no",
+      "evidence": "The active predictor reads test.csv and runs existing checkpoints; it does not train folds or evaluate labeled validation rows. The planning block was considered once: retain four-fold averaging, avoid unsupported stacking or loss changes without OOF data."
+    },
+    {
+      "observation": "Does PET originally save continuous predictions per checkpoint?",
+      "result": "no",
+      "evidence": "The original PET cell stores predictions in memory and only writes the rounded submission."
+    },
+    {
+      "observation": "Does the revised code pass a Python syntax check after separating notebook writefile magics?",
+      "result": "yes",
+      "evidence": "ast.parse succeeded for all 36 notebook cells, including 9 generated Python scripts; no model code was executed."
+    },
+    {
+      "observation": "Does the report have the required JSON structure?",
+      "result": "yes",
+      "evidence": "Parsed report.json with the standard json module; checked both top-level fields, each observation field, string values, and yes/no result values."
+    }
+  ],
+  "action_summary": "Restore the historical v129 four-fold PET DeBERTa-v3-large inference route and its exact experiment-specific QWK cutpoints, which previously scored 0.82845 versus v136 at 0.80526. Preserve the v136 small-model route when the historical assets are not mounted. Keep PET preprocessing and output scaling, lower its batch size to four, load checkpoint tensors onto CPU before copying into the GPU model, save continuous fold predictions, align submission rows by essay_id, and validate submission scores. This is an evidence-backed model selection change, not a newly measured gain; no training or inference was run and no unsupported OOF calibration was fitted."
+}

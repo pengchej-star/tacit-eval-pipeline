@@ -1,0 +1,90 @@
+{
+  "observations": [
+    {
+      "observation": "Is quadratic weighted kappa the target metric?",
+      "result": "yes",
+      "evidence": "task.md Evaluation specifies quadratic weighted kappa; higher is better."
+    },
+    {
+      "observation": "Are the allowed essay scores integers from 1 through 6?",
+      "result": "yes",
+      "evidence": "task.md Data describes the 1\u20136 score scale; the submission example uses integer scores."
+    },
+    {
+      "observation": "Must the final submission be named submission.csv?",
+      "result": "yes",
+      "evidence": "task.md Code Requirements specifies submission.csv, with essay_id and score in the submission example."
+    },
+    {
+      "observation": "Does the supplied history contain a score above v136?",
+      "result": "yes",
+      "evidence": "history.md lists v136 at 0.80526 and v129 at 0.82845."
+    },
+    {
+      "observation": "Did v129 activate the PET predictor?",
+      "result": "yes",
+      "evidence": "history.md v128 -> v129 enabled predict_pet2 and changed the last cut point from 5.3453 to 4.87535; score increased to 0.82845."
+    },
+    {
+      "observation": "Did replacing calibrated thresholds with half-integer thresholds improve the recorded score?",
+      "result": "no",
+      "evidence": "history.md v133 -> v134 changed thresholds and disabled scaling; score fell from 0.82503 to 0.80343. This comparison does not isolate the two changes."
+    },
+    {
+      "observation": "Did the switch to small checkpoints improve the recorded score?",
+      "result": "no",
+      "evidence": "history.md v135 -> v136 reports 0.80784 -> 0.80526 after switching to predict_separated with DeBERTa-v3-small."
+    },
+    {
+      "observation": "Is the active prediction job a four-fold small-model ensemble?",
+      "result": "yes",
+      "evidence": "current_code.py active predict_separated invocation lists model_fold0.pth through model_fold3.pth under aes2-deberta-v3-small-fit-v5."
+    },
+    {
+      "observation": "Does the existing code retain a PET large invocation consistent with v129?",
+      "result": "yes",
+      "evidence": "current_code.py commented predict_pet2 invocation includes exp320-large-last, all four stage2 last checkpoints, vocab_size=128003, and cut points ending in 4.875353957753833."
+    },
+    {
+      "observation": "Does the PET predictor average continuous fold outputs before rounding?",
+      "result": "yes",
+      "evidence": "predict_pet2.py cell applies model output * 5 + 1, then np.mean(predictions, axis=0), then OptimizedRounder.predict."
+    },
+    {
+      "observation": "Are the five values called weights used as checkpoint mixing coefficients?",
+      "result": "no",
+      "evidence": "The PET predictor passes args.weights to OptimizedRounder.predict; fold predictions receive equal weights in np.mean."
+    },
+    {
+      "observation": "Does PET tokenization retain a prompt mask index?",
+      "result": "yes",
+      "evidence": "predict_pet2.py tokenize constructs the Student Writing Evaluate prompt and returns mask_token_indexes for the first mask token."
+    },
+    {
+      "observation": "Does the original PET predictor sort essays by tokenized length?",
+      "result": "no",
+      "evidence": "The PET dataset is mapped and immediately reduced to input_ids, attention_mask, mask_token_indexes without sorting; the separated predictor sorts by length."
+    },
+    {
+      "observation": "Does the original PET submission align predictions by essay_id?",
+      "result": "no",
+      "evidence": "predict_pet2.py assigns preds positionally to sample_submission.csv, assuming identical row order to test.csv."
+    },
+    {
+      "observation": "Does PET checkpoint loading explicitly map tensors to CPU?",
+      "result": "no",
+      "evidence": "The original PET loop calls torch.load(checkpoint) without map_location."
+    },
+    {
+      "observation": "Does the revised code pass Python syntax validation after removing notebook writefile directives?",
+      "result": "yes",
+      "evidence": "Parsed and compiled all 36 cells independently, including all 9 embedded scripts; no training or inference was executed."
+    },
+    {
+      "observation": "Does report.json satisfy the requested JSON structure?",
+      "result": "yes",
+      "evidence": "Loaded the report with json.loads, checked both top-level keys, checked each observation has observation/result/evidence string fields, and checked every result is yes or no."
+    }
+  ],
+  "action_summary": "Prefer the existing four-fold exp320 PET large experiment with the exact score thresholds associated with v129 (0.82845 versus current 0.80526), preserving its prompt, tokenizer additions, output scaling, equal fold averaging, and strict checkpoint loading. Sort PET batches by length, use batch size 4, load checkpoint tensors through CPU, and align rounded predictions by essay_id in sample-submission order. Retain the original v136 small-model job only when the referenced PET artifacts are absent; that fallback is not expected to improve the score. Run the selected job with checked subprocess execution and validate the final submission schema, IDs, and integer score range. Artifact availability and leaderboard improvement cannot be verified without competition data; no training or inference was run."
+}

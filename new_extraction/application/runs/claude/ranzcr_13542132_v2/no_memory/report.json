@@ -1,0 +1,14 @@
+{
+  "observations": [
+    {"observation": "The metric is macro-averaged AUC over 11 labels, higher is better.", "result": "yes", "evidence": "task.md Evaluation section: AUC per label then averaged; 'Metric direction: higher is better'."},
+    {"observation": "The current code trains a model inside the notebook.", "result": "no", "evidence": "current_code.py: train split, dataset build and create_model cells are commented out; model is loaded from '../input/ranzcr-xception-tpu-baseline/Xception_750_TPU.h5' (line 227)."},
+    {"observation": "The loaded model was trained with random left-right and up-down flip augmentation.", "result": "yes", "evidence": "build_augmenter in current_code.py lines 150-159 applies random_flip_left_right and random_flip_up_down; the referenced training notebook uses the same pipeline."},
+    {"observation": "The current code applies any test-time augmentation.", "result": "no", "evidence": "Line 304: ss[label_cols] = model.predict(test_df) on a single un-augmented dataset (augment = False)."},
+    {"observation": "Test-time augmentation was already tried in an earlier version.", "result": "no", "evidence": "history.md: v1 -> v2 only refactored the notebook (removed cells, parameters, paths); no TTA mentioned."},
+    {"observation": "The history contains more than one score to judge a trend.", "result": "no", "evidence": "history.md lists only v1 -> v2 (0.94363, +0.00226)."},
+    {"observation": "The notebook runs an expensive activation-visualization predict pass that does not affect the submission.", "result": "yes", "evidence": "Lines 293-298 build img_tensor and call all_activations_vis(img_tensor, 3), which builds a sub-model and predicts; result is only plotted."},
+    {"observation": "The test decoder preprocessing (scale /255, bilinear resize to 750) must be kept to match training.", "result": "yes", "evidence": "build_decoder lines 127-147 is the same function used in the training notebook; changing it would create a train/test mismatch."},
+    {"observation": "The submission format is StudyInstanceUID plus 11 probability columns written to submission.csv.", "result": "yes", "evidence": "task.md Submission File section and current_code.py lines 304-305 writing ss to 'submission.csv'."}
+  ],
+  "action_summary": "Kept the inference-only pipeline and the frozen Xception_750 model, but replaced the single predict call with 4-view flip test-time augmentation (identity, horizontal flip, vertical flip, both), averaging the sigmoid outputs. This matches the random flips used during training, so each view is in-distribution, and averaging reduces prediction variance which typically raises per-label AUC. Added a shape assertion and clipping before writing submission.csv. Commented out the activation-visualization predict pass to save runtime for the extra TTA passes. Decoder preprocessing, paths and file format are unchanged."
+}

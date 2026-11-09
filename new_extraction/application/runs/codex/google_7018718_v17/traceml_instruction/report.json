@@ -1,0 +1,55 @@
+{
+  "observations": [
+    {
+      "observation": "Is the competition evaluated by mean column-wise Spearman correlation?",
+      "result": "yes",
+      "evidence": "task.md, Evaluation: Spearman correlation is computed separately for each target column, then averaged; higher is better."
+    },
+    {
+      "observation": "Does the submission require 30 predictions per test row?",
+      "result": "yes",
+      "evidence": "task.md, Dataset Description: 30 continuous target labels in [0,1], with qa_id and target names supplied by sample_submission.csv."
+    },
+    {
+      "observation": "Did the most recent change reduce the recorded leaderboard score?",
+      "result": "yes",
+      "evidence": "history.md: v16 scored 0.38513; v17 scored 0.37427, a decrease of 0.01086."
+    },
+    {
+      "observation": "Was enabling fold-model deletion the only recorded change from v16 to v17?",
+      "result": "yes",
+      "evidence": "history.md, v16 -> v17: six previously commented rm -rf commands targeting model_0 through model_5 were uncommented."
+    },
+    {
+      "observation": "Did an earlier model-removal experiment also reduce the recorded score?",
+      "result": "yes",
+      "evidence": "history.md, v11 -> v12: deleting model_5 through model_9 reduced the score from 0.38408 to 0.37988."
+    },
+    {
+      "observation": "Did sigmoid blending outperform rank blending for the current BiEncoder experiment in the recorded history?",
+      "result": "yes",
+      "evidence": "history.md: v15 used rank blending and scored 0.38484; v16 switched to sigmoid blending and scored 0.38513."
+    },
+    {
+      "observation": "Does the current code delete six fold-model directories after copying the experiment artifacts?",
+      "result": "yes",
+      "evidence": "current_code.py, first two cells: experiment artifacts are copied from the Kaggle input, then model_0 through model_5 under 2019_12_15__12_28_32__384/fold_models are deleted."
+    },
+    {
+      "observation": "Is the evaluator configured to use the saved fold-model ensemble?",
+      "result": "yes",
+      "evidence": "current_code.py: BiEncoderEvaluator is constructed with models_dir_name='fold_models' and blend_strategy='sigmoid'. This already provides the fold ensemble recommended by the planning block."
+    },
+    {
+      "observation": "Does the supplied script generate out-of-fold validation predictions?",
+      "result": "no",
+      "evidence": "current_code.py loads test.csv and sample_submission.csv, constructs a pretrained evaluator, then calls evaluator.run(test_df); no training or OOF generation appears. With no competition data available, new validation-based tuning cannot be justified here."
+    },
+    {
+      "observation": "Does the existing pipeline write the required submission filename?",
+      "result": "yes",
+      "evidence": "current_code.py: output columns come from sample_submission.csv, qa_id comes from test_df, and to_csv('submission.csv', index=False) writes the result."
+    }
+  ],
+  "action_summary": "Removed all six destructive fold-model deletion commands, restoring the complete saved BiEncoder fold ensemble used by v16, whose recorded score was 0.38513 versus v17 at 0.37427. Kept sigmoid averaging because its recorded BiEncoder score exceeded rank averaging. Preserved the Kaggle paths, checkpoint, batch size, notebook cell structure, and submission pipeline. The planning block was applied once: prioritize recovery of the existing fold ensemble; defer new backbones, loss changes, OOF stacking, and training without data or validation evidence. No training or inference was run; recovery of the historical score is plausible but not measured in this environment."
+}

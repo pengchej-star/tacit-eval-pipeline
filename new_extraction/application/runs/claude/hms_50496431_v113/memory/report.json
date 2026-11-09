@@ -1,0 +1,13 @@
+{
+  "observations": [
+    {"observation": "Did the score regress sharply in the latest version (v112 -> v113)?", "result": "yes", "evidence": "history.md: v113 scored 0.45086 vs 0.27837 for v112 (-0.17249), the largest drop in the history."},
+    {"observation": "Is the best historical score from v111?", "result": "yes", "evidence": "history.md: v111 reached 0.25772 by adding run_weight_x3d to the run_weight_eeg_raw member."},
+    {"observation": "Did v113 run only the double_head member in the ensemble?", "result": "yes", "evidence": "current_code.py final cell: only run_weight_double_head() is uncommented; x3d and eeg_raw calls are commented out."},
+    {"observation": "Did v113 reimplement the double_head feature extractors (Modeleeg/Modelspec) without new weights?", "result": "yes", "evidence": "history.md v112->v113 change description; CFG weight paths unchanged, suggesting an architecture/weights mismatch that explains the 0.45 score."},
+    {"observation": "Did the v112 change to Net1d (neck layer, 16x2500x4 layout, dropping x3d) worsen the score vs v111?", "result": "yes", "evidence": "history.md: v111 0.25772 -> v112 0.27837 after adding the neck and changing the reshape; current Net1d still has neck and view(bs,16,2500,4)."},
+    {"observation": "Does the current Net1d load eeg_raw weights with strict=True?", "result": "yes", "evidence": "current_code.py run_weight_eeg_raw: model.load_state_dict(state_dict,strict=True)."},
+    {"observation": "Was the ensemble composition x3d + eeg_raw already tried and did it give the best score?", "result": "yes", "evidence": "history.md v109 (0.27038) and v111 (0.25772) both used eeg_raw plus x3d."},
+    {"observation": "Does the final blend renormalise rows to sum to one before writing the submission?", "result": "no", "evidence": "current_code.py: predictions=np.mean(predictions,axis=0) then written directly to sub[TARGETS]."}
+  ],
+  "action_summary": "Reverted the ensemble to the best-known v111 configuration: re-enabled run_weight_x3d and run_weight_eeg_raw, disabled the v113 double_head member whose reimplemented Modeleeg/Modelspec is mismatched with its checkpoints (score 0.45). Restored Net1d to the v111 layout (view(bs,16,1000,10) -> reshape (bs,160,1000), AdaptiveAvgPool2d, no neck layer) and load its weights with strict=False (printing missing/unexpected keys) so the run cannot fail on neck keys. Added clipping and row renormalisation of the averaged predictions so the submission is a valid probability distribution for the KL-divergence metric."
+}

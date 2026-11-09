@@ -1,0 +1,12 @@
+{
+  "observations": [
+    {"observation": "The metric is mean column-wise Spearman correlation, which depends only on ranks.", "result": "yes", "evidence": "task.md Evaluation section: 'mean column-wise Spearman's correlation coefficient'."},
+    {"observation": "The best historical scores (about 0.426-0.427) were reached by versions that applied per-column discretization post-processing.", "result": "yes", "evidence": "history.md: v38 scored 0.42704 with quantized blending; v45 scored 0.42580 with KBinsDiscretizer plus min-max rescaling."},
+    {"observation": "Removing the discretization post-processing caused a large score drop in the history.", "result": "yes", "evidence": "history.md: v39->v40 removed per-column quantized blending, score 0.38139 (-0.04303); v45->v46 removed KBins discretization, score 0.38762 (-0.03819)."},
+    {"observation": "The current code (v46) applies any post-processing to y_pred before writing the submission.", "result": "no", "evidence": "current_code.py lines 47-65: y_pred = evaluator.run(test_df) is written directly into out_df with no discretization."},
+    {"observation": "The current code guards against NaN or out-of-range predictions before writing the submission.", "result": "no", "evidence": "current_code.py line 64 assigns y_pred directly without clipping or nan handling."},
+    {"observation": "Earlier versions found that columns collapsing to a single bin after discretization needed to be reverted to the raw predictions.", "result": "yes", "evidence": "history.md v41->v42 and v44->v45 describe reverting constant columns to original predictions."},
+    {"observation": "Changing experiment checkpoints and blend strategy produced only small or negative changes in the history compared with post-processing.", "result": "yes", "evidence": "history.md v28-v36: checkpoint/blend changes moved the score by at most about +-0.006, versus +-0.04 for discretization."}
+  ],
+  "action_summary": "Restored the per-column KBinsDiscretizer (quantile, ordinal, 20 bins) post-processing that v38/v45 used to reach ~0.426, which v46 had dropped (score fell to 0.388). Each prediction column is quantile-binned, columns that collapse to a single bin are reverted to the raw continuous predictions, and the binned values are min-max rescaled to [0,1]. Added nan handling and clipping of the raw predictions to [0,1] before writing submission.csv. Model loading, checkpoints, NER and math preprocessing are unchanged."
+}
