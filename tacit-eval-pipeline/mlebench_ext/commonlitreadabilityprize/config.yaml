@@ -1,0 +1,18 @@
+# Own MLE-bench entry (not part of official MLE-bench). Source of truth: tacit-eval-pipeline/mlebench_ext/.
+# Symlinked into <mle-bench>/mlebench/competitions/ by mlebench_ext/link.sh, so the import paths below resolve.
+id: commonlitreadabilityprize
+name: CommonLit Readability Prize
+competition_type: code
+awards_medals: true
+# prizes: omitted (not used for grading)
+description: mlebench/competitions/commonlitreadabilityprize/description.md
+
+dataset:
+  answers: commonlitreadabilityprize/prepared/private/answers.csv
+  sample_submission: commonlitreadabilityprize/prepared/public/sample_submission.csv
+
+grader:
+  name: root-mean-squared-error
+  grade_fn: mlebench.competitions.commonlitreadabilityprize.grade:grade
+
+preparer: mlebench.competitions.commonlitreadabilityprize.prepare:prepare

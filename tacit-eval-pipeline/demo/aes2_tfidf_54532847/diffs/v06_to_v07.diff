@@ -1,0 +1,9 @@
+--- v06.py
++++ v07.py
+@@ -50,5 +50,5 @@
+     analyzer='word',
+     strip_accents='unicode',
+-    stop_words='english'
++#     stop_words='english'
+ )
+ 

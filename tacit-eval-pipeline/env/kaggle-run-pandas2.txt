@@ -1,0 +1,5 @@
+# venv on top of conda env kaggle-run (python -m venv --system-site-packages), for notebooks written for pandas 2 / sklearn < 1.6
+# path: /data/user_data/pengchej/software/venvs/kaggle-run-pandas2; jupyter kernel: kaggle-run-pandas2
+# everything else comes from env/kaggle-run.txt; only these override it:
+pandas==2.3.3
+scikit-learn==1.5.2

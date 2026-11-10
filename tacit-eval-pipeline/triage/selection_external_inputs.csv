@@ -1,0 +1,804 @@
+kernel_ref,folder,available,verified,resolved_as
+alexeykarnachev/kernel1864bcfc13,2020-01-20-20-10-11-640,False,False,2020-01-20-20-10-11-640: no Kaggle ref found (unverified)
+alexeykarnachev/kernel1864bcfc13,2020-02-01-19-10-50-329,False,False,2020-02-01-19-10-50-329: no Kaggle ref found (unverified)
+alexeykarnachev/kernel1864bcfc13,2020-02-06-15-23-54-121,False,False,2020-02-06-15-23-54-121: no Kaggle ref found (unverified)
+alexeykarnachev/kernel1864bcfc13,2020-02-07-11-43-57-950,False,False,2020-02-07-11-43-57-950: no Kaggle ref found (unverified)
+nizamuddin/qa-augur,2layerednn,False,False,2layerednn: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,8bins,False,False,8bins: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,abd-exp-01,False,False,abd-exp-01: no Kaggle ref found (unverified)
+goldenlock/image-model-single-model-with-lb0-235-pb0-283,absl-py,False,False,absl-py: no Kaggle ref found (unverified)
+batprem/aes2-tuning-ensemble,aes-15fold,False,False,aes-15fold: no Kaggle ref found (unverified)
+batprem/aes2-xgboost-lightboost-share-the-same-loss,aes-15fold,False,False,aes-15fold: no Kaggle ref found (unverified)
+ryenhails/aes2-lgbm-deberta-baseline,aes-15fold,False,False,aes-15fold: no Kaggle ref found (unverified)
+stefanoclss/unselected-0-836-private-score-submission,aes-15fold,False,False,aes-15fold: no Kaggle ref found (unverified)
+ryenhails/aes2-lgbm-deberta-baseline,aes-model,False,False,aes-model: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,aes2-deberta-v3-base-fit-v1,False,False,aes2-deberta-v3-base-fit-v1: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,aes2-deberta-v3-base-fit-v3-sep,False,False,aes2-deberta-v3-base-fit-v3-sep: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,aes2-deberta-v3-small-fit,False,False,aes2-deberta-v3-small-fit: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,aes2-deberta-v3-small-fit-all-v2,False,False,aes2-deberta-v3-small-fit-all-v2: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,aes2-deberta-v3-small-fit-v2,False,False,aes2-deberta-v3-small-fit-v2: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,aes2-deberta-v3-small-fit-v3,False,False,aes2-deberta-v3-small-fit-v3: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,aes2-deberta-v3-small-fit-v6,False,False,aes2-deberta-v3-small-fit-v6: no Kaggle ref found (unverified)
+ryenhails/aes2-lgbm-deberta-baseline,aes2-tf-debertav3-base-hidden-vector-and-model,False,False,aes2-tf-debertav3-base-hidden-vector-and-model: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,ag-exp-01,False,False,ag-exp-01: no Kaggle ref found (unverified)
+alexeykarnachev/kernel1864bcfc13,aggle-google-qa-labeling,False,False,aggle-google-qa-labeling: no Kaggle ref found (unverified)
+vineethakkinapalli/commonlit-two-models,albert-base-v2-with-pretrain,False,False,albert-base-v2-with-pretrain: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,albert-xlarge-v2,False,False,albert-xlarge-v2: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,albert053,False,False,albert053: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,albertallr2,False,False,albertallr2: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,albertxxlargef5,False,False,albertxxlargef5: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,albibs,False,False,albibs: no Kaggle ref found (unverified)
+lucasmorin/amex-lgbm-features-eng,amex-feature-engineering,False,False,amex-feature-engineering: no Kaggle ref found (unverified)
+delight669/amex-feature-engg-for-calssifiers,amex-pretrained-models,False,False,amex-pretrained-models: no Kaggle ref found (unverified)
+delight669/amex-feature-engg-for-calssifiers,amexd,False,False,amexd: no Kaggle ref found (unverified)
+ishaan45/amex-lgbm-feature-engineering,amexfeatureranking,False,False,amexfeatureranking: no Kaggle ref found (unverified)
+,baseanswer,False,False,baseanswer: no Kaggle ref found (unverified)
+,basequestion,False,False,basequestion: no Kaggle ref found (unverified)
+daigohirooka/huggingface-tfbert-for-full-prediction,bert-base-5cv,False,False,bert-base-5cv: no Kaggle ref found (unverified)
+daigohirooka/huggingface-tfbert-for-full-prediction,bert-base-double-5cv-early-stop,False,False,bert-base-double-5cv-early-stop: no Kaggle ref found (unverified)
+nxrprime/jigsaw-google-q-a-eda-ii,bert-base-tf2.0-minimalistic-iii,False,False,bert-base-tf2.0-minimalistic-iii: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold1-bertadam,False,False,bert-fold1-bertadam: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold1-g,False,False,bert-fold1-g: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold1-joint,False,False,bert-fold1-joint: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold1-multi,False,False,bert-fold1-multi: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold1-new,False,False,bert-fold1-new: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold1-title,False,False,bert-fold1-title: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold10,False,False,bert-fold10: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold10-g,False,False,bert-fold10-g: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold1_new,False,False,bert-fold1_new: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold2-bertadam,False,False,bert-fold2-bertadam: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold2-g,False,False,bert-fold2-g: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold2-joint,False,False,bert-fold2-joint: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold2-multi,False,False,bert-fold2-multi: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold2-new,False,False,bert-fold2-new: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold2-title,False,False,bert-fold2-title: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold3-bertadam,False,False,bert-fold3-bertadam: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold3-g,False,False,bert-fold3-g: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold3-joint,False,False,bert-fold3-joint: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold3-multi,False,False,bert-fold3-multi: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold3-new,False,False,bert-fold3-new: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold3-title,False,False,bert-fold3-title: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold3_new,False,False,bert-fold3_new: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold4-bertadam,False,False,bert-fold4-bertadam: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold4-g,False,False,bert-fold4-g: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold4-joint,False,False,bert-fold4-joint: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold4-multi,False,False,bert-fold4-multi: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold4-new,False,False,bert-fold4-new: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold4-title,False,False,bert-fold4-title: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold5-bertadam,False,False,bert-fold5-bertadam: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold5-g,False,False,bert-fold5-g: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold5-joint,False,False,bert-fold5-joint: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold5-multi,False,False,bert-fold5-multi: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold5-new,False,False,bert-fold5-new: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold5-title,False,False,bert-fold5-title: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold6,False,False,bert-fold6: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold6-g,False,False,bert-fold6-g: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold7,False,False,bert-fold7: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold7-g,False,False,bert-fold7-g: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold8,False,False,bert-fold8: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold8-g,False,False,bert-fold8-g: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold9,False,False,bert-fold9: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-fold9-g,False,False,bert-fold9-g: no Kaggle ref found (unverified)
+nxrprime/jigsaw-google-q-a-eda-ii,bert-model-pretrained,False,False,bert-model-pretrained: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-v1,False,False,bert-v1: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-v2,False,False,bert-v2: no Kaggle ref found (unverified)
+lhohoz/bert-base-pytorch-inference,bert-v3,False,False,bert-v3: no Kaggle ref found (unverified)
+daigohirooka/huggingface-tfbert-for-full-prediction,bertbasetriplet5cv,False,False,bertbasetriplet5cv: no Kaggle ref found (unverified)
+nizamuddin/qa-augur,bertf1e15,False,False,bertf1e15: no Kaggle ref found (unverified)
+nxrprime/jigsaw-google-q-a-eda-ii,bertf1e15,False,False,bertf1e15: no Kaggle ref found (unverified)
+nizamuddin/qa-augur,bertuned-f,False,False,bertuned-f: no Kaggle ref found (unverified)
+nxrprime/jigsaw-google-q-a-eda-ii,bertuned-f,False,False,bertuned-f: no Kaggle ref found (unverified)
+batprem/aes2-xgboost-lightboost-share-the-same-loss,best-model-1,False,False,best-model-1: no Kaggle ref found (unverified)
+stellaris98/commonlit-two-models,best-transformer-representations,False,False,best-transformer-representations: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,bideberta,False,False,bideberta: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,biensembler,False,False,biensembler: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,binsf0,False,False,binsf0: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,binsf1,False,False,binsf1: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,binsf2,False,False,binsf2: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,binsf3,False,False,binsf3: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,binsf4,False,False,binsf4: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,binsf5,False,False,binsf5: no Kaggle ref found (unverified)
+sunyuri/hms-vipeegnetv1,brain-imgs,False,False,brain-imgs: no Kaggle ref found (unverified)
+sunyuri/hms-vipeegnetv1,brain-stfts,False,False,brain-stfts: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,catboost-exp-01,False,False,catboost-exp-01: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,catboost-exp-02,False,False,catboost-exp-02: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,catboost-exp-03,False,False,catboost-exp-03: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,catboost-exp-04,False,False,catboost-exp-04: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,catboost-exp-05,False,False,catboost-exp-05: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,catboost-exp-06,False,False,catboost-exp-06: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,catboost-exp-08,False,False,catboost-exp-08: no Kaggle ref found (unverified)
+gunesevitan/cibmtr-inference,cibmtr-models,False,False,cibmtr-models: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,clralbert-xlarge-v2pretrained-modelsv1,False,False,clralbert-xlarge-v2pretrained-modelsv1: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,clrbart-largepretrained-modelsv1,False,False,clrbart-largepretrained-modelsv1: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,clrdeberta-largepretrained-modelsv1,False,False,clrdeberta-largepretrained-modelsv1: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,clrdeberta-largev1,False,False,clrdeberta-largev1: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,clrelectra-largepretrained-modelsv1,False,False,clrelectra-largepretrained-modelsv1: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,clrelectra-largev1,False,False,clrelectra-largev1: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,clrfunnel-largepretrained-modelsv1,False,False,clrfunnel-largepretrained-modelsv1: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,clrgpt2-mediumpretrained-modelsv1,False,False,clrgpt2-mediumpretrained-modelsv1: no Kaggle ref found (unverified)
+vineethakkinapalli/commonlit-two-models,clrp-albert-xxlarge-v2,False,False,clrp-albert-xxlarge-v2: no Kaggle ref found (unverified)
+vineethakkinapalli/commonlit-two-models,clrp-distilbert-base-uncased-tf,False,False,clrp-distilbert-base-uncased-tf: no Kaggle ref found (unverified)
+vineethakkinapalli/commonlit-two-models,clrp-roberta-finetune,False,False,clrp-roberta-finetune: no Kaggle ref found (unverified)
+stellaris98/commonlit-two-models,clrp-roberta-large,False,False,clrp-roberta-large: no Kaggle ref found (unverified)
+rajat95gupta/commonlit-ensemble-5x-inference,clrp-submission,False,False,clrp-submission: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,clrroberta-basepretrained-modelsv11,False,False,clrroberta-basepretrained-modelsv11: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,clrroberta-largepretrained-models,False,False,clrroberta-largepretrained-models: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,clrroberta-largepretrained-modelspart-ii,False,False,clrroberta-largepretrained-modelspart-ii: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,clrroberta-largepretrained-modelsv1,False,False,clrroberta-largepretrained-modelsv1: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,clrroberta-largepretrained-modelsv11,False,False,clrroberta-largepretrained-modelsv11: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,clrroberta-largepretrained-modelsv12,False,False,clrroberta-largepretrained-modelsv12: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,clrroberta-largepretrained-modelsv13,False,False,clrroberta-largepretrained-modelsv13: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,clrroberta-largepretrained-modelsv14,False,False,clrroberta-largepretrained-modelsv14: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,clrroberta-largepretrained-modelsv15,False,False,clrroberta-largepretrained-modelsv15: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,clrroberta-largepretrained-modelsv15,False,False,clrroberta-largepretrained-modelsv15: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,clrroberta-largepretrained-modelsv16,False,False,clrroberta-largepretrained-modelsv16: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,clrroberta-largepretrained-modelsv16,False,False,clrroberta-largepretrained-modelsv16: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,clrroberta-largepretrained-modelsv6,False,False,clrroberta-largepretrained-modelsv6: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,clrroberta-largepretrained-modelsv7,False,False,clrroberta-largepretrained-modelsv7: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,clrroberta-largepretrained-modelsv9,False,False,clrroberta-largepretrained-modelsv9: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,clrroberta-largev15,False,False,clrroberta-largev15: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,clrroberta-largev15,False,False,clrroberta-largev15: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,clrxlnet-large-casedv1,False,False,clrxlnet-large-casedv1: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,clrxlnet-largepretrained-models,False,False,clrxlnet-largepretrained-models: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,cnn-exp-01,False,False,cnn-exp-01: no Kaggle ref found (unverified)
+arkqaq/clrp-ensemble-3x-inference,comdbli,False,False,comdbli: no Kaggle ref found (unverified)
+gilfernandes/commonlit-pytorch-ensemble-large,commonlit-deberta-large,False,False,commonlit-deberta-large: no Kaggle ref found (unverified)
+gilfernandes/commonlit-pytorch-ensemble-large,commonlit-deberta-large-uniform,False,False,commonlit-deberta-large-uniform: no Kaggle ref found (unverified)
+gilfernandes/commonlit-pytorch-ensemble-large,commonlit-deberta-xlarge,False,False,commonlit-deberta-xlarge: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,commonlit-readability-models,False,False,commonlit-readability-models: no Kaggle ref found (unverified)
+gilfernandes/commonlit-pytorch-ensemble-large,commonlit-roberta-base-extended,False,False,commonlit-roberta-base-extended: no Kaggle ref found (unverified)
+gilfernandes/commonlit-pytorch-ensemble-large,commonlit-roberta-large-mnli,False,False,commonlit-roberta-large-mnli: no Kaggle ref found (unverified)
+gilfernandes/commonlit-pytorch-ensemble-large,commonlit-t5-large,False,False,commonlit-t5-large: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,commonlit-t5-large,False,False,commonlit-t5-large: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,commonlit-train-dataset,False,False,commonlit-train-dataset: no Kaggle ref found (unverified)
+gilfernandes/commonlit-pytorch-ensemble-large,commonlit-xlnet-large-cased,False,False,commonlit-xlnet-large-cased: no Kaggle ref found (unverified)
+gilfernandes/commonlit-pytorch-ensemble-large,commonlitbartlargelight,False,False,commonlitbartlargelight: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,commonlitr1,False,False,commonlitr1: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,commonlitr23,False,False,commonlitr23: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,commonlitr24,False,False,commonlitr24: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,commonlitr3,False,False,commonlitr3: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,commonlitr31,False,False,commonlitr31: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,commonlitr4,False,False,commonlitr4: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,commonlitr41,False,False,commonlitr41: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,commonlitr42,False,False,commonlitr42: no Kaggle ref found (unverified)
+sunyuri/hms-vipeegnetv1,cupy20240401,False,False,cupy20240401: no Kaggle ref found (unverified)
+thedevastator/the-fine-art-of-hyperparameter-tuning,dart-v2-features-ensemble-sub,False,False,dart-v2-features-ensemble-sub: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,dataset-for-stacking,False,False,dataset-for-stacking: no Kaggle ref found (unverified)
+arkqaq/clrp-ensemble-3x-inference,dbx777,False,False,dbx777: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,debertalargebalanced,False,False,debertalargebalanced: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,debertalargebalancedbetter,False,False,debertalargebalancedbetter: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,ds-exp-01,False,False,ds-exp-01: no Kaggle ref found (unverified)
+ameya98/efficientnet-submission,effnet-tpu-2,False,False,effnet-tpu-2: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,en-exp-01,False,False,en-exp-01: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,en-exp-02,False,False,en-exp-02: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,ensemble-bayes,False,False,ensemble-bayes: no Kaggle ref found (unverified)
+shan007007/how-good-is-that-essay,essay-scoring-features,False,False,essay-scoring-features: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,et-exp-01,False,False,et-exp-01: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301-1-base-f0,False,False,exp301-1-base-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301-1-large-itpt10-all,False,False,exp301-1-large-itpt10-all: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301-1-large-itpt10-f0,False,False,exp301-1-large-itpt10-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301-1-small-f0,False,False,exp301-1-small-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301-base-clf-f0,False,False,exp301-base-clf-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301-base-rk2-f0,False,False,exp301-base-rk2-f0: no Kaggle ref found (unverified)
+syhens/aes2-voting,exp301-base-rk2-f0,False,False,exp301-base-rk2-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301-large-f0-lr,False,False,exp301-large-f0-lr: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301-topic-large-all,False,False,exp301-topic-large-all: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301d-base-all,False,False,exp301d-base-all: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301d-base-awp-itpt10-f0,False,False,exp301d-base-awp-itpt10-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301d-base-awp2-itpit10-f0,False,False,exp301d-base-awp2-itpit10-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301d-base-itpt10-f0,False,False,exp301d-base-itpt10-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301d-small-itpt20-all,False,False,exp301d-small-itpt20-all: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301e-deberta-v3-base-10-topic-fold,False,False,exp301e-deberta-v3-base-10-topic-fold: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301f-large-itpt10-f0,False,False,exp301f-large-itpt10-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301h-large768-itpt10-f0,False,False,exp301h-large768-itpt10-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp301z-large-itpt10-all,False,False,exp301z-large-itpt10-all: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp302-large-f0-ts,False,False,exp302-large-f0-ts: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp302-pl-large-f0,False,False,exp302-pl-large-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp302-pl-v2-large-f0,False,False,exp302-pl-v2-large-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp302-pl-v3c-large-f0,False,False,exp302-pl-v3c-large-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp302b-large-f0-ts-ext,False,False,exp302b-large-f0-ts-ext: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp302d-base-all-ts,False,False,exp302d-base-all-ts: no Kaggle ref found (unverified)
+syhens/aes2-voting,exp302d-base-all-ts,False,False,exp302d-base-all-ts: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp302d-base-f0-ts,False,False,exp302d-base-f0-ts: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp302d-large-best-full,False,False,exp302d-large-best-full: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp303-pet-large-f0,False,False,exp303-pet-large-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp303b-pet-f0-true,False,False,exp303b-pet-f0-true: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp303d-pet-base-itpt10-015-f0,False,False,exp303d-pet-base-itpt10-015-f0: no Kaggle ref found (unverified)
+syhens/aes2-voting,exp303d-pet-base-itpt10-015-f0,False,False,exp303d-pet-base-itpt10-015-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp305-base-separated-f0,False,False,exp305-base-separated-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp305-large-20-all,False,False,exp305-large-20-all: no Kaggle ref found (unverified)
+syhens/aes2-voting,exp305-large-20-all,False,False,exp305-large-20-all: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp305-large-20-f0,False,False,exp305-large-20-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp305-small-separated-f0,False,False,exp305-small-separated-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp306-hybrid-aes2-deberta-v3-large-10,False,False,exp306-hybrid-aes2-deberta-v3-large-10: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp306-hybrid-large-best-all,False,False,exp306-hybrid-large-best-all: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp306-hybrid-large-best-last,False,False,exp306-hybrid-large-best-last: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp306-large-ordinal-f0,False,False,exp306-large-ordinal-f0: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp306b-topic-large-best-all,False,False,exp306b-topic-large-best-all: no Kaggle ref found (unverified)
+syhens/aes2-inference-single-model,exp311-large-sep-multiscale-f0,False,False,exp311-large-sep-multiscale-f0: no Kaggle ref found (unverified)
+alexeykarnachev/kernel1864bcfc13,experiments,False,False,experiments: no Kaggle ref found (unverified)
+sunyuri/hms-vipeegnetv1,extra-data,False,False,extra-data: no Kaggle ref found (unverified)
+goldenlock/image-model-single-model-with-lb0-235-pb0-283,fcwt-py,False,False,fcwt-py: no Kaggle ref found (unverified)
+bluexleoxgreen/google-quest-inference-kernel,feat-multi,False,False,feat-multi: no Kaggle ref found (unverified)
+bluexleoxgreen/google-quest-inference-kernel,feat-nn,False,False,feat-nn: no Kaggle ref found (unverified)
+,flquestion,False,False,flquestion: no Kaggle ref found (unverified)
+,flquestion1,False,False,flquestion1: no Kaggle ref found (unverified)
+ryenhails/aes2-lgbm-deberta-baseline,generated-new-sample,False,False,generated-new-sample: no Kaggle ref found (unverified)
+vinaydoshi/tfbert-ensemble-preprocess-v1,google-qa-bert-trained-tfbert-hiddenl-preprocess,False,False,google-qa-bert-trained-tfbert-hiddenl-preprocess: no Kaggle ref found (unverified)
+alexeykarnachev/kernel1864bcfc13,google-qa-experiments,False,False,google-qa-experiments: no Kaggle ref found (unverified)
+alexeykarnachev/kernel1864bcfc13,google-qa-libs,False,False,google-qa-libs: no Kaggle ref found (unverified)
+alexeykarnachev/kernel1864bcfc13,googleqaexperiments,False,False,googleqaexperiments: no Kaggle ref found (unverified)
+alexeykarnachev/kernel1864bcfc13,googleqalabeling,False,False,googleqalabeling: no Kaggle ref found (unverified)
+bluexleoxgreen/google-quest-inference-kernel,gq-debug,False,False,gq-debug: no Kaggle ref found (unverified)
+bluexleoxgreen/google-quest-inference-kernel,gq-inf-scripts,False,False,gq-inf-scripts: no Kaggle ref found (unverified)
+stefanoclss/unselected-0-836-private-score-submission,grouped-data,False,False,grouped-data: no Kaggle ref found (unverified)
+cooolz/notebookc1c6c389c3,hms-3d,False,False,hms-3d: no Kaggle ref found (unverified)
+cooolz/notebookc1c6c389c3,hms-baseline,False,False,hms-baseline: no Kaggle ref found (unverified)
+quan0095/hms-best-public-final,hms-bestlb-vitbase,False,False,hms-bestlb-vitbase: no Kaggle ref found (unverified)
+cooolz/notebookc1c6c389c3,hms-convnext,False,False,hms-convnext: no Kaggle ref found (unverified)
+cooolz/notebookc1c6c389c3,hms-double-head,False,False,hms-double-head: no Kaggle ref found (unverified)
+cooolz/notebookc1c6c389c3,hms-eeg-16chans,False,False,hms-eeg-16chans: no Kaggle ref found (unverified)
+cooolz/notebookc1c6c389c3,hms-eeg-raw2500,False,False,hms-eeg-raw2500: no Kaggle ref found (unverified)
+cooolz/notebookc1c6c389c3,hms-effv2-m,False,False,hms-effv2-m: no Kaggle ref found (unverified)
+cooolz/notebookc1c6c389c3,hms-mix,False,False,hms-mix: no Kaggle ref found (unverified)
+tezdhar/mk-sub-1,hms-mk-codes,False,False,hms-mk-codes: no Kaggle ref found (unverified)
+tezdhar/mk-sub-1,hms-mk-codesv2,False,False,hms-mk-codesv2: no Kaggle ref found (unverified)
+tezdhar/mk-sub-1,hms-mk-data,False,False,hms-mk-data: no Kaggle ref found (unverified)
+asaliquid1011/hms-team-inference-ktmud,hms-models2,False,False,hms-models2: no Kaggle ref found (unverified)
+asaliquid1011/hms-team-inference-ktmud,hms-models3,False,False,hms-models3: no Kaggle ref found (unverified)
+cooolz/notebookc1c6c389c3,hms-mvit,False,False,hms-mvit: no Kaggle ref found (unverified)
+cooolz/notebookc1c6c389c3,hms-nolead,False,False,hms-nolead: no Kaggle ref found (unverified)
+yezhiheng/zy-three-model-ensemble-gpu100,hms-resnet1d-gru-weights-v84,False,False,hms-resnet1d-gru-weights-v84: no Kaggle ref found (unverified)
+yezhiheng/zy-three-model-ensemble-gpu100,hms-resnet1d-gru-weights-v90,False,False,hms-resnet1d-gru-weights-v90: no Kaggle ref found (unverified)
+yezhiheng/zy-three-model-ensemble-gpu100,hms-resnet1d-gru-weights-v96-full,False,False,hms-resnet1d-gru-weights-v96-full: no Kaggle ref found (unverified)
+yezhiheng/zy-three-model-ensemble-gpu100,hms-resnet1d-gru-weights-v98,False,False,hms-resnet1d-gru-weights-v98: no Kaggle ref found (unverified)
+quan0095/hms-best-public-final,hms-stage2,False,False,hms-stage2: no Kaggle ref found (unverified)
+quan0095/hms-best-public-final,hms-stage2-2,False,False,hms-stage2-2: no Kaggle ref found (unverified)
+quan0095/hms-best-public-final,hms-stage2-vitlarge,False,False,hms-stage2-vitlarge: no Kaggle ref found (unverified)
+asaliquid1011/hms-team-inference-ktmud,hms-th-wheels,False,False,hms-th-wheels: no Kaggle ref found (unverified)
+cooolz/notebookc1c6c389c3,hms-x3d-m,False,False,hms-x3d-m: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,hugeensemblebinned,False,False,hugeensemblebinned: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,k,False,False,k: no Kaggle ref found (unverified)
+konumaru/submission-stacking-roberta-models,k,False,False,k: no Kaggle ref found (unverified)
+sinamhd9/keras-models-tensorflow-data-dataset-tpu-part2,keras-models-image-data-generator-part1,False,False,keras-models-image-data-generator-part1: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,kernelridge,False,False,kernelridge: no Kaggle ref found (unverified)
+,largeanswer1,False,False,largeanswer1: no Kaggle ref found (unverified)
+,largeanswer2,False,False,largeanswer2: no Kaggle ref found (unverified)
+,largequestion1,False,False,largequestion1: no Kaggle ref found (unverified)
+,largequestion2,False,False,largequestion2: no Kaggle ref found (unverified)
+,largequestion3,False,False,largequestion3: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,largerensemble,False,False,largerensemble: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,largeridges,False,False,largeridges: no Kaggle ref found (unverified)
+stellaris98/commonlit-two-models,largeroberta2,False,False,largeroberta2: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,largestensemble,False,False,largestensemble: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,lasso-exp-01,False,False,lasso-exp-01: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,lazyroberta-embedding,False,False,lazyroberta-embedding: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,lgbm-exp-01,False,False,lgbm-exp-01: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,lgbm-exp-03,False,False,lgbm-exp-03: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,lgbm-exp-04,False,False,lgbm-exp-04: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,lgbm-exp-05,False,False,lgbm-exp-05: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,lgbm-exp-06,False,False,lgbm-exp-06: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,lgbm-exp-08,False,False,lgbm-exp-08: no Kaggle ref found (unverified)
+tingyu516/aes2-private-score-0-83531,library-kaggle,False,False,library-kaggle: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,lir-exp-01,False,False,lir-exp-01: no Kaggle ref found (unverified)
+sunyuri/hms-vipeegnetv1,locallibrosa,False,False,locallibrosa: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,mcts-exp-02,False,False,mcts-exp-02: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,meanpoolingdataset,False,False,meanpoolingdataset: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,meanpoolingrobertabasedataset,False,False,meanpoolingrobertabasedataset: no Kaggle ref found (unverified)
+stefanoclss/unselected-0-836-private-score-submission,mistral-7b-instruct-v02-fp16,False,False,mistral-7b-instruct-v02-fp16: no Kaggle ref found (unverified)
+stefanoclss/unselected-0-836-private-score-submission,mistral-preds,False,False,mistral-preds: no Kaggle ref found (unverified)
+stefanoclss/unselected-0-836-private-score-submission,mistral-v0,False,False,mistral-v0: no Kaggle ref found (unverified)
+jiahaopengx/0-692-cibmtr-weights-ranking-ensemble,models_nmdp_trio_score_shuzi,False,False,models_nmdp_trio_score_shuzi: no Kaggle ref found (unverified)
+hongyishao/amex-model-tuning-version4-stackingstrategyc,modelspackages,False,False,modelspackages: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,nishipy-robertabase-embedding-dataset,False,False,nishipy-robertabase-embedding-dataset: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,nishipy-robertalarge-dataset,False,False,nishipy-robertalarge-dataset: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,nishipyroberta-dataset,False,False,nishipyroberta-dataset: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,nn-exp-01,False,False,nn-exp-01: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,nn-exp-02,False,False,nn-exp-02: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,nn-exp-04,False,False,nn-exp-04: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,nn-exp-05,False,False,nn-exp-05: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,nn-exp-06,False,False,nn-exp-06: no Kaggle ref found (unverified)
+ravaghi/cibmtr-autogluon-ensembler-inference,nn-models,False,False,nn-models: no Kaggle ref found (unverified)
+ravaghi/cibmtr-equity-in-post-hct-survival-hill-climb,nn-models,False,False,nn-models: no Kaggle ref found (unverified)
+ravaghi/cibmtr-equity-in-post-hct-survival-ridge,nn-models,False,False,nn-models: no Kaggle ref found (unverified)
+ravaghi/cibmtr-autogluon-ensembler-inference,no-leakage-models-riza-02,False,False,no-leakage-models-riza-02: no Kaggle ref found (unverified)
+ravaghi/cibmtr-equity-in-post-hct-survival-hill-climb,no-leakage-models-riza-02,False,False,no-leakage-models-riza-02: no Kaggle ref found (unverified)
+ravaghi/cibmtr-equity-in-post-hct-survival-ridge,no-leakage-models-riza-02,False,False,no-leakage-models-riza-02: no Kaggle ref found (unverified)
+arkqaq/clrp-ensemble-3x-inference,notebook6921fb919e,False,False,notebook6921fb919e: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,oofensemblebinnedextraleaky,False,False,oofensemblebinnedextraleaky: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,oofensemblev1,False,False,oofensemblev1: no Kaggle ref found (unverified)
+nizamuddin/qa-augur,output1,False,False,output1: no Kaggle ref found (unverified)
+bluexleoxgreen/google-quest-inference-kernel,pretrained-albert,False,False,pretrained-albert: no Kaggle ref found (unverified)
+stellaris98/commonlit-two-models,pretrained-best-transformer-representations,False,False,pretrained-best-transformer-representations: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,prlnn-exp-01,False,False,prlnn-exp-01: no Kaggle ref found (unverified)
+bluexleoxgreen/google-quest-inference-kernel,pytorch-base,False,False,pytorch-base: no Kaggle ref found (unverified)
+xhlulu/ranzcr-efficientnet-submission,ranzcr-efficientnet-b7-tpu-training,False,False,ranzcr-efficientnet-b7-tpu-training: no Kaggle ref found (unverified)
+maksymshkliarevskyi/ranzcr-xception-tpu-prediction,ranzcr-xception-tpu,False,False,ranzcr-xception-tpu: no Kaggle ref found (unverified)
+syxuming/inference-resnet200d-singlemodel,ranzcr2113,False,False,ranzcr2113: no Kaggle ref found (unverified)
+rsinda/38th-place-solution-0-972-single-model-5-fold,ranzer-models,False,False,ranzer-models: no Kaggle ref found (unverified)
+,rb8answer,False,False,rb8answer: no Kaggle ref found (unverified)
+,rb8question,False,False,rb8question: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,readability-roberta-large-train,False,False,readability-roberta-large-train: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,readability-stacking-train,False,False,readability-stacking-train: no Kaggle ref found (unverified)
+tezdhar/mk-sub-1,requirements-mk,False,False,requirements-mk: no Kaggle ref found (unverified)
+yezhiheng/zy-three-model-ensemble-gpu100,resnet-best,False,False,resnet-best: no Kaggle ref found (unverified)
+syxuming/inference-resnet200d-singlemodel,resnet200d-n-stage,False,False,resnet200d-n-stage: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,rf-exp-05,False,False,rf-exp-05: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,ri-exp-01,False,False,ri-exp-01: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,ri-exp-06,False,False,ri-exp-06: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,ridgesof2robertas,False,False,ridgesof2robertas: no Kaggle ref found (unverified)
+ravaghi/cibmtr-equity-in-post-hct-survival-ridge,riza-models-03,False,False,riza-models-03: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,roberta-base-20210711202147-sche,False,False,roberta-base-20210711202147-sche: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,roberta-base-20210730175534-stk,False,False,roberta-base-20210730175534-stk: no Kaggle ref found (unverified)
+vineethakkinapalli/commonlit-two-models,roberta-base-finetune,False,False,roberta-base-finetune: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,roberta-embedding-dataset,False,False,roberta-embedding-dataset: no Kaggle ref found (unverified)
+,roberta-l-fea-ans,False,False,roberta-l-fea-ans: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,roberta-large-20210712191259-mlm,False,False,roberta-large-20210712191259-mlm: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,roberta-large-20210720020531-sch,False,False,roberta-large-20210720020531-sch: no Kaggle ref found (unverified)
+stellaris98/commonlit-two-models,roberta5seed,False,False,roberta5seed: no Kaggle ref found (unverified)
+stellaris98/commonlit-two-models,robertaattention,False,False,robertaattention: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertabase051,False,False,robertabase051: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertabaseaugmentr1fold0,False,False,robertabaseaugmentr1fold0: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertabaseaugmentr1fold1,False,False,robertabaseaugmentr1fold1: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertabaseaugmentr1fold2,False,False,robertabaseaugmentr1fold2: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertabaseaugmentr1fold3,False,False,robertabaseaugmentr1fold3: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertabaseaugmentr1fold4,False,False,robertabaseaugmentr1fold4: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertabaseaugmentr1fold5,False,False,robertabaseaugmentr1fold5: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,robertabasemeanpooling,False,False,robertabasemeanpooling: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertabasenoisedf0,False,False,robertabasenoisedf0: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertabasenoisedf1,False,False,robertabasenoisedf1: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertabasenoisedf2,False,False,robertabasenoisedf2: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertabasenoisedf3,False,False,robertabasenoisedf3: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertabasenoisedf4,False,False,robertabasenoisedf4: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertabasenoisedf5,False,False,robertabasenoisedf5: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertabootstrap2,False,False,robertabootstrap2: no Kaggle ref found (unverified)
+,robertal,False,False,robertal: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertalarge051,False,False,robertalarge051: no Kaggle ref found (unverified)
+,robertalarge2,False,False,robertalarge2: no Kaggle ref found (unverified)
+,robertalarge3,False,False,robertalarge3: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,robertalargeembedding,False,False,robertalargeembedding: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,robertalargemeanpooling,False,False,robertalargemeanpooling: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertalargepseudof0,False,False,robertalargepseudof0: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertalargepseudof1,False,False,robertalargepseudof1: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertalargepseudof2,False,False,robertalargepseudof2: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertalargepseudof3,False,False,robertalargepseudof3: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertalargepseudof4,False,False,robertalargepseudof4: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertalargepseudof5,False,False,robertalargepseudof5: no Kaggle ref found (unverified)
+,robertalargeque2,False,False,robertalargeque2: no Kaggle ref found (unverified)
+,robertalargeque3,False,False,robertalargeque3: no Kaggle ref found (unverified)
+konumaru/submission-stacking-roberta-models,robertalargesquad2,False,False,robertalargesquad2: no Kaggle ref found (unverified)
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,robertameanpoolingdataset,False,False,robertameanpoolingdataset: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertaridges,False,False,robertaridges: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertrabootstrap,False,False,robertrabootstrap: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,robertrabootstrap2,False,False,robertrabootstrap2: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,rolargef2,False,False,rolargef2: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,sentencetransformers2,False,False,sentencetransformers2: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,senttrans,False,False,senttrans: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,spacy-readability,False,False,spacy-readability: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,spacy-readability,False,False,spacy-readability: no Kaggle ref found (unverified)
+bluexleoxgreen/google-quest-inference-kernel,split-dataset,False,False,split-dataset: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,suv-ran-exp-01,False,False,suv-ran-exp-01: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,svmlargerobertas,False,False,svmlargerobertas: no Kaggle ref found (unverified)
+mathislucka/commonlitreadability-r3,svmrobertaslarge,False,False,svmrobertaslarge: no Kaggle ref found (unverified)
+stefanoclss/unselected-0-836-private-score-submission,svr-data,False,False,svr-data: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,svr-exp-01,False,False,svr-exp-01: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,svr-exp-06,False,False,svr-exp-06: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-roberta-large-inference,syllapy,False,False,syllapy: no Kaggle ref found (unverified)
+shinomoriaoshi/readability-stacking-inference,syllapy,False,False,syllapy: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,tabm-exp-01,False,False,tabm-exp-01: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,tabm-exp-02,False,False,tabm-exp-02: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,tabm-exp-03,False,False,tabm-exp-03: no Kaggle ref found (unverified)
+sinamhd9/keras-models-tensorflow-data-dataset-tpu-part2,tensorflow-data-dataset-tpu-part1,False,False,tensorflow-data-dataset-tpu-part1: no Kaggle ref found (unverified)
+konumaru/submission-stacking-roberta-models,textfeatmodule,False,False,textfeatmodule: no Kaggle ref found (unverified)
+stefanoclss/unselected-0-836-private-score-submission,textstatv1,False,False,textstatv1: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,tf-exp-01,False,False,tf-exp-01: no Kaggle ref found (unverified)
+nizamuddin/qa-augur,tftext,False,False,tftext: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,tn-exp-01,False,False,tn-exp-01: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,tn-exp-02,False,False,tn-exp-02: no Kaggle ref found (unverified)
+yezhiheng/zy-three-model-ensemble-gpu100,train,False,False,train: no Kaggle ref found (unverified)
+batprem/aes2-xgboost-lightboost-share-the-same-loss,train-best-model-3,False,False,train-best-model-3: no Kaggle ref found (unverified)
+adamlogman/693notebook,train-data-4t,False,False,train-data-4t: no Kaggle ref found (unverified)
+yezhiheng/zy-three-model-ensemble-gpu100,train-lf-hms,False,False,train-lf-hms: no Kaggle ref found (unverified)
+konumaru/submission-stacking-roberta-models,train-stack-models-roberta-base-rsa,False,False,train-stack-models-roberta-base-rsa: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,ts-exp-01,False,False,ts-exp-01: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,tt-exp-01,False,False,tt-exp-01: no Kaggle ref found (unverified)
+nizamuddin/qa-augur,useqa3,False,False,useqa3: no Kaggle ref found (unverified)
+stefanoclss/unselected-0-836-private-score-submission,vadersentimentv1,False,False,vadersentimentv1: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,vr-exp-01,False,False,vr-exp-01: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,wheelhouse-cibmtr,False,False,wheelhouse-cibmtr: no Kaggle ref found (unverified)
+nizamuddin/qa-augur,x-train-opt,False,False,x-train-opt: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,xgboost-exp-01,False,False,xgboost-exp-01: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,xgboost-exp-02,False,False,xgboost-exp-02: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,xgboost-exp-05,False,False,xgboost-exp-05: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,xgboost-exp-06,False,False,xgboost-exp-06: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,xgboost-exp-07,False,False,xgboost-exp-07: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,xgboost-exp-08,False,False,xgboost-exp-08: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,xgboost-exp-09,False,False,xgboost-exp-09: no Kaggle ref found (unverified)
+jaytonde/hill-climbing-submission,xgboost-exp-10,False,False,xgboost-exp-10: no Kaggle ref found (unverified)
+arkqaq/clrp-ensemble-3x-inference,0463-robertalarge,True,True,dataset:danielxinhj/0463-robertalarge
+yezhiheng/zy-three-model-ensemble-gpu100,3-diff-time-specs-hms,True,True,dataset:rafaelzimmermann1/3-diff-time-specs-hms
+jaytonde/hill-climbing-submission,abdbase,True,True,kernel:abdmental01/abdbase
+ryenhails/aes2-lgbm-deberta-baseline,aes-computed-features,True,True,dataset:juanjindachang/aes-computed-features
+nguynminh444/aes2-modeling-with-fb-scoring,aes-data-word-cnt,True,True,dataset:nguynminh444/aes-data-word-cnt
+syhens/aes2-inference-single-model,aes-exp302-two-stage-f0,True,True,dataset:syhens/aes-exp302-two-stage-f0
+syhens/aes2-voting,aes-exp302-two-stage-f0,True,True,dataset:syhens/aes-exp302-two-stage-f0
+nguynminh444/aes2-modeling-with-fb-scoring,aes-whls,True,True,dataset:datafan07/aes-whls
+stefanoclss/unselected-0-836-private-score-submission,aes-whls,True,True,dataset:datafan07/aes-whls
+batprem/aes2-tuning-ensemble,aes2-400-20240419134941,True,True,dataset:hideyukizushi/aes2-400-20240419134941
+batprem/aes2-xgboost-lightboost-share-the-same-loss,aes2-400-20240419134941,True,True,dataset:hideyukizushi/aes2-400-20240419134941
+nguynminh444/aes2-modeling-with-fb-scoring,aes2-400-20240419134941,True,True,dataset:hideyukizushi/aes2-400-20240419134941
+ryenhails/aes2-lgbm-deberta-baseline,aes2-400-20240419134941,True,True,dataset:hideyukizushi/aes2-400-20240419134941
+shan007007/how-good-is-that-essay,aes2-400-20240419134941,True,True,dataset:hideyukizushi/aes2-400-20240419134941
+stefanoclss/unselected-0-836-private-score-submission,aes2-400-20240419134941,True,True,dataset:hideyukizushi/aes2-400-20240419134941
+tingyu516/aes2-private-score-0-83531,aes2-400-20240419134941,True,True,dataset:hideyukizushi/aes2-400-20240419134941
+batprem/aes2-xgboost-lightboost-share-the-same-loss,aes2-400-fes-202404291649,True,True,dataset:hideyukizushi/aes2-400-fes-202404291649
+ryenhails/aes2-lgbm-deberta-baseline,aes2-400-fes-202404291649,True,True,dataset:hideyukizushi/aes2-400-fes-202404291649
+tingyu516/aes2-private-score-0-83531,aes2-400-fes-202404291649,True,True,dataset:hideyukizushi/aes2-400-fes-202404291649
+batprem/aes2-tuning-ensemble,aes2-cache,True,True,dataset:batprem/aes2-cache
+batprem/aes2-xgboost-lightboost-share-the-same-loss,aes2-cache,True,True,dataset:batprem/aes2-cache
+stefanoclss/unselected-0-836-private-score-submission,aes2-cache,True,True,dataset:batprem/aes2-cache
+syhens/aes2-inference-single-model,aes2-code,True,True,dataset:syhens/aes2-code
+syhens/aes2-voting,aes2-code,True,True,dataset:syhens/aes2-code
+syhens/aes2-inference-single-model,aes2-deberta-v3-small-fit-v5,True,True,kernel:syhens/aes2-deberta-v3-small-fit-v5
+syhens/aes2-voting,aes2-deberta-v3-small-fit-v5,True,True,kernel:syhens/aes2-deberta-v3-small-fit-v5
+batprem/aes2-tuning-ensemble,aes2-eval-added-fb-prize-as-features-8168c5,True,True,kernel:batprem/aes2-eval-added-fb-prize-as-features-8168c5
+lenferdetroud/aes2-tuning-ensemble,aes2-eval-added-fb-prize-as-features-8168c5,True,True,kernel:batprem/aes2-eval-added-fb-prize-as-features-8168c5
+nguynminh444/aes2-modeling-with-fb-scoring,aes2-eval-added-fb-prize-as-features-8168c5,True,True,kernel:batprem/aes2-eval-added-fb-prize-as-features-8168c5
+shan007007/how-good-is-that-essay,aes2-eval-added-fb-prize-as-features-8168c5,True,True,kernel:batprem/aes2-eval-added-fb-prize-as-features-8168c5
+tingyu516/aes2-private-score-0-83531,aes2-eval-added-fb-prize-as-features-8168c5,True,True,kernel:batprem/aes2-eval-added-fb-prize-as-features-8168c5
+tingyu516/aes2-private-score-0-83531,aes2-extracted-features,True,True,dataset:samvelkoch/aes2-extracted-features
+ryenhails/aes2-lgbm-deberta-baseline,aes2-feature-selection,True,True,dataset:ryenhails/aes2-feature-selection
+batprem/aes2-xgboost-lightboost-share-the-same-loss,aes2-preprocessing,True,True,kernel:batprem/aes2-preprocessing
+stefanoclss/unselected-0-836-private-score-submission,aes2-preprocessing,True,True,kernel:batprem/aes2-preprocessing
+stefanoclss/unselected-0-836-private-score-submission,aes2-what-are-the-essays-about,True,True,kernel:mpware/aes2-what-are-the-essays-about
+vineethakkinapalli/commonlit-two-models,albert-large-without-pretrain,True,True,dataset:vineethakkinapalli/albert-large-without-pretrain
+mathislucka/commonlitreadability-r3,albertall,True,True,dataset:mathislucka/albertall
+mathislucka/commonlitreadability-r3,albertxxlarge2models,True,True,dataset:mathislucka/albertxxlarge2models
+mathislucka/commonlitreadability-r3,albertxxlarge2modelspt2,True,True,dataset:mathislucka/albertxxlarge2modelspt2
+mathislucka/commonlitreadability-r3,albertxxlargef0,True,True,dataset:mathislucka/albertxxlargef0
+mathislucka/commonlitreadability-r3,albertxxlargef1,True,True,dataset:mathislucka/albertxxlargef1
+mathislucka/commonlitreadability-r3,albertxxlargef2,True,True,dataset:mathislucka/albertxxlargef2
+mathislucka/commonlitreadability-r3,albertxxlargef3,True,True,dataset:mathislucka/albertxxlargef3
+mathislucka/commonlitreadability-r3,albertxxlargef4,True,True,dataset:mathislucka/albertxxlargef4
+mathislucka/commonlitreadability-r3,albertxxlargef5v2,True,True,dataset:mathislucka/albertxxlargef5v2
+mathislucka/commonlitreadability-r3,albertxxlargelowlr,True,True,dataset:mathislucka/albertxxlargelowlr
+delight669/amex-feature-engg-for-calssifiers,amex-data-for-transformers-and-rnns,True,True,dataset:cdeotte/amex-data-for-transformers-and-rnns
+canonicalized/amex-v2,amex-data-integer-dtypes-parquet-format,True,True,dataset:raddar/amex-data-integer-dtypes-parquet-format
+delight669/amex-feature-engg-for-calssifiers,amex-data-integer-dtypes-parquet-format,True,True,dataset:raddar/amex-data-integer-dtypes-parquet-format
+kdafke123141/feature-engineering-using-last-3-month,amex-data-integer-dtypes-parquet-format,True,True,dataset:raddar/amex-data-integer-dtypes-parquet-format
+sietseschrder/xgboost-starter-0-793,amex-data-integer-dtypes-parquet-format,True,True,dataset:raddar/amex-data-integer-dtypes-parquet-format
+canonicalized/amex-v2,amex-feature-engineering-2-aggreg-functions,True,True,kernel:lucasmorin/amex-feature-engineering-2-aggreg-functions
+canonicalized/amex-v2,amex-v2-feature-files,True,True,kernel:canonicalized/amex-v2-feature-files
+alexryzhkov/amex-lightautoml-starter,amexaggdatapicklef32,True,True,dataset:alexryzhkov/amexaggdatapicklef32
+delight669/amex-feature-engg-for-calssifiers,amexfeather,True,True,dataset:munumbutt/amexfeather
+ishaan45/amex-lgbm-feature-engineering,amexfeather,True,True,dataset:munumbutt/amexfeather
+swimmy/tuffline-amex-anotherfeaturelgbm,amexfeather,True,True,dataset:munumbutt/amexfeather
+hongyishao/amex-model-tuning-version4-stackingstrategyc,amexlgbselectedfeatures,True,True,dataset:hongyishao/amexlgbselectedfeatures
+hongyishao/amex-model-tuning-version4-stackingstrategyc,amexshycombinedfeatures,True,True,dataset:hongyishao/amexshycombinedfeatures
+syhens/aes2-inference-single-model,ases-oofs,True,True,dataset:syhens/ases-oofs
+syhens/aes2-voting,ases-oofs,True,True,dataset:syhens/ases-oofs
+asaliquid1011/hms-team-inference-ktmud,audio-library,True,True,kernel:asaliquid1011/audio-library
+jaytonde/hill-climbing-submission,autogluon,True,True,dataset:usamabuttar/autogluon
+shinomoriaoshi/readability-stacking-inference,bart-large,True,True,dataset:shinomoriaoshi/bart-large
+asaliquid1011/hms-team-inference-ktmud,base-library,True,True,kernel:asaliquid1011/base-library
+bluexleoxgreen/google-quest-inference-kernel,bert-base,True,True,kernel:orionpax00/bert-base
+,bert-base-from-tfhub,True,True,dataset:akensert/bert-base-from-tfhub
+bluexleoxgreen/google-quest-inference-kernel,bert-base-from-tfhub,True,True,dataset:akensert/bert-base-from-tfhub
+daigohirooka/huggingface-tfbert-for-full-prediction,bert-base-from-tfhub,True,True,dataset:akensert/bert-base-from-tfhub
+nxrprime/jigsaw-google-q-a-eda-ii,bert-base-from-tfhub,True,True,dataset:akensert/bert-base-from-tfhub
+tangchengshun/bert-tensorflow2-0-10,bert-base-from-tfhub,True,True,dataset:akensert/bert-base-from-tfhub
+tangchengshun/bert-tensorflow2-0-6,bert-base-from-tfhub,True,True,dataset:akensert/bert-base-from-tfhub
+vinaydoshi/tfbert-ensemble-preprocess-v1,bert-base-from-tfhub,True,True,dataset:akensert/bert-base-from-tfhub
+nxrprime/jigsaw-google-q-a-eda-ii,bert-base-tf2-0-minimalistic-iii,True,True,kernel:nxrprime/bert-base-tf2-0-minimalistic-iii
+nxrprime/jigsaw-google-q-a-eda-ii,bert-base-tf2-0-now-huggingface-transformer,True,True,kernel:dhirus/bert-base-tf2-0-now-huggingface-transformer
+daigohirooka/huggingface-tfbert-for-full-prediction,bert-base-uncased-huggingface-transformer,True,True,dataset:akensert/bert-base-uncased-huggingface-transformer
+lhohoz/bert-base-pytorch-inference,bert-fold1,True,True,dataset:lhohoz/bert-fold1
+lhohoz/bert-base-pytorch-inference,bert-fold2,True,True,dataset:lhohoz/bert-fold2
+lhohoz/bert-base-pytorch-inference,bert-fold3,True,True,dataset:lhohoz/bert-fold3
+lhohoz/bert-base-pytorch-inference,bert-fold4,True,True,dataset:lhohoz/bert-fold4
+lhohoz/bert-base-pytorch-inference,bert-fold5,True,True,dataset:lhohoz/bert-fold5
+vinaydoshi/tfbert-ensemble-preprocess-v1,bert-tensorflow,True,True,dataset:abhishek/bert-tensorflow
+nizamuddin/qa-augur,bertbaseuncased,True,True,dataset:marshal02/bertbaseuncased
+nizamuddin/qa-augur,berthub,True,True,dataset:marceloo/berthub
+nxrprime/jigsaw-google-q-a-eda-ii,bertmodelpretrained,True,True,dataset:nxrprime/bertmodelpretrained
+lhohoz/bert-base-pytorch-inference,bertpretrained,True,True,dataset:ryches/bertpretrained
+sunyuri/hms-vipeegnetv1,brain-eegs,True,True,dataset:cdeotte/brain-eegs
+sunyuri/hms-vipeegnetv1,brain-efficientnetb2-models-v1,True,True,dataset:cdeotte/brain-efficientnetb2-models-v1
+minhsienweng/infer-three-models-of-resnet-efficientnetb2,brain-spectrograms,True,True,dataset:cdeotte/brain-spectrograms
+sunyuri/hms-vipeegnetv1,brain-spectrograms,True,True,dataset:cdeotte/brain-spectrograms
+jaytonde/hill-climbing-submission,cibmtr-2024-dataset,True,True,dataset:jaytonde/cibmtr-2024-dataset
+ravaghi/cibmtr-autogluon-ensembler-inference,cibmtr-autogluon-ensembler-training,True,True,kernel:ravaghi/cibmtr-autogluon-ensembler-training
+churkinnikita/3rd-place-solution,cibmtr-competition,True,True,dataset:ukrainskiydv/cibmtr-competition
+ukrainskiydv/3rd-place-solution-nn-solo-0-69694-private-lb,cibmtr-competition,True,True,dataset:ukrainskiydv/cibmtr-competition
+gunesevitan/cibmtr-inference,cibmtr-dataset,True,True,dataset:gunesevitan/cibmtr-dataset
+jaytonde/hill-climbing-submission,cibmtr-pip-install-pycox,True,True,kernel:albansteff/cibmtr-pip-install-pycox
+ravaghi/cibmtr-autogluon-ensembler-inference,cibmtr-pretrained-models,True,True,dataset:ravaghi/cibmtr-pretrained-models
+ravaghi/cibmtr-equity-in-post-hct-survival-hill-climb,cibmtr-pretrained-models,True,True,dataset:ravaghi/cibmtr-pretrained-models
+ravaghi/cibmtr-equity-in-post-hct-survival-ridge,cibmtr-pretrained-models,True,True,dataset:ravaghi/cibmtr-pretrained-models
+churkinnikita/3rd-place-solution,cibmtr-scripts,True,True,dataset:churkinnikita/cibmtr-scripts
+vineethakkinapalli/commonlit-two-models,clrp-distilbert-base-uncased,True,True,dataset:vineethakkinapalli/clrp-distilbert-base-uncased
+rajat95gupta/commonlit-ensemble-5x-inference,clrp-finetune-dataset,True,True,dataset:rajat95gupta/clrp-finetune-dataset
+arkqaq/clrp-ensemble-3x-inference,clrp-mean-pooling,True,True,dataset:rajat95gupta/clrp-mean-pooling
+rajat95gupta/commonlit-ensemble-5x-inference,clrp-mean-pooling,True,True,dataset:rajat95gupta/clrp-mean-pooling
+vineethakkinapalli/commonlit-two-models,clrp-mean-pooling,True,True,dataset:rajat95gupta/clrp-mean-pooling
+rajat95gupta/commonlit-ensemble-5x-inference,clrp-mean-pooling-seeds-17-43,True,True,dataset:rajat95gupta/clrp-mean-pooling-seeds-17-43
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,clrp-pytorch-roberta-finetune-roberta-large,True,True,kernel:tutty1992/clrp-pytorch-roberta-finetune-roberta-large
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,clrp-pytorch-roberta-pretrain-roberta-large,True,True,kernel:tutty1992/clrp-pytorch-roberta-pretrain-roberta-large
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,clrp-roberta-base,True,True,dataset:maunish/clrp-roberta-base
+gilfernandes/commonlit-pytorch-ensemble-large,commonlit-electra-large-discriminator,True,True,dataset:gilfernandes/commonlit-electra-large-discriminator
+rajat95gupta/commonlit-ensemble-5x-inference,commonlit-readability-roberta-base,True,True,dataset:ragnar123/commonlit-readability-roberta-base
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,commonlit-readability-roberta-base,True,True,dataset:ragnar123/commonlit-readability-roberta-base
+arkqaq/clrp-ensemble-3x-inference,commonlit-roberta-0467,True,True,dataset:andretugan/commonlit-roberta-0467
+mathislucka/commonlitreadability-r3,commonlit-roberta-0467,True,True,dataset:andretugan/commonlit-roberta-0467
+rajat95gupta/commonlit-ensemble-5x-inference,commonlit-roberta-0467,True,True,dataset:andretugan/commonlit-roberta-0467
+stellaris98/commonlit-two-models,commonlit-roberta-0467,True,True,dataset:andretugan/commonlit-roberta-0467
+vineethakkinapalli/commonlit-two-models,commonlit-roberta-0467,True,True,dataset:andretugan/commonlit-roberta-0467
+arkqaq/clrp-ensemble-3x-inference,commonlit-roberta-base-i,True,True,dataset:rhtsingh/commonlit-roberta-base-i
+mathislucka/commonlitreadability-r3,commonlit-roberta-base-i,True,True,dataset:rhtsingh/commonlit-roberta-base-i
+rajat95gupta/commonlit-ensemble-5x-inference,commonlit-roberta-base-i,True,True,dataset:rhtsingh/commonlit-roberta-base-i
+stellaris98/commonlit-two-models,commonlit-roberta-base-i,True,True,dataset:rhtsingh/commonlit-roberta-base-i
+vineethakkinapalli/commonlit-two-models,commonlit-roberta-base-i,True,True,dataset:rhtsingh/commonlit-roberta-base-i
+gilfernandes/commonlit-pytorch-ensemble-large,commonlit-roberta-base-light,True,True,dataset:gilfernandes/commonlit-roberta-base-light
+gilfernandes/commonlit-pytorch-ensemble-large,commonlit-roberta-base-light-balanced,True,True,dataset:gilfernandes/commonlit-roberta-base-light-balanced
+arkqaq/clrp-ensemble-3x-inference,commonlit-roberta-large-ii,True,True,dataset:rhtsingh/commonlit-roberta-large-ii
+mathislucka/commonlitreadability-r3,commonlit-roberta-large-ii,True,True,dataset:rhtsingh/commonlit-roberta-large-ii
+rajat95gupta/commonlit-ensemble-5x-inference,commonlit-roberta-large-ii,True,True,dataset:rhtsingh/commonlit-roberta-large-ii
+stellaris98/commonlit-two-models,commonlit-roberta-large-ii,True,True,dataset:rhtsingh/commonlit-roberta-large-ii
+vineethakkinapalli/commonlit-two-models,commonlit-roberta-large-ii,True,True,dataset:rhtsingh/commonlit-roberta-large-ii
+gilfernandes/commonlit-pytorch-ensemble-large,commonlit-roberta-large-light,True,True,dataset:gilfernandes/commonlit-roberta-large-light
+gilfernandes/commonlit-pytorch-ensemble-large,commonlit-roberta-large-light-2,True,True,dataset:gilfernandes/commonlit-roberta-large-light-2
+rajat95gupta/commonlit-ensemble-5x-inference,commonlit-roberta-model-1,True,True,dataset:rajat95gupta/commonlit-roberta-model-1
+tangchengshun/bert-tensorflow2-0-10,data-input,True,True,kernel:bulter22/data-input
+shinomoriaoshi/readability-stacking-inference,deberta-large,True,True,dataset:shinomoriaoshi/deberta-large
+syhens/aes2-inference-single-model,deberta-v3-base,True,True,dataset:jonathanchan/deberta-v3-base
+syhens/aes2-voting,deberta-v3-base,True,True,dataset:jonathanchan/deberta-v3-base
+syhens/aes2-inference-single-model,deberta-v3-large,True,True,dataset:jonathanchan/deberta-v3-large
+syhens/aes2-voting,deberta-v3-large,True,True,dataset:jonathanchan/deberta-v3-large
+syhens/aes2-inference-single-model,deberta-v3-small,True,True,dataset:jonathanchan/deberta-v3-small
+syhens/aes2-voting,deberta-v3-small,True,True,dataset:jonathanchan/deberta-v3-small
+batprem/aes2-tuning-ensemble,deberta-v3-small-finetuned-v1,True,True,dataset:cdeotte/deberta-v3-small-finetuned-v1
+batprem/aes2-xgboost-lightboost-share-the-same-loss,deberta-v3-small-finetuned-v1,True,True,dataset:cdeotte/deberta-v3-small-finetuned-v1
+mathislucka/commonlitreadability-r3,debertabootstrap,True,True,dataset:mathislucka/debertabootstrap
+mathislucka/commonlitreadability-r3,debertabspt2,True,True,dataset:mathislucka/debertabspt2
+mathislucka/commonlitreadability-r3,debertalarge,True,True,dataset:mathislucka/debertalarge
+mathislucka/commonlitreadability-r3,debertalargelowlr,True,True,dataset:mathislucka/debertalargelowlr
+mathislucka/commonlitreadability-r3,debertalargept2,True,True,dataset:mathislucka/debertalargept2
+bluexleoxgreen/google-quest-inference-kernel,distilbertbaseuncased,True,True,dataset:abhishek/distilbertbaseuncased
+nizamuddin/qa-augur,distilbertbaseuncased,True,True,dataset:abhishek/distilbertbaseuncased
+vineethakkinapalli/commonlit-two-models,distilbertbaseuncased,True,True,dataset:abhishek/distilbertbaseuncased
+stefanoclss/unselected-0-836-private-score-submission,downgrade-pandas,True,True,kernel:cdeotte/downgrade-pandas
+ryenhails/aes2-lgbm-deberta-baseline,download-huggingface-models,True,True,kernel:cdeotte/download-huggingface-models
+stefanoclss/unselected-0-836-private-score-submission,download-huggingface-models,True,True,kernel:cdeotte/download-huggingface-models
+adamlogman/693notebook,download-lightning-and-pytorch-tabular,True,True,kernel:dreamingtree/download-lightning-and-pytorch-tabular
+frankzfchen/ensemble-minezf,download-lightning-and-pytorch-tabular,True,True,kernel:dreamingtree/download-lightning-and-pytorch-tabular
+jaytonde/hill-climbing-submission,download-lightning-and-pytorch-tabular,True,True,kernel:dreamingtree/download-lightning-and-pytorch-tabular
+jiahaopengx/0-692-cibmtr-weights-ranking-ensemble,download-lightning-and-pytorch-tabular,True,True,kernel:dreamingtree/download-lightning-and-pytorch-tabular
+asaliquid1011/hms-team-inference-ktmud,download-omegaconf,True,True,kernel:kazumax0720/download-omegaconf
+asaliquid1011/hms-team-inference-ktmud,download-timm,True,True,kernel:kazumax0720/download-timm
+minhsienweng/infer-three-models-of-resnet-efficientnetb2,eeg-spectrograms,True,True,dataset:nartaa/eeg-spectrograms
+yezhiheng/zy-three-model-ensemble-gpu100,efficientnet-b1-ownspectrograms,True,True,dataset:naomideenen/efficientnet-b1-ownspectrograms
+ameya98/efficientnet-submission,efficientnet-keras-source-code,True,True,dataset:xhlulu/efficientnet-keras-source-code
+xhlulu/ranzcr-efficientnet-submission,efficientnet-keras-source-code,True,True,dataset:xhlulu/efficientnet-keras-source-code
+ameya98/efficientnet-submission,efficientnet-tpu,True,True,kernel:ameya98/efficientnet-tpu
+minhsienweng/infer-three-models-of-resnet-efficientnetb2,efficientnetb-tf-keras,True,True,dataset:nartaa/efficientnetb-tf-keras
+yezhiheng/zy-three-model-ensemble-gpu100,efficientnetb-tf-keras,True,True,dataset:nartaa/efficientnetb-tf-keras
+kanruwang/ranzcr-resnet200d-seresnet152d-efficientnetb5,efficientnetb5cv9621,True,True,dataset:ammarali32/efficientnetb5cv9621
+asaliquid1011/hms-team-inference-ktmud,effnet-whl,True,True,dataset:dimanishi/effnet-whl
+shinomoriaoshi/readability-stacking-inference,electra-large-discriminator,True,True,dataset:shinomoriaoshi/electra-large-discriminator
+mathislucka/commonlitreadability-r3,electraensembling,True,True,dataset:mathislucka/electraensembling
+mathislucka/commonlitreadability-r3,electralarge,True,True,dataset:mathislucka/electralarge
+batprem/aes2-tuning-ensemble,english-word-hx,True,True,dataset:xianhellg/english-word-hx
+batprem/aes2-xgboost-lightboost-share-the-same-loss,english-word-hx,True,True,dataset:xianhellg/english-word-hx
+nguynminh444/aes2-modeling-with-fb-scoring,english-word-hx,True,True,dataset:xianhellg/english-word-hx
+ryenhails/aes2-lgbm-deberta-baseline,english-word-hx,True,True,dataset:xianhellg/english-word-hx
+shan007007/how-good-is-that-essay,english-word-hx,True,True,dataset:xianhellg/english-word-hx
+stefanoclss/unselected-0-836-private-score-submission,english-word-hx,True,True,dataset:xianhellg/english-word-hx
+tingyu516/aes2-private-score-0-83531,english-word-hx,True,True,dataset:xianhellg/english-word-hx
+rajat95gupta/commonlit-ensemble-5x-inference,epochs-100-lr-4e5-seed-123,True,True,dataset:rajat95gupta/epochs-100-lr-4e5-seed-123
+rajat95gupta/commonlit-ensemble-5x-inference,epochs-70-lr-4e5-seed-2021,True,True,dataset:rajat95gupta/epochs-70-lr-4e5-seed-2021
+adamlogman/693notebook,equity-post-HCT-survival-predictions,True,True,competition:equity-post-HCT-survival-predictions
+churkinnikita/3rd-place-solution,equity-post-HCT-survival-predictions,True,True,competition:equity-post-HCT-survival-predictions
+frankzfchen/ensemble-minezf,equity-post-HCT-survival-predictions,True,True,competition:equity-post-HCT-survival-predictions
+gunesevitan/cibmtr-inference,equity-post-HCT-survival-predictions,True,True,competition:equity-post-HCT-survival-predictions
+jaytonde/hill-climbing-submission,equity-post-HCT-survival-predictions,True,True,competition:equity-post-HCT-survival-predictions
+jiahaopengx/0-692-cibmtr-weights-ranking-ensemble,equity-post-HCT-survival-predictions,True,True,competition:equity-post-HCT-survival-predictions
+ravaghi/cibmtr-autogluon-ensembler-inference,equity-post-HCT-survival-predictions,True,True,competition:equity-post-HCT-survival-predictions
+ravaghi/cibmtr-equity-in-post-hct-survival-hill-climb,equity-post-HCT-survival-predictions,True,True,competition:equity-post-HCT-survival-predictions
+ravaghi/cibmtr-equity-in-post-hct-survival-ridge,equity-post-HCT-survival-predictions,True,True,competition:equity-post-HCT-survival-predictions
+ukrainskiydv/3rd-place-solution-nn-solo-0-69694-private-lb,equity-post-HCT-survival-predictions,True,True,competition:equity-post-HCT-survival-predictions
+ryenhails/aes2-lgbm-deberta-baseline,essay-embeddings-v1,True,True,dataset:cdeotte/essay-embeddings-v1
+stefanoclss/unselected-0-836-private-score-submission,essay-embeddings-v1,True,True,dataset:cdeotte/essay-embeddings-v1
+syhens/aes2-inference-single-model,exp302-cope-large-all,True,True,dataset:syhens/exp302-cope-large-all
+syhens/aes2-voting,exp302-cope-large-all,True,True,dataset:syhens/exp302-cope-large-all
+syhens/aes2-inference-single-model,exp302-small-kd,True,True,dataset:syhens/exp302-small-kd
+syhens/aes2-inference-single-model,exp302c-large-scale-best,True,True,dataset:syhens/exp302c-large-scale-best
+syhens/aes2-voting,exp302c-large-scale-best,True,True,dataset:syhens/exp302c-large-scale-best
+syhens/aes2-inference-single-model,exp302c-large-scale-best-all,True,True,dataset:syhens/exp302c-large-scale-best-all
+syhens/aes2-inference-single-model,exp302c-large-stage2-only,True,True,dataset:syhens/exp302c-large-stage2-only
+syhens/aes2-inference-single-model,exp302d-large-best-all,True,True,dataset:syhens/exp302d-large-best-all
+syhens/aes2-voting,exp302d-large-best-all,True,True,dataset:syhens/exp302d-large-best-all
+syhens/aes2-inference-single-model,exp302d-large-f0,True,True,dataset:syhens/exp302d-large-f0
+syhens/aes2-inference-single-model,exp303-pet-large-2e-5,True,True,dataset:syhens/exp303-pet-large-2e-5
+syhens/aes2-inference-single-model,exp303-ts-large-all,True,True,dataset:syhens/exp303-ts-large-all
+syhens/aes2-voting,exp303-ts-large-all,True,True,dataset:syhens/exp303-ts-large-all
+syhens/aes2-inference-single-model,exp303b-lang-f0,True,True,dataset:syhens/exp303b-lang-f0
+syhens/aes2-inference-single-model,exp306-large-ordinal-all,True,True,dataset:syhens/exp306-large-ordinal-all
+syhens/aes2-voting,exp306-large-ordinal-all,True,True,dataset:syhens/exp306-large-ordinal-all
+syhens/aes2-inference-single-model,exp306-small-last,True,True,dataset:syhens/exp306-small-last
+syhens/aes2-inference-single-model,exp306b-large-all,True,True,dataset:syhens/exp306b-large-all
+syhens/aes2-inference-single-model,exp306b-large-all-last,True,True,dataset:syhens/exp306b-large-all-last
+syhens/aes2-voting,exp306b-large-all-last,True,True,dataset:syhens/exp306b-large-all-last
+syhens/aes2-inference-single-model,exp306b-large-clean-last,True,True,dataset:syhens/exp306b-large-clean-last
+syhens/aes2-voting,exp306b-large-clean-last,True,True,dataset:syhens/exp306b-large-clean-last
+syhens/aes2-inference-single-model,exp306b-large-last-full,True,True,dataset:syhens/exp306b-large-last-full
+syhens/aes2-voting,exp306b-large-last-full,True,True,dataset:syhens/exp306b-large-last-full
+syhens/aes2-inference-single-model,exp307-large-all,True,True,dataset:syhens/exp307-large-all
+syhens/aes2-voting,exp307-large-all,True,True,dataset:syhens/exp307-large-all
+syhens/aes2-inference-single-model,exp320-large-last,True,True,dataset:syhens/exp320-large-last
+syhens/aes2-voting,exp320-large-last,True,True,dataset:syhens/exp320-large-last
+syhens/aes2-inference-single-model,exp320b-large-last,True,True,dataset:syhens/exp320b-large-last
+syhens/aes2-voting,exp320b-large-last,True,True,dataset:syhens/exp320b-large-last
+syhens/aes2-inference-single-model,exp321-large-ms-all,True,True,dataset:syhens/exp321-large-ms-all
+syhens/aes2-voting,exp321-large-ms-all,True,True,dataset:syhens/exp321-large-ms-all
+minhsienweng/infer-three-models-of-resnet-efficientnetb2,features-head-starter-models,True,True,dataset:nartaa/features-head-starter-models
+yezhiheng/zy-three-model-ensemble-gpu100,features-head-starter-models,True,True,dataset:nartaa/features-head-starter-models
+nguynminh444/aes2-modeling-with-fb-scoring,feedback-data,True,True,dataset:datafan07/feedback-data
+stefanoclss/unselected-0-836-private-score-submission,feedback-data,True,True,dataset:datafan07/feedback-data
+shinomoriaoshi/readability-stacking-inference,funnel-transformer-large,True,True,dataset:shinomoriaoshi/funnel-transformer-large
+alexeykarnachev/kernel1864bcfc13,google-qa-ner,True,True,dataset:alexeykarnachev/google-qa-ner
+shinomoriaoshi/readability-stacking-inference,gpt2-medium,True,True,dataset:shinomoriaoshi/gpt2-medium
+asaliquid1011/hms-team-inference-ktmud,hms-code,True,True,dataset:asaliquid1011/hms-code
+cooolz/notebookc1c6c389c3,hms-doublehead-butter-filter,True,True,dataset:cooolz/hms-doublehead-butter-filter
+cooolz/notebookc1c6c389c3,hms-eeg,True,True,dataset:nartaa/hms-eeg
+minhsienweng/infer-three-models-of-resnet-efficientnetb2,hms-eeg,True,True,dataset:nartaa/hms-eeg
+cooolz/notebookc1c6c389c3,hms-eeg-raw,True,True,dataset:cooolz/hms-eeg-raw
+gunesevitan/hms-hbac-inference,hms-hbac-dataset,True,True,dataset:gunesevitan/hms-hbac-dataset
+asaliquid1011/hms-team-inference-ktmud,hms-hbac-src,True,True,dataset:hiroitakafumi/hms-hbac-src
+asaliquid1011/hms-team-inference-ktmud,hms-hbac-weight,True,True,dataset:hiroitakafumi/hms-hbac-weight
+cooolz/notebookc1c6c389c3,hms-hgnet,True,True,dataset:cooolz/hms-hgnet
+cooolz/notebookc1c6c389c3,hms-kaggle-spec,True,True,dataset:cooolz/hms-kaggle-spec
+asaliquid1011/hms-team-inference-ktmud,hms-models,True,True,dataset:ryanirl/hms-models
+ryanirl/hms-baseline-sub,hms-models,True,True,dataset:ryanirl/hms-models
+asaliquid1011/hms-team-inference-ktmud,hms-models-10,True,True,dataset:kazumax0720/hms-models-10
+asaliquid1011/hms-team-inference-ktmud,hms-models-11,True,True,dataset:kazumax0720/hms-models-11
+asaliquid1011/hms-team-inference-ktmud,hms-models-12,True,True,dataset:kazumax0720/hms-models-12
+asaliquid1011/hms-team-inference-ktmud,hms-models-13,True,True,dataset:kazumax0720/hms-models-13
+asaliquid1011/hms-team-inference-ktmud,hms-models-14,True,True,dataset:kazumax0720/hms-models-14
+asaliquid1011/hms-team-inference-ktmud,hms-models-9,True,True,dataset:kazumax0720/hms-models-9
+asaliquid1011/hms-team-inference-ktmud,hms-models4,True,True,dataset:asaliquid1011/hms-models4
+asaliquid1011/hms-team-inference-ktmud,hms-models5,True,True,dataset:asaliquid1011/hms-models5
+asaliquid1011/hms-team-inference-ktmud,hms-models6,True,True,dataset:asaliquid1011/hms-models6
+cooolz/notebookc1c6c389c3,hms-oneimage,True,True,dataset:cooolz/hms-oneimage
+asaliquid1011/hms-team-inference-ktmud,hms-pyfile,True,True,dataset:dimanishi/hms-pyfile
+cooolz/notebookc1c6c389c3,hms-raw-eeg-butter-filter,True,True,dataset:cooolz/hms-raw-eeg-butter-filter
+minhsienweng/infer-three-models-of-resnet-efficientnetb2,hms-resnet1d-gru-weights-v82,True,True,dataset:konstantinboyko/hms-resnet1d-gru-weights-v82
+yezhiheng/zy-three-model-ensemble-gpu100,hms-resnet1d-gru-weights-v82,True,True,dataset:konstantinboyko/hms-resnet1d-gru-weights-v82
+minhsienweng/infer-three-models-of-resnet-efficientnetb2,hms-train-efficientnetb0,True,True,kernel:andreasbis/hms-train-efficientnetb0
+yezhiheng/zy-three-model-ensemble-gpu100,hms-train-efficientnetb0,True,True,kernel:andreasbis/hms-train-efficientnetb0
+minhsienweng/infer-three-models-of-resnet-efficientnetb2,hms-train-efficientnetb1,True,True,kernel:andreasbis/hms-train-efficientnetb1
+minhsienweng/infer-three-models-of-resnet-efficientnetb2,hms-train-resnet34d,True,True,kernel:andreasbis/hms-train-resnet34d
+asaliquid1011/hms-team-inference-ktmud,hms-v6-datasets,True,True,dataset:maxchen303/hms-v6-datasets
+asaliquid1011/hms-team-inference-ktmud,hms-v6-pipeline-packed,True,True,dataset:maxchen303/hms-v6-pipeline-packed
+cooolz/notebookc1c6c389c3,hms-x3d,True,True,dataset:cooolz/hms-x3d
+mathislucka/commonlitreadability-r3,hugeensembler,True,True,dataset:mathislucka/hugeensembler
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,huggingface-roberta-variants,True,True,dataset:sauravmaheshkar/huggingface-roberta-variants
+vinaydoshi/tfbert-ensemble-preprocess-v1,huggingface-transformers,True,True,dataset:goosedude/huggingface-transformers
+goldenlock/image-model-single-model-with-lb0-235-pb0-283,icecream,True,True,dataset:goldenlock/icecream
+alexeykarnachev/kernel1864bcfc13,kaggle-google-qa-labeling,True,True,dataset:alexeykarnachev/kaggle-google-qa-labeling
+minhsienweng/infer-three-models-of-resnet-efficientnetb2,kaggle-kl-div,True,True,dataset:cdeotte/kaggle-kl-div
+sunyuri/hms-vipeegnetv1,kaggle-kl-div,True,True,dataset:cdeotte/kaggle-kl-div
+yezhiheng/zy-three-model-ensemble-gpu100,kaggle-kl-div,True,True,dataset:cdeotte/kaggle-kl-div
+ameya98/efficientnet-submission,kerasapplications,True,True,dataset:xhlulu/kerasapplications
+xhlulu/ranzcr-efficientnet-submission,kerasapplications,True,True,dataset:xhlulu/kerasapplications
+stefanoclss/unselected-0-836-private-score-submission,llm-peft-pkg,True,True,dataset:tongkokoro/llm-peft-pkg
+nizamuddin/qa-augur,mt-dnn-largept,True,True,dataset:karlpoppery/mt-dnn-largept
+syhens/aes2-inference-single-model,omegaconf,True,True,dataset:shonenkov/omegaconf
+syhens/aes2-voting,omegaconf,True,True,dataset:shonenkov/omegaconf
+goldenlock/image-model-single-model-with-lb0-235-pb0-283,pandarallel,True,True,dataset:goldenlock/pandarallel
+ryenhails/aes2-lgbm-deberta-baseline,persaude-corpus-2,True,True,dataset:nbroad/persaude-corpus-2
+bluexleoxgreen/google-quest-inference-kernel,pickled-crawl300d2m-for-kernel-competitions,True,True,dataset:authman/pickled-crawl300d2m-for-kernel-competitions
+bluexleoxgreen/google-quest-inference-kernel,pickled-glove840b300d-for-10sec-loading,True,True,dataset:authman/pickled-glove840b300d-for-10sec-loading
+goldenlock/image-model-single-model-with-lb0-235-pb0-283,pikachu,True,True,dataset:goldenlock/pikachu
+ravaghi/cibmtr-equity-in-post-hct-survival-ridge,pip-install-autogluon,True,True,kernel:colorfuldra/pip-install-autogluon
+adamlogman/693notebook,pip-install-lifelines,True,True,kernel:cdeotte/pip-install-lifelines
+frankzfchen/ensemble-minezf,pip-install-lifelines,True,True,kernel:cdeotte/pip-install-lifelines
+jaytonde/hill-climbing-submission,pip-install-lifelines,True,True,kernel:cdeotte/pip-install-lifelines
+jiahaopengx/0-692-cibmtr-weights-ranking-ensemble,pip-install-lifelines,True,True,kernel:cdeotte/pip-install-lifelines
+ravaghi/cibmtr-equity-in-post-hct-survival-ridge,pip-install-lifelines,True,True,kernel:cdeotte/pip-install-lifelines
+arkqaq/clrp-ensemble-3x-inference,pre-trained-roberta-solution-in-pytorch,True,True,kernel:arkqaq/pre-trained-roberta-solution-in-pytorch
+ryenhails/aes2-lgbm-deberta-baseline,predict-the-prompts,True,True,kernel:emiz6413/predict-the-prompts
+syhens/aes2-inference-single-model,predict-the-prompts,True,True,kernel:emiz6413/predict-the-prompts
+syhens/aes2-voting,predict-the-prompts,True,True,kernel:emiz6413/predict-the-prompts
+vineethakkinapalli/commonlit-two-models,pretrained-albert-pytorch,True,True,dataset:radream/pretrained-albert-pytorch
+stefanoclss/unselected-0-836-private-score-submission,pyspellchecker,True,True,dataset:tsunotsuno/pyspellchecker
+kanruwang/ranzcr-resnet200d-seresnet152d-efficientnetb5,pytorch-image-models,True,True,dataset:yasufuminakama/pytorch-image-models
+roydatascience/resnet200d-public-multi-head-private-lb-970,pytorch-image-models,True,True,dataset:yasufuminakama/pytorch-image-models
+rsinda/38th-place-solution-0-972-single-model-5-fold,pytorch-image-models,True,True,dataset:yasufuminakama/pytorch-image-models
+syxuming/inference-resnet200d-singlemodel,pytorch-image-models,True,True,dataset:yasufuminakama/pytorch-image-models
+ttahara/ranzcr-multi-head-model-inference,pytorch-image-models,True,True,dataset:yasufuminakama/pytorch-image-models
+kanruwang/ranzcr-resnet200d-seresnet152d-efficientnetb5,pytorch-images-seresnet,True,True,dataset:ammarali32/pytorch-images-seresnet
+roydatascience/resnet200d-public-multi-head-private-lb-970,pytorch-images-seresnet,True,True,dataset:ammarali32/pytorch-images-seresnet
+jaytonde/hill-climbing-submission,pytorchtabnet,True,True,dataset:ryati131457/pytorchtabnet
+ameya98/efficientnet-submission,ranzcr-efficientnet-tpu-training,True,True,kernel:xhlulu/ranzcr-efficientnet-tpu-training
+xhlulu/ranzcr-efficientnet-submission,ranzcr-efficientnet-tpu-training,True,True,kernel:xhlulu/ranzcr-efficientnet-tpu-training
+maksymshkliarevskyi/ranzcr-xception-tpu-prediction,ranzcr-xception-tpu-baseline,True,True,kernel:maksymshkliarevskyi/ranzcr-xception-tpu-baseline
+gunesevitan/hms-hbac-inference,rapids,True,True,dataset:cdeotte/rapids
+yezhiheng/zy-three-model-ensemble-gpu100,rapids,True,True,dataset:cdeotte/rapids
+shinomoriaoshi/readability-stacking-inference,readability-package,True,True,dataset:ravishah1/readability-package
+archanabenur/resnet200d,resnet200d-baseline-benchmark-public,True,True,dataset:underwearfitting/resnet200d-baseline-benchmark-public
+kanruwang/ranzcr-resnet200d-seresnet152d-efficientnetb5,resnet200d-baseline-benchmark-public,True,True,dataset:underwearfitting/resnet200d-baseline-benchmark-public
+roydatascience/resnet200d-public-multi-head-private-lb-970,resnet200d-baseline-benchmark-public,True,True,dataset:underwearfitting/resnet200d-baseline-benchmark-public
+archanabenur/resnet200d,resnet200d-public,True,True,dataset:ammarali32/resnet200d-public
+kanruwang/ranzcr-resnet200d-seresnet152d-efficientnetb5,resnet200d-public,True,True,dataset:ammarali32/resnet200d-public
+roydatascience/resnet200d-public-multi-head-private-lb-970,resnet200d-public,True,True,dataset:ammarali32/resnet200d-public
+mathislucka/commonlitreadability-r3,roberta-base,True,True,dataset:abhishek/roberta-base
+rajat95gupta/commonlit-ensemble-5x-inference,roberta-base,True,True,dataset:abhishek/roberta-base
+shinomoriaoshi/readability-stacking-inference,roberta-base,True,True,dataset:abhishek/roberta-base
+stellaris98/commonlit-two-models,roberta-base,True,True,dataset:abhishek/roberta-base
+vineethakkinapalli/commonlit-two-models,roberta-base,True,True,dataset:abhishek/roberta-base
+arkqaq/clrp-ensemble-3x-inference,roberta-large-itptfit,True,True,dataset:rhtsingh/roberta-large-itptfit
+mathislucka/commonlitreadability-r3,roberta-large-itptfit,True,True,dataset:rhtsingh/roberta-large-itptfit
+rajat95gupta/commonlit-ensemble-5x-inference,roberta-large-itptfit,True,True,dataset:rhtsingh/roberta-large-itptfit
+stellaris98/commonlit-two-models,roberta-large-itptfit,True,True,dataset:rhtsingh/roberta-large-itptfit
+vineethakkinapalli/commonlit-two-models,roberta-large-itptfit,True,True,dataset:rhtsingh/roberta-large-itptfit
+konumaru/submission-stacking-roberta-models,roberta-squad2,True,True,dataset:jjinho/roberta-squad2
+rajat95gupta/commonlit-ensemble-5x-inference,roberta-svm-finetune,True,True,dataset:rajat95gupta/roberta-svm-finetune
+arkqaq/clrp-ensemble-3x-inference,roberta-transformers-pytorch,True,True,dataset:maroberti/roberta-transformers-pytorch
+konumaru/submission-stacking-roberta-models,roberta-transformers-pytorch,True,True,dataset:maroberti/roberta-transformers-pytorch
+rajat95gupta/commonlit-ensemble-5x-inference,roberta-transformers-pytorch,True,True,dataset:maroberti/roberta-transformers-pytorch
+stellaris98/commonlit-two-models,roberta-transformers-pytorch,True,True,dataset:maroberti/roberta-transformers-pytorch
+takeshikobayashi/bronze-medal-solution-roberta-stacking-ensemble,roberta-transformers-pytorch,True,True,dataset:maroberti/roberta-transformers-pytorch
+,robertabase,True,True,dataset:hannes82/robertabase
+mathislucka/commonlitreadability-r3,robertalarge,True,True,dataset:marshal02/robertalarge
+rajat95gupta/commonlit-ensemble-5x-inference,robertalarge,True,True,dataset:marshal02/robertalarge
+shinomoriaoshi/readability-roberta-large-inference,robertalarge,True,True,dataset:marshal02/robertalarge
+shinomoriaoshi/readability-stacking-inference,robertalarge,True,True,dataset:marshal02/robertalarge
+stellaris98/commonlit-two-models,robertalarge,True,True,dataset:marshal02/robertalarge
+vineethakkinapalli/commonlit-two-models,robertalarge,True,True,dataset:marshal02/robertalarge
+mathislucka/commonlitreadability-r3,robertalargetwomodels,True,True,dataset:mathislucka/robertalargetwomodels
+mathislucka/commonlitreadability-r3,roblargeaugf1,True,True,dataset:mathislucka/roblargeaugf1
+mathislucka/commonlitreadability-r3,roblargeaugf3,True,True,dataset:mathislucka/roblargeaugf3
+mathislucka/commonlitreadability-r3,roblargeaugf4,True,True,dataset:mathislucka/roblargeaugf4
+mathislucka/commonlitreadability-r3,roblargef5,True,True,dataset:mathislucka/roblargef5
+mathislucka/commonlitreadability-r3,rolargef0,True,True,dataset:mathislucka/rolargef0
+bluexleoxgreen/google-quest-inference-kernel,sacremoses,True,True,dataset:abhishek/sacremoses
+daigohirooka/huggingface-tfbert-for-full-prediction,sacremoses,True,True,dataset:akensert/sacremoses
+nguynminh444/aes2-modeling-with-fb-scoring,sent-debsmall,True,True,dataset:datafan07/sent-debsmall
+stefanoclss/unselected-0-836-private-score-submission,sent-debsmall,True,True,dataset:datafan07/sent-debsmall
+shan007007/how-good-is-that-essay,sentence-embedding-models,True,True,dataset:evilmage93/sentence-embedding-models
+mathislucka/commonlitreadability-r3,sentence-transformers,True,True,dataset:datafan07/sentence-transformers
+kanruwang/ranzcr-resnet200d-seresnet152d-efficientnetb5,seresnet152d-cv9615,True,True,dataset:ammarali32/seresnet152d-cv9615
+kanruwang/ranzcr-resnet200d-seresnet152d-efficientnetb5,startingpointschestx,True,True,dataset:ammarali32/startingpointschestx
+roydatascience/resnet200d-public-multi-head-private-lb-970,startingpointschestx,True,True,dataset:ammarali32/startingpointschestx
+rsinda/38th-place-solution-0-972-single-model-5-fold,startingpointschestx,True,True,dataset:ammarali32/startingpointschestx
+syxuming/inference-resnet200d-singlemodel,startingpointschestx,True,True,dataset:ammarali32/startingpointschestx
+ttahara/ranzcr-multi-head-model-inference,startingpointschestx,True,True,dataset:ammarali32/startingpointschestx
+vineethakkinapalli/commonlit-two-models,t5large,True,True,dataset:ravoxsg/t5large
+jaytonde/hill-climbing-submission,tabm-tabular-dl-library,True,True,dataset:yekenot/tabm-tabular-dl-library
+jaytonde/hill-climbing-submission,tabpfn-v2,True,True,dataset:horikitasaku/tabpfn-v2
+sunyuri/hms-vipeegnetv1,tf-efficientnet-imagenet-weights,True,True,dataset:cdeotte/tf-efficientnet-imagenet-weights
+yezhiheng/zy-three-model-ensemble-gpu100,tf-efficientnet-imagenet-weights,True,True,dataset:cdeotte/tf-efficientnet-imagenet-weights
+sunyuri/hms-vipeegnetv1,tf-efficientnet-whl-files,True,True,kernel:cdeotte/tf-efficientnet-whl-files
+yezhiheng/zy-three-model-ensemble-gpu100,tf-efficientnet-whl-files,True,True,kernel:cdeotte/tf-efficientnet-whl-files
+vineethakkinapalli/commonlit-two-models,tfdistilbertbaseuncased,True,True,dataset:anjalia8/tfdistilbertbaseuncased
+rajat95gupta/commonlit-ensemble-5x-inference,tfroberta-base,True,True,dataset:jeongyoonlee/tfroberta-base
+archanabenur/resnet200d,timm-pytorch-image-models,True,True,dataset:kozodoi/timm-pytorch-image-models
+kanruwang/ranzcr-resnet200d-seresnet152d-efficientnetb5,timm-pytorch-image-models,True,True,dataset:kozodoi/timm-pytorch-image-models
+roydatascience/resnet200d-public-multi-head-private-lb-970,timm-pytorch-image-models,True,True,dataset:kozodoi/timm-pytorch-image-models
+arkqaq/clrp-ensemble-3x-inference,tokenizers,True,True,dataset:chamecall/tokenizers
+rajat95gupta/commonlit-ensemble-5x-inference,tokenizers,True,True,dataset:chamecall/tokenizers
+cooolz/notebookc1c6c389c3,torchvideo,True,True,dataset:cooolz/torchvideo
+bluexleoxgreen/google-quest-inference-kernel,transformers,True,True,dataset:abhishek/transformers
+daigohirooka/huggingface-tfbert-for-full-prediction,transformers,True,True,dataset:akensert/transformers
+nizamuddin/qa-augur,transformers,True,True,dataset:abhishek/transformers
+alexeykarnachev/kernel1864bcfc13,transformersdependencies,True,True,dataset:alexeykarnachev/transformersdependencies
+stefanoclss/unselected-0-836-private-score-submission,universal-sentence-encoder,True,True,model:google/universal-sentence-encoder/TensorFlow2/universal-sentence-encoder/2
+,universalsentenceencoderlarge4,True,True,dataset:ldm314/universalsentenceencoderlarge4
+bluexleoxgreen/google-quest-inference-kernel,universalsentenceencoderlarge4,True,True,dataset:ldm314/universalsentenceencoderlarge4
+nizamuddin/qa-augur,universalsentenceencoderlarge4,True,True,dataset:ldm314/universalsentenceencoderlarge4
+ryenhails/aes2-lgbm-deberta-baseline,useful-nlp-package,True,True,dataset:ryenhails/useful-nlp-package
+alexryzhkov/amex-lightautoml-starter,xgboost-starter-0-793,True,True,kernel:cdeotte/xgboost-starter-0-793
+shinomoriaoshi/readability-stacking-inference,xlnet-large-cased,True,True,dataset:shinomoriaoshi/xlnet-large-cased
+adamlogman/693notebook,yunbase,True,True,kernel:yunsuxiaozi/yunbase
+frankzfchen/ensemble-minezf,yunbase,True,True,kernel:yunsuxiaozi/yunbase
+jiahaopengx/0-692-cibmtr-weights-ranking-ensemble,yunbase,True,True,kernel:yunsuxiaozi/yunbase

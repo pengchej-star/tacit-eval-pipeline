@@ -1,0 +1,45 @@
+--- v10.py
++++ v11.py
+@@ -10,11 +10,14 @@
+ from sklearn.metrics import cohen_kappa_score
+ from sklearn.calibration import CalibratedClassifierCV
++from lightgbm import LGBMClassifier
+ import random
+ import gc
++import warnings
++warnings.filterwarnings("ignore")
+ 
+ # %% [2]
+ SEED = 1124
+ SUBMIT = True
+-EVALUATE = False
++EVALUATE = True
+ SGD_ITER = 15000
+ CV = 3
+@@ -49,14 +52,21 @@
+     clf_sgd2 = CalibratedClassifierCV(SGDClassifier(max_iter=iterations, tol=1e-4, loss="hinge"), cv=3, method='sigmoid')
+     clf_sgd3 = SGDClassifier(max_iter=iterations, tol=1e-4, loss="log_loss")
+-#     clf_nb = MultinomialNB(alpha=0.02)
++    
++    param = {'n_iter': 1500,'verbose': -1,'objective': 'multiclass',
++          'metric': 'multi_logloss','learning_rate': 0.1, 
++          'colsample_bytree': 0.72, 'colsample_bynode': 0.58, 
++          'lambda_l1': 8.56, 'lambda_l2': 4.89, 
++          'min_data_in_leaf': 115, 'max_depth': 23, 'max_bin': 254, "device": "gpu", "num_class": 6}
++    lgb = LGBMClassifier(**param)
+ 
+     ensemble = VotingClassifier(
+         estimators=[
+-            ('sgd', clf_sgd), 
+-            ('sgd2', clf_sgd2),
+-            ('sgd3', clf_sgd3),
++            ('lgb', lgb),
++#             ('sgd', clf_sgd), 
++#             ('sgd2', clf_sgd2),
++#             ('sgd3', clf_sgd3),
+         ],
+         voting='soft', 
+-        weights=[0.4, 0.5, 0.1],
++#         weights=[0.4, 0.5, 0.1],
+         n_jobs=-1)
+     return ensemble

@@ -1,0 +1,18 @@
+# Own MLE-bench entry (not part of official MLE-bench). Source of truth: tacit-eval-pipeline/mlebench_ext/.
+# Symlinked into <mle-bench>/mlebench/competitions/ by mlebench_ext/link.sh, so the import paths below resolve.
+id: amex-default-prediction
+name: American Express - Default Prediction
+competition_type: code
+awards_medals: true
+# prizes: omitted (not used for grading)
+description: mlebench/competitions/amex-default-prediction/description.md
+
+dataset:
+  answers: amex-default-prediction/prepared/private/answers.csv
+  sample_submission: amex-default-prediction/prepared/public/sample_submission.csv
+
+grader:
+  name: amex-metric
+  grade_fn: mlebench.competitions.amex-default-prediction.grade:grade
+
+preparer: mlebench.competitions.amex-default-prediction.prepare:prepare

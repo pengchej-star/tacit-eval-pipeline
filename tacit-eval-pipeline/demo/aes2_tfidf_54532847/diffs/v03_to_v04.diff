@@ -1,0 +1,54 @@
+--- v03.py
++++ v04.py
+@@ -28,5 +28,6 @@
+     sublinear_tf=True, 
+     analyzer='word',
+-    strip_accents='unicode'
++    strip_accents='unicode',
++    stop_words='english'
+ )
+ 
+@@ -35,13 +36,40 @@
+ 
+ # %% [6]
++"""
++loss{‘hinge’, ‘log_loss’, ‘modified_huber’, ‘squared_hinge’, ‘perceptron’, ‘squared_error’, ‘huber’, ‘epsilon_insensitive’, ‘squared_epsilon_insensitive’}, default=’hinge’
++The loss function to be used.
++
++‘hinge’ gives a linear SVM.
++
++‘log_loss’ gives logistic regression, a probabilistic classifier.
++
++‘modified_huber’ is another smooth loss that brings tolerance to outliers as well as probability estimates.
++
++‘squared_hinge’ is like hinge but is quadratically penalized.
++
++‘perceptron’ is the linear loss used by the perceptron algorithm.
++
++The other losses, ‘squared_error’, ‘huber’, ‘epsilon_insensitive’ and ‘squared_epsilon_insensitive’ are designed for regression but can be useful in classification as well; see SGDRegressor for a description.
++
++"""
++
++from sklearn.calibration import CalibratedClassifierCV
++
+ def init_model():
+-#     clf = LogisticRegression(solver='liblinear', C=0.5)
+-    sgd_model = SGDClassifier(max_iter=10000, tol=1e-4, loss="modified_huber") 
++    clf_sgd = SGDClassifier(max_iter=8000, tol=1e-4, loss="modified_huber") 
++    clf_sgd2 = CalibratedClassifierCV(SGDClassifier(max_iter=8000, tol=1e-4, loss="hinge"), cv=3, method='sigmoid')
++    clf_sgd3 = SGDClassifier(max_iter=8000, tol=2e-4, loss="log_loss")
++#     clf_nb = MultinomialNB(alpha=0.02)
+ 
+     ensemble = VotingClassifier(
+         estimators=[
+-            ('sgd', sgd_model)
++            ('sgd', clf_sgd), # 0.572
++            ('sgd2', clf_sgd2), # 0.576
++            ('sgd3', clf_sgd3),  # 0.580
++#             ('nb', clf_nb),  # 0.413
++#             ('lr', clf_lr)
+         ],
+         voting='soft', 
++        weights=[0.4, 0.5, 0.1],
+         n_jobs=-1)
+     return ensemble

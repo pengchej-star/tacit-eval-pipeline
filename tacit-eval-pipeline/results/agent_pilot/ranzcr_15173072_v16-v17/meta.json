@@ -1,0 +1,40 @@
+{
+  "run_id": "ranzcr-clip-catheter-line-classification__15173072_v017__agent__20261030-024501",
+  "comp": "ranzcr-clip-catheter-line-classification",
+  "key_id": "15173072",
+  "v_k": 16,
+  "model": "wine-claude-opus-5-5",
+  "minutes_budget": 40,
+  "max_usd": 10.0,
+  "agent_s": 161.0,
+  "exit_code": 0,
+  "num_turns": 6,
+  "cost_usd_reported": 0.18259740000000002,
+  "usage": {
+    "input_tokens": 12,
+    "cache_creation_input_tokens": 23157,
+    "cache_read_input_tokens": 97622,
+    "output_tokens": 2362,
+    "output_tokens_details": {
+      "thinking_tokens": 313
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 23157
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "solution": true,
+  "external": [
+    "dataset:underwearfitting/resnet200d-baseline-benchmark-public",
+    "dataset:kozodoi/timm-pytorch-image-models"
+  ]
+}

@@ -1,0 +1,73 @@
+--- v07.py
++++ v08.py
+@@ -14,5 +14,6 @@
+ # %% [2]
+ SEED = 1124
+-ONLINE = True
++SUBMIT = True
++EVALUATE = False
+ CV = 3
+ 
+@@ -24,24 +25,4 @@
+ 
+ # %% [5]
+-def init_model():
+-    clf_sgd = SGDClassifier(max_iter=10000, tol=1e-4, loss="modified_huber") 
+-#     clf_sgd2 = CalibratedClassifierCV(SGDClassifier(max_iter=8000, tol=1e-4, loss="hinge"), cv=3, method='sigmoid')
+-#     clf_sgd3 = SGDClassifier(max_iter=8000, tol=2e-4, loss="log_loss")
+-#     clf_nb = MultinomialNB(alpha=0.02)
+-
+-    ensemble = VotingClassifier(
+-        estimators=[
+-            ('sgd', clf_sgd), # 0.572
+-#             ('sgd2', clf_sgd2), # 0.576
+-#             ('sgd3', clf_sgd3),  # 0.580
+-#             ('nb', clf_nb),  # 0.413
+-#             ('lr', clf_lr)
+-        ],
+-        voting='soft', 
+-#         weights=[0.4, 0.5, 0.1],
+-        n_jobs=-1)
+-    return ensemble
+-
+-# %% [6]
+ vectorizer = TfidfVectorizer(
+     ngram_range=(1, 3), 
+@@ -55,7 +36,29 @@
+ tf_data = vectorizer.fit_transform(data['full_text'])
+ 
++# %% [6]
++def init_model():
++    clf_sgd = SGDClassifier(max_iter=10000, tol=1e-4, loss="modified_huber") 
++    clf_sgd2 = CalibratedClassifierCV(SGDClassifier(max_iter=10000, tol=1e-4, loss="hinge"), cv=3, method='sigmoid')
++    clf_sgd3 = SGDClassifier(max_iter=10000, tol=1e-4, loss="log_loss")
++#     clf_nb = MultinomialNB(alpha=0.02)
++
++    ensemble = VotingClassifier(
++        estimators=[
++            ('sgd', clf_sgd), 
++            ('sgd2', clf_sgd2),
++            ('sgd3', clf_sgd3),
++#             ('nb', clf_nb), 
++        ],
++        voting='soft', 
++        weights=[0.4, 0.5, 0.1],
++        n_jobs=-1)
++    return ensemble
++
+ # %% [7]
+ %%time
+-if not ONLINE:
++
++# huber-sgd-10,000 => train: 0.611992 => test: 0.556
++# 0.6209
++if EVALUATE:
+     metrics = pd.DataFrame(np.zeros((1, CV)), columns=[f'kappa_{i}' for i in range(1, CV+1)])
+     kf = KFold(n_splits=CV)
+@@ -85,5 +88,5 @@
+ 
+ # %% [10]
+-if ONLINE:
++if SUBMIT:
+     print("Online submission")
+     tf_test = vectorizer.transform(test['full_text'])

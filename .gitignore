@@ -5,7 +5,6 @@ BLADE/
 new_extraction/archive_old_runs
 tacit-eval-pipeline-old/
 .env
-tacit-eval-pipeline/
 .DS_Store
 __pycache__/
 new_extraction/out/

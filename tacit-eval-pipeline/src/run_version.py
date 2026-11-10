@@ -1,0 +1,416 @@
+"""Phase 4: execute one expert version (or any notebook/script) in an isolated workdir and grade it.
+
+Steps
+  1. Find the code: <human-dir>/<key_id>/versions/vNNN.{ipynb,py}, or --code-file.
+  2. Make <runs-dir>/<run_id>/ with
+       kaggle/input/<comp>/  read-only COPIES of mlebench-cache/<comp>/prepared/public/*
+       kaggle/working/       the notebook's cwd; submission.csv is expected here
+     prepared/private is never copied, linked or mentioned to the notebook. Copies (not a directory
+     symlink) are used because `<symlink>/../private` would resolve to the real prepared/private.
+  3. Rewrite the literal paths /kaggle/input and /kaggle/working to the workdir. Relative paths such as
+     ../input/<comp> already work because the cwd is kaggle/working. The only other changes are the
+     known compatibility patches (API renames, see PATCHES): applied by default wherever their pattern
+     matches (--patches none to disable), and every one applied is recorded in patches_applied.
+  4. Execute with papermill on the `kaggle-run` kernel (so IPython magics like %%capture work), with a
+     wall-clock timeout for the whole run (the process group is killed on timeout). The executed notebook and the log are kept in the workdir.
+  5. Find submission.csv in kaggle/working and grade it with mlebench's grade_csv, the function
+     behind `mlebench grade-sample`.
+  6. Append one JSON row to results/runs.jsonl.
+
+External Kaggle inputs (datasets, kernel outputs, other competitions) can be mounted at kaggle/input/<slug> with
+--external kind:ref, or looked up per version from triage_static.py's versions.csv with --inputs-from. They are
+downloaded once into a shared cache (src/kaggle_inputs.py) and hardlinked into the workdir. A version whose
+triage row lists a missing input is not executed (status MISSING_EXTERNAL_INPUT).
+
+A notebook that raises an error is not graded, even if it wrote a submission.csv before failing
+(the same as on Kaggle).
+
+Example (run from the repo root, in the env that has mlebench installed):
+  python src/run_version.py --comp learning-agency-lab-automated-essay-scoring-2 --key-id 55844901 --version 1
+"""
+
+import argparse
+import datetime as dt
+import fcntl
+import getpass
+import json
+import os
+import re
+import shutil
+import signal
+import socket
+import stat
+import subprocess
+import time
+from pathlib import Path
+
+import nbformat
+
+import kaggle_inputs
+
+USER_DATA = Path("/data/user_data") / getpass.getuser()
+REPO = Path(__file__).resolve().parents[1]
+
+# Compatibility patches: pure API renames between the notebooks' library versions and our 2026 stack.
+# Applied wherever the pattern matches (default --patches all) and always recorded with their count.
+# Each must keep the notebook's logic; the "why" explains why it is behaviour-preserving.
+PATCHES = {
+    "kfold_random_state_without_shuffle": dict(
+        pattern=r"KFold\((\s*n_splits\s*=\s*[^,()]+),\s*random_state\s*=\s*[^,()]+\)",
+        repl=r"KFold(\1)",
+        why="scikit-learn >= 0.24 raises ValueError for KFold(random_state=..., shuffle=False); "
+            "random_state had no effect without shuffling, so dropping it keeps the same folds.",
+    ),
+    "sklearn_get_feature_names_out": dict(
+        pattern=r"\.get_feature_names\(([^()]*)\)",
+        repl=r".get_feature_names_out(\1).tolist()",
+        why="scikit-learn 1.2 removed get_feature_names(); get_feature_names_out() returns the same names as an "
+            "array, and .tolist() restores the old list return type.",
+    ),
+    "pandas_applymap_to_map": dict(
+        pattern=r"\.applymap\(",
+        repl=".map(",
+        why="pandas 3 removed DataFrame.applymap / Styler.applymap; DataFrame.map / Styler.map (pandas >= 2.1) "
+            "are the same element-wise operation under the new name.",
+    ),
+    "prefer_attached_libraries": dict(
+        pattern=r"sys\.path\.append\(\s*(?=[rRfF]?['\"](?:\.\./input/|[^'\"\n]*/kaggle/input/))",
+        repl="sys.path.insert(0, ",
+        why="notebooks attach a copy of a library as an input (e.g. an old timm) and append it to sys.path; a newer "
+            "copy installed in our run env would shadow it, so the attached copy goes first.",
+    ),
+}
+RANK_ONLY_METRICS = {"ranzcr-clip-catheter-line-classification"}  # AUC: scores outside [0, 1] are rescaled, see grade()
+ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
+
+
+def find_code(human_dir: Path, key_id: str, version: int) -> Path:
+    for ext in (".ipynb", ".py"):
+        p = human_dir / key_id / "versions" / f"v{version:03d}{ext}"
+        if p.exists():
+            return p
+    raise FileNotFoundError(f"no code file for key_id={key_id} version={version} under {human_dir}")
+
+
+def comp_aliases(text: str, comp: str) -> set[str]:
+    """Input folders the code reads that name the competition in other letter case (Kaggle mounts equity as
+    /kaggle/input/equity-post-HCT-survival-predictions, while its slug is lower case)."""
+    return {f for f in re.findall(r"/kaggle/input/([\w.-]+)", text) if f.lower() == comp.lower() and f != comp}
+
+
+def load_notebook(path: Path) -> nbformat.NotebookNode:
+    if path.suffix == ".py":  # Kaggle script kernel: run it as a single cell
+        nb = nbformat.v4.new_notebook()
+        nb.cells = [nbformat.v4.new_code_cell(path.read_text(errors="replace"))]
+        return nb
+    return nbformat.read(path, as_version=4)
+
+
+def stage_inputs(public: Path, dest: Path) -> int:
+    """Hardlink (or copy, across filesystems) prepared/public into dest as read-only files. Returns the number of files.
+
+    Hardlinks, not symlinks: a symlink would reveal the cache path and with it ../private. hms public is 23 GB, so
+    copying it per run is not an option."""
+    if public.name != "public" or not public.is_dir():
+        raise ValueError(f"expected a prepared/public directory, got {public}")
+    n = 0
+    for src in public.rglob("*"):
+        rel = src.relative_to(public)
+        if "private" in rel.parts:
+            raise RuntimeError(f"refusing to stage {src}: looks like private data")
+        out = dest / rel
+        if src.is_dir():
+            out.mkdir(parents=True, exist_ok=True)
+            continue
+        out.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            os.link(src, out)
+        except OSError:
+            shutil.copy2(src, out)
+        out.chmod(stat.S_IRUSR | stat.S_IRGRP)
+        n += 1
+    restore_kaggle_columns(public.parent.parent.name, dest / "sample_submission.csv")
+    return n
+
+
+# Columns the Kaggle original sample_submission.csv has but MLE-bench's leaves out because it grades fewer classes.
+# Notebooks written for Kaggle index the original layout (e.g. ranzcr `test.iloc[:, 1:12]`); the graders read only
+# the columns they score, so restoring the layout changes no grade.
+KAGGLE_EXTRA_COLUMNS = {
+    "ranzcr-clip-catheter-line-classification": ["CVC - Normal", "Swan Ganz Catheter Present"],
+}
+
+
+def restore_kaggle_columns(comp: str, sample_submission: Path):
+    extra = KAGGLE_EXTRA_COLUMNS.get(comp)
+    if not extra or not sample_submission.exists():
+        return
+    lines = sample_submission.read_text().splitlines()
+    sample_submission.unlink()  # a hardlink into the cache: replace it, never write through it
+    sample_submission.write_text("\n".join([lines[0] + "".join("," + c for c in extra)]
+                                           + [line + ",0" * len(extra) for line in lines[1:]]) + "\n")
+    sample_submission.chmod(stat.S_IRUSR | stat.S_IRGRP)
+
+
+def rewrite(nb, workdir: Path, patch_names: list[str]):
+    """Rewrite Kaggle absolute paths and apply the given patches where they match.
+
+    Returns (n_path_rewrites, patches_applied); only patches that changed something are listed."""
+    mapping = {"/kaggle/input": str(workdir / "kaggle/input"), "/kaggle/working": str(workdir / "kaggle/working")}
+    n_paths = 0
+    patch_counts = {name: 0 for name in patch_names}
+    for cell in nb.cells:
+        if cell.cell_type != "code":
+            continue
+        src = cell.source
+        for old, new in mapping.items():
+            n_paths += src.count(old)
+            src = src.replace(old, new)
+        for name in patch_names:
+            src, k = re.subn(PATCHES[name]["pattern"], PATCHES[name]["repl"], src)
+            patch_counts[name] += k
+        cell.source = src
+        cell.outputs, cell.execution_count = [], None
+    applied = [{"name": n, "n_replacements": k, "why": PATCHES[n]["why"]} for n, k in patch_counts.items() if k]
+    return n_paths, applied
+
+
+def inputs_for_version(versions_csv: Path, key_id, version):
+    """Look up a version's external inputs in triage_static.py's versions.csv.
+
+    Returns (status, error, specs): status is MISSING_EXTERNAL_INPUT if any input is missing, else None."""
+    import pandas as pd
+
+    v = pd.read_csv(versions_csv, dtype={"key_id": str})
+    row = v[(v.key_id == str(key_id)) & (v.version == version)]
+    if row.empty:
+        return "NOT_IN_TRIAGE", f"key_id={key_id} v{version} not in {versions_csv}", []
+    row = row.iloc[0]
+    missing = row.missing_external if isinstance(row.missing_external, str) else ""
+    if missing:
+        return "MISSING_EXTERNAL_INPUT", f"missing: {missing}", []
+    avail = row.available_external if isinstance(row.available_external, str) else ""
+    return None, "", [s for s in avail.split(";") if s]
+
+
+def kaggle_score(traceml_dir: Path, key_id: str, version: int):
+    import pandas as pd
+
+    for split in ("paired", "humans_only"):
+        df = pd.read_parquet(traceml_dir / f"data/{split}/state.parquet", columns=["key_id", "version_number", "score"])
+        hit = df[(df.key_id == key_id) & (df.version_number == version)]
+        if len(hit):
+            s = hit.score.iloc[0]
+            return None if pd.isna(s) else float(s)
+    return None
+
+
+def rescale_to_unit_interval(submission: Path):
+    """Min-max scale every score column that leaves [0, 1]; returns the rescaled copy, or None if none did.
+
+    Kaggle accepted any scores for AUC metrics (only the order counts), so some notebooks submit ranks; MLE-bench's
+    AUC helper rejects values outside [0, 1]. Scaling keeps the order within each column, so the AUC is unchanged."""
+    import pandas as pd
+
+    df = pd.read_csv(submission)
+    cols = [c for c in df.columns[1:] if pd.api.types.is_numeric_dtype(df[c]) and (df[c].min() < 0 or df[c].max() > 1)]
+    if not cols:
+        return None
+    for c in cols:
+        lo, hi = df[c].min(), df[c].max()
+        df[c] = (df[c] - lo) / (hi - lo) if hi > lo else 0.5
+    out = submission.with_name("submission_rescaled.csv")
+    df.to_csv(out, index=False)
+    return out
+
+
+def grade(submission: Path, comp: str, cache: Path) -> dict:
+    from mlebench.grade import grade_csv
+    from mlebench.registry import registry
+
+    competition = registry.set_data_dir(cache).get_competition(comp)
+    report = grade_csv(submission, competition).to_dict()
+    if not report.get("valid_submission") and comp in RANK_ONLY_METRICS:
+        rescaled = rescale_to_unit_interval(submission)
+        if rescaled:
+            report = {**grade_csv(rescaled, competition).to_dict(), "rescaled_to_unit_interval": True}
+    return report
+
+
+def shell_errors(executed_nb: Path, n_lines: int = 8) -> str:
+    """Tracebacks printed by `!cmd` shell cells. A failing shell command does not stop the notebook, so the root
+    cause is often only visible there, while the final error is a downstream symptom (e.g. no submission.csv)."""
+    try:
+        nb = nbformat.read(executed_nb, as_version=4)
+    except Exception:  # noqa: BLE001 - notebook may not exist if papermill died early
+        return ""
+    found = []
+    for i, cell in enumerate(nb.cells):
+        if cell.cell_type != "code" or not cell.source.lstrip().startswith("!"):
+            continue
+        text = ANSI.sub("", "".join(o.get("text", "") for o in cell.get("outputs", [])))
+        if "Traceback" in text or "Error" in text:
+            lines = [l for l in text.splitlines() if l.strip()]
+            found.append(f"[shell cell {i}]\n" + "\n".join(lines[-n_lines:]))
+    return ("\n".join(found) + "\n[final error]\n") if found else ""
+
+
+def tail(text: str, n_lines: int = 30, n_chars: int = 3000) -> str:
+    lines = [l for l in ANSI.sub("", text).splitlines() if l.strip()]
+    return "\n".join(lines[-n_lines:])[-n_chars:]
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--comp", required=True, help="competition slug (MLE-bench id)")
+    ap.add_argument("--key-id", help="TraceML key_id (= Kaggle kernel id for humans)")
+    ap.add_argument("--version", type=int, help="TraceML version_number")
+    ap.add_argument("--code-file", type=Path, help="run this .ipynb/.py instead of a TraceML version")
+    ap.add_argument("--patches", default="all",
+                    help="compat patches: 'all' (default, apply every known patch where it matches), 'none', "
+                         f"or a comma-separated subset of {sorted(PATCHES)}")
+    ap.add_argument("--run-round", default="", help="round label stored in the results row (e.g. r1, r2)")
+    ap.add_argument("--timeout", type=int, default=3600, help="wall-clock seconds for the whole notebook run")
+    ap.add_argument("--tag", default="", help="free-text label stored in the results row (e.g. a batch name)")
+    ap.add_argument("--human-dir", type=Path, default=USER_DATA / "traceml/extracted/human")
+    ap.add_argument("--traceml-dir", type=Path, default=USER_DATA / "traceml/hf")
+    ap.add_argument("--mlebench-cache", type=Path, default=USER_DATA / "mlebench-cache")
+    ap.add_argument("--runs-dir", type=Path, default=USER_DATA / "runs")
+    ap.add_argument("--run-env", type=Path, default=USER_DATA / "software/anaconda3/envs/kaggle-run")
+    ap.add_argument("--kernel", default="kaggle-run")
+    ap.add_argument("--results", type=Path, default=REPO / "results/runs.jsonl")
+    ap.add_argument("--external", action="append", default=[],
+                    help="external input to mount, e.g. dataset:owner/slug, kernel:owner/slug, competition:slug")
+    ap.add_argument("--inputs-from", type=Path,
+                    help="versions.csv from triage_static.py: mount this version's available_external inputs")
+    ap.add_argument("--inputs-cache", type=Path, default=USER_DATA / "kaggle-inputs")
+    ap.add_argument("--max-input-gb", type=float, default=20.0, help="per-input download limit")
+    args = ap.parse_args()
+
+    if args.code_file is None and (args.key_id is None or args.version is None):
+        ap.error("give --key-id and --version, or --code-file")
+    code = args.code_file or find_code(args.human_dir, args.key_id, args.version)
+    label = f"{args.key_id}_v{args.version:03d}" if args.code_file is None else code.stem
+    stamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
+    run_id = f"{args.comp}__{label}__{stamp}"
+    workdir = (args.runs_dir / run_id).resolve()
+    working = workdir / "kaggle/working"
+    working.mkdir(parents=True)
+
+    n_inputs = stage_inputs(args.mlebench_cache / args.comp / "prepared/public", workdir / "kaggle/input" / args.comp)
+    shutil.copy2(code, workdir / f"original{code.suffix}")
+    nb = load_notebook(code)
+    for alias in comp_aliases("\n".join(c.source for c in nb.cells), args.comp):
+        stage_inputs(args.mlebench_cache / args.comp / "prepared/public", workdir / "kaggle/input" / alias)
+    if args.patches == "all":
+        patch_names = sorted(PATCHES)
+    elif args.patches == "none":
+        patch_names = []
+    else:
+        patch_names = [n.strip() for n in args.patches.split(",") if n.strip()]
+        unknown = [n for n in patch_names if n not in PATCHES]
+        if unknown:
+            ap.error(f"unknown patch(es) {unknown}; known: {sorted(PATCHES)}")
+    n_paths, patches = rewrite(nb, workdir, patch_names)
+    nb.metadata["kernelspec"] = {"name": args.kernel, "display_name": args.kernel, "language": "python"}
+    nb_in, nb_out, log = workdir / "notebook.ipynb", workdir / "executed.ipynb", workdir / "run.log"
+    nbformat.write(nb, nb_in)
+
+    env = {k: v for k, v in os.environ.items() if k not in ("PYTHONPATH", "TRACEML_MLEBENCH_CACHE")}
+    # PIP_REQUIRE_VIRTUALENV: a notebook's `!pip install` must not change the shared run env (many runs use it at once)
+    env.update(PATH=f"{args.run_env / 'bin'}:{env.get('PATH', '')}", CONDA_PREFIX=str(args.run_env),
+               MPLBACKEND="Agg", KAGGLE_KERNEL_RUN_TYPE="Batch", PIP_REQUIRE_VIRTUALENV="1")
+    cmd = [str(args.run_env / "bin/python"), "-m", "papermill", str(nb_in), str(nb_out),
+           "-k", args.kernel, "--cwd", str(working), "--execution-timeout", str(args.timeout),
+           "--log-output", "--no-progress-bar"]
+    status, error = None, ""
+    specs, externals = list(args.external), []
+    if args.inputs_from:
+        status, error, found = inputs_for_version(args.inputs_from, args.key_id, args.version)
+        specs += [s for s in found if s not in specs]
+    for spec in specs if status is None else []:
+        kind, ref, folder = kaggle_inputs.parse(spec)
+        dest = workdir / "kaggle/input" / folder
+        if folder == args.comp or dest.exists():
+            continue
+        try:
+            files_dir, info = kaggle_inputs.fetch(spec, args.inputs_cache, max_bytes=args.max_input_gb * 1e9)
+        except kaggle_inputs.InputError as e:
+            status, error = e.status, f"{spec}: {e}"
+            break
+        externals.append({**info, "n_files": kaggle_inputs.mount(files_dir, dest)})
+    print(f"[run] {run_id}\n      code={code}\n      inputs={n_inputs} files, external={[x['spec'] for x in externals]}, "
+          f"path rewrites={n_paths}, patches={[p['name'] for p in patches]}", flush=True)
+
+    t0, rc, log_text = time.time(), 0, ""
+    if status is None:
+        with open(log, "w") as fh:
+            # own process group, so a timeout also kills the Jupyter kernel that papermill started
+            proc = subprocess.Popen(cmd, cwd=working, env=env, stdout=fh, stderr=subprocess.STDOUT,
+                                    start_new_session=True)
+            try:
+                rc = proc.wait(timeout=args.timeout)
+            except subprocess.TimeoutExpired:
+                os.killpg(proc.pid, signal.SIGKILL)
+                proc.wait()
+                rc, status = None, "TIMEOUT"
+        log_text = log.read_text(errors="replace")
+    runtime = round(time.time() - t0, 1)
+    if status is None and rc != 0:
+        status = "TIMEOUT" if re.search(r"CellTimeoutError|Cell execution timed out", log_text) else "EXEC_FAILED"
+    if status == "TIMEOUT":
+        error = f"killed after {args.timeout} s\n" + tail(log_text, n_lines=10)
+    elif status in ("EXEC_FAILED",):
+        error = shell_errors(nb_out) + tail(log_text)
+
+    submission, report = None, {}
+    if status is None:
+        subs = [working / "submission.csv"] if (working / "submission.csv").is_file() else \
+            sorted(working.rglob("submission.csv"), key=lambda p: p.stat().st_mtime)
+        if not subs:
+            status, error = "NO_SUBMISSION", "notebook finished but wrote no submission.csv under kaggle/working"
+        else:
+            submission = subs[-1]
+            try:
+                report = grade(submission, args.comp, args.mlebench_cache)
+                status = "OK" if report.get("valid_submission") else "INVALID_SUBMISSION"
+            except Exception as e:  # noqa: BLE001
+                status, error = "GRADE_FAILED", f"{type(e).__name__}: {e}"[-3000:]
+
+    row = {
+        "run_id": run_id,
+        "timestamp": dt.datetime.now().isoformat(timespec="seconds"),
+        "comp": args.comp,
+        "key_id": args.key_id,
+        "version": args.version,
+        "code_file": str(code),
+        "status": status,
+        "score": report.get("score"),
+        "kaggle_score": kaggle_score(args.traceml_dir, args.key_id, args.version)
+        if args.code_file is None else None,
+        "above_median": report.get("above_median"),
+        "runtime_s": runtime,
+        "patches_applied": patches,
+        "external_inputs": externals,
+        "path_rewrites": n_paths,
+        "submission": str(submission.relative_to(workdir)) if submission else None,
+        "submission_rescaled": bool(report.get("rescaled_to_unit_interval")),
+        "workdir": str(workdir),
+        "host": socket.gethostname(),
+        "run_env": str(args.run_env),
+        "tag": args.tag,
+        "run_round": args.run_round,
+        "error_tail": error,
+    }
+    args.results.parent.mkdir(parents=True, exist_ok=True)
+    with open(args.results, "a") as fh:  # locked: several runs may append at once
+        fcntl.flock(fh, fcntl.LOCK_EX)
+        fh.write(json.dumps(row) + "\n")
+        fcntl.flock(fh, fcntl.LOCK_UN)
+    print(f"[done] status={status} score={row['score']} kaggle_score={row['kaggle_score']} runtime_s={runtime}")
+    if error:
+        print("[error_tail]\n" + error)
+
+
+if __name__ == "__main__":
+    main()
