@@ -1,0 +1,7 @@
+# Use subgroup-specific thresholds  `T.8.1.4`   1 edits, 0 experts
+1 scored cases, median improvement -0.00769, 0 improved
+
+
+- expert 55621328 (Master) · learning · v72→v74   Train a separate classifier to predict the subgroup, then apply per-group rounding thresholds. If the subgroup classifier is imperfect, errors in group assignment propagate into worse thresholds, often degrading the overall metric. Verify on the leaderboard or a held-out set; if the score drops, rev
+    evidence: ✓ Public high-scoring solutions or known best practices for this task use threshold optimization (e.g., Nelder-Mead on OOF) to maximize the evaluation metric. | ✓ No naive-rounding baseline score exists yet to compare against optimized thresholds. | ✗ The target column has only two distinct label values, making a simple threshold binarization the appropriate discretization. | ✓ Multiple thresholds are being changed simultaneously rather than incrementally, making it impossible to attribute score changes to individual threshold adjustments. | ✓ A reliable expected label-frequency distribution is known for the evaluation population. | ✓ Groups show different calibration errors and have enough calibration examples per label.
+    leaderboard score 0.82142 → 0.81373 (-0.00769)

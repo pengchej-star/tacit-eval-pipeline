@@ -23,7 +23,7 @@ def convert(n, des, items, depth=0):
               pushes=[[names.get(k, k), v] for k, v in (c.get("pushes") or {}).items()]) for c in g["checks"]])
              for g in (des.get(n["id"]) or {}).get("groups", [])]
     return dict(id=n["id"], name=n["name"], sub=n.get("decision", ""), text=n.get("description", ""), level=depth,
-                source={"data": "bottom_up", "prior": "top_down"}.get(n.get("source"), "both"),
+                source=None,
                 ne=len(experts), experts=experts, ni=len(allit), all_items=allit, items=its, actions=[], desid=desid,
                 empty=not allit, issues=[], children=kids)
 
@@ -54,8 +54,7 @@ if "/*multi*/" not in s:
     old = "mount('L',D.bu,'bu');mount('R',D.mg,'mg');"
     assert old in s
     s = s.replace(old, """/*multi*/
-const TREES=[{key:'bu',title:'Bottom-up (2b_bottomup.json) — root at top level, leaves = actions',kind:'bu',root:D.bu,on:false},
- {key:'mg',title:'Merged tree (3_merged_tree.json) — skeleton + observed',kind:'mg',root:D.mg,on:false}]
+const TREES=[{key:'mg',title:'Merged tree (3_merged_tree.json) — skeleton + observed',kind:'mg',root:D.mg,on:false}]
  .concat(Object.entries(D.ag||{}).map(([k,a])=>({key:k,title:a.title+' — agent_tree/runs/'+k,kind:'mg',root:a.root,on:true})));
 function show(t){
  const w=document.getElementById('wrap'),p=document.createElement('div');p.className='pane';p.id='pane_'+t.key;

@@ -8,4 +8,5 @@ tacit-eval-pipeline-old/
 .DS_Store
 __pycache__/
 new_extraction/out/
+artifact_for_show/
 *.npz

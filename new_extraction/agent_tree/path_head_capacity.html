@@ -1,0 +1,91 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>How we reach: Change head capacity or attention</title>
+<style>
+:root{--maroon:#6b1320;--brown:#5a3e2b;--line:#e3d5c0;--beige:#f3e9db;--mute:#8a7a6a}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 -apple-system,"Segoe UI",sans-serif;color:#2a1f18;background:#fff}
+main{padding:22px 28px 40px;min-width:1500px}
+h1{font-size:20px;margin:0 0 2px}
+.lead{color:var(--mute);margin:0 0 14px;max-width:900px}
+.legend{display:flex;gap:22px;align-items:center;margin:0 0 18px;color:var(--brown)}
+.legend i{display:inline-block;width:26px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px}
+.case{border:1px solid var(--line);border-left:4px solid #d97706;border-radius:6px;padding:8px 12px;margin:0 0 20px;max-width:1000px;font-size:13px}
+.case b{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#b45309;display:block}
+#dg{position:relative;display:flex;gap:42px;align-items:flex-start}
+svg{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.col{width:300px;flex:none;position:relative;z-index:1}
+.col>h3{margin:0 0 10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--brown);min-height:34px}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;margin:0 0 12px}
+.card .nm{font-weight:600;font-size:15.5px}
+.card.sel{border:2px solid var(--maroon);box-shadow:0 0 0 4px #f6dfe1}
+.card .ds{color:var(--mute);margin-top:1px}
+.card .sec{border-top:1px dashed var(--line);margin-top:8px;padding-top:7px}
+.lab{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--brown);margin-right:5px}
+.cks{list-style:none;margin:6px 0 0;padding:0}
+.ck{position:relative;margin:5px 0;padding:1px 0 1px 24px;color:#4b3b30}
+.ck::before{content:"☐";position:absolute;left:2px;top:1px;color:var(--mute)}
+.ck.on::before{content:"✓";color:var(--maroon);font-weight:700}
+.ck.on{background:#fdf2f3;padding:4px 7px 4px 24px;border-radius:5px;color:#2a1f18;font-weight:500}
+.ck .sub{font-size:12.5px;color:var(--mute);margin-top:2px}
+.ck .sub b{color:var(--brown)}
+.ck .go{display:inline-block;font-size:11.5px;background:#f6dfe1;color:var(--maroon);border-radius:9px;padding:0 7px;margin:3px 4px 0 0}
+.card.root{background:var(--maroon);border-color:var(--maroon);color:#fff}
+.card.root .ds,.card.root .lab{color:#e9c9cd}
+.card.root .sec{border-color:#9a4a55}
+.card.root .ck{color:#f3dde0}
+.card.root .ck::before{color:#e9c9cd}.card.root .ck.on::before{color:#fff}.card.root .ck.on{background:#8a2a38;color:#fff}
+.card.root .ck .sub{color:#ecd0d4}.card.root .ck .sub b{color:#fff}
+.card.root .ck .go{background:#fff;color:var(--maroon)}
+.card.act{background:var(--beige);border-color:var(--line);padding:9px 13px}
+.card.act .nm{font-size:13.5px}
+.card.act.sel{border:2px solid var(--maroon)}
+.card.act .eid{font-size:12px;color:var(--mute);margin-top:1px}
+.card.act.sel .eid{color:var(--maroon);font-weight:600}
+.card.act .ds{font-size:12.5px;color:#4b3b30}
+.card.act .ds p{margin:4px 0 0}
+</style></head><body><main>
+<h1>How we reach “Change head capacity or attention”</h1>
+<p class="lead">Each column is one decision, titled by its question. The highlighted card is the branch taken. In the selected cards, the desiderata are listed as bullets: ✓ marks a check that holds in this case and decides the branch, ☐ marks a check that was considered but does not hold (name only).</p>
+<div class="legend"><span><i style="border:2px solid var(--maroon);box-shadow:0 0 0 3px #f6dfe1"></i>selected</span><span><i style="background:var(--beige);border:1.5px solid var(--line)"></i>episode (bottom of the tree)</span></div>
+<div class="case"><b>The case we walk through</b><span id="casetxt"></span></div>
+<div id="dg"><svg id="sv"></svg></div>
+<p class="lead" style="margin-top:16px;font-size:12.5px">Desiderata names, “how to verify” text and branch weights come from the codex tree’s <code>desiderata.json</code>. Which checks are highlighted, and the “In this case” lines, are a reading of the episode and are illustrative.</p>
+</main>
+<script>
+const D={"cols": [{"head": "GOAL", "cards": [{"id": "T", "name": "Improve the solution", "sel": true, "desc": "Choose the next concrete intervention using the available evidence, then revisit the tree after measuring its effect.", "decision": "what can I change to improve my solution?", "checks": [{"text": "The current predictions fail a schema, signal, or compatibility check.", "on": false, "how": "", "why": "", "pushes": []}, {"text": "The claimed gain is no larger than variation in prior unchanged runs.", "on": false, "how": "", "why": "", "pushes": []}, {"text": "Errors concentrate where the existing input representation loses available information.", "on": false, "how": "", "why": "", "pushes": []}, {"text": "A known noisy or shifted subgroup dominates the training errors.", "on": false, "how": "", "why": "", "pushes": []}, {"text": "Learning curves show underfitting, overfitting, or unstable optimization despite correct inputs.", "on": true, "how": "Compare training and held-out loss curves with the model capacity, loss, and optimizer configuration.", "why": "A strong ResNeXt backbone with inputs already correct; the 5-fold ensemble sits at 0.93873 and the author says the gain must come from the model, not the data.", "pushes": [["Change the learned model", 0.9]]}, {"text": "Available candidate predictors make complementary held-out errors.", "on": false, "how": "", "why": "", "pushes": []}, {"text": "Valid cached predictions exist and output mapping or blending is not yet compared on held-out data.", "on": false, "how": "", "why": "", "pushes": []}, {"text": "Resource failures prevent the intended full pipeline or meaningful trials from completing.", "on": false, "how": "", "why": "", "pushes": []}]}]}, {"head": "what can I change to improve my solution?", "parent": "T", "cards": [{"id": "T.1", "name": "Improve the evidence for choosing changes", "sel": false}, {"id": "T.2", "name": "Repair incorrect or mismatched predictions", "sel": false}, {"id": "T.3", "name": "Change the information presented to the model", "sel": false}, {"id": "T.4", "name": "Change training examples or targets", "sel": false}, {"id": "T.5", "name": "Change the learned model", "sel": true, "desc": "Choose an architecture, objective, or optimization experiment based on observed fit limitations.", "decision": "Which model-fitting change is the most plausible next intervention?", "checks": [{"text": "A correctly implemented backbone or learner has plateaued across local tuning.", "on": false, "how": "", "why": "", "pushes": []}, {"text": "A minimal head or fusion rule discards useful backbone or branch information.", "on": true, "how": "Inspect model forward code and branch dimensions and compare errors with representation ablations.", "why": "The head is just global pooling then a linear layer, so it discards spatial / channel information the backbone already computes.", "pushes": [["Change the prediction architecture", 0.9]]}, {"text": "The active learner is a tree model with capacity or convergence problems.", "on": false, "how": "", "why": "", "pushes": []}, {"text": "The active component is neural and its optimization or loss is suspect.", "on": false, "how": "", "why": "", "pushes": []}]}, {"id": "T.6", "name": "Change the prediction pool", "sel": false}, {"id": "T.7", "name": "Change prediction combination or output mapping", "sel": false}, {"id": "T.8", "name": "Make useful experiments feasible", "sel": false}]}, {"head": "Which model-fitting change is the most plausible next intervention?", "parent": "T.5", "cards": [{"id": "T.5.1", "name": "Choose a model family or initialization", "sel": false}, {"id": "T.5.2", "name": "Change the prediction architecture", "sel": true, "desc": "Target the representational bottleneck while retaining compatibility between learned weights and inference code.", "decision": "Which architectural component should I alter?", "checks": [{"text": "The backbone feeds a minimal, inappropriate shared, or oversized head.", "on": true, "how": "Inspect the head layers, per-target parameter sharing, and training/validation behavior.", "why": "The backbone feeds a minimal pool → linear head, so head capacity is the component to alter.", "pushes": [["Change head capacity or attention", 0.9]]}, {"text": "Only one hidden layer or pooling statistic is used despite variable-length or multi-layer information.", "on": false, "how": "", "why": "", "pushes": []}, {"text": "An auxiliary target or discretized version of the main target is available.", "on": false, "how": "", "why": "", "pushes": []}, {"text": "Multiple informative branches are merged by a lossy or untested rule.", "on": false, "how": "", "why": "", "pushes": []}, {"text": "The head overfits or varies markedly across seeds.", "on": false, "how": "", "why": "", "pushes": []}]}, {"id": "T.5.3", "name": "Tune a tree learner", "sel": false}, {"id": "T.5.4", "name": "Tune neural optimization or loss", "sel": false}]}, {"head": "Which architectural component should I alter?", "parent": "T.5.2", "cards": [{"id": "T.5.2.1", "name": "Change head capacity or attention", "sel": true, "desc": "Compare shared versus separate heads, hidden layers, and attention blocks on a fixed backbone.", "decision": "", "checks": []}, {"id": "T.5.2.2", "name": "Change pooling or representation normalization", "sel": false}, {"id": "T.5.2.3", "name": "Add auxiliary supervision", "sel": false}, {"id": "T.5.2.4", "name": "Change feature-level modality fusion", "sel": false}, {"id": "T.5.2.5", "name": "Change training-time dropout", "sel": false}]}, {"head": "Episodes filed under this leaf", "parent": "T.5.2.1", "cards": [{"id": "13848868:e2#1", "name": "ranzcr-clip-catheter-line-classification", "sel": true, "ctx": "Baseline 5-fold ensemble with a simple pooling+linear head scored 0.93873. The backbone was already strong (ResNeXt), so gains had to come from the head or post-processing.", "act": "Added an SSE (Squeeze-and-Excitation style) spatial-channel attention block before pooling (v7, +0.00266), then added a hidden Linear+ReLU+Dropout(0.5) layer between pooling and the final classifier (v9, +0.00135). Each architectural change was submitted first without rank conversion, then with rank conversion toggled on to measure its independent effect.", "action": true}, {"id": "13848868:e5#1", "name": "ranzcr-clip-catheter-line-classification", "sel": false, "ctx": "The previous best score (0.94396) used a MultiHeadResNeXt with SSE attention and a hidden+dropout head. The author had a new SingleHeadModel architecture to try with 5-fold ensemble.", "act": "Replaced MultiHeadResNeXt with SingleHeadModel in inference, expanded from 4 to 5 folds. Initial score dropped to 0.93993, but after further submissions (likely loading correct checkpoints trained with the new architecture), the score jumped to 0.95031 and eventually 0.95233, a large improvement over the prior best.", "action": true}, {"id": "13848868:e6#1", "name": "ranzcr-clip-catheter-line-classification", "sel": false, "ctx": "The best score so far was 0.95233 using an SSEBlock-based model with raw probabilities. The author replaced SSEBlock with SpatialAttentionBlock and swept channel configurations [32,16,1] and [64,32,16,1].", "act": "Tried SpatialAttentionBlock with [32,16,1] channels (LB 0.943–0.944), then widened to [64,32,16,1] (LB 0.948–0.950), then reverted to [32,16,1] (LB 0.949). None matched the prior best of 0.952. The author eventually reverted to SSEBlock in v29, confirming the replacement was not beneficial.", "action": true}, {"id": "13848868:e7#1", "name": "ranzcr-clip-catheter-line-classification", "sel": false, "ctx": "The best score with SpatialAttentionBlock was 0.95233 (v21). After several tweaks to SpatialAttentionBlock capacity and rank settings, scores plateaued around 0.949. The author previously achieved 0.94166 with SSEBlock (v8) but the model head has since changed. Reverting to SSEBlock is a probe to compare.", "act": "Swapped SpatialAttentionBlock back to SSEBlock in the model head (v29), scoring 0.94661. Then toggled rank conversion on (v30), scoring 0.94719. Both scores were well below the best SpatialAttentionBlock result (0.95233), so the author later reverted to SpatialAttentionBlock with larger channels (v31, 0.95418).", "action": true}, {"id": "49576186:e22#2", "name": "hms-harmful-brain-activity-classification", "sel": false, "ctx": "Previous best (0.26637) used multi-slice EEG stacking with CNN-only architecture. The author introduced a TransformerBlock class, changed EEG input to a single full 50s segment, and added per-sample normalization.", "act": "Added the Transformer block and full-window EEG representation in one commit, then scored 0.28049 — worse than the 0.26637 baseline. The author later removed the Transformer block in v139, indicating it did not help.", "action": true}, {"id": "15082684:e3#1", "name": "ranzcr-clip-catheter-line-classification", "sel": false, "ctx": "The best LB score (0.96040) was achieved early at v3; subsequent checkpoint swaps across 11 versions never surpassed it. The task has 11 binary labels, suggesting a multi-output architecture might better capture per-label structure.", "act": "Replaced the single-head classifier with a multi-head ResNet200D that uses spatial attention blocks per output group, loaded a student-pretrained backbone, and used a checkpoint trained with this architecture (cv 0.9662). This scored 0.95870, an improvement over the prior checkpoint-swap attempts but still below the v3 best.", "action": true}]}], "case": "Baseline 5-fold ensemble with a simple pooling+linear head scored 0.93873. The backbone was already strong (ResNeXt), so gains had to come from the head or post-processing."};
+const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+document.getElementById('casetxt').textContent=D.case;
+const dg=document.getElementById('dg');
+D.cols.forEach((col,ci)=>{
+ const el=document.createElement('div');el.className='col';
+ el.innerHTML=`<h3>${esc(col.head)}</h3>`+col.cards.map(c=>{
+  const root=ci==0;
+  if(c.action){
+   return `<div class="card act ${c.sel?'sel':''}" data-id="${esc(c.id)}"><div class="nm">${esc(c.name)}</div>
+    <div class="eid">${esc(c.id)}${c.sel?' · the case walked through':''}</div>
+    <div class="ds"><p><span class="lab">Context</span>${esc(c.ctx)}</p><p><span class="lab">Action</span>${esc(c.act)}</p></div></div>`}
+  if(!c.sel)return `<div class="card" data-id="${esc(c.id)}"><div class="nm">${esc(c.name)}</div></div>`;
+  let h=`<div class="card sel ${root?'root':''}" data-id="${esc(c.id)}"><div class="nm">${esc(c.name)}</div><div class="ds">${esc(c.desc)}</div>`;
+  if(c.decision)h+=`<div class="sec"><span class="lab">Next decision</span>${esc(c.decision)}</div>`;
+  if(c.checks&&c.checks.length)h+=`<div class="sec"><span class="lab">Desiderata</span><ul class="cks">`+c.checks.map(k=>
+   `<li class="ck ${k.on?'on':''}">${esc(k.text)}`+(k.on?`<div class="sub"><b>How to verify:</b> ${esc(k.how)}</div>`+(k.why?`<div class="sub"><b>In this case:</b> ${esc(k.why)}</div>`:'')+
+    `<div>${k.pushes.map(p=>`<span class="go">${esc(p[0])} ${p[1]>0?'+':''}${p[1]}</span>`).join('')}</div>`:'')+`</li>`).join('')+`</ul></div>`;
+  return h+`</div>`}).join('');
+ dg.appendChild(el);
+});
+function draw(){
+ const sv=document.getElementById('sv'),b=dg.getBoundingClientRect();sv.setAttribute('width',b.width);sv.setAttribute('height',b.height);
+ let p='';
+ D.cols.forEach((col,ci)=>{if(!col.parent)return;
+  const pc=dg.children[ci].querySelector('.card.sel');if(!pc)return;
+  const r=pc.getBoundingClientRect(),x1=r.right-b.left,y1=r.top+Math.min(40,r.height/2)-b.top;
+  dg.children[ci+1].querySelectorAll('.card').forEach(k=>{
+   const q=k.getBoundingClientRect(),x2=q.left-b.left,y2=q.top+22-b.top,m=(x1+x2)/2;
+   const sel=k.classList.contains('sel');
+   p+=`<path d="M${x1},${y1} C${m},${y1} ${m},${y2} ${x2},${y2}" fill="none" stroke="${sel?'#6b1320':'#e3d5c0'}" stroke-width="${sel?2:1.5}"/>`;
+  });
+ });
+ sv.innerHTML=p;
+}
+draw();addEventListener('resize',draw);addEventListener('load',draw);
+</script></body></html>

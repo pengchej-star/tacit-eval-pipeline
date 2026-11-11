@@ -1,0 +1,7 @@
+# Restore global thresholds  `T.8.1.6`   1 edits, 0 experts
+1 scored cases, median improvement +0.01088, 1 improved
+
+
+- expert 55621328 (Master) · learning · v74→v76   Revert the per-group post-processing and return to a single global calibration. When group-specific tuning hurts, it usually means the groups are too small or the test distribution differs from training; prefer the simpler global approach unless there is strong evidence of distinct subpopulations in
+    evidence: ✓ Subgroup-specific thresholds regress or depend on inaccurate group predictions. | ✓ Public high-scoring solutions or known best practices for this task use threshold optimization (e.g., Nelder-Mead on OOF) to maximize the evaluation metric. | ✗ No naive-rounding baseline score exists yet to compare against optimized thresholds. | ✗ The training objective or model predictions are currently unstable or incorrect, making threshold tuning premature. | ✗ The target column has only two distinct label values, making a simple threshold binarization the appropriate discretization. | ✓ Complex post-processing may interact with the training objective; simplifying to clip+round first would isolate each component's effect.
+    leaderboard score 0.81373 → 0.82461 (+0.01088)

@@ -1,0 +1,7 @@
+# Match a justified label distribution  `T.8.1.3`   1 edits, 0 experts
+1 scored cases, median improvement -0.00092, 0 improved
+
+
+- expert 55621328 (Master) · learning · v63→v68   Sort all test predictions by their continuous value and assign discrete labels so cumulative counts match the expected distribution. Compare the resulting metric against per-sample optimized-threshold rounding. Be aware that distribution matching ignores per-sample confidence and can hurt metrics th
+    evidence: ✓ A reliable expected label-frequency distribution is known for the evaluation population. | ✓ Public high-scoring solutions or known best practices for this task use threshold optimization (e.g., Nelder-Mead on OOF) to maximize the evaluation metric. | ✗ No naive-rounding baseline score exists yet to compare against optimized thresholds. | ✓ Simple rounding produced substantially worse scores than optimized threshold rounding, confirming the value of threshold optimization. | ✗ The target column has only two distinct label values, making a simple threshold binarization the appropriate discretization. | ✓ The discretization code path has a bug (missing column, name inconsistency, or incorrect guard) that prevents it from executing correctly.
+    leaderboard score 0.81174 → 0.81082 (-0.00092)

@@ -1,0 +1,5 @@
+# Keep unmodified continuous scores  `T.8.2.5`   1 edits, 0 experts
+
+- expert 6803050 (Master) · google · v35→v39   Avoid adding random noise to predictions when the evaluation metric is rank-based, as it can only degrade signal. Clipping to avoid exact 0/1 is also unnecessary for rank metrics. Use raw model outputs or deterministic post-processing (e.g., quantile mapping) instead.
+    evidence: ✓ The metric is invariant to the proposed rescaling and no calibration defect has been demonstrated. | ✗ The calibration transform is applied inside the training loop (not purely post-hoc), so it may alter gradient flow or interact with ensembling rather than being a simple monotonic rescaling. | ✓ The proposed correction magnitude has not been validated against a held-out or cross-validation metric. | ✓ Raw model outputs include boundary values (exactly 0 or 1) or out-of-range values that could cause numerical issues during calibration transforms.
+    leaderboard score n/a → 0.38287

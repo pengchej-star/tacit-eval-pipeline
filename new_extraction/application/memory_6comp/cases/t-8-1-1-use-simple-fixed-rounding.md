@@ -1,0 +1,7 @@
+# Use simple fixed rounding  `T.8.1.1`   1 edits, 0 experts
+1 scored cases, median improvement +0.00245, 1 improved
+
+
+- expert 58130512 (Master) · learning · v96→v97   Try replacing optimized ordinal thresholds with simple clip-and-round as a baseline. If the simpler approach scores comparably or better on the leaderboard, the threshold optimization is overfitting and should be removed or regularized.
+    evidence: ✓ Public high-scoring solutions or known best practices for this task use threshold optimization (e.g., Nelder-Mead on OOF) to maximize the evaluation metric. | ✓ No naive-rounding baseline score exists yet to compare against optimized thresholds. | ✓ The current threshold values are already optimized on OOF/validation data (not just naive midpoints). | ✓ Out-of-fold predictions are available from cross-validation to serve as the optimization target for threshold tuning. | ✓ Complex post-processing may interact with the training objective; simplifying to clip+round first would isolate each component's effect. | ✗ The target column has only two distinct label values, making a simple threshold binarization the appropriate discretization.
+    leaderboard score 0.81933 → 0.82179 (+0.00245)

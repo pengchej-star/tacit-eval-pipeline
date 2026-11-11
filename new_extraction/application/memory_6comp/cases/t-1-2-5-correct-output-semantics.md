@@ -1,0 +1,25 @@
+# Correct output semantics  `T.1.2.5`   7 edits, 0 experts
+3 scored cases, median improvement +0.01146, 3 improved
+
+
+- expert 27389424 (Grandmaster) · amex · v7→v8   Verify that the submission contains properly calibrated probabilities by applying the appropriate inverse-link function (e.g., sigmoid for binary classification) to raw model outputs. Plot histograms of both raw and transformed predictions to confirm the distribution is in [0,1] and has a sensible s
+    evidence: ✓ Scores suggest reversed risk ordering or outputs violate the metric’s required interpretation.
+    leaderboard score n/a → 0.78358
+- expert 28984551 (Contributor) · amex · v12→v13   Use the classifier variant of the model and extract class probabilities (not raw predictions) as stacking features. This keeps all base-learner outputs on the same [0,1] probability scale, improving ensemble coherence and typically the final metric.
+    evidence: ✗ A small-batch run raises an API, shape, or variable-reference exception. | ✗ The notebook completes but its output is missing, stale, or based on placeholder inputs. | ✓ Scores suggest reversed risk ordering or outputs violate the metric’s required interpretation.
+    leaderboard score 0.79232 → 0.79279 (+0.00047)
+- expert 28093671 (Contributor) · amex · v12→v15   Check which API was used to train the model. The low-level API's model object typically has only a generic `.predict()` method that returns probabilities when the objective is a classification loss. The scikit-learn wrapper adds `.predict_proba()`. Mixing them causes attribute errors. Match the pred
+    evidence: ✓ A small-batch run raises an API, shape, or variable-reference exception. | ✓ Scores suggest reversed risk ordering or outputs violate the metric’s required interpretation.
+    leaderboard score n/a → n/a
+- expert 77129691 (Master) · equity · v1→v2   Negate the predictions and resubmit. If the score jumps to roughly (1 − old_score), the sign was inverted. Always verify whether the evaluation expects higher predictions to mean higher risk or longer survival, and align accordingly.
+    evidence: ✗ A small-batch run raises an API, shape, or variable-reference exception. | ✗ Required files or packages are absent or incompatible in the submission environment. | ✗ The notebook completes but its output is missing, stale, or based on placeholder inputs. | ✓ Scores suggest reversed risk ordering or outputs violate the metric’s required interpretation. | ✗ The traceback identifies incompatible devices or unsupported accelerator settings.
+    leaderboard score 0.29019 → 0.69005 (+0.39986)
+- expert 7823861 (nan) · google · v7→v10   Before tuning the model, verify the full inference path: check that the correct prediction API is called, that encoders/transformers fitted on training data are applied (not re-fitted) to test data, and that all feature arrays have the correct length and alignment with test samples. A large score ju
+    evidence: ✓ A small-batch run raises an API, shape, or variable-reference exception. | ✓ Scores suggest reversed risk ordering or outputs violate the metric’s required interpretation. | ✓ The blended output disagrees with a direct recomputation from saved member arrays. | ✗ Required files or packages are absent or incompatible in the submission environment.
+    leaderboard score n/a → 0.41495
+- expert 55621328 (Master) · learning · v89→v92   Implement ordinal regression inference: treat each output unit as a cumulative threshold probability, apply sigmoid, and sum across thresholds to produce a continuous score. Add an offset (+1) if the label scale starts above zero. Then apply the same optimized rounding post-processing. This preserve
+    evidence: ✓ Scores suggest reversed risk ordering or outputs violate the metric’s required interpretation. | ✗ A small-batch run raises an API, shape, or variable-reference exception. | ✗ Required files or packages are absent or incompatible in the submission environment. | ✗ The traceback identifies incompatible devices or unsupported accelerator settings. | ✓ The blended output disagrees with a direct recomputation from saved member arrays. | ✓ The notebook completes but its output is missing, stale, or based on placeholder inputs.
+    leaderboard score 0.81590 → 0.82736 (+0.01146)
+- expert 55621328 (Master) · learning · v90→v91   After summing the sigmoid outputs, add the minimum label value as an offset so the predicted range matches the target range. Verify this alignment before applying any rounding or threshold optimization, as a mismatch will silently degrade the metric.
+    evidence: ✗ A small-batch run raises an API, shape, or variable-reference exception. | ✗ Required files or packages are absent or incompatible in the submission environment. | ✓ Scores suggest reversed risk ordering or outputs violate the metric’s required interpretation. | ✗ The traceback identifies incompatible devices or unsupported accelerator settings.
+    leaderboard score n/a → n/a

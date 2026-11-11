@@ -1,0 +1,34 @@
+# Change meta-learner complexity  `T.7.2.6`   10 edits, 0 experts
+9 scored cases, median improvement +0.00001, 6 improved
+
+
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v134→v137   Try alternative meta-learner variants (e.g., kernel or Bayesian versions of the same regularized linear model) one at a time, submitting each. If none beats the baseline, revert to the original meta-learner rather than continuing to explore variants—small datasets rarely reward more complex meta-lea
+    evidence: ✓ Leakage-free out-of-fold predictions and enough examples to fit a combiner are available. | ✓ A fitted stacker underfits or overfits while its input predictions remain fixed. | ✗ Members predict class distributions and stored logits are available. | ✓ Components have unequal validated quality and their combination changes the metric.
+    leaderboard score 0.44776 → 0.44975 (+0.00199)
+- expert 18851026 (Master) · commonlitreadabilityprize · v2→v4   Start with a simple linear model (ordinary or ridge regression) as the stacking meta-learner. Compare against a kernel-based or nonlinear model. On small, low-dimensional meta-feature sets the linear model often wins because it avoids overfitting; prefer it unless the nonlinear variant clearly impro
+    evidence: ✓ Leakage-free out-of-fold predictions and enough examples to fit a combiner are available. | ✓ A fitted stacker underfits or overfits while its input predictions remain fixed. | ✗ Members predict class distributions and stored logits are available.
+    leaderboard score 0.45969 → 0.46423 (+0.00453)
+- expert 18851026 (Master) · commonlitreadabilityprize · v5→v6   Try reverting the regularization parameter to its default. If the blended score does not change, the ensemble is robust to moderate shifts in one meta-learner's regularization, and further tuning effort on that parameter can be deprioritized.
+    evidence: ✓ Leakage-free out-of-fold predictions and enough examples to fit a combiner are available. | ✓ A fitted stacker underfits or overfits while its input predictions remain fixed. | ✗ Members predict class distributions and stored logits are available.
+    leaderboard score 0.45816 → 0.45816 (+0.00000)
+- expert 18851026 (Master) · commonlitreadabilityprize · v8→v9   Add a tree-based regressor (e.g., random forest) as a third meta-learner in the stacking blend. Keep the addition mostly experimental (e.g., partially commented out or low weight) and verify on the leaderboard that it does not overfit the small meta-training set before committing to it.
+    evidence: ✓ Leakage-free out-of-fold predictions and enough examples to fit a combiner are available. | ✓ A fitted stacker underfits or overfits while its input predictions remain fixed. | ✗ Members predict class distributions and stored logits are available.
+    leaderboard score 0.45924 → 0.45852 (-0.00072)
+- expert 18851026 (Master) · commonlitreadabilityprize · v28→v29   Add a sparse-penalty linear regressor to the blend and submit. If the score does not improve, try dropping the weakest existing member instead of keeping all three, since averaging more models only helps when they contribute complementary signal.
+    evidence: ✓ Leakage-free out-of-fold predictions and enough examples to fit a combiner are available. | ✓ A fitted stacker underfits or overfits while its input predictions remain fixed. | ✗ Members predict class distributions and stored logits are available.
+    leaderboard score 0.45803 → 0.45819 (+0.00016)
+- expert 73937748 (Master) · equity · v31→v35   Start with a moderate default regularization strength. If automated tuning of the meta-learner's hyperparameters does not improve the holdout/LB score, prefer the simpler default — with few meta-features, the optimization surface is noisy and tuning can overfit. Ensure the search range is wide enoug
+    evidence: ✓ Leakage-free out-of-fold predictions and enough examples to fit a combiner are available. | ✓ A fitted stacker underfits or overfits while its input predictions remain fixed. | ✗ Members predict class distributions and stored logits are available.
+    leaderboard score 0.69032 → n/a
+- expert 73937748 (Master) · equity · v52→v54   If switching from L2 to L1 regularization in the meta-learner causes a large score drop, revert immediately. L1 can zero out useful contributors when base-model predictions are correlated, making L2 the safer default for stacking ensembles of many similar models. Instead of changing the meta-learner
+    evidence: ✓ Leakage-free out-of-fold predictions and enough examples to fit a combiner are available. | ✓ A fitted stacker underfits or overfits while its input predictions remain fixed. | ✓ The metric depends on ordering and member outputs have incompatible scales or outliers. | ✗ Members predict class distributions and stored logits are available.
+    leaderboard score 0.69155 → 0.69113 (-0.00042)
+- expert 73937748 (Master) · equity · v55→v56   Widen the search range for the regularization parameter (increase the upper bound) and tighten the convergence tolerance floor (decrease the lower bound) so the optimizer can explore both stronger regularization and more precise fits. Submit to verify the wider range helps.
+    evidence: ✓ A fitted stacker underfits or overfits while its input predictions remain fixed.
+    leaderboard score 0.68977 → 0.69178 (+0.00202)
+- expert 73937748 (Master) · equity · v57→v58   Widen the regularization search range, increase the number of random startup trials in the optimizer to improve exploration, and reorder candidate features by individual quality before greedy selection. Monitor whether the change helps; if the score drops or stays flat, revert — at this stage the en
+    evidence: ✓ Leakage-free out-of-fold predictions and enough examples to fit a combiner are available. | ✓ A fitted stacker underfits or overfits while its input predictions remain fixed. | ✓ The metric depends on ordering and member outputs have incompatible scales or outliers. | ✗ Members predict class distributions and stored logits are available.
+    leaderboard score 0.69183 → 0.69177 (-0.00006)
+- expert 73937748 (Master) · equity · v64→v67   Expand the hyperparameter search space of the linear meta-learner (regularization strength, tolerance, intercept toggle, coefficient-sign constraint) and run a bounded automated search. Expect negligible gains when the ensemble composition and base models are already mature; the meta-learner's HP se
+    evidence: ✓ Leakage-free out-of-fold predictions and enough examples to fit a combiner are available. | ✓ A fitted stacker underfits or overfits while its input predictions remain fixed. | ✗ Members predict class distributions and stored logits are available.
+    leaderboard score 0.69312 → 0.69313 (+0.00001)

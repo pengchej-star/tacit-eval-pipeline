@@ -1,0 +1,13 @@
+# Add auxiliary supervision  `T.5.2.2`   3 edits, 0 experts
+1 scored cases, median improvement +0.00790, 1 improved
+
+
+- expert 17371717 (Master) · commonlitreadabilityprize · v19→v20   Add a parallel classification head that predicts the target binned into discrete categories. Train with both regression and classification losses. At inference, use the regression output (or blend both). This can regularize the model and provide complementary signal, especially on small datasets.
+    evidence: ✓ A related target can be derived from the training labels without test leakage. | ✓ A previous change to the aggregation head degraded performance, indicating the current head design is suboptimal. | ✓ Public or known solutions for this task use auxiliary classification heads alongside regression to regularize on small data. | ✓ The proposed aggregation head is incompatible with existing trained checkpoints, requiring retraining or architectural bridging.
+    leaderboard score n/a → 0.46543
+- expert 17371717 (Master) · commonlitreadabilityprize · v33→v36   Test the model with and without the auxiliary classification head while keeping other factors fixed. If the regression-only configuration scores better, drop the auxiliary head—on small datasets the extra head can introduce noise that outweighs its regularization benefit.
+    evidence: ✓ Public or known solutions for this task use auxiliary classification heads alongside regression to regularize on small data. | ✓ The auxiliary classification head is effectively disabled by the current configuration (e.g., num_bins=1). | ✓ The auxiliary binning/classification head has shown inconsistent benefit across different checkpoint and pooling configurations. | ✓ A related target can be derived from the training labels without test leakage.
+    leaderboard score 0.46357 → 0.47147 (+0.00790)
+- expert 6803050 (Master) · google · v27→v30   Try loading the joint checkpoints and adapting the inference architecture to include the auxiliary head. Compare leaderboard scores against the single-head baseline. If the joint model underperforms, revert to the simpler single-head architecture—auxiliary heads that help training do not always help
+    evidence: ✓ A related target can be derived from the training labels without test leakage. | ✓ The proposed aggregation head is incompatible with existing trained checkpoints, requiring retraining or architectural bridging. | ✓ A previous change to the aggregation head degraded performance, indicating the current head design is suboptimal. | ✓ The auxiliary binning/classification head has shown inconsistent benefit across different checkpoint and pooling configurations.
+    leaderboard score n/a → 0.35475

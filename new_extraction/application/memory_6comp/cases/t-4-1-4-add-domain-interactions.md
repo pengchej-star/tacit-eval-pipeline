@@ -1,0 +1,22 @@
+# Add domain interactions  `T.4.1.4`   6 edits, 0 experts
+4 scored cases, median improvement +0.00013, 3 improved
+
+
+- expert 27836972 (Expert) · amex · v43→v55   Test a small representative subset of the proposed interaction features first and check the leaderboard or validation score before expanding. If the initial subset does not improve the score, the tree model is likely already capturing those interactions, and further sweeping of variants is unlikely 
+    evidence: ✗ The current model uses raw repeated rows without an entity-level baseline. | ✗ Multiple observations exist but only one record per entity reaches the model. | ✗ Global summaries discard recency or the order of meaningful changes. | ✓ Related variables encode a meaningful contrast not explicit in the current features.
+    leaderboard score 0.79452 → n/a
+- expert 27836972 (Expert) · amex · v69→v70   Build interaction features using smoothed aggregates (e.g., recent-window means) rather than single-point values, and restrict to a small number of domain-motivated column pairs rather than a broad combinatorial expansion. This reduces noise while preserving meaningful signal.
+    evidence: ✗ The current model uses raw repeated rows without an entity-level baseline. | ✗ Multiple observations exist but only one record per entity reaches the model. | ✗ Global summaries discard recency or the order of meaningful changes. | ✓ Related variables encode a meaningful contrast not explicit in the current features.
+    leaderboard score n/a → n/a
+- expert 27799930 (Contributor) · amex · v65→v69   Create interaction features by combining semantically related columns (e.g., subtracting one group from another), and add custom aggregation functions (root-mean-square, mean-of-differences) applied selectively to feature subgroups rather than all columns. Pair this with aggressive dropping of low-i
+    evidence: ✗ The current model uses raw repeated rows without an entity-level baseline. | ✗ Multiple observations exist but only one record per entity reaches the model. | ✓ Related variables encode a meaningful contrast not explicit in the current features. | ✓ Global summaries discard recency or the order of meaningful changes.
+    leaderboard score 0.79462 → 0.79475 (+0.00013)
+- expert 75145694 (Expert) · equity · v17→v19   Test the new features in isolation or with minimal ensemble changes first. If the score drops, the new features may be adding noise or conflicting with existing model outputs. Do not simultaneously change features and ensemble composition, as it confounds diagnosis of what helped or hurt.
+    evidence: ✗ The current model uses raw repeated rows without an entity-level baseline. | ✗ Multiple observations exist but only one record per entity reaches the model. | ✗ Global summaries discard recency or the order of meaningful changes. | ✓ Related variables encode a meaningful contrast not explicit in the current features.
+    leaderboard score 0.69070 → 0.68978 (-0.00092)
+- expert 75145694 (Expert) · equity · v28→v29   Create experiment-specific feature pipelines so each member model gets tailored features. Compute multiple survival-derived labels (e.g., cumulative hazard and survival probability transforms) as alternative regression targets. Standardize numeric features per-experiment. Expect small but consistent
+    evidence: ✗ The current model uses raw repeated rows without an entity-level baseline. | ✗ Multiple observations exist but only one record per entity reaches the model. | ✗ Global summaries discard recency or the order of meaningful changes. | ✓ Related variables encode a meaningful contrast not explicit in the current features.
+    leaderboard score 0.69133 → 0.69139 (+0.00006)
+- expert 73937748 (Master) · equity · v7→v8   Create explicit interaction features (products, ratios, composite scores) between variables known to interact in the domain. Also create binary risk flags and categorical encodings that simplify the split search for trees. Combine multiple such features in one iteration and re-optimize ensemble weig
+    evidence: ✗ The current model uses raw repeated rows without an entity-level baseline. | ✗ Multiple observations exist but only one record per entity reaches the model. | ✗ Global summaries discard recency or the order of meaningful changes. | ✓ Related variables encode a meaningful contrast not explicit in the current features.
+    leaderboard score 0.68768 → 0.68946 (+0.00178)

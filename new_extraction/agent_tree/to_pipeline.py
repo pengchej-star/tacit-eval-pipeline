@@ -8,6 +8,11 @@ agent = sys.argv[1]
 HERE = Path(__file__).resolve().parent
 NE = HERE.parent
 os.environ["NE_SUFFIX"] = f"_agent_{agent}"
+ITEMS = HERE / "runs" / agent / "episode_items.jsonl"   # present when the run used a subset of competitions (run_codex.sh EXCLUDE_COMP)
+KEEP = None
+if ITEMS.exists():
+    KEEP = sorted({json.loads(l)["comp"] for l in open(ITEMS)})
+    os.environ["NE_COMPS"] = ",".join(KEEP)
 sys.path.insert(0, str(NE))
 from pipeline_tree import merge   # noqa: E402  (after env: finalize)
 from common import OUT, jdump     # noqa: E402
@@ -16,11 +21,17 @@ if (OUT / "5_visits.json").exists() and "--force" not in sys.argv:
     sys.exit(f"{OUT} already has step 5-8 results; they would be inconsistent with a rewritten tree/desiderata. Use --force to overwrite.")
 SRC = NE / "out" / "pooled_episode"      # same items, same transitions as the reported run
 for f in ("2a_items.json", "trans.json"):
-    shutil.copy(SRC / f, OUT / f)
+    rows = json.load(open(SRC / f))
+    if KEEP:
+        rows = [r for r in rows if r["comp"] in KEEP]
+    jdump(rows, OUT / f)
 
 tree = json.load(open(HERE / "runs" / agent / "output" / "tree.json"))
 des = json.load(open(HERE / "runs" / agent / "output" / "desiderata.json"))["nodes"]
-assert not tree.get("unassigned"), "unassigned items: add a node for them first"
+unassigned = {u["item"] for u in tree.get("unassigned") or []}
+if unassigned:     # the agent declared these non-substantive (no modeling/eval change): leave them out of the items so steps 5-8 never look for them in the tree
+    print(f"dropping {len(unassigned)} unassigned items from 2a_items.json: {sorted(unassigned)}")
+    jdump([i for i in json.load(open(OUT / "2a_items.json")) if i["id"] not in unassigned], OUT / "2a_items.json")
 
 def conv(n, depth):
     kids = [conv(c, depth + 1) for c in n.get("children") or []]

@@ -1,0 +1,17 @@
+# Add temporal contrasts  `T.4.1.3`   5 edits, 0 experts
+
+- expert 27836972 (Expert) · amex · v7→v18   Try simple transformations first: days-since-reference-date (global max or per-group max), then include in standard aggregations or take only the 'last' value. Submit after each variant and compare to baseline. If no variant improves the score after several attempts, accept that the date feature add
+    evidence: ✗ The current model uses raw repeated rows without an entity-level baseline. | ✗ Multiple observations exist but only one record per entity reaches the model. | ✓ Global summaries discard recency or the order of meaningful changes.
+    leaderboard score n/a → 0.79274
+- expert 27836972 (Expert) · amex · v18→v22   Prototype lag features on a small data sample with progress bars and debug prints. If implementation proves fragile or slow after a few iterations, abandon the approach and try a simpler feature transformation rather than sinking more time into debugging.
+    evidence: ✗ The current model uses raw repeated rows without an entity-level baseline. | ✗ Multiple observations exist but only one record per entity reaches the model. | ✓ Global summaries discard recency or the order of meaningful changes.
+    leaderboard score 0.79274 → n/a
+- expert 27836972 (Expert) · amex · v39→v43   Add first-aggregation and derived lag features (last minus first, last divided by first) incrementally. Submit after each addition and compare to the best known score. If the score drops, try removing the noisiest variant (e.g., the ratio) separately. If neither variant improves the score, revert th
+    evidence: ✗ The current model uses raw repeated rows without an entity-level baseline. | ✗ Multiple observations exist but only one record per entity reaches the model. | ✓ Global summaries discard recency or the order of meaningful changes. | ✓ Related variables encode a meaningful contrast not explicit in the current features.
+    leaderboard score n/a → 0.79452
+- expert 27836972 (Expert) · amex · v55→v62   Compute aggregations (e.g., mean) over only the last N records per entity, where N is a small fraction of the typical sequence length. Add these as new features alongside the full-history aggregations. Start with a small window (e.g., last 3 records), confirm improvement, then optionally sweep the w
+    evidence: ✗ The current model uses raw repeated rows without an entity-level baseline. | ✗ Multiple observations exist but only one record per entity reaches the model. | ✓ Global summaries discard recency or the order of meaningful changes.
+    leaderboard score n/a → n/a
+- expert 27836972 (Expert) · amex · v63→v67   Implement the difference features, but before committing to a submission, disable them and submit without them to establish a clean baseline. If the feature was tried multiple times before without success, treat it as low-priority and avoid spending many iterations refining the implementation before
+    evidence: ✗ The current model uses raw repeated rows without an entity-level baseline. | ✗ Multiple observations exist but only one record per entity reaches the model. | ✓ Global summaries discard recency or the order of meaningful changes.
+    leaderboard score n/a → 0.79497

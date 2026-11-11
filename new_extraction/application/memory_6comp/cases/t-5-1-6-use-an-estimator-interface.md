@@ -1,0 +1,5 @@
+# Use an estimator interface  `T.5.1.6`   1 edits, 0 experts
+
+- expert 27656049 (Expert) · amex · v6→v7   Use the scikit-learn-compatible estimator class. It handles dataset wrapping internally, provides a predict_proba method for direct probability output, and accepts early-stopping callbacks in the fit call, reducing boilerplate and integration friction.
+    evidence: ✗ The wrapper prevents configuring the required custom callback or iteration selection. | ✓ Dataset wrapping and prediction-method differences are causing integration errors without a need for native-only controls. | ✗ The proposed alternative was already tried and reverted in a prior iteration, so the replacement has already been evaluated. | ✗ The current model variant has reached a strong, stable best score that serves as a clear baseline for evaluating the alternative. | ✓ A prior full-swap attempt was not submitted or failed, motivating a more incremental (selective/staged) replacement strategy. | ✓ The alternative learner offers hardware acceleration (e.g., GPU training) that could speed up hyperparameter sweeps compared to the current setup.
+    leaderboard score n/a → n/a

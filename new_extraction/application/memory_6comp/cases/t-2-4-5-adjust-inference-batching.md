@@ -1,0 +1,25 @@
+# Adjust inference batching  `T.2.4.5`   7 edits, 0 experts
+4 scored cases, median improvement -0.00694, 0 improved
+
+
+- expert 7823861 (nan) · google · v2→v4   Try the smallest possible batch size (1) first to rule out memory issues and shape mismatches. If that fails, increment the batch size to check whether the error is batch-related. Revert to the smallest working value once a successful run is confirmed.
+    evidence: ✓ A single inference batch exceeds device memory or padding dominates its size. | ✓ The previous version failed to produce a submission (no LB score), so a re-run with no or minimal code changes is the cheapest way to obtain feedback. | ✓ A previous version already split a memory-heavy operation into multiple calls, indicating the single-call approach caused OOM.
+    leaderboard score n/a → -0.00372
+- expert 7670859 (Contributor) · google · v16→v17   Halve the inference batch size from the previous setting and re-run. If it still fails, halve again. Choose the largest power-of-two batch size that completes without memory errors to balance throughput and stability.
+    evidence: ✓ A single inference batch exceeds device memory or padding dominates its size. | ✓ The previous version failed to produce a submission (no LB score), so a re-run with no or minimal code changes is the cheapest way to obtain feedback.
+    leaderboard score n/a → n/a
+- expert 50376011 (Grandmaster) · hms · v77→v79   Change only one variable at a time when possible. If a large batch size degrades the score, revert to the smaller default; large batches can cause silent OOM issues or numerical differences that hurt predictions, especially on limited GPU memory.
+    evidence: ✓ A global initialization routine overrides manually-set configuration values, preventing experimentation with those parameters. | ✗ The previous version failed to produce a submission (no LB score), so a re-run with no or minimal code changes is the cheapest way to obtain feedback. | ✓ A single inference batch exceeds device memory or padding dominates its size.
+    leaderboard score 0.36160 → 0.33044 (-0.03116)
+- expert 50376011 (Grandmaster) · hms · v221→v222   When expanding the number of ensemble members, proportionally reduce the inference batch size to keep peak memory within budget. Process one model at a time, accumulate predictions, and average at the end.
+    evidence: ✓ Memory grows as successive models or framework stages are loaded. | ✓ A single inference batch exceeds device memory or padding dominates its size. | ✗ Stored arrays or activations dominate memory and a precision reference is available. | ✗ The previous version failed to produce a submission (no LB score), so a re-run with no or minimal code changes is the cheapest way to obtain feedback.
+    leaderboard score 0.24562 → 0.23868 (-0.00694)
+- expert 55621328 (Master) · learning · v76→v78   Sort or bucket the inference dataset by token length so each batch contains sequences of similar length, minimizing padding. After inference, re-map predictions to the original sample identifiers to avoid alignment errors.
+    evidence: ✓ A single inference batch exceeds device memory or padding dominates its size. | ✗ The previous version failed to produce a submission (no LB score), so a re-run with no or minimal code changes is the cheapest way to obtain feedback. | ✓ A previously deleted or out-of-scope variable is still referenced downstream, causing a runtime error.
+    leaderboard score 0.82461 → 0.82461 (+0.00000)
+- expert 50496431 (Grandmaster) · hms · v62→v68   Start with a conservatively small batch size (e.g., one-eighth of the default) for the new model. Only increase after verifying that checkpoint loading is strict (no missing/unexpected keys) and that model configuration parameters exactly match the trained checkpoint. A sudden catastrophic score is 
+    evidence: ✓ A single inference batch exceeds device memory or padding dominates its size. | ✓ The previous version failed to produce a submission (no LB score), so a re-run with no or minimal code changes is the cheapest way to obtain feedback. | ✓ A previous version already split a memory-heavy operation into multiple calls, indicating the single-call approach caused OOM. | ✓ Memory grows as successive models or framework stages are loaded.
+    leaderboard score n/a → 0.30784
+- expert 50496431 (Grandmaster) · hms · v102→v104   Implement flip TTA inside the model's forward pass by concatenating original and flipped inputs along the batch dimension, running one forward pass, then averaging paired outputs. Halve the dataloader batch size to keep total GPU memory roughly constant. Evaluate the upgraded member both in isolatio
+    evidence: ✓ A single inference batch exceeds device memory or padding dominates its size.
+    leaderboard score 0.28002 → 0.27115 (-0.00887)

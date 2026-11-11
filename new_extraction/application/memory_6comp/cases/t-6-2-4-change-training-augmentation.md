@@ -1,0 +1,19 @@
+# Change training augmentation  `T.6.2.4`   5 edits, 0 experts
+4 scored cases, median improvement +0.00298, 3 improved
+
+
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v49→v50   Swap in the alternative fold predictions and evaluate on the leaderboard. If the score degrades further, abandon that augmentation variant and return to the previously best-performing ensemble composition rather than continuing to explore weaker components.
+    evidence: ✓ A transformation can vary inputs while preserving or consistently mixing target meaning. | ✓ Previous augmentation changes (e.g., spectrogram blackout, time-cropping/masking) did not clearly improve scores and need further iteration or reversion.
+    leaderboard score 0.47952 → 0.49902 (+0.01950)
+- expert 49576186 (Expert) · hms · v58→v60   Extend mixup to blend three samples with a dominant weight on the primary sample (e.g., 0.8) and split the remainder randomly between two other samples. Ensure NaN values in inputs are zeroed before mixing. Evaluate in isolation or with minimal other changes to attribute any score change correctly.
+    evidence: ✓ A transformation can vary inputs while preserving or consistently mixing target meaning. | ✓ Multiple hyperparameters were changed simultaneously in a previous edit, so individual effects are confounded and need isolated testing.
+    leaderboard score n/a → 0.41959
+- expert 49576186 (Expert) · hms · v157→v163   Add random zeroing of contiguous time-frequency regions in the spectrogram (applied stochastically per sample during training only). Test across multiple runs. If the score does not improve after several attempts, the augmentation is not beneficial for this input representation and should be reverte
+    evidence: ✓ A transformation can vary inputs while preserving or consistently mixing target meaning. | ✓ Previous augmentation changes (e.g., spectrogram blackout, time-cropping/masking) did not clearly improve scores and need further iteration or reversion. | ✓ Multiple hyperparameters were changed simultaneously in a previous edit, so individual effects are confounded and need isolated testing. | ✓ Training improves while held-out performance degrades on a small labeled dataset.
+    leaderboard score 0.27394 → 0.27691 (+0.00298)
+- expert 58130512 (Master) · learning · v81→v86   Generate synthetic samples by finding nearest neighbors within each label class (using an approximate nearest-neighbor index for speed) and interpolating their feature vectors. Append these to training folds. Monitor both validation and leaderboard scores carefully: mixup-style augmentation in featu
+    evidence: ✓ A transformation can vary inputs while preserving or consistently mixing target meaning. | ✓ Previous augmentation changes (e.g., spectrogram blackout, time-cropping/masking) did not clearly improve scores and need further iteration or reversion. | ✓ Multiple hyperparameters were changed simultaneously in a previous edit, so individual effects are confounded and need isolated testing. | ✓ Training improves while held-out performance degrades on a small labeled dataset.
+    leaderboard score 0.82250 → 0.82322 (+0.00073)
+- expert 58130512 (Master) · learning · v86→v87   Remove the augmentation entirely and compare the score. If performance is similar or only marginally worse, the augmentation is not contributing meaningful signal and should be dropped to simplify the pipeline and reduce confounding when tuning other levers.
+    evidence: ✓ Previous augmentation changes (e.g., spectrogram blackout, time-cropping/masking) did not clearly improve scores and need further iteration or reversion. | ✓ Multiple hyperparameters were changed simultaneously in a previous edit, so individual effects are confounded and need isolated testing.
+    leaderboard score 0.82322 → 0.82230 (-0.00092)

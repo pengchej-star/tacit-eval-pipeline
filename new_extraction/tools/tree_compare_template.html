@@ -43,21 +43,21 @@ const D=__DATA__;
 const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 function count(n){n.size=1+n.children.reduce((a,c)=>a+count(c),0);return n.size}
 function leaves(n){return n.children.length?n.children.reduce((a,c)=>a+leaves(c),0):1}
-function itemsHtml(ids){return ids.map(i=>{const t=D.items[i];return t?`<div class="it"><b>${esc(i)}</b> <i>${esc(t.comp)}</i>\n<b>Q:</b> ${esc(t.goal)}\n<b>Did:</b> ${esc(t.what)}</div>`:`<div class="it">${esc(i)}</div>`}).join('')}
+function itemsHtml(ids){return ids.map(i=>{const t=D.items[i];return t?`<div class="it"><b>${esc(i)}</b> <i>${esc(t.comp)}</i>\n<b>Context:</b> ${esc(t.ctx)}\n<b>Action:</b> ${esc(t.act)}</div>`:`<div class="it">${esc(i)}</div>`}).join('')}
 function build(n,kind){
  const li=document.createElement('li');li._n=n;
  const hasK=n.children.length;
  const row=document.createElement('div');row.className='row';
- let badges=`<span class="b">${esc(n.id)}</span>`;
+ let badges='';
  if(kind=='bu'){badges+=`<span class="b">L${n.level}</span><span class="b">${n.ne} experts</span>`;if(!hasK)badges+=`<span class="b">${n.items.length} items</span>`}
- else{badges+=`<span class="b ${n.source}">${n.source}</span><span class="b">${n.ne} experts / ${n.ni} edits</span>`;if(n.actions.length)badges+=`<span class="b">${n.actions.length} actions</span>`;if(n.desid.length)badges+=`<span class="b ds">☑ ${n.desid.reduce((a,g)=>a+g.checks.length,0)} desiderata</span>`;if(n.empty)badges+=`<span class="b warn">empty (no expert edit)</span>`;if(n.issues.length)badges+=`<span class="b warn">⚠ ${n.issues.length} check issues</span>`}
+ else{if(n.source)badges+=`<span class="b ${n.source}">${n.source}</span>`;badges+=`<span class="b">${n.ne} experts / ${n.ni} edits</span>`;if(n.actions.length)badges+=`<span class="b">${n.actions.length} actions</span>`;if(n.empty)badges+=`<span class="b warn">empty (no expert edit)</span>`;}
  if(hasK)badges+=`<span class="b">${hasK} ▸ ${leaves(n)} leaves</span>`;
  row.innerHTML=`<span class="tog">${hasK?'▸':'·'}</span><span class="name">${esc(n.name)}</span>${badges}<span class="sub">${esc(n.sub)}</span>`;
  li.appendChild(row);
  const det=document.createElement('div');det.className='det';
- let h='';if(n.experts&&n.experts.length&&n.experts.length<=30)h+=`<b>Experts:</b> ${esc(n.experts.join(', '))}\n`;if(n.text)h+=`<b>Summary:</b> ${esc(n.text)}\n`;if(n.sub)h+=`<b>Question:</b> ${esc(n.sub)}\n`;
+ let h='';if(n.text)h+=`<b>Description:</b> ${esc(n.text)}\n`;if(n.experts&&n.experts.length&&n.experts.length<=30)h+=`<b>Experts:</b> ${esc(n.experts.join(', '))}\n`;if(n.sub)h+=`<b>Question:</b> ${esc(n.sub)}\n`;
  if(n.issues&&n.issues.length)h+=`<b>Sibling check issues:</b>\n`+n.issues.map(x=>'• '+esc(x)).join('\n')+'\n';
- if(n.desid&&n.desid.length){h+=`<b>Desiderata (${n.desid.reduce((a,g)=>a+g.checks.length,0)} checks):</b>\n`;n.desid.forEach(g=>{h+=`<div class="it" style="border-color:#c084fc"><b>${esc(g.under)}</b>`+g.checks.map(c=>`\n☐ ${esc(c.check)}\n    <i>how:</i> ${esc(c.how)}\n    <i>pushes:</i> ${c.pushes.map(p=>esc(p[0])+' '+(p[1]>0?'+':'')+p[1]).join('; ')}`).join('')+`</div>`})}
+ if(n.desid&&n.desid.length){h+=`<b>Desiderata:</b>\n`;n.desid.forEach(g=>{h+=`<div class="it" style="border-color:#c084fc"><b>${esc(g.under)}</b>`+g.checks.map(c=>`\n☐ ${esc(c.check)}\n    <i>how:</i> ${esc(c.how)}\n    <i>pushes:</i> ${c.pushes.map(p=>esc(p[0])+' '+(p[1]>0?'+':'')+p[1]).join('; ')}`).join('')+`</div>`})}
  if(n.actions&&n.actions.length)h+=`<b>Actions:</b> ${esc(n.actions.join(', '))}\n`;
  if(n.items&&n.items.length)h+=`<b>Items (${n.items.length}):</b>\n`+itemsHtml(n.items);
  det.innerHTML=h;li.appendChild(det);
@@ -73,7 +73,7 @@ function mount(id,n,kind){const ul=document.createElement('ul');const li=build(n
 mount('L',D.bu,'bu');mount('R',D.mg,'mg');
 function depth(d){for(const id in roots){(function go(li,k){ if(!li._n.children.length)return; li.open(k<d); if(li._o&&li.lastChild.tagName=='UL')[...li.lastChild.children].forEach(c=>go(c,k+1))})(roots[id],0)}}
 // search: expand path to matches in both trees, highlight
-function match(n,q){return (n.name+' '+n.sub+' '+n.text+' '+(n.experts||[]).join(' ')+' '+(n.desid||[]).map(g=>g.under+' '+g.checks.map(c=>c.check).join(' ')).join(' ')).toLowerCase().includes(q)||(n.items||[]).some(i=>{const t=D.items[i];return t&&(t.goal+' '+t.what+' '+t.expert+' '+i).toLowerCase().includes(q)})}
+function match(n,q){return (n.name+' '+n.sub+' '+n.text+' '+(n.experts||[]).join(' ')+' '+(n.desid||[]).map(g=>g.under+' '+g.checks.map(c=>c.check).join(' ')).join(' ')).toLowerCase().includes(q)||(n.items||[]).some(i=>{const t=D.items[i];return t&&(t.ctx+' '+t.act+' '+t.expert+' '+i).toLowerCase().includes(q)})}
 function search(q){let total=0;
  for(const id in roots){
   (function go(li){const n=li._n;let any=false;const self=q&&match(n,q);

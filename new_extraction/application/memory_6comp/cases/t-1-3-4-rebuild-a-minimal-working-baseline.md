@@ -1,0 +1,16 @@
+# Rebuild a minimal working baseline  `T.1.3.4`   4 edits, 0 experts
+1 scored cases, median improvement +0.00071, 1 improved
+
+
+- expert 28093671 (Contributor) · amex · v26→v28   Rewrite the full pipeline from scratch in one pass: proper missing-value imputation (e.g., median), systematic per-entity aggregation features (last, mean, std), standard scaling, cross-validated training with the competition metric, and correct fold-averaged inference. A clean rebuild can yield a l
+    evidence: ✓ A previously verified configuration exists and recent bundled edits caused a large regression. | ✓ Repeated branches and implicit configuration make model dispatch or data flow inconsistent. | ✓ No end-to-end baseline can be reproduced from the current implementation. | ✓ A newly integrated path has never completed on representative data.
+    leaderboard score n/a → 0.70811
+- expert 27656049 (Expert) · amex · v1→v7   Build the pipeline in small incremental steps: first get data loading and cleaning working (drop high-missing columns, encode categoricals), then add the aggregation logic (e.g., keep last row per entity), then add model training with early stopping, then enable hardware acceleration and tune tree c
+    evidence: ✓ A newly integrated path has never completed on representative data. | ✗ A previously verified configuration exists and recent bundled edits caused a large regression. | ✓ No end-to-end baseline can be reproduced from the current implementation. | ✓ Repeated branches and implicit configuration make model dispatch or data flow inconsistent.
+    leaderboard score n/a → n/a
+- expert 75145694 (Expert) · equity · v1→v3   In the first version, assemble a complete pipeline that includes: (1) a non-parametric survival transform (e.g., Kaplan-Meier probabilities) as the regression target, (2) importing one or more external pretrained models for blending, (3) a local evaluation function matching the competition metric, a
+    evidence: ✓ A newly integrated path has never completed on representative data. | ✗ A previously verified configuration exists and recent bundled edits caused a large regression. | ✓ Repeated branches and implicit configuration make model dispatch or data flow inconsistent. | ✓ No end-to-end baseline can be reproduced from the current implementation.
+    leaderboard score 0.68795 → 0.68865 (+0.00071)
+- expert 77386286 (Expert) · equity · v1→v2   Build and submit a complete end-to-end pipeline as quickly as possible to establish a numeric baseline. This anchors all future experiments and reveals whether the task is easy or hard relative to the leaderboard distribution.
+    evidence: ✓ A newly integrated path has never completed on representative data. | ✗ A previously verified configuration exists and recent bundled edits caused a large regression. | ✗ Repeated branches and implicit configuration make model dispatch or data flow inconsistent. | ✓ No end-to-end baseline can be reproduced from the current implementation.
+    leaderboard score n/a → 0.69332

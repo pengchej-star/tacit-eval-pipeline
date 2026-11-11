@@ -1,0 +1,7 @@
+# Use the native training interface  `T.5.1.5`   1 edits, 0 experts
+1 scored cases, median improvement -0.00014, 0 improved
+
+
+- expert 29588171 (Master) · amex · v9→v10   Switch to the native training API with a held-out validation set and early stopping. Compare the leaderboard score at the same blend weight. If the score does not improve, the gain from API-level control is negligible and effort is better spent elsewhere (e.g., features or hyperparameters).
+    evidence: ✓ The current tabular learner has plateaued on a stable feature set. | ✓ The wrapper prevents configuring the required custom callback or iteration selection. | ✗ The replacement fully swaps out one model family for another (rather than blending/adding alongside), risking loss of complementary signal from the removed component. | ✗ The alternative learner is significantly slower per iteration/fold, making full cross-validation or hyperparameter search impractical within time/compute constraints. | ✗ The alternative learner variant has known incompatibilities with standard training utilities (e.g., early stopping, callbacks) that require special handling. | ✗ The proposed alternative was already tried and reverted in a prior iteration, so the replacement has already been evaluated.
+    leaderboard score 0.79988 → 0.79973 (-0.00014)

@@ -6,7 +6,8 @@ root = pathlib.Path(__file__).resolve().parent.parent
 d = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else root / "out/pooled_episode"
 out = pathlib.Path(sys.argv[2]) if len(sys.argv) > 2 else root / "tree_compare.html"
 
-items = {i["id"]: {"goal": i.get("goal", ""), "what": (i.get("what") or "")[:700],
+items = {i["id"]: {"ctx": (i.get("instance") or {}).get("context") or i.get("why", ""),
+                   "act": (i.get("instance") or {}).get("action") or i.get("what", ""),
                    "comp": i.get("comp", ""), "expert": i.get("expert", "")}
          for i in json.load(open(d / "2a_items.json"))}
 

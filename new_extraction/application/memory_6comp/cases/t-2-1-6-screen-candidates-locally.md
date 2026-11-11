@@ -1,0 +1,13 @@
+# Screen candidates locally  `T.2.1.6`   3 edits, 0 experts
+1 scored cases, median improvement +0.01237, 1 improved
+
+
+- expert 27825577 (Expert) · amex · v6→v11   Use local validation to rank all candidate configurations and submit only those that show clear improvement over the current best. Skip configurations whose validation scores are obviously worse. This preserves submission budget for the most promising runs and avoids wasting attempts on clearly subo
+    evidence: ✓ The best tested parameter lies at a range boundary or a changed setting invalidates an earlier optimum. | ✓ A representative local validation set is available but candidates are being ranked only by submissions. | ✗ The complete pipeline has no task-metric evaluation despite multiple implementation iterations. | ✓ The score comparison changed multiple settings or artifacts simultaneously. | ✓ Recent trials along the same lever repeatedly tie or worsen the best validated result.
+    leaderboard score n/a → 0.79425
+- expert 53762022 (Contributor) · hms · v10→v12   Use one or two probes to identify the dominant model and the direction of improvement, then bundle the refined blend weights with other orthogonal improvements (e.g., better checkpoints or architecture tweaks) into a single submission rather than submitting each incremental weight change separately.
+    evidence: ✗ The score comparison changed multiple settings or artifacts simultaneously. | ✓ The best tested parameter lies at a range boundary or a changed setting invalidates an earlier optimum. | ✓ A representative local validation set is available but candidates are being ranked only by submissions. | ✗ The complete pipeline has no task-metric evaluation despite multiple implementation iterations.
+    leaderboard score 0.39598 → n/a
+- expert 55621328 (Master) · learning · v68→v71   First validate the new recipe with a smaller, cheaper model variant. If it performs competitively with the current best, scale up to the larger backbone to capture the combined gain from both the recipe improvement and the larger capacity.
+    evidence: ✓ The score comparison changed multiple settings or artifacts simultaneously. | ✓ The claimed gain is comparable to variation already observed across unchanged runs. | ✓ A representative local validation set is available but candidates are being ranked only by submissions. | ✗ The complete pipeline has no task-metric evaluation despite multiple implementation iterations. | ✗ Recent trials along the same lever repeatedly tie or worsen the best validated result. | ✓ The best tested parameter lies at a range boundary or a changed setting invalidates an earlier optimum.
+    leaderboard score 0.81082 → 0.82319 (+0.01237)
