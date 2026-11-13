@@ -47,7 +47,7 @@ from pathlib import Path
 
 import kaggle_inputs
 from app_memory_reads import check_knowledge_used, memory_reads
-from run_version import comp_aliases, stage_inputs
+from run_version import comp_aliases, shared_public, stage_inputs
 
 USER_DATA = Path("/data/user_data") / getpass.getuser()
 REPO = Path(__file__).resolve().parents[1]
@@ -122,6 +122,9 @@ def main():
     ap.add_argument("--runs", type=Path, default=USER_DATA / "app_runs")
     ap.add_argument("--mlebench-cache", type=Path, default=USER_DATA / "mlebench-cache")
     ap.add_argument("--inputs-cache", type=Path, default=USER_DATA / "kaggle-inputs")
+    ap.add_argument("--staged-inputs", type=Path, default=USER_DATA / "app_eval/staged",
+                    help="shared read-only copy of prepared/public, made once per competition and bind-mounted into every "
+                         "run and grading (run_version.py --staged-inputs); empty string: hardlink per run as before")
     ap.add_argument("--run-env", type=Path, default=SOFTWARE / "venvs/kaggle-run-gpu")
     ap.add_argument("--kernel", default="kaggle-run-gpu")
     ap.add_argument("--sif", type=Path, default=USER_DATA / "containers/rocky9.sif")
@@ -165,9 +168,14 @@ def main():
     (run / "prompt.txt").write_text(prompt)
 
     public = args.mlebench_cache / case["comp"] / "prepared/public"
-    stage_inputs(public, run / "kaggle/input" / case["comp"])
-    for alias in comp_aliases((ws / "current_code.py").read_text(), case["comp"]):
-        stage_inputs(public, run / "kaggle/input" / alias)
+    names = [case["comp"], *sorted(comp_aliases((ws / "current_code.py").read_text(), case["comp"]))]
+    staged = shared_public(public, args.staged_inputs) if str(args.staged_inputs) not in ("", ".") else None
+    for name in names:
+        if staged:  # mount point inside run/kaggle; the staged copy is bound over it read-only
+            (run / "kaggle/input" / name).mkdir(parents=True)
+            binds += ["--bind", f"{staged}:/kaggle/input/{name}:ro"]
+        else:
+            stage_inputs(public, run / "kaggle/input" / name)
     for spec in args.external:
         files_dir, _ = kaggle_inputs.fetch(spec, args.inputs_cache)
         kaggle_inputs.mount(files_dir, run / "kaggle/input" / kaggle_inputs.parse(spec)[2])
@@ -244,6 +252,8 @@ def main():
                "--tag", f"{args.tag}:{args.agent}:{args.model}:{args.condition}:{args.minutes}min", "--results", str(args.results)]
         for spec in args.external:
             cmd += ["--external", spec]
+        if staged:
+            cmd += ["--staged-inputs", str(args.staged_inputs)]
         subprocess.run(cmd, check=False)
 
 

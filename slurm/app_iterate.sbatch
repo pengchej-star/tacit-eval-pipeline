@@ -12,8 +12,9 @@
 #SBATCH -J app-iter
 #SBATCH -o /data/user_data/pengchej/app_runs/logs/%x_%j.log
 set -u
-source /data/user_data/pengchej/software/anaconda3/etc/profile.d/conda.sh
-conda activate tacit-eval
+# tacit-eval without conda activate: conda itself imports thousands of files from nas8 and took 6+ min on a cold node
+export CONDA_PREFIX=/data/user_data/pengchej/software/anaconda3/envs/tacit-eval
+export PATH=$CONDA_PREFIX/bin:$PATH
 source "$HOME/.config/wine/litellm.env"
 REPO=/home/pengchej/tacit-eval-pipeline
 # GPU env: the single conda env, unpacked on this node's local disk from /home (nas8 is not read for it)
