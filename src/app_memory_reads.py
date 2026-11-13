@@ -26,7 +26,7 @@ SEARCH_CMDS = {"grep", "egrep", "rg", "ag"}
 
 def node_of(path: str):
     name = Path(path).name
-    m = re.match(r"t-((?:\d+-)*\d+)-", name)
+    m = re.match(r"t-((?:\d+-)*\d+)(?:-|\*)", name)     # also a glob such as t-1-1-3* (one option's file)
     if m:
         return "T." + m.group(1).replace("-", ".")
     return "T" if name.startswith("t-") else None
@@ -41,9 +41,14 @@ HEREDOC_RE = re.compile(r"<<-?\s*['\"]?(\w+)['\"]?[^\n]*\n(.*?)\n\s*\1\b", re.S)
 OPEN_RE = re.compile(r"open\(\s*['\"]([^'\"]*memory/[^'\"]+)['\"]")
 
 
-def _bash_events(cmd: str):
+REL_RE = re.compile(r"(?<![\w/.-])((?:attention|cases|evidence)/[A-Za-z0-9_.*/-]*|taxonomy\.md)")
+
+
+def _bash_events(cmd: str, state: dict):
     """Heredoc bodies are mostly text the agent writes (code, report.json citing memory files), so only open('memory/...')
-    inside them counts as a read; the rest of the command is split into simple commands."""
+    inside them counts as a read; the rest of the command is split into simple commands. state["in_mem"] follows `cd`
+    into and out of memory/ across calls (the Bash tool keeps its working directory), so `cd /workspace/memory;
+    cat attention/t-7-3-...md` counts too."""
     out = []
     for m in HEREDOC_RE.finditer(cmd):
         out += [{"kind": "read", "path": p} for p in PATH_RE.findall(" ".join(OPEN_RE.findall(m.group(2))))]
@@ -53,10 +58,17 @@ def _bash_events(cmd: str):
         while words and ("=" in words[0] or words[0] in ("sudo", "command", "xargs")):
             words = words[1:]
         first = Path(words[0]).name if words else ""
+        if first == "cd":
+            target = words[1].strip("'\"").rstrip("/") if len(words) > 1 else ""
+            state["in_mem"] = target.endswith("memory") or (state["in_mem"] and target in ("", ".", "attention", "cases", "evidence"))
+            continue
         kind = "list" if first in LIST_CMDS else "search" if first in SEARCH_CMDS else "read"
         partial = first in ("head", "tail", "sed", "awk")
-        for p in PATH_RE.findall(seg):
-            k = "list" if ("*" in p or p.endswith("/") or "." not in Path(p).name) and kind == "read" else kind
+        paths = PATH_RE.findall(seg)
+        if state["in_mem"]:
+            paths += ["memory/" + p for p in REL_RE.findall(seg)]
+        for p in paths:
+            k = "list" if (p.endswith("/") or "." not in Path(p).name.replace("*", "")) and kind == "read" and "*" not in p else kind
             ev = {"kind": k, "path": p.rstrip("/")}
             if k == "read" and partial:
                 ev["partial"] = True
@@ -68,7 +80,7 @@ def _bash_events(cmd: str):
 
 def memory_reads(transcript: Path) -> dict:
     """Ordered memory events and a summary of what was opened."""
-    events, step = [], 0
+    events, step, state = [], 0, {"in_mem": False}
     for line in Path(transcript).read_text(errors="replace").splitlines():
         try:
             msg = json.loads(line)
@@ -95,7 +107,7 @@ def memory_reads(transcript: Path) -> dict:
                 for p in PATH_RE.findall(inp.get("pattern", "") + " " + inp.get("path", "")):
                     found.append({"kind": "list", "path": p.rstrip("/")})
             elif name == "Bash":
-                found = _bash_events(inp.get("command", ""))
+                found = _bash_events(inp.get("command", ""), state)
             for ev in found:
                 events.append({"step": step, "tool": name, **ev})
 

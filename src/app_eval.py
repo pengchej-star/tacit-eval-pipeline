@@ -109,6 +109,10 @@ def gold_from_tree(model, memory_dir: Path, case, expert_diff):
             f"goal: {g.get('goal')}\nchange: {g.get('change')}\nlabels: {g.get('labels')}\n\nCode diff:\n{expert_diff or '(not available)'}\n\n"
             'Answer {"options": ["<the most specific option id the edit took, one per distinct change>"], "why": "<one sentence>"}.')
     ans = ask(model, SYS_GOLD, user, max_tokens=1500)
+    valid = set(re.findall(r"`(T(?:\.\d+)*)`", (memory_dir / "taxonomy.md").read_text()))
+    if any(o not in valid for o in ans.get("options") or []):   # e.g. an id from another version of the tree
+        ans = ask(model, SYS_GOLD, user + f"\n\nUse only ids that occur in this tree: {', '.join(sorted(valid))}.", max_tokens=1500)
+        ans["options"] = [o for o in ans.get("options") or [] if o in valid]
     codes, nodes = set(), []
     for opt in ans.get("options") or []:
         parts = opt.split(".")
