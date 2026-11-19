@@ -1,0 +1,16 @@
+# Apply a high-precision metadata rule  `T.8.4.2`   4 edits, 0 experts
+3 scored cases, median improvement +0.00155, 2 improved
+
+
+- expert 6803050 (Master) · google · v50→v51   Identify target columns whose training-set values are almost perfectly predicted by a simple metadata rule (e.g., category membership). For those columns, replace the model's continuous prediction with the rule-based indicator directly in the submission. Start with a moderate indicator value and tun
+    evidence: ✗ An auxiliary classifier or head gives held-out information not captured by the main prediction. | ✓ A prediction-time metadata condition almost determines a particular target in training and held-out examples. | ✓ The current post-processing was tuned for older checkpoints or its contribution is unverified.
+    leaderboard score 0.37898 → 0.38852 (+0.00954)
+- expert 6803050 (Master) · google · v51→v56   Create a binary or low-cardinality indicator from metadata (e.g., domain, category) and add it as a post-hoc adjustment to specific target columns. Sweep the weight of the adjustment (e.g., 0.5 vs 1.0) and the detection method (metadata-based vs content-based). Prefer the simplest rule that improves
+    evidence: ✓ A prediction-time metadata condition almost determines a particular target in training and held-out examples. | ✓ The current post-processing was tuned for older checkpoints or its contribution is unverified. | ✗ A content-based heuristic (e.g., phonetic matching) has been tested and found to degrade performance compared to the simpler metadata-based rule.
+    leaderboard score 0.38852 → 0.39007 (+0.00155)
+- expert 6803050 (Master) · google · v54→v56   Prefer high-precision, low-recall heuristics (exact metadata matches) over broader but noisier text-pattern heuristics. If a content-based rule degrades the score, revert to the metadata-based rule. Validate each variant on the leaderboard or a local rank-correlation metric before committing.
+    evidence: ✓ A prediction-time metadata condition almost determines a particular target in training and held-out examples. | ✓ A content-based heuristic (e.g., phonetic matching) has been tested and found to degrade performance compared to the simpler metadata-based rule. | ✓ The current post-processing was tuned for older checkpoints or its contribution is unverified.
+    leaderboard score n/a → 0.39007
+- expert 6803050 (Master) · google · v56→v58   Test each variant in isolation by changing only the feature definition and submitting. If the score drops, revert immediately. Keep the variant that scores highest and treat the comparison as a controlled A/B test.
+    evidence: ✓ A content-based heuristic (e.g., phonetic matching) has been tested and found to degrade performance compared to the simpler metadata-based rule. | ✓ A prediction-time metadata condition almost determines a particular target in training and held-out examples. | ✓ The current post-processing was tuned for older checkpoints or its contribution is unverified.
+    leaderboard score 0.39007 → 0.39004 (-0.00004)

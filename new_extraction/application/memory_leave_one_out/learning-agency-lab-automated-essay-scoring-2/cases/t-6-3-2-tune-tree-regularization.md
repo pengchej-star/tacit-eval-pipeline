@@ -1,0 +1,17 @@
+# Tune tree regularization  `T.6.3.2`   5 edits, 0 experts
+
+- expert 27389424 (Grandmaster) · amex · v32→v36   Sweep the L2 regularization parameter in roughly exponential steps (e.g., doubling or more each time). If increasing regularization does not improve validation, revert to a moderate value and instead adjust the minimum samples per leaf downward to restore model expressiveness. Combine both levers ra
+    evidence: ✓ Training improves while validation stagnates under the current tree capacity. | ✗ Tree duration was tuned for a standalone model but it now contributes to a multi-model ensemble.
+    leaderboard score n/a → n/a
+- expert 27389424 (Grandmaster) · amex · v32→v36   Sweep one regularization axis at a time in coarse exponential steps. When increasing regularization along one axis fails to help across several trials, revert it to a moderate value and compensate by relaxing a different regularization axis (e.g., reduce minimum leaf size). This avoids a full grid s
+    evidence: ✓ Training improves while validation stagnates under the current tree capacity. | ✗ Tree duration was tuned for a standalone model but it now contributes to a multi-model ensemble.
+    leaderboard score n/a → n/a
+- expert 27389424 (Grandmaster) · amex · v78→v82   Fix the first parameter near its optimum, activate the second regularization control, and re-sweep the first parameter to capture any interaction. Compare local validation against the single-control best. If no improvement is observed across the sweep, revert the second control and keep the simpler 
+    evidence: ✓ Training fit is poor under shallow trees or prior depth changes show a clear capacity effect. | ✗ Every tree sees all rows and columns and the model overfits after feature selection. | ✓ Training improves while validation stagnates under the current tree capacity.
+    leaderboard score n/a → n/a
+- expert 27389424 (Grandmaster) · amex · v96→v131   Expect diminishing returns: regularization strength tuning on gradient-boosted trees typically yields only marginal gains after tree depth, learning rate, and iteration count are set. Limit the sweep to a coarse log-scale grid (e.g., 5–7 values spanning 4 orders of magnitude) for each penalty type, 
+    evidence: ✓ Training improves while validation stagnates under the current tree capacity. | ✓ Every tree sees all rows and columns and the model overfits after feature selection. | ✗ Lower learning rates reach the round cap or trigger stopping before sustained convergence. | ✗ Training fit is poor under shallow trees or prior depth changes show a clear capacity effect. | ✗ Tree duration was tuned for a standalone model but it now contributes to a multi-model ensemble.
+    leaderboard score n/a → n/a
+- expert 27799930 (Contributor) · amex · v14→v15   Reset the uncertain parameters to library defaults in one step, keeping only the parameters whose effect is well understood (e.g., learning rate, number of rounds). Compare validation performance against the previous run. Re-introduce parameters one at a time only if the default-based run is worse, 
+    evidence: ✓ Training improves while validation stagnates under the current tree capacity. | ✗ Lower learning rates reach the round cap or trigger stopping before sustained convergence. | ✗ Tree duration was tuned for a standalone model but it now contributes to a multi-model ensemble.
+    leaderboard score n/a → n/a

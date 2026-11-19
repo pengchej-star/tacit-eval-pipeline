@@ -1,0 +1,91 @@
+# Replace the model family or capacity  `T.4.2`   29 edits, 0 experts
+25 scored cases, median improvement -0.00013, 11 improved
+
+
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v10→v12   Evaluate each checkpoint individually on the leaderboard by swapping only the checkpoint path, keeping all other inference code identical. Track every result in a table. Recognize that small public test sets make single-checkpoint comparisons unreliable, so treat large score differences as more info
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The proposed weights were trained with a different input pipeline than the current one. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors.
+    leaderboard score 0.48130 → 0.51701 (+0.03572)
+- expert 18423958 (Master) · commonlitreadabilityprize · v3→v4   When swapping a backbone, verify that the hidden dimension, tokenizer, and checkpoint weights are all mutually consistent before trusting the leaderboard result. If the score degrades dramatically (e.g., more than doubles), suspect a configuration mismatch rather than concluding the backbone is infe
+    evidence: ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ A strong backbone uses a limited head or cannot yet combine available branches. | ✓ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score 0.46226 → 1.04188 (+0.57961)
+- expert 73671444 (Grandmaster) · equity · v3→v4   Swap the model backend and compare on the leaderboard. Expect minimal change when the underlying model class is nearly identical; reserve effort for trying a genuinely different model family (e.g., gradient-boosted trees) if the swap shows no gain.
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score 0.66983 → 0.66967 (-0.00016)
+- expert 73671444 (Grandmaster) · equity · v4→v6   Replace the survival model inference with gradient-boosted tree predictions, rank-averaging across fold models. Critically, remove all preprocessing code specific to the old model rather than layering the new model on top; leftover incompatible preprocessing can silently corrupt predictions and caus
+    evidence: ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score 0.66967 → 0.67991 (+0.01024)
+- expert 53424936 (Master) · hms · v30→v32   Try upgrading all branches to the larger backbone first, then selectively revert individual branches back to the smaller backbone. Evaluate each combination on the leaderboard or validation set. Keep the configuration where each branch uses the backbone size best suited to its input characteristics.
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ A strong backbone uses a limited head or cannot yet combine available branches. | ✓ Compatible weights pretrained on relevant domain data are available.
+    leaderboard score 0.22629 → 0.22615 (-0.00013)
+- expert 49524919 (Grandmaster) · hms · v2→v3   After swapping to the smaller backbone, if the score regresses significantly, do not immediately abandon the variant. Instead, iterate on checkpoint quality (retrain or use later training snapshots) and inference settings before concluding the variant is inferior. Track whether successive checkpoint
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors.
+    leaderboard score 0.46256 → 0.51664 (+0.05409)
+- expert 49524919 (Grandmaster) · hms · v25→v26   Test the alternative backbone variant on the leaderboard. Compare its first-iteration score against the mature variant's best score. If the early-iteration alternative already underperforms the mature variant significantly, return to the mature variant and continue refining it rather than investing 
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors.
+    leaderboard score 0.45926 → 0.47345 (+0.01419)
+- expert 49524919 (Grandmaster) · hms · v26→v27   Revert to the better-performing backbone and apply the new preprocessing idea on top of it. Test one change at a time against the strongest known configuration rather than stacking changes on a weaker baseline.
+    evidence: ✓ The current model is underpowered or a different inductive bias is supported by prior errors.
+    leaderboard score 0.47345 → 0.45265 (-0.02080)
+- expert 49524919 (Grandmaster) · hms · v46→v47   Scale up the model width (number of feature channels) by several times, add a few more residual blocks, enlarge the classification head accordingly, and switch to a slightly more expressive activation function. Ensure the inference code architecture exactly matches the new checkpoints. Expect a noti
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score 0.46059 → 0.41674 (-0.04385)
+- expert 49524919 (Grandmaster) · hms · v67→v72   Sweep across model sizes within the same architecture family (e.g., tiny → small → medium) by substituting checkpoints and matching preprocessing. Submit each variant to evaluate on the test metric. If smaller variants plateau, try the next larger variant; capacity increase often breaks through when
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors.
+    leaderboard score 0.29040 → 0.29425 (+0.00385)
+- expert 49524919 (Grandmaster) · hms · v72→v73   Swap in the larger backbone variant's checkpoints while keeping the rest of the pipeline identical. If the score improves, keep it; the cost is mainly inference time.
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors.
+    leaderboard score 0.29425 → 0.28380 (-0.01045)
+- expert 49576186 (Expert) · hms · v26→v29   Swap the backbone and submit without changing other hyperparameters to get a quick signal. If the score regresses, revert rather than investing time tuning around the new backbone, unless there is a strong prior that the new variant is superior and the regression is likely due to mismatched settings
+    evidence: ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score 0.36532 → 0.38683 (+0.02151)
+- expert 52860091 (Grandmaster) · hms · v13→v14   Swap the experiment/config to a different trained model family while keeping the rest of the inference and ensembling pipeline identical. Evaluate on the leaderboard; even a tiny gain confirms the alternative model captures complementary signal, which can later be combined with the original.
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors.
+    leaderboard score 0.29157 → 0.29146 (-0.00011)
+- expert 52551258 (Expert) · hms · v2→v3   Replace the generic image backbone with an ensemble of domain-specific models (e.g., CNN-RNN on raw signals) that incorporate proper signal preprocessing (bandpass filtering, custom spectrograms). Load multiple fold checkpoints and average their predictions. Expect a large score jump—potentially hal
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ Compatible weights pretrained on relevant domain data are available. | ✓ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score 0.65796 → 0.37116 (-0.28680)
+- expert 55621328 (Master) · learning · v10→v12   Test each variant individually on the leaderboard (or a reliable validation set), changing only the checkpoint while keeping the rest of the pipeline fixed. If the larger or alternative variant scores equal or worse, revert to the original and look for gains elsewhere (e.g., ensembling folds). Do no
+    evidence: ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ The proposed weights were trained with a different input pipeline than the current one. | ✓ Compatible checkpoints differ in training history or validation quality.
+    leaderboard score 0.80442 → 0.80219 (-0.00223)
+- expert 55621328 (Master) · learning · v27→v30   Submit the larger model with initial threshold estimates to get a baseline, then sweep thresholds and alternative checkpoints (e.g., different learning rates). Compare the best result against the smaller model's best. Expect that a larger model can underperform if its training hyperparameters are no
+    evidence: ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ The proposed weights were trained with a different input pipeline than the current one. | ✓ Compatible checkpoints differ in training history or validation quality.
+    leaderboard score 0.80527 → 0.80353 (-0.00174)
+- expert 55621328 (Master) · learning · v40→v43   Test the larger backbone variants individually on the leaderboard. If they do not surpass the smaller backbone's score, prefer the smaller model—especially when ensembling across folds and seeds, where the smaller model's stability compounds into a better ensemble.
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score 0.81139 → 0.81037 (-0.00102)
+- expert 55621328 (Master) · learning · v47→v51   Systematically try each backbone size (small, medium, large) with comparable ensemble configurations. If a larger model underperforms, check whether it simply needs more diverse checkpoints (more folds, seeds) before discarding it. A single submission per configuration is enough to rank them, but in
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors.
+    leaderboard score 0.81727 → 0.81053 (-0.00674)
+- expert 55621328 (Master) · learning · v56→v63   Systematically test small, medium, and large variants of the same backbone family using the same inference pipeline. Compare leaderboard scores directly. Expect that the largest model usually wins if it was properly trained, but verify because checkpoint quality and training regime can dominate mode
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score 0.81508 → 0.81174 (-0.00334)
+- expert 55621328 (Master) · learning · v83→v87   Test the new pipeline with the smallest viable backbone first to verify correctness quickly and cheaply, then scale up. If a larger backbone underperforms the smaller one in the new pipeline (contrary to the old pipeline's pattern), suspect a bug or mismatch in the new code rather than concluding th
+    evidence: ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ The proposed weights were trained with a different input pipeline than the current one. | ✓ Compatible checkpoints differ in training history or validation quality.
+    leaderboard score 0.80977 → 0.81038 (+0.00061)
+- expert 55621328 (Master) · learning · v94→v98   Systematically swap one factor at a time (backbone size, then training run / checkpoint set) while keeping other inference settings similar. Submit the most promising variants. If none surpass the current best after a few trials, stop exploring that axis and move to a different experiment or approac
+    evidence: ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score 0.81721 → 0.82066 (+0.00345)
+- expert 55621328 (Master) · learning · v135→v137   Test both sizes on the leaderboard. Expect the larger backbone to outperform the smaller one, often by a meaningful margin. Use the larger model for final submissions unless compute or latency constraints prevent it.
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score 0.80784 → 0.82918 (+0.02134)
+- expert 55621328 (Master) · learning · v141→v142   When swapping backbone sizes, ensure the checkpoints were actually trained with that backbone. Simply changing the pretrained path to a smaller variant while loading checkpoints trained on a larger variant will degrade performance or fail silently due to weight mismatches. Always verify checkpoint-b
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score n/a → 0.82067
+- expert 55431616 (Grandmaster) · learning · v21→v24   Swap the boosting library while keeping features and folds identical. Adapt the custom evaluation metric to the new library's callback API. Configure early stopping to monitor and maximize the task-specific metric (not the default loss), enable best-model checkpointing, and disable any ensemble blen
+    evidence: ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✗ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score n/a → n/a
+- expert 58130512 (Master) · learning · v36→v41   Give the new framework one or two submissions with reasonable hyperparameters. If it underperforms the tuned baseline by a large margin, revert to the original framework rather than spending many iterations tuning the new one. Transfer the custom objective logic back to the original framework instea
+    evidence: ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✗ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score 0.80408 → 0.81920 (+0.01512)
+- expert 58130512 (Master) · learning · v122→v130   Swap the framework, adapt the evaluation metric and callbacks, then sweep key hyperparameters (tree depth, learning rate, number of trees, column subsampling, regularization) over several iterations. Compare the best result against the original framework's best. If no improvement materializes after 
+    evidence: ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✗ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score n/a → 0.82067
+- expert 15082684 (Master) · ranzcr · v29→v32   Swap to the smaller backbone with a properly trained checkpoint and submit. If the score drops noticeably, revert to the larger backbone and instead invest in other improvements (e.g., higher resolution or better checkpoints) rather than pursuing the smaller model further.
+    evidence: ✓ Compatible checkpoints differ in training history or validation quality. | ✓ The current model is underpowered or a different inductive bias is supported by prior errors.
+    leaderboard score 0.96901 → n/a
+- expert 50496431 (Grandmaster) · hms · v38→v39   Swap the 3D backbone for an alternative factorized variant (e.g., (2+1)D decomposition) that separates spatial and temporal convolutions, adjust pooling and head dimensions accordingly, and test it in isolation by disabling other ensemble members. If the isolated score is reasonable, re-enable the r
+    evidence: ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ A strong backbone uses a limited head or cannot yet combine available branches.
+    leaderboard score 0.41902 → 0.35972 (-0.05931)
+- expert 50496431 (Grandmaster) · hms · v115→v117   Test the larger variant against the current one with a single submission or validation run. If it degrades, revert immediately—larger backbones are not always better for non-standard inputs. Prefer the smallest backbone that matches the input's information content.
+    evidence: ✓ The current model is underpowered or a different inductive bias is supported by prior errors. | ✓ A strong backbone uses a limited head or cannot yet combine available branches. | ✓ The proposed weights were trained with a different input pipeline than the current one.
+    leaderboard score 0.27768 → 0.27711 (-0.00057)

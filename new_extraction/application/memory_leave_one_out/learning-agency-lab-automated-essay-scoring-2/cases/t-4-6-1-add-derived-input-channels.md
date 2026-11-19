@@ -1,0 +1,16 @@
+# Add derived input channels  `T.4.6.1`   4 edits, 0 experts
+3 scored cases, median improvement +0.00739, 2 improved
+
+
+- expert 49576186 (Expert) · hms · v7→v12   Fix the window extraction to use the correct sampling rate, increase the number of derived input channels, and add per-sample normalization. After making these changes, retrain or load updated checkpoints and compare the leaderboard score. If the score does not improve, the additional channels or no
+    evidence: ✓ Useful channels are available in the same signal but excluded from the current tensor. | ✓ The signal extraction indexing uses an incorrect sampling rate or offset, causing misaligned input segments. | ✗ A previous attempt to increase input channels worsened the score, suggesting adding more channels may not help. | ✓ A full-modality baseline score exists to compare the ablation against.
+    leaderboard score n/a → 0.37612
+- expert 49576186 (Expert) · hms · v38→v41   Test a small range of channel counts (fewer and more than the current default) while keeping other settings fixed. If both increasing and decreasing the channel count worsen the score, the current count is likely near-optimal. Avoid assuming more channels always help—redundant or noisy channels can 
+    evidence: ✓ Useful channels are available in the same signal but excluded from the current tensor. | ✓ A full-modality baseline score exists to compare the ablation against. | ✓ The backbone capacity is insufficient for the number of input channels or modality complexity, requiring a larger model variant. | ✓ A previous attempt to increase input channels worsened the score, suggesting adding more channels may not help.
+    leaderboard score 0.38150 → 0.39003 (+0.00853)
+- expert 52551258 (Expert) · hms · v18→v19   Derive the new channels, add appropriate normalization (e.g., robust statistics, clipping), train or load a model that accepts the expanded input, and include it in the ensemble. If the leaderboard score worsens, the new component may be adding noise or the model checkpoint may not be well-calibrate
+    evidence: ✓ Useful channels are available in the same signal but excluded from the current tensor. | ✗ A previous attempt to increase input channels worsened the score, suggesting adding more channels may not help. | ✓ A full-modality baseline score exists to compare the ablation against.
+    leaderboard score 0.28137 → 0.28876 (+0.00739)
+- expert 50496431 (Grandmaster) · hms · v215→v216   Add the extra channels, update the model's input reshape/dimension accordingly, and evaluate. If the gain is visible in isolation but the overall ensemble doesn't improve, the extra channels may help only specific model variants; test them selectively rather than applying globally.
+    evidence: ✓ Useful channels are available in the same signal but excluded from the current tensor. | ✗ A previous attempt to increase input channels worsened the score, suggesting adding more channels may not help. | ✓ A full-modality baseline score exists to compare the ablation against.
+    leaderboard score 0.26249 → 0.23945 (-0.02304)

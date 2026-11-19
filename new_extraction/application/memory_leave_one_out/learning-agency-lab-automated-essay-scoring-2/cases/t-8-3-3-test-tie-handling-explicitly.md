@@ -1,0 +1,8 @@
+# Test tie handling explicitly  `T.8.3.3`   2 edits, 0 experts
+
+- expert 7548275 (Expert) · google · v14→v15   Add negligible random noise (e.g., Gaussian with standard deviation many orders of magnitude smaller than the prediction range) to break ties before submission. This preserves the intended ordering while ensuring the rank-based metric sees distinct values.
+    evidence: ✓ Targets occupy a small set of repeated levels while model outputs are fully continuous. | ✓ Exact prediction ties are common and their treatment can change the scored ordering.
+    leaderboard score n/a → 0.00596
+- expert 6803050 (Master) · google · v35→v39   Avoid adding random noise to predictions when the evaluation metric is rank-based, as it can only degrade signal. Clipping to avoid exact 0/1 is also unnecessary for rank metrics. Use raw model outputs or deterministic post-processing (e.g., quantile mapping) instead.
+    evidence: ✓ Targets occupy a small set of repeated levels while model outputs are fully continuous. | ✓ Exact prediction ties are common and their treatment can change the scored ordering. | ✓ Base model predictions produce meaningful, non-degenerate orderings that would benefit from discretization rather than being harmed by it. | ✓ Alternative discretization methods (e.g., epsilon-based gap merging, per-column adaptive strategies) have not yet been explored beyond the current approach. | ✓ The implementation contains a bug where edge cases (e.g., empty arrays, off-by-one errors) cause incorrect or degenerate overwrites.
+    leaderboard score n/a → 0.38287

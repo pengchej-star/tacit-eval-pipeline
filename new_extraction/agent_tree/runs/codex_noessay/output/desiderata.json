@@ -1,0 +1,1767 @@
+{
+  "nodes": {
+    "T": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Current scores cannot distinguish model changes because splits, metrics, or experiments are unreliable.",
+              "how": "Inspect split overlap, scoring code, version diffs, and repeated-run score variation.",
+              "pushes": {
+                "T.1": 1,
+                "T.7": -0.3
+              }
+            },
+            {
+              "check": "Predictions fail basic validity or do not match the trained pipeline.",
+              "how": "Inspect loading diagnostics, input/output IDs, prediction ranges, and train/inference configurations.",
+              "pushes": {
+                "T.2": 1,
+                "T.6": -0.5
+              }
+            },
+            {
+              "check": "Correct runs are blocked by memory, session limits, or repeated expensive work.",
+              "how": "Use runtime logs and memory profiles to locate the limiting stage.",
+              "pushes": {
+                "T.3": 1
+              }
+            },
+            {
+              "check": "Available task-relevant information is absent, distorted, or diluted in current inputs.",
+              "how": "Compare raw data with feature tensors and existing feature or modality ablations.",
+              "pushes": {
+                "T.4": 0.9
+              }
+            },
+            {
+              "check": "Label quality, data coverage, censoring, or sample weighting limits the training signal.",
+              "how": "Inspect label distributions, event indicators, data provenance, and quality-stratified errors.",
+              "pushes": {
+                "T.5": 0.9
+              }
+            },
+            {
+              "check": "Learning curves or controlled single-model experiments implicate capacity, objective, or optimization.",
+              "how": "Inspect train/validation curves and model-family or head comparisons.",
+              "pushes": {
+                "T.6": 1
+              }
+            },
+            {
+              "check": "Correct aligned predictions from multiple sources show potentially complementary errors.",
+              "how": "Inspect OOF provenance, standalone scores, residual correlations, and current blend ablations.",
+              "pushes": {
+                "T.7": 1
+              }
+            },
+            {
+              "check": "Valid base predictions retain an observable calibration, granularity, or inference-view mismatch.",
+              "how": "Inspect held-out calibration, target support, domain symmetries, and current post-processing ablations.",
+              "pushes": {
+                "T.8": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.1": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Related rows cross folds or fold target distributions are visibly skewed.",
+              "how": "Inspect split IDs and per-fold target summaries.",
+              "pushes": {
+                "T.1.1": 1
+              }
+            },
+            {
+              "check": "The reported evaluation callback is incorrect, unstable, or a measured runtime bottleneck.",
+              "how": "Compare metric code, curves, and profiler output with the task’s scoring definition.",
+              "pushes": {
+                "T.1.2": 1
+              }
+            },
+            {
+              "check": "Multiple edits or stochastic reruns make the latest score movement ambiguous.",
+              "how": "Review version diffs and repeated baseline scores.",
+              "pushes": {
+                "T.1.3": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.1.1": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Several candidate configurations can be scored on an existing representative holdout.",
+              "how": "Inspect stored validation predictions, labels, and split provenance; verify candidates used the same rows.",
+              "pushes": {
+                "T.1.1.1": 0.9
+              }
+            },
+            {
+              "check": "Fold target distributions differ substantially despite independent observations.",
+              "how": "Tabulate class proportions or target-bin histograms by fold and compare with the full labeled sample.",
+              "pushes": {
+                "T.1.1.2": 0.9
+              }
+            },
+            {
+              "check": "Several rows or overlapping windows belong to the same prediction entity.",
+              "how": "Count repeated entity IDs and intersect IDs or window intervals across the current train and validation partitions.",
+              "pushes": {
+                "T.1.1.3": 1,
+                "T.1.1.2": -0.5
+              }
+            },
+            {
+              "check": "A proposed stacker lacks held-out predictions aligned to common row and fold identifiers.",
+              "how": "Join each base model’s prediction file to saved fold indices and check that no row was predicted by a model trained on it.",
+              "pushes": {
+                "T.1.1.4": 1
+              }
+            },
+            {
+              "check": "Local and public scores have ranked existing checkpoints differently.",
+              "how": "Compare the paired local/external score table and public sample size; distinguish ranking reversals from repeated-run variation.",
+              "pushes": {
+                "T.1.1.5": 0.9,
+                "T.1.1.1": -0.3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.1.2": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "The current stopping metric differs from the scored objective and selects worse checkpoints in prior comparisons.",
+              "how": "Compare the configured evaluation callback with the task formula and recorded task scores along training.",
+              "pushes": {
+                "T.1.2.1": 0.9
+              }
+            },
+            {
+              "check": "The task metric fluctuates sharply between nearby iterations while a smooth proxy tracks generalization better.",
+              "how": "Inspect validation curves and prior stopping-point comparisons on identical folds.",
+              "pushes": {
+                "T.1.2.2": 0.9,
+                "T.1.2.1": -0.5
+              }
+            },
+            {
+              "check": "Callback values or shapes disagree with an independent calculation.",
+              "how": "Evaluate a small labeled prediction vector through both code paths and inspect the framework callback arguments.",
+              "pushes": {
+                "T.1.2.3": 1
+              }
+            },
+            {
+              "check": "Metric computation dominates repeated training or blending evaluations.",
+              "how": "Read profiler timings for the callback and compare its output against the existing reference implementation.",
+              "pushes": {
+                "T.1.2.4": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.1.3": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "No complete pipeline has yet produced a scored prediction file.",
+              "how": "Inspect run artifacts and the experiment log for a successful end-to-end scored baseline.",
+              "pushes": {
+                "T.1.3.1": 1,
+                "T.1.3.4": -0.5
+              }
+            },
+            {
+              "check": "The last score change followed several simultaneous functional edits.",
+              "how": "Diff the last two scored versions and list changed inputs, checkpoints, training settings, and blend formulas.",
+              "pushes": {
+                "T.1.3.2": 1,
+                "T.1.3.4": -0.4
+              }
+            },
+            {
+              "check": "Existing unchanged runs vary by as much as the candidate gain.",
+              "how": "Compare repeated scores and prediction files for an identical configuration, including pinned artifacts.",
+              "pushes": {
+                "T.1.3.3": 1,
+                "T.1.3.4": -0.6
+              }
+            },
+            {
+              "check": "A reproducible parameter trend exists but the optimum has not been bracketed.",
+              "how": "Inspect the trial table for consistently improving values and whether values on both sides have been evaluated.",
+              "pushes": {
+                "T.1.3.4": 0.9
+              }
+            },
+            {
+              "check": "The latest configuration is substantially worse than a reproducible saved baseline.",
+              "how": "Compare the regression with measured run variation and locate the exact saved configuration and artifacts.",
+              "pushes": {
+                "T.1.3.5": 1
+              }
+            },
+            {
+              "check": "Several recent settings failed to improve beyond the measured noise floor.",
+              "how": "Read the recent sweep table, including failed probes, and compare its range with unchanged-run variation.",
+              "pushes": {
+                "T.1.3.6": 1,
+                "T.1.3.4": -0.8
+              }
+            },
+            {
+              "check": "The first baseline is far below existing scored alternatives and several compatible missing components are already evidenced.",
+              "how": "Compare available baseline scores and code paths for missing domain preprocessing, suitable models, or averaging; record the loss of attribution before bundling.",
+              "pushes": {
+                "T.1.3.7": 0.7,
+                "T.1.3.2": -0.2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.2": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Failures begin at import, checkpoint resolution, or state loading.",
+              "how": "Read the earliest error and loading diagnostics.",
+              "pushes": {
+                "T.2.1": 1
+              }
+            },
+            {
+              "check": "The model runs but rows, features, or executed branches do not match the intended pipeline.",
+              "how": "Inspect IDs, stage shapes, and per-model prediction counts.",
+              "pushes": {
+                "T.2.2": 1
+              }
+            },
+            {
+              "check": "Prediction scale, direction, finiteness, or blending arithmetic is invalid.",
+              "how": "Inspect numeric summaries and manually recompute representative outputs.",
+              "pushes": {
+                "T.2.3": 1
+              }
+            },
+            {
+              "check": "No usable final output exists or accumulated patches obstruct basic execution.",
+              "how": "Inspect the first failure and final artifact schema.",
+              "pushes": {
+                "T.2.4": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.2.1": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "A configured artifact is missing or its resolved path differs from the saved artifact.",
+              "how": "List available files and compare full resolved paths, including filename punctuation and cleanup commands.",
+              "pushes": {
+                "T.2.1.1": 1
+              }
+            },
+            {
+              "check": "Imports fail or resolve to a different library copy than the checkpoint requires.",
+              "how": "Inspect import exceptions, module file locations, local package versions, and path ordering.",
+              "pushes": {
+                "T.2.1.2": 1
+              }
+            },
+            {
+              "check": "Checkpoint keys, tensor shapes, tokenizer vocabulary, or head dimensions disagree with the constructed model.",
+              "how": "Compare the saved configuration and state dictionary with the instantiated model under strict loading.",
+              "pushes": {
+                "T.2.1.3": 1
+              }
+            },
+            {
+              "check": "Loading appears successful but predictions resemble an untrained or constant model.",
+              "how": "Inspect loaded parameter statistics, missing-key reports, evaluation mode, and predictions on a small known labeled sample.",
+              "pushes": {
+                "T.2.1.4": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.2.2": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Outputs are constant across substantial edits or some configured members never produce predictions.",
+              "how": "Trace loop entry counts, array accumulation, input row IDs, and the exact variable written to disk.",
+              "pushes": {
+                "T.2.2.1": 1
+              }
+            },
+            {
+              "check": "A new feature branch receives implausible shapes or values.",
+              "how": "Print small tensor slices, axis meanings, and statistics before and after each new transform.",
+              "pushes": {
+                "T.2.2.2": 1
+              }
+            },
+            {
+              "check": "Inference transforms or fitted preprocessing objects differ from those used for the checkpoint.",
+              "how": "Compare saved training configuration, feature order, scaler/encoder artifacts, and inference call order.",
+              "pushes": {
+                "T.2.2.3": 1
+              }
+            },
+            {
+              "check": "Test categories include unseen levels or the inference code fits a new encoder.",
+              "how": "Compare category sets and inspect calls to fit, fit_transform, and transform.",
+              "pushes": {
+                "T.2.2.4": 1
+              }
+            },
+            {
+              "check": "A preprocessing or target-building step consumes identifiers or labels unavailable at prediction time.",
+              "how": "Trace input dependencies against the test schema and audit fitting boundaries inside each fold.",
+              "pushes": {
+                "T.2.2.5": 1
+              }
+            },
+            {
+              "check": "A supposedly behavior-preserving refactor has changed predictions or has not been checked for equivalence.",
+              "how": "Locate reference predictions and compare both implementations on the same ordered sample.",
+              "pushes": {
+                "T.2.2.6": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.2.3": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Prediction units or monotonic direction disagree with the labels or other members.",
+              "how": "Check target scaling and inverse-link code, and compare standalone held-out score direction with a trusted member.",
+              "pushes": {
+                "T.2.3.1": 1
+              }
+            },
+            {
+              "check": "Ensemble scale changes after member removal or the formula uses list arithmetic or an incorrect denominator.",
+              "how": "Recompute a few rows by hand and compare active member counts, weights, types, and array shapes.",
+              "pushes": {
+                "T.2.3.2": 1
+              }
+            },
+            {
+              "check": "Inputs or intermediate network outputs contain non-finite values.",
+              "how": "Run finite-value checks stage by stage on a small failing batch.",
+              "pushes": {
+                "T.2.3.3": 1
+              }
+            },
+            {
+              "check": "The called method or argument belongs to a different API wrapper than the instantiated object.",
+              "how": "Inspect object types and local function signatures at the failing call.",
+              "pushes": {
+                "T.2.3.4": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.2.4": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "The pipeline fails before completing even one sample or model.",
+              "how": "Read the first traceback and try the same path on one batch with minimal training.",
+              "pushes": {
+                "T.2.4.1": 1
+              }
+            },
+            {
+              "check": "Inference finishes but the expected prediction file is absent or malformed.",
+              "how": "Read the final artifact and compare its path, row IDs, columns, and numeric values with the required template.",
+              "pushes": {
+                "T.2.4.2": 1
+              }
+            },
+            {
+              "check": "Some ensemble output files are missing or fallback arrays are placeholders.",
+              "how": "Inspect each member file, its provenance and row alignment, and logs identifying which fallback path executed.",
+              "pushes": {
+                "T.2.4.3": 1
+              }
+            },
+            {
+              "check": "Repeated patches leave duplicated transformations or hidden dependencies that prevent reliable fixes.",
+              "how": "Trace the current stages and compare duplicate code paths and their outputs.",
+              "pushes": {
+                "T.2.4.4": 0.8,
+                "T.2.4.1": 0.3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.3": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Runs fail or slow sharply at a reproducible memory peak.",
+              "how": "Inspect memory profiles and failure traces.",
+              "pushes": {
+                "T.3.1": 1
+              }
+            },
+            {
+              "check": "Repeated loading, extraction, or full training dominates otherwise working experiments.",
+              "how": "Compare stage timings across recent runs.",
+              "pushes": {
+                "T.3.2": 1
+              }
+            },
+            {
+              "check": "Device support or API limitations block a required operation.",
+              "how": "Inspect runtime exceptions and available local interfaces.",
+              "pushes": {
+                "T.3.3": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.3.1": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "The raw table or engineered feature table exceeds memory before model inference starts.",
+              "how": "Compare dataframe sizes and profiler memory peaks during loading and aggregation.",
+              "pushes": {
+                "T.3.1.1": 1,
+                "T.3.1.3": -0.5
+              }
+            },
+            {
+              "check": "Memory grows between sequential model runs because completed objects remain live.",
+              "how": "Inspect memory after each model and references to model objects and intermediate arrays.",
+              "pushes": {
+                "T.3.1.2": 1
+              }
+            },
+            {
+              "check": "Memory failure occurs in a single forward pass and grows with batch size.",
+              "how": "Inspect the traceback and peak accelerator memory for progressively smaller batches.",
+              "pushes": {
+                "T.3.1.3": 1
+              }
+            },
+            {
+              "check": "Model tensors dominate memory and the current pipeline uses full precision.",
+              "how": "Inspect tensor dtypes and allocations and any prior paired precision results.",
+              "pushes": {
+                "T.3.1.4": 0.7
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.3.2": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "A full training run is currently needed just to test code wiring or screen a parameter.",
+              "how": "Measure run time and inspect whether fold, seed, and iteration counts can be reduced coherently.",
+              "pushes": {
+                "T.3.2.1": 0.9
+              }
+            },
+            {
+              "check": "The expensive upstream outputs are unchanged across downstream experiments.",
+              "how": "Compare artifact hashes and configurations for repeated feature extraction or base-model inference.",
+              "pushes": {
+                "T.3.2.2": 1
+              }
+            },
+            {
+              "check": "A session cannot finish all folds but completed fold checkpoints can be reused.",
+              "how": "Compare per-fold run time with the session limit and inspect persisted fold manifests.",
+              "pushes": {
+                "T.3.2.3": 1
+              }
+            },
+            {
+              "check": "Repeated ranking or subgroup post-processing dominates the inference-adjustment search.",
+              "how": "Inspect stage timings and compare current rank outputs on tied and grouped predictions with a small exact reference.",
+              "pushes": {
+                "T.3.2.4": 1
+              }
+            },
+            {
+              "check": "Variant changes require repeated manual edits that have caused configuration drift.",
+              "how": "Inspect duplicate constants, path lists, and flags across the notebook.",
+              "pushes": {
+                "T.3.2.5": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.3.3": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "The configured accelerator or dataframe backend does not support a required operation.",
+              "how": "Inspect the device error, available hardware, and a minimal local backend probe.",
+              "pushes": {
+                "T.3.3.1": 1
+              }
+            },
+            {
+              "check": "The current wrapper cannot expose the needed custom metric or iteration control.",
+              "how": "Inspect the installed wrapper signature and the native training interface used by existing code.",
+              "pushes": {
+                "T.3.3.2": 0.9,
+                "T.3.3.3": -0.6
+              }
+            },
+            {
+              "check": "The estimator wrapper already supports the required stopping and probability outputs.",
+              "how": "Inspect its local interface and compare it with the extra dataset and prediction-conversion code currently maintained.",
+              "pushes": {
+                "T.3.3.3": 0.8,
+                "T.3.3.2": -0.3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.4": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Repeated rows are collapsed into a limited summary or their structure is still unknown.",
+              "how": "Inspect entity histories and the current tabular feature specification.",
+              "pushes": {
+                "T.4.1": 1
+              }
+            },
+            {
+              "check": "Many engineered inputs are redundant, sparse, or implicated in prior regressions.",
+              "how": "Review importance stability, missingness, and feature-group ablation results.",
+              "pushes": {
+                "T.4.2": 0.9
+              }
+            },
+            {
+              "check": "Missingness or stored numerical precision conflicts with estimator assumptions.",
+              "how": "Inspect actual dtypes, NaNs, and active model capabilities.",
+              "pushes": {
+                "T.4.3": 1
+              }
+            },
+            {
+              "check": "Text truncation, formatting, or omitted metadata plausibly limits the encoder.",
+              "how": "Inspect tokenized samples and the text/metadata schema.",
+              "pushes": {
+                "T.4.4": 0.9
+              }
+            },
+            {
+              "check": "Spatial or spectral preprocessing removes relevant structure or mismatches trained inputs.",
+              "how": "Inspect transformed examples and saved extraction settings.",
+              "pushes": {
+                "T.4.5": 1
+              }
+            },
+            {
+              "check": "Several aligned modalities or channels exist and their use or fusion remains unresolved.",
+              "how": "Inspect available inputs, branch outputs, and existing modality ablations.",
+              "pushes": {
+                "T.4.6": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.4.1": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "The number and ordering of records per prediction entity are not yet established.",
+              "how": "Inspect entity counts, sorted timestamps, feature prefixes, and missingness summaries.",
+              "pushes": {
+                "T.4.1.1": 1
+              }
+            },
+            {
+              "check": "No working entity-level feature baseline exists.",
+              "how": "Inspect the feature table and training inputs for duplicate prediction IDs and missing aggregation logic.",
+              "pushes": {
+                "T.4.1.2": 1,
+                "T.4.1.3": -0.4
+              }
+            },
+            {
+              "check": "Only the last observation or one central statistic is currently retained.",
+              "how": "Compare the aggregation specification with within-entity variation and existing importance plots.",
+              "pushes": {
+                "T.4.1.3": 0.9
+              }
+            },
+            {
+              "check": "Full-history aggregates obscure behavior near the prediction time.",
+              "how": "Compare recent and full-history distributions, history lengths, and the label time horizon.",
+              "pushes": {
+                "T.4.1.4": 0.9
+              }
+            },
+            {
+              "check": "Entities have ordered histories whose recent changes are not represented.",
+              "how": "Inspect sequence lengths, time ordering, and whether current aggregates discard direction of change.",
+              "pushes": {
+                "T.4.1.5": 0.9
+              }
+            },
+            {
+              "check": "Domain-related columns have a meaningful ratio or deviation not present in the features.",
+              "how": "Inspect column definitions and the existing derived-feature list, then review prior interaction ablations.",
+              "pushes": {
+                "T.4.1.6": 0.8
+              }
+            },
+            {
+              "check": "Timestamps vary meaningfully across entities and have been discarded from the feature table.",
+              "how": "Compare timestamp ranges and target patterns with the current aggregation outputs.",
+              "pushes": {
+                "T.4.1.7": 0.7
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.4.2": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "A wide feature table has stable cross-fold importance estimates.",
+              "how": "Compare rankings across fitted folds and inspect whether low-ranked columns dominate feature count.",
+              "pushes": {
+                "T.4.2.1": 0.9
+              }
+            },
+            {
+              "check": "A particular added feature family coincided with a regression or is error-prone.",
+              "how": "Review feature-version diffs, prior group ablations, and implementation failures.",
+              "pushes": {
+                "T.4.2.2": 1
+              }
+            },
+            {
+              "check": "Some columns are almost entirely missing.",
+              "how": "Compute column missingness on train and validation and inspect the model’s use of those columns.",
+              "pushes": {
+                "T.4.2.3": 0.8
+              }
+            },
+            {
+              "check": "The classifier consumes a truncated backbone embedding and full-dimensional checkpoints are available.",
+              "how": "Inspect pooled tensor width, head parameter count, and compatible checkpoint configurations.",
+              "pushes": {
+                "T.4.2.4": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.4.3": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "The current tree implementation handles missing values and added preprocessing erases missingness or removes useful extremes.",
+              "how": "Inspect estimator capabilities, aggregation-generated NaNs, and prior preprocessing ablations.",
+              "pushes": {
+                "T.4.3.1": 1
+              }
+            },
+            {
+              "check": "At least one active model rejects missing values or lacks native handling.",
+              "how": "Inspect estimator input checks and the finite-value fraction of its actual feature matrix.",
+              "pushes": {
+                "T.4.3.2": 1,
+                "T.4.3.1": -0.5
+              }
+            },
+            {
+              "check": "Low-precision storage creates spurious fine-scale differences relative to meaningful measurement resolution.",
+              "how": "Compare raw and stored values, unique-value spacing, and dtype conversion code.",
+              "pushes": {
+                "T.4.3.3": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.4.4": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Relevant text lies outside the retained token range or is diluted by unrelated spans.",
+              "how": "Inspect token-length distributions, truncation examples, and task-relevant span locations.",
+              "pushes": {
+                "T.4.4.1": 0.9
+              }
+            },
+            {
+              "check": "Custom normalization changes text beyond the tokenizer’s training assumptions.",
+              "how": "Compare before/after examples and existing cleaning ablations.",
+              "pushes": {
+                "T.4.4.2": 0.9
+              }
+            },
+            {
+              "check": "Distinct text fields are flattened together despite different roles in the target.",
+              "how": "Inspect input schema, encoding templates, and available checkpoints for separate or paired streams.",
+              "pushes": {
+                "T.4.4.3": 0.9
+              }
+            },
+            {
+              "check": "Structured metadata or surface statistics vary with targets but are absent from the model.",
+              "how": "Inspect train-only metadata summaries, target associations, and the current input signature.",
+              "pushes": {
+                "T.4.4.4": 0.8
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.4.5": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Useful fine detail is lost at the current resize and compatible higher-resolution weights exist.",
+              "how": "Inspect downsampled examples, checkpoint training sizes, and prior resolution probes.",
+              "pushes": {
+                "T.4.5.1": 0.9
+              }
+            },
+            {
+              "check": "The current temporal or spatial window misses the labeled region or includes irrelevant context.",
+              "how": "Compare timestamp or crop bounds with label scope, sequence lengths, and current retained content.",
+              "pushes": {
+                "T.4.5.2": 1
+              }
+            },
+            {
+              "check": "Time-frequency bins are too coarse for the event durations or frequency structure of interest.",
+              "how": "Inspect spectrograms, transform parameters, sampling rate, and matched checkpoint settings.",
+              "pushes": {
+                "T.4.5.3": 0.9
+              }
+            },
+            {
+              "check": "Input intensity statistics differ from the training preprocessing or target-domain distribution.",
+              "how": "Compare per-channel statistics and saved normalization code with inference tensors.",
+              "pushes": {
+                "T.4.5.4": 1
+              }
+            },
+            {
+              "check": "Known interference frequencies or an unsuitable passband remain in the signal.",
+              "how": "Inspect spectra, filter response, sampling rate, and documented signal bandwidth.",
+              "pushes": {
+                "T.4.5.5": 0.9
+              }
+            },
+            {
+              "check": "A few extreme values dominate the raw or spectral dynamic range.",
+              "how": "Inspect value quantiles and plots before and after current clipping.",
+              "pushes": {
+                "T.4.5.6": 0.9
+              }
+            },
+            {
+              "check": "A natural-image backbone receives scalar spectral images and a color encoding has not been tested.",
+              "how": "Inspect input channels, pretraining expectations, and any compatible color-encoded checkpoints.",
+              "pushes": {
+                "T.4.5.7": 0.6
+              }
+            },
+            {
+              "check": "An arbitrary signal-to-image factorization creates implausible local neighborhoods.",
+              "how": "Trace the reshape dimensions and visualize adjacent image positions against original time and channel indices.",
+              "pushes": {
+                "T.4.5.8": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.4.6": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Useful channels are available in the same signal but excluded from the current tensor.",
+              "how": "Compare raw channels and derived-channel definitions with model input indices.",
+              "pushes": {
+                "T.4.6.1": 0.9
+              }
+            },
+            {
+              "check": "A different modality or representation carries information the current branch cannot see.",
+              "how": "Inspect paired samples, existing standalone modality scores, and available compatible training paths.",
+              "pushes": {
+                "T.4.6.2": 0.9
+              }
+            },
+            {
+              "check": "An existing branch adds substantial complexity and its incremental benefit is unverified or negative.",
+              "how": "Inspect previous branch ablations and branch-specific outputs on the same rows.",
+              "pushes": {
+                "T.4.6.3": 1
+              }
+            },
+            {
+              "check": "Equal-width branch embeddings are averaged before classification, potentially discarding distinct information.",
+              "how": "Inspect fusion code, feature dimensions, and compatible heads for concatenation and averaging.",
+              "pushes": {
+                "T.4.6.4": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.5": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Data quantity, label quality, duplication, or imbalance is the observed limitation.",
+              "how": "Inspect learning curves, sample provenance, counts, and quality-stratified errors.",
+              "pushes": {
+                "T.5.1": 1
+              }
+            },
+            {
+              "check": "Censoring or evaluation-group fairness is not represented appropriately by the current target.",
+              "how": "Inspect outcome schema, target construction, and per-group scores.",
+              "pushes": {
+                "T.5.2": 1
+              }
+            },
+            {
+              "check": "Training overfits despite plausible label-preserving input perturbations being available.",
+              "how": "Inspect train/validation gaps and examples of domain-compatible transforms.",
+              "pushes": {
+                "T.5.3": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.5.1": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "A substantial labeled holdout remains unused after the configuration has already been selected.",
+              "how": "Inspect split sizes, stopping strategy, and the independently saved validation evidence.",
+              "pushes": {
+                "T.5.1.1": 0.9
+              }
+            },
+            {
+              "check": "Additional labeled examples exist with compatible targets and adaptable input shapes.",
+              "how": "Inspect their provenance, label definitions, distribution, and previous inclusion experiments.",
+              "pushes": {
+                "T.5.1.2": 0.9
+              }
+            },
+            {
+              "check": "Unlabeled examples and a pseudo-labeling procedure already improved another comparable member.",
+              "how": "Review available pseudo-label artifacts, confidence diagnostics, and labeled-only versus pseudo-labeled validation results.",
+              "pushes": {
+                "T.5.1.3": 0.9
+              }
+            },
+            {
+              "check": "Training examples contain duplicated windows, flagged outliers, or measurable label-quality variation.",
+              "how": "Inspect overlap IDs, out-of-fold residuals, annotator counts, and retained sample counts under proposed filters.",
+              "pushes": {
+                "T.5.1.4": 1
+              }
+            },
+            {
+              "check": "Class imbalance or subgroup error patterns suggest the current sample weighting is unsuitable.",
+              "how": "Compare class counts and per-class held-out errors with the metric’s weighting and earlier weight sweeps.",
+              "pushes": {
+                "T.5.1.5": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.5.2": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "The outcome is censored and ordinary regression targets do not express the observed event information.",
+              "how": "Inspect event indicators, observation times, censoring rates, and current target-building code.",
+              "pushes": {
+                "T.5.2.1": 1
+              }
+            },
+            {
+              "check": "The metric scores predefined groups and their outcome distributions differ substantially.",
+              "how": "Read the metric grouping definition and compare training-only event and censoring distributions by group.",
+              "pushes": {
+                "T.5.2.2": 1
+              }
+            },
+            {
+              "check": "Some groups have too few observed events for stable group-specific transforms.",
+              "how": "Count events and inspect transform stability across training folds within each group.",
+              "pushes": {
+                "T.5.2.2": -0.8,
+                "T.5.2.1": 0.6
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.5.3": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Image intensity varies naturally but strong augmentation has previously distorted useful structure.",
+              "how": "Inspect image distributions and augmentation examples alongside prior magnitude sweeps.",
+              "pushes": {
+                "T.5.3.1": 0.9
+              }
+            },
+            {
+              "check": "The model sees spectrograms and should tolerate missing local time-frequency evidence.",
+              "how": "Inspect signal events and candidate masks to confirm they do not systematically erase the full target interval.",
+              "pushes": {
+                "T.5.3.2": 0.9
+              }
+            },
+            {
+              "check": "Labels are soft distributions and the existing training code already supports weighted example mixing.",
+              "how": "Inspect label normalization and mixup weights and compare previous mixed versus unmixed training results.",
+              "pushes": {
+                "T.5.3.3": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.6": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "The current predictor’s inductive bias or pretraining domain appears unsuitable.",
+              "how": "Compare standalone errors, data modality, and available alternative predictors.",
+              "pushes": {
+                "T.6.1": 0.9
+              }
+            },
+            {
+              "check": "The backbone is useful but pooling or the output head is limiting.",
+              "how": "Review architecture and head-only ablation results.",
+              "pushes": {
+                "T.6.2": 0.9
+              }
+            },
+            {
+              "check": "A tree model’s capacity, regularization, or round budget is implicated by learning curves.",
+              "how": "Inspect tree fit and validation traces.",
+              "pushes": {
+                "T.6.3": 1
+              }
+            },
+            {
+              "check": "Neural optimization or objective mismatch is visible in training diagnostics.",
+              "how": "Inspect optimizer, loss, activation, and rate traces.",
+              "pushes": {
+                "T.6.4": 1
+              }
+            },
+            {
+              "check": "The available trained states differ more than recent architecture changes or stopping is poorly configured.",
+              "how": "Review checkpoint scores, training curves, and component-training audits.",
+              "pushes": {
+                "T.6.5": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.6.1": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "The current family has plateaued despite useful features and controlled tuning.",
+              "how": "Review the single-model tuning history and whether an alternative family offers a different treatment of the data.",
+              "pushes": {
+                "T.6.1.1": 0.8
+              }
+            },
+            {
+              "check": "A domain-relevant or structurally different pretrained backbone is available.",
+              "how": "Inspect its training domain, expected inputs, and existing standalone validation evidence.",
+              "pushes": {
+                "T.6.1.2": 0.9
+              }
+            },
+            {
+              "check": "Capacity appears limiting or a smaller model may meet the same quality target.",
+              "how": "Compare train/validation errors, resource use, and available size-matched checkpoints.",
+              "pushes": {
+                "T.6.1.3": 0.8
+              }
+            },
+            {
+              "check": "Pretrained embeddings are available but end-to-end fine-tuning is noisy or expensive.",
+              "how": "Inspect cached representation quality, sample count, and variance across fine-tuning runs.",
+              "pushes": {
+                "T.6.1.4": 0.9
+              }
+            },
+            {
+              "check": "Similar labeled examples exist and a leakage-free retrieval index can be built for each validation fold.",
+              "how": "Inspect nearest-neighbor examples and verify that the query’s label and validation rows are excluded from its index.",
+              "pushes": {
+                "T.6.1.5": 0.8
+              }
+            },
+            {
+              "check": "The tuned standard tree booster still appears to overfit and a dropout-based variant is supported.",
+              "how": "Inspect train/validation curves and prior booster comparisons, including whether early stopping works for the variant.",
+              "pushes": {
+                "T.6.1.6": 0.8
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.6.2": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "The backbone is strong but its current head is only a minimal projection.",
+              "how": "Inspect architecture definitions and the plateau under backbone-fixed experiments.",
+              "pushes": {
+                "T.6.2.1": 0.9
+              }
+            },
+            {
+              "check": "A complex multi-head or normalization design has regressed or overfit.",
+              "how": "Compare train/validation behavior and head ablations with matching checkpoints.",
+              "pushes": {
+                "T.6.2.2": 1,
+                "T.6.2.1": -0.5
+              }
+            },
+            {
+              "check": "Useful token or hidden-layer information is discarded by the current pooling.",
+              "how": "Inspect pooling code, available hidden states, sequence structure, and earlier pooling comparisons.",
+              "pushes": {
+                "T.6.2.3": 0.9
+              }
+            },
+            {
+              "check": "The main regression target has a meaningful discrete or auxiliary structure that can be learned jointly.",
+              "how": "Inspect target support and previous auxiliary-task validation results; verify sufficient labels for both tasks.",
+              "pushes": {
+                "T.6.2.4": 0.8
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.6.3": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Training fit is poor under shallow trees or prior depth changes show a clear capacity effect.",
+              "how": "Inspect train/validation curves, depth and leaf settings, and completed capacity probes.",
+              "pushes": {
+                "T.6.3.1": 0.9
+              }
+            },
+            {
+              "check": "Training improves while validation stagnates under the current tree capacity.",
+              "how": "Compare curves and prior penalties or minimum-leaf settings on the same feature set.",
+              "pushes": {
+                "T.6.3.2": 0.9,
+                "T.6.3.1": -0.4
+              }
+            },
+            {
+              "check": "Every tree sees all rows and columns and the model overfits after feature selection.",
+              "how": "Inspect bagging and feature-fraction settings and the held-out gap.",
+              "pushes": {
+                "T.6.3.3": 0.9
+              }
+            },
+            {
+              "check": "Lower learning rates reach the round cap or trigger stopping before sustained convergence.",
+              "how": "Inspect best iteration, learning rate, round budget, and metric progression near stopping.",
+              "pushes": {
+                "T.6.3.4": 1
+              }
+            },
+            {
+              "check": "Tree duration was tuned for a standalone model but it now contributes to a multi-model ensemble.",
+              "how": "Compare standalone and ensemble validation curves across saved iteration checkpoints.",
+              "pushes": {
+                "T.6.3.5": 0.7
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.6.4": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Training is unstable or converges too slowly under the current fine-tuning rate.",
+              "how": "Inspect loss curves, gradient behavior, rate settings, and previous rate trials.",
+              "pushes": {
+                "T.6.4.1": 1
+              }
+            },
+            {
+              "check": "Convergence stalls around the current decay schedule’s transitions.",
+              "how": "Plot learning rate and validation metric over steps and compare with earlier schedules.",
+              "pushes": {
+                "T.6.4.2": 0.8
+              }
+            },
+            {
+              "check": "The current optimizer has reproducible convergence limitations after learning-rate tuning.",
+              "how": "Inspect optimization traces and prior controlled rate sweeps before comparing another optimizer.",
+              "pushes": {
+                "T.6.4.3": 0.7
+              }
+            },
+            {
+              "check": "The pretrained backbone fits training data well but the added head overfits.",
+              "how": "Inspect train/validation gaps and the head’s current dropout and capacity.",
+              "pushes": {
+                "T.6.4.4": 0.9
+              }
+            },
+            {
+              "check": "The output activation or training loss imposes assumptions inconsistent with the labels or task metric.",
+              "how": "Compare mutually exclusive versus independent targets, distributional labels, or pairwise ranking requirements with the current head and loss.",
+              "pushes": {
+                "T.6.4.5": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.6.5": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "The metric is still improving at the training cap or extra epochs have started to overfit.",
+              "how": "Inspect held-out learning curves and saved adjacent-epoch checkpoints.",
+              "pushes": {
+                "T.6.5.1": 0.9
+              }
+            },
+            {
+              "check": "Stopping occurs during noisy short plateaus, especially with a reduced learning rate.",
+              "how": "Inspect the patience window, curve fluctuations, and later improvements in longer runs.",
+              "pushes": {
+                "T.6.5.2": 1
+              }
+            },
+            {
+              "check": "Several compatible trained states already exist with different validation results.",
+              "how": "Inspect checkpoint metadata, stage provenance, and fixed-pipeline scores.",
+              "pushes": {
+                "T.6.5.3": 1
+              }
+            },
+            {
+              "check": "Several late states of one compatible architecture are available and individual weights remain noisy.",
+              "how": "Inspect training continuity, parameter keys, and validation behavior of those states.",
+              "pushes": {
+                "T.6.5.4": 0.8
+              }
+            },
+            {
+              "check": "A weak ensemble component lacks the fold discipline or tuning used by the stronger components.",
+              "how": "Audit its split indices, saved OOF predictions, data loading, and training configuration.",
+              "pushes": {
+                "T.6.5.5": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.7": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "The value of specific active or candidate members is uncertain.",
+              "how": "Inspect addition, replacement, and leave-one-out results.",
+              "pushes": {
+                "T.7.1": 1
+              }
+            },
+            {
+              "check": "Current members have highly correlated errors and additional independent prediction sources are available.",
+              "how": "Compare residual correlations with available architectures, representations, folds, and seeds.",
+              "pushes": {
+                "T.7.2": 1
+              }
+            },
+            {
+              "check": "Membership is stable but existing weights ignore quality differences or group sizes.",
+              "how": "Inspect effective coefficients, member scores, and previous weighting comparisons.",
+              "pushes": {
+                "T.7.3": 1
+              }
+            },
+            {
+              "check": "Member output scales or activation order are inconsistent with the intended metric and blend.",
+              "how": "Inspect score distributions, links, and the aggregation formula.",
+              "pushes": {
+                "T.7.4": 1
+              }
+            },
+            {
+              "check": "Aligned OOF predictions support a learned combiner and its capacity or features remain unresolved.",
+              "how": "Inspect OOF provenance and meta-model validation results.",
+              "pushes": {
+                "T.7.5": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.7.1": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "A compatible unused candidate has reasonable standalone predictions and potentially different residual errors.",
+              "how": "Inspect aligned candidate predictions, standalone scores, residual correlations, and earlier inclusion trials.",
+              "pushes": {
+                "T.7.1.1": 0.9
+              }
+            },
+            {
+              "check": "A stronger or different candidate is available for a known weak or redundant slot.",
+              "how": "Compare the current slot and replacement on the same held-out rows and inspect their correlations with the rest of the blend.",
+              "pushes": {
+                "T.7.1.2": 0.9
+              }
+            },
+            {
+              "check": "An active member has repeatedly worsened the fixed blend or seems redundant.",
+              "how": "Read leave-one-out results and per-member residual correlations using unchanged weights or renormalized baselines.",
+              "pushes": {
+                "T.7.1.3": 1,
+                "T.7.1.1": -0.4
+              }
+            },
+            {
+              "check": "No same-split comparison establishes that the ensemble beats its strongest member.",
+              "how": "Inspect saved standalone and ensemble scores on identical examples.",
+              "pushes": {
+                "T.7.1.4": 1
+              }
+            },
+            {
+              "check": "The current regression followed removal of members that previously had positive ablation evidence.",
+              "how": "Compare member manifests before and after the regression and locate their validated prediction files.",
+              "pushes": {
+                "T.7.1.5": 1,
+                "T.7.1.3": -0.7
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.7.2": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Most active members share one architecture or algorithm and their residuals are highly correlated.",
+              "how": "Inspect the member manifest and held-out residual correlation matrix.",
+              "pushes": {
+                "T.7.2.1": 1
+              }
+            },
+            {
+              "check": "An available modality, feature set, or preprocessing variant is absent from current members.",
+              "how": "Compare training representations and standalone validation results for the alternate path.",
+              "pushes": {
+                "T.7.2.2": 0.9
+              }
+            },
+            {
+              "check": "Different valid outcome transforms produce complementary residuals for the same task.",
+              "how": "Inspect OOF predictions from existing transformed-target models and verify target-direction alignment.",
+              "pushes": {
+                "T.7.2.3": 0.9
+              }
+            },
+            {
+              "check": "Training seeds produce substantial variance while architecture and fold setup remain fixed.",
+              "how": "Compare saved independent-seed predictions and same-split score distributions.",
+              "pushes": {
+                "T.7.2.4": 1
+              }
+            },
+            {
+              "check": "Additional compatible fold checkpoints are unused and prior fold additions have improved validation.",
+              "how": "Inspect fold coverage, checkpoint provenance, and the marginal-gain table.",
+              "pushes": {
+                "T.7.2.5": 1
+              }
+            },
+            {
+              "check": "One or more fold checkpoints are incompatible or repeatedly harm the full average on reliable validation.",
+              "how": "Check checkpoint metadata and fixed-pipeline full-versus-subset scores across held-out samples.",
+              "pushes": {
+                "T.7.2.6": 1,
+                "T.7.2.5": -0.6
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.7.3": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Members have comparable quality and tuned weights have not reliably improved the simple average.",
+              "how": "Compare uniform and tuned blend scores across the same held-out samples or repeated evaluations.",
+              "pushes": {
+                "T.7.3.1": 1,
+                "T.7.3.2": -0.5
+              }
+            },
+            {
+              "check": "Component quality differs reproducibly or a member’s predictions have changed since weights were tuned.",
+              "how": "Inspect standalone scores, OOF residuals, and artifact versions relative to the saved weight configuration.",
+              "pushes": {
+                "T.7.3.2": 1
+              }
+            },
+            {
+              "check": "A candidate’s residual contribution appears negatively correlated with the remaining blend’s error.",
+              "how": "Compute conditional residual associations and inspect prior small signed-weight probes on held-out data.",
+              "pushes": {
+                "T.7.3.3": 0.8
+              }
+            },
+            {
+              "check": "Model families contain unequal numbers of folds or variants.",
+              "how": "Count members per group and expand the current formula into effective per-family weights.",
+              "pushes": {
+                "T.7.3.4": 1
+              }
+            },
+            {
+              "check": "Current weights depend on statistics of a very small or varying inference sample.",
+              "how": "Inspect weight-generation code and the sample count and variability used to estimate adaptive coefficients.",
+              "pushes": {
+                "T.7.3.5": 1
+              }
+            },
+            {
+              "check": "Different components consistently win on different classes with adequate validation examples.",
+              "how": "Compare per-class held-out errors and sample counts across folds.",
+              "pushes": {
+                "T.7.3.6": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.7.4": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Useful score magnitudes or calibrated additive corrections are already validated.",
+              "how": "Inspect raw-versus-rank comparisons and whether downstream adjustments rely on absolute scale.",
+              "pushes": {
+                "T.7.4.1": 1,
+                "T.7.4.2": -0.6
+              }
+            },
+            {
+              "check": "The metric is rank-based and member score distributions differ in calibration or scale.",
+              "how": "Read the metric definition and plot per-member prediction distributions and held-out raw/rank blend results.",
+              "pushes": {
+                "T.7.4.2": 0.9
+              }
+            },
+            {
+              "check": "Stacking or weighted blending mixes columns with different scales or outlier-heavy outputs.",
+              "how": "Inspect OOF column quantiles and scaler fitting code; compare spread and outliers across members.",
+              "pushes": {
+                "T.7.4.3": 0.9
+              }
+            },
+            {
+              "check": "Overconfident member probabilities cluster near the boundaries and their magnitude dominates the blend.",
+              "how": "Inspect probability histograms and existing held-out power-transform comparisons.",
+              "pushes": {
+                "T.7.4.4": 0.7
+              }
+            },
+            {
+              "check": "Compatible pre-softmax logits are available and the task scores categorical probability distributions.",
+              "how": "Inspect saved logits, class ordering, and the distributional metric before comparing combination order.",
+              "pushes": {
+                "T.7.4.5": 0.8
+              }
+            },
+            {
+              "check": "Current inputs to an arithmetic average are unnormalized outputs although the blend is intended to average distributions.",
+              "how": "Inspect each member’s output activation and row sums before averaging.",
+              "pushes": {
+                "T.7.4.6": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.7.5": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "A fixed blend has plateaued and enough aligned held-out base predictions exist to fit a small combiner.",
+              "how": "Inspect OOF coverage, row alignment, sample count relative to member count, and fixed-blend scores.",
+              "pushes": {
+                "T.7.5.1": 0.9
+              }
+            },
+            {
+              "check": "The current stacker’s model class underfits or a complex stacker overfits the available meta-data.",
+              "how": "Compare training and held-out meta-model errors and prior family ablations.",
+              "pushes": {
+                "T.7.5.2": 0.9
+              }
+            },
+            {
+              "check": "The current meta-learner’s best setting lies at a search boundary or coefficients are unstable.",
+              "how": "Inspect search history, convergence warnings, and coefficient variation across folds.",
+              "pushes": {
+                "T.7.5.3": 0.9
+              }
+            },
+            {
+              "check": "Useful new OOF outputs or embeddings exist, or the current meta-feature schema contains weak redundant columns.",
+              "how": "Inspect feature provenance, alignment, correlations, and previous meta-feature ablations.",
+              "pushes": {
+                "T.7.5.4": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.8": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Validated symmetries or unintended stochastic inference could explain residual variance.",
+              "how": "Inspect transforms, evaluation mode, and repeated prediction files.",
+              "pushes": {
+                "T.8.1": 1
+              }
+            },
+            {
+              "check": "Prediction bias, scale, or probability mass conflicts with the output requirements or validation labels.",
+              "how": "Inspect residuals, calibration plots, ranges, and row sums.",
+              "pushes": {
+                "T.8.2": 1
+              }
+            },
+            {
+              "check": "Discrete target support or degenerate ties affect the ranking metric.",
+              "how": "Inspect target levels and raw/post-processed prediction uniqueness.",
+              "pushes": {
+                "T.8.3": 1
+              }
+            },
+            {
+              "check": "Auxiliary predictions or reliable metadata support a targeted correction.",
+              "how": "Inspect held-out conditional errors and correction ablations.",
+              "pushes": {
+                "T.8.4": 0.9
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.8.1": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "The task has label-preserving transformations represented by the trained model.",
+              "how": "Inspect domain symmetries, training augmentations, and prior transformed-view validation results.",
+              "pushes": {
+                "T.8.1.1": 1
+              }
+            },
+            {
+              "check": "A small noisy task may benefit from stochastic head averaging and dropout can be activated deliberately.",
+              "how": "Inspect model mode and verify that repeated dropout-enabled passes actually vary while other layers remain appropriate for inference.",
+              "pushes": {
+                "T.8.1.2": 0.7
+              }
+            },
+            {
+              "check": "Repeated inference changes scores unexpectedly or dropout settings are being tuned while inactive.",
+              "how": "Compare identical-run predictions and inspect evaluation mode, random transforms, seeds, and dynamic batching.",
+              "pushes": {
+                "T.8.1.3": 1,
+                "T.8.1.2": -0.5
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.8.2": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Held-out regression residuals show a stable offset or a reliable reference example exposes one.",
+              "how": "Inspect signed residual means across folds and reference-example prediction error.",
+              "pushes": {
+                "T.8.2.1": 0.9
+              }
+            },
+            {
+              "check": "A component’s bounded activation compresses its contribution to a heterogeneous blend.",
+              "how": "Inspect pre-activation distributions and held-out blended performance across existing temperature settings.",
+              "pushes": {
+                "T.8.2.2": 0.8
+              }
+            },
+            {
+              "check": "Class probability mass is systematically biased on a representative validation set.",
+              "how": "Compare predicted and observed class distributions and per-class calibration diagnostics.",
+              "pushes": {
+                "T.8.2.3": 0.9
+              }
+            },
+            {
+              "check": "The task requires bounded values or row-normalized probabilities and current outputs violate that contract.",
+              "how": "Read the output requirements and compute ranges and row sums after every activation.",
+              "pushes": {
+                "T.8.2.4": 1
+              }
+            },
+            {
+              "check": "Only ordering is scored and added scaling or clipping has no validated benefit.",
+              "how": "Inspect the metric’s invariances and compare rank order before and after current transforms, including ties.",
+              "pushes": {
+                "T.8.2.5": 1,
+                "T.8.2.4": -0.4
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.8.3": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "Targets occupy a small set of repeated levels while model outputs are fully continuous.",
+              "how": "Inspect unique target values and their frequencies by output column and the metric’s treatment of tied ranks.",
+              "pushes": {
+                "T.8.3.1": 1
+              }
+            },
+            {
+              "check": "Existing binning collapses one or more prediction columns to a constant.",
+              "how": "Count distinct values and variance per column after binning and compare with the raw outputs.",
+              "pushes": {
+                "T.8.3.2": 1,
+                "T.8.3.1": -0.7
+              }
+            },
+            {
+              "check": "Exact prediction ties are common and their treatment can change the scored ordering.",
+              "how": "Inspect tied-value counts and the metric implementation, then check existing tie-preserving and tie-breaking comparisons.",
+              "pushes": {
+                "T.8.3.3": 0.8
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "T.8.4": {
+      "groups": [
+        {
+          "under": "WHAT FITS THIS CASE?",
+          "checks": [
+            {
+              "check": "An auxiliary classifier or head gives held-out information not captured by the main prediction.",
+              "how": "Inspect its confidence, error correlation, and previously tested correction magnitudes on aligned rows.",
+              "pushes": {
+                "T.8.4.1": 0.9
+              }
+            },
+            {
+              "check": "A prediction-time metadata condition almost determines a particular target in training and held-out examples.",
+              "how": "Cross-tabulate the condition and target by split and inspect exceptions and distribution shift.",
+              "pushes": {
+                "T.8.4.2": 0.9
+              }
+            },
+            {
+              "check": "The current post-processing was tuned for older checkpoints or its contribution is unverified.",
+              "how": "Compare artifact versions and fixed-model correction-on versus correction-off results.",
+              "pushes": {
+                "T.8.4.3": 1
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

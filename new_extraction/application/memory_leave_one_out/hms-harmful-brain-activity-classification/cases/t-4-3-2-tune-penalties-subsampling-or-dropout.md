@@ -1,0 +1,25 @@
+# Tune penalties, subsampling or dropout  `T.4.3.2`   7 edits, 0 experts
+5 scored cases, median improvement +0.00117, 4 improved
+
+
+- expert 27389424 (Grandmaster) · amex · v32→v36   Sweep the L2 regularization parameter in roughly exponential steps (e.g., doubling or more each time). If increasing regularization does not improve validation, revert to a moderate value and instead adjust the minimum samples per leaf downward to restore model expressiveness. Combine both levers ra
+    evidence: ✓ The fitted model overfits or current regularization suppresses useful signal. | ✓ Multiple hyperparameters are being changed simultaneously without isolating individual effects. | ✓ Training fit or the train-validation gap suggests an inappropriate tree capacity.
+    leaderboard score n/a → n/a
+- expert 27389424 (Grandmaster) · amex · v63→v64   Enable column subsampling and row subsampling (e.g., both around 0.3) so each tree sees a random subset of features and rows. Also increase early-stopping patience proportionally so the model can still find its best iteration under the added noise.
+    evidence: ✓ The fitted model overfits or current regularization suppresses useful signal. | ✓ Validation improvement continues at the cap or has already reversed before the selected checkpoint. | ✗ The training loop currently lacks early-stopping and iteration-logging callbacks. | ✓ Multiple hyperparameters are being changed simultaneously without isolating individual effects.
+    leaderboard score 0.78859 → 0.79155 (+0.00296)
+- expert 7253130 (Contributor) · google · v3→v5   Re-tune the learning rate and dropout in small sequential steps, changing one at a time and submitting after each change to isolate effects. Start by lowering the learning rate (the loss surface changed) and reducing dropout, then adjust dropout back up if the lower rate already stabilizes training.
+    evidence: ✓ Multiple hyperparameters are being changed simultaneously without isolating individual effects. | ✓ The fitted model overfits or current regularization suppresses useful signal.
+    leaderboard score n/a → 0.36997
+- expert 7253130 (Contributor) · google · v9→v11   Change one or two hyperparameters at a time in small increments, submit each variant, and compare. When a joint change improves the score, keep it. When a partial revert worsens the score, revert toward the configuration that scored best. This greedy coordinate-style search is practical when each ev
+    evidence: ✓ The fitted model overfits or current regularization suppresses useful signal. | ✓ Multiple hyperparameters are being changed simultaneously without isolating individual effects. | ✓ Training is unstable or stops before a lower-rate run can converge.
+    leaderboard score 0.37253 → 0.37532 (+0.00279)
+- expert 55987255 (Master) · learning · v9→v10   Try substantially increasing L1 regularization (e.g., doubling or tripling it) to encourage sparsity over noisy features, while simultaneously reducing L2 regularization and modestly increasing the number of trees to compensate for the stronger sparsity penalty. Evaluate each combination on the lead
+    evidence: ✓ The fitted model overfits or current regularization suppresses useful signal. | ✓ Validation improvement continues at the cap or has already reversed before the selected checkpoint. | ✗ GPU acceleration is available and would meaningfully speed up training iterations. | ✓ GPU training caused instability or errors requiring fallback to CPU. | ✓ Multiple hyperparameters are being changed simultaneously without isolating individual effects. | ✗ The models share a single generic parameter dictionary rather than having model-specific tuned configurations.
+    leaderboard score 0.81798 → 0.81914 (+0.00117)
+- expert 55591012 (Grandmaster) · learning · v10→v12   Avoid jumping regularization coefficients by orders of magnitude in a single step (e.g., 0.1 → 100). Such extreme changes often over-regularize and degrade the score. Instead, sweep multiplicatively in smaller factors (e.g., ×2 or ×5), evaluate each, and stop when the validation metric stops improvi
+    evidence: ✓ The fitted model overfits or current regularization suppresses useful signal. | ✓ Multiple hyperparameters are being changed simultaneously without isolating individual effects. | ✓ GPU acceleration is available and would meaningfully speed up training iterations.
+    leaderboard score 0.81126 → 0.80877 (-0.00249)
+- expert 55591012 (Grandmaster) · learning · v34→v39   After trying small increments in both directions and seeing no clear improvement, make a larger jump (e.g., double the value) to escape the local region. Submit each change individually to isolate its effect. If the larger jump improves, continue exploring in that direction.
+    evidence: ✓ The fitted model overfits or current regularization suppresses useful signal. | ✓ Multiple hyperparameters are being changed simultaneously without isolating individual effects. | ✓ The models share a single generic parameter dictionary rather than having model-specific tuned configurations.
+    leaderboard score 0.81994 → 0.81998 (+0.00004)

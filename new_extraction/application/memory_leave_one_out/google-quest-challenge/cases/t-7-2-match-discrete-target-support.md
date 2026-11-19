@@ -1,0 +1,7 @@
+# Match discrete target support  `T.7.2`   1 edits, 0 experts
+1 scored cases, median improvement -0.00092, 0 improved
+
+
+- expert 55621328 (Master) · learning · v63→v68   Sort all test predictions by their continuous value and assign discrete labels so cumulative counts match the expected distribution. Compare the resulting metric against per-sample optimized-threshold rounding. Be aware that distribution matching ignores per-sample confidence and can hurt metrics th
+    evidence: ✓ The target is ordinal and the metric depends on discrete label agreement. | ✓ Ordinal label frequencies are approximately known and the metric is sensitive to the marginal prediction distribution. | ✓ Public or known high-scoring solutions for this task use the proposed output mapping technique as a standard practice. | ✓ Multiple values of the current mapping parameter have already been tried, providing a search history to guide the next choice. | ✓ The output mapping code references a column or variable name that does not exist at runtime, causing a crash. | ✓ The submission file has formatting issues (wrong columns, extra columns, incorrect column names) that prevent valid submission.
+    leaderboard score 0.81174 → 0.81082 (-0.00092)

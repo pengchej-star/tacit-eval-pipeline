@@ -1,0 +1,16 @@
+# Tune class or sample weights  `T.5.1.5`   4 edits, 0 experts
+3 scored cases, median improvement +0.00023, 2 improved
+
+
+- expert 27389424 (Grandmaster) · amex · v10→v25   First sweep the minority-class weight exponentially upward (e.g., 1, 2, 5, 10, 25, 50, 100) to find where performance peaks and degrades. Then reverse direction and sweep below 1.0 (e.g., 0.8, 0.5, 0.25, 0.1, 0.04, 0.01) to check whether down-weighting the minority class helps. Use a fast local vali
+    evidence: ✓ Class imbalance or subgroup error patterns suggest the current sample weighting is unsuitable. | ✗ The competition metric is rank-based or otherwise insensitive to the class-weight direction being explored. | ✗ Previous filtering or data-selection changes regressed the score, suggesting the current selection should be reverted or refined rather than extended.
+    leaderboard score n/a → n/a
+- expert 27502740 (Grandmaster) · amex · v2→v5   Try adding sample weights that inflate the majority class relative to the minority class. Compare the leaderboard score to the unweighted baseline. If the score does not improve (or slightly degrades), revert the weights—ranking-based metrics are often invariant to or harmed by class reweighting bec
+    evidence: ✓ Class imbalance or subgroup error patterns suggest the current sample weighting is unsuitable. | ✓ The competition metric is rank-based or otherwise insensitive to the class-weight direction being explored. | ✗ Previous filtering or data-selection changes regressed the score, suggesting the current selection should be reverted or refined rather than extended.
+    leaderboard score 0.79421 → 0.79418 (-0.00003)
+- expert 27656049 (Expert) · amex · v8→v9   Relax the missing-value drop threshold slightly (e.g., from 90% to 95%) so the model can exploit partially-observed features, and enable the built-in class-weight rebalancing flag. Expect a modest gain; treat this as a low-risk incremental step.
+    evidence: ✓ Class imbalance or subgroup error patterns suggest the current sample weighting is unsuitable. | ✗ The competition metric is rank-based or otherwise insensitive to the class-weight direction being explored.
+    leaderboard score 0.78584 → 0.78607 (+0.00023)
+- expert 27656049 (Expert) · amex · v23→v26   Sweep the exponent applied to the negative-to-positive ratio (e.g., 1/4, 1/3, 1/2, 1) to set the class weight. Submit or validate each, and pick the exponent that maximizes the target metric. Moderate exponents (e.g., cube root) often outperform both the raw ratio and near-unity weights.
+    evidence: ✓ Class imbalance or subgroup error patterns suggest the current sample weighting is unsuitable. | ✗ The competition metric is rank-based or otherwise insensitive to the class-weight direction being explored. | ✗ Previous filtering or data-selection changes regressed the score, suggesting the current selection should be reverted or refined rather than extended.
+    leaderboard score 0.79224 → 0.79258 (+0.00034)

@@ -1,0 +1,19 @@
+[amex-default-prediction] building tree
+[commonlitreadabilityprize] building tree
+[equity-post-hct-survival-predictions] building tree
+[google-quest-challenge] building tree
+[hms-harmful-brain-activity-classification] building tree
+[learning-agency-lab-automated-essay-scoring-2] building tree
+[hms-harmful-brain-activity-classification] steps 5-8
+[google-quest-challenge] steps 5-8
+[commonlitreadabilityprize] steps 5-8
+[equity-post-hct-survival-predictions] steps 5-8
+[hms-harmful-brain-activity-classification] done -> /Users/yaqingyang/Documents/bosch/meta_kaggle/new_extraction/application/memory_leave_one_out/hms-harmful-brain-activity-classification
+[learning-agency-lab-automated-essay-scoring-2] steps 5-8
+[google-quest-challenge] done -> /Users/yaqingyang/Documents/bosch/meta_kaggle/new_extraction/application/memory_leave_one_out/google-quest-challenge
+[amex-default-prediction] steps 5-8
+[commonlitreadabilityprize] done -> /Users/yaqingyang/Documents/bosch/meta_kaggle/new_extraction/application/memory_leave_one_out/commonlitreadabilityprize
+[equity-post-hct-survival-predictions] done -> /Users/yaqingyang/Documents/bosch/meta_kaggle/new_extraction/application/memory_leave_one_out/equity-post-hct-survival-predictions
+[learning-agency-lab-automated-essay-scoring-2] done -> /Users/yaqingyang/Documents/bosch/meta_kaggle/new_extraction/application/memory_leave_one_out/learning-agency-lab-automated-essay-scoring-2
+[amex-default-prediction] done -> /Users/yaqingyang/Documents/bosch/meta_kaggle/new_extraction/application/memory_leave_one_out/amex-default-prediction
+{"amex-default-prediction": true, "commonlitreadabilityprize": true, "equity-post-hct-survival-predictions": true, "google-quest-challenge": true, "hms-harmful-brain-activity-classification": true, "learning-agency-lab-automated-essay-scoring-2": true}

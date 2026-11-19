@@ -1,0 +1,133 @@
+# Select a compatible trained checkpoint  `T.5.1`   43 edits, 0 experts
+36 scored cases, median improvement -0.00004, 17 improved
+
+
+- expert 77450317 (Grandmaster) · equity · v8→v9   Iterate on the external model training/prediction scripts independently (tuning hyperparameters, features, or training procedure) and swap in the improved versions. Keep the ensemble blending logic fixed so that any score change is attributable solely to the component quality, making it easy to diag
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path.
+    leaderboard score 0.69524 → 0.69562 (+0.00038)
+- expert 73671444 (Grandmaster) · equity · v1→v3   Probe by submitting predictions from (a) only fold models, (b) only full-data models, and (c) all models combined. If the score differences are negligible (on the order of noise), conclude that checkpoint selection is not a productive lever and move on to other changes such as model architecture or 
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score 0.66986 → 0.66983 (-0.00004)
+- expert 7018718 (Expert) · google · v2→v3   Swap in a better-performing checkpoint and use a shared, tested evaluation module that includes post-processing steps like rank blending. Verify the gain on the leaderboard before further tuning individual components.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path.
+    leaderboard score 0.36973 → 0.37770 (+0.00797)
+- expert 7018718 (Expert) · google · v4→v8   Sweep checkpoints one at a time by changing only the checkpoint path, submitting each to the leaderboard. Keep the one that scores best. This is cheap when inference is fast relative to training and the number of candidates is small.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score 0.37851 → 0.38615 (+0.00765)
+- expert 7018718 (Expert) · google · v18→v20   Swap the checkpoint path, re-run inference locally, and inspect validation outputs or prediction distributions before spending a leaderboard submission. If the local signals are not clearly better than the current best, skip submission and try another checkpoint or approach.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score 0.38508 → n/a
+- expert 7018718 (Expert) · google · v26→v27   Systematically swap checkpoints while keeping the rest of the inference pipeline constant. Expect meaningful variance across runs; do not abandon a pipeline change based on a single checkpoint's poor result. The score difference between checkpoints of the same setup can exceed the difference between
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path.
+    leaderboard score 0.37970 → 0.38820 (+0.00850)
+- expert 7573212 (Contributor) · google · v11→v13   Rather than selecting a single checkpoint, load both variants per fold, generate predictions from each, and average them into the ensemble. This exploits the diversity between checkpoints and often outperforms either alone.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage.
+    leaderboard score n/a → 0.39071
+- expert 7573212 (Contributor) · google · v10→v13   Hold all code constant and vary only which checkpoint files are loaded. Test individual checkpoints first to gauge their standalone quality, then try averaging predictions from multiple checkpoints. Use leaderboard scores to guide selection, keeping iterations minimal.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage.
+    leaderboard score 0.39027 → 0.39071 (+0.00044)
+- expert 6803050 (Master) · google · v37→v39   When a score drops unexpectedly after changing checkpoint paths, verify every path string character-by-character. Load one fold at a time and check that the model produces non-trivial outputs before running the full ensemble. Treat any sudden regression after a path change as a path bug until proven
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score 0.29940 → 0.38287 (+0.08347)
+- expert 7606235 (Master) · google · v8→v15   Submit each fold checkpoint individually and record the test/leaderboard score. Expect meaningful variance across folds (here ~0.005 spread on a correlation metric). Select the best-performing single fold before attempting ensembles, as not all folds contribute equally.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score n/a → 0.38524
+- expert 53747598 (Master) · hms · v25→v30   Add the new checkpoints to the ensemble, then iteratively tune blend weights in small increments around the current best ratio. After each weight change, evaluate on the leaderboard or a reliable validation set. Prefer near-equal weighting as a starting point and shift weight toward the component th
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score 0.22688 → 0.22587 (-0.00101)
+- expert 53424936 (Master) · hms · v27→v28   Replace only the checkpoint file paths in the ensemble, keeping the model architecture, preprocessing, and aggregation logic identical. Submit and compare the leaderboard score to isolate the effect of the new training run. This cleanly attributes any gain to training quality rather than pipeline ch
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path.
+    leaderboard score 0.22782 → 0.22621 (-0.00161)
+- expert 50376011 (Grandmaster) · hms · v27→v29   Evaluate the new checkpoint group alone (not mixed with the old group) to get a clean comparison. If it outperforms the old group, adopt it as the new baseline before attempting cross-group blending.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path.
+    leaderboard score n/a → 0.38671
+- expert 49524919 (Grandmaster) · hms · v1→v2   Swap the checkpoint path to each candidate and submit to the leaderboard to identify the best-performing one before investing in further improvements. Start with the checkpoint expected to be strongest based on training setup (e.g., a more specialized architecture or longer training).
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path.
+    leaderboard score 0.49198 → 0.46256 (-0.02942)
+- expert 49524919 (Grandmaster) · hms · v6→v12   Sweep all available checkpoint versions by submitting each to the leaderboard (or evaluating on a trusted validation set). Record every score. Do not assume newer checkpoints are better—performance can be non-monotonic across training iterations. Select the version with the best metric.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score 0.51388 → 0.48671 (-0.02717)
+- expert 49524919 (Grandmaster) · hms · v21→v25   Hold all other inference settings constant (no post-processing tweaks, same augmentation) and submit each checkpoint version in turn. This isolates the checkpoint effect. Keep the best-scoring version and use it as the baseline for further experiments.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage.
+    leaderboard score 0.48815 → 0.45926 (-0.02889)
+- expert 49524919 (Grandmaster) · hms · v55→v58   Sweep checkpoint versions one at a time, submitting each to the evaluation metric. Track the score for each version, pick the best, and only then move to other tuning levers (e.g., blend weights). Expect diminishing or non-monotonic returns across versions.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage.
+    leaderboard score 0.29864 → 0.29199 (-0.00665)
+- expert 49524919 (Grandmaster) · hms · v60→v66   Sweep checkpoint versions one at a time, holding all other pipeline components fixed, and submit each to the leaderboard. Track scores to identify the best version. Expect non-monotonic results — newer checkpoints are not always better. Keep the sweep systematic (sequential versions) so regressions 
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage.
+    leaderboard score n/a → 0.29086
+- expert 49524919 (Grandmaster) · hms · v66→v67   When swapping to a new checkpoint, also update the inference-time transforms (dropout, normalization order, additional augmentations) to match or complement the training regime of that checkpoint. Test the combined change as a single submission; if it beats both the old checkpoint and the new checkp
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage.
+    leaderboard score 0.29086 → 0.29040 (-0.00045)
+- expert 49524919 (Grandmaster) · hms · v140→v142   Swap checkpoints across two or three submissions. If the score varies only marginally (small fraction of the gap to the target), conclude that checkpoint selection is not the limiting factor and redirect effort to model architecture, training strategy, or ensemble composition instead.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✓ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score 0.25994 → 0.26137 (+0.00143)
+- expert 49576186 (Expert) · hms · v76→v78   Swap only the checkpoint directory path and re-run inference to isolate the effect of the new weights. Compare the leaderboard score to the previous best to confirm the new checkpoints are strictly better before making any other changes.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path.
+    leaderboard score 0.34054 → 0.32680 (-0.01374)
+- expert 49576186 (Expert) · hms · v90→v93   Systematically try weights from each training stage and each saved checkpoint directory, submitting each to the leaderboard. Pick the combination that scores best. Do not assume the final stage is always superior.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage.
+    leaderboard score 0.27366 → 0.26921 (-0.00445)
+- expert 49576186 (Expert) · hms · v168→v172   Run inference with each stage's checkpoint separately and compare leaderboard or validation scores. Test at least two stages, and if results are consistent across multiple runs (including when the training data changes), trust the pattern. Pick the stage that reliably scores best.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage.
+    leaderboard score 0.26603 → 0.28320 (+0.01717)
+- expert 49576186 (Expert) · hms · v172→v180   Isolate checkpoint selection from other changes: fix the data pipeline first, then swap checkpoints one at a time and submit. Compare leaderboard scores to identify the best checkpoint. Avoid changing both the data pipeline and the checkpoint simultaneously, as this confounds the comparison.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage. | ✗ Tabular features are stable and a different boosting method or interface offers the required optimization controls.
+    leaderboard score 0.28320 → 0.26166 (-0.02155)
+- expert 49576186 (Expert) · hms · v180→v181   Re-probe each candidate stage after any significant change to the training setup or checkpoints. Compare the resulting metric against the current best. If the alternative is worse, revert to the previously best stage. Do not assume earlier comparisons still hold after pipeline changes.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage.
+    leaderboard score 0.26166 → 0.27700 (+0.01535)
+- expert 52860091 (Grandmaster) · hms · v4→v8   Sweep checkpoints by substituting each into the inference pipeline and submitting. Do not rely solely on the validation loss recorded during training to pick the best checkpoint; instead, evaluate each on the actual test/leaderboard metric. A checkpoint with a slightly worse validation loss can outp
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage.
+    leaderboard score 0.35973 → 0.32858 (-0.03115)
+- expert 52860091 (Grandmaster) · hms · v11→v13   Swap ensemble members to use checkpoints from the stronger training procedure rather than just adding more members from the weaker one. Compare the ensemble score before and after the swap to confirm the gain comes from checkpoint quality, not just quantity.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path.
+    leaderboard score 0.29768 → 0.29157 (-0.00611)
+- expert 52551258 (Expert) · hms · v5→v7   Try checkpoints selected on the high-confidence validation subset (e.g., best score on samples with many annotator votes) rather than final-epoch or full-validation-best checkpoints. Ensure the output conversion (e.g., exponentiating log-probabilities) matches what the checkpoint was trained to prod
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score 0.37494 → 0.32513 (-0.04982)
+- expert 52551258 (Expert) · hms · v22→v26   Sweep checkpoint directories one at a time on the leaderboard, starting with the most promising (e.g., a sanity-checked or final-stage set). If none improves over the current best, try combining the top two directories. Stop when combinations also fail to improve, and revert to the previous best ens
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation. | ✗ Tabular features are stable and a different boosting method or interface offers the required optimization controls. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage.
+    leaderboard score 0.29324 → 0.28546 (-0.00778)
+- expert 60264017 (Master) · learning · v4→v5   Before searching over different architectures, try swapping training variants of the same architecture (e.g., different data subsets, cleaning strategies, or loss functions) into the ensemble. Measure each variant's marginal contribution; a variant that decorrelates errors with existing members can 
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path.
+    leaderboard score 0.82940 → 0.83110 (+0.00170)
+- expert 55621328 (Master) · learning · v46→v47   Swap in last-epoch snapshots while keeping everything else fixed. If the score drops, prefer best-validation checkpoints; the gap indicates how much the model overfits in later epochs and whether early stopping is essential for this task.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path.
+    leaderboard score 0.81880 → 0.81727 (-0.00153)
+- expert 55621328 (Master) · learning · v71→v72   Test the alternative checkpoint with minor weight adjustments. If the score regresses, revert to the previous best configuration rather than continuing to tune weights around the inferior checkpoint. Small checkpoint swaps near a peak often regress, so treat each swap as a quick probe and keep the p
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score 0.82319 → 0.82142 (-0.00177)
+- expert 55621328 (Master) · learning · v78→v80   Instead of immediately reverting, try a structurally different ensemble configuration (e.g., switching from a single checkpoint to a multi-fold average, or changing the number of ensemble members). A structural change explores a different part of the search space and can recover and exceed the previ
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage.
+    leaderboard score 0.82461 → 0.82504 (+0.00043)
+- expert 55621328 (Master) · learning · v81→v82   Swap to the newer variant and re-tune blend weights. If the score improves but remains below the previous best, conclude that the ensemble size reduction is the dominant factor and revert to the larger ensemble rather than continuing to search over single-checkpoint variants.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score 0.82051 → 0.82193 (+0.00142)
+- expert 55621328 (Master) · learning · v94→v98   Systematically swap one factor at a time (backbone size, then training run / checkpoint set) while keeping other inference settings similar. Submit the most promising variants. If none surpass the current best after a few trials, stop exploring that axis and move to a different experiment or approac
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score 0.81721 → 0.82066 (+0.00345)
+- expert 55621328 (Master) · learning · v103→v104   Try both checkpoint variants in the inference ensemble and compare scores. Final-epoch checkpoints can sometimes generalize better when the validation set distribution differs from the test set, so do not assume early stopping is always superior.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score 0.82467 → 0.82726 (+0.00259)
+- expert 55621328 (Master) · learning · v108→v109   Swap one factor at a time (checkpoint set, blend weights, batch size) and submit. Track each combination's score against the running best. When a new variant scores close to but below the best, note it as a viable ensemble candidate rather than discarding it, since it may complement other models in 
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path.
+    leaderboard score 0.81837 → 0.82798 (+0.00961)
+- expert 55621328 (Master) · learning · v119→v125   Before burning leaderboard submissions, evaluate checkpoint variants on a local validation set that mirrors the test distribution. Only submit the variant that clearly improves local validation. Blind sweeping on the leaderboard is expensive and often yields no gain when the variants are minor pertu
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score 0.82840 → 0.81897 (-0.00943)
+- expert 55591012 (Grandmaster) · learning · v30→v31   Before making the swap, cache all expensive preprocessing and feature computations so iteration is fast. Then swap the checkpoint and re-run. Compare the new score against the previous best. If the score regresses, revert the checkpoint change rather than continuing to tune around it; the backbone q
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✓ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score n/a → 0.81761
+- expert 15082684 (Master) · ranzcr · v19→v22   Add debug prints to inspect the loaded state dict (keys, shapes, count) immediately after loading. Compare against the model's expected parameters. Check that every configuration flag (architecture variant, head type, number of outputs) matches the training configuration of those specific checkpoint
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation. | ✓ A newer checkpoint has worse independent validation despite being from a later training stage. | ✓ Backbone features are strong but pooling, output heads or modality fusion remain minimal or poorly validated.
+    leaderboard score 0.96183 → 0.96591 (+0.00408)
+- expert 15082684 (Master) · ranzcr · v24→v29   Sweep checkpoints one at a time, prioritizing those with the highest local validation scores. Submit each to verify leaderboard alignment. When two checkpoints from different runs share the same validation score and produce nearly identical leaderboard scores, treat local CV as a reliable proxy and 
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation. | ✗ A newer checkpoint has worse independent validation despite being from a later training stage.
+    leaderboard score 0.96249 → 0.96901 (+0.00652)
+- expert 13521245 (Grandmaster) · ranzcr · v6→v7   Before tuning any inference hyperparameters, first try swapping in the strongest available pretrained checkpoint. The checkpoint quality often dominates all other inference-time decisions and can yield the largest single improvement.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path.
+    leaderboard score n/a → 0.95237
+- expert 50496431 (Grandmaster) · hms · v7→v8   Systematically try alternative checkpoint selections—varying which epoch or run is chosen per fold—and evaluate on the leaderboard or a held-out set. Even without changing the model or augmentation, checkpoint selection alone can yield a larger gain than adding TTA.
+    evidence: ✓ Several compatible training runs or stages exist but have not been compared with one fixed inference path. | ✗ Checkpoint-only tuning has stalled and available architectures or pretraining sources offer a different representation.
+    leaderboard score 0.42697 → 0.42196 (-0.00501)

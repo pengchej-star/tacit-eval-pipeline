@@ -1,0 +1,28 @@
+# Fit the batch to memory  `T.8.1.2`   8 edits, 0 experts
+5 scored cases, median improvement -0.00694, 0 improved
+
+
+- expert 7823861 (nan) · google · v2→v4   Try the smallest possible batch size (1) first to rule out memory issues and shape mismatches. If that fails, increment the batch size to check whether the error is batch-related. Revert to the smallest working value once a successful run is confirmed.
+    evidence: ✓ The first forward pass fails at the current batch size. | ✗ The edit changes multiple variables simultaneously (e.g., precision and blend weights), confounding the effect of the resource reduction. | ✓ The runtime error at a specific batch size is not purely OOM but a batch-size-dependent shape or computation issue.
+    leaderboard score n/a → -0.00372
+- expert 7670859 (Contributor) · google · v16→v17   Halve the inference batch size from the previous setting and re-run. If it still fails, halve again. Choose the largest power-of-two batch size that completes without memory errors to balance throughput and stability.
+    evidence: ✓ The first forward pass fails at the current batch size. | ✗ The object being deleted is still referenced downstream in the pipeline, causing a runtime error. | ✗ The replacement model has a smaller memory footprint than the model it replaces, allowing a larger batch size. | ✓ The edit changes multiple variables simultaneously (e.g., precision and blend weights), confounding the effect of the resource reduction.
+    leaderboard score n/a → n/a
+- expert 50376011 (Grandmaster) · hms · v77→v79   Change only one variable at a time when possible. If a large batch size degrades the score, revert to the smaller default; large batches can cause silent OOM issues or numerical differences that hurt predictions, especially on limited GPU memory.
+    evidence: ✓ Repeated inference passes (e.g., hack_count) multiply effective memory usage, requiring a smaller per-pass batch size. | ✓ The edit changes multiple variables simultaneously (e.g., precision and blend weights), confounding the effect of the resource reduction. | ✗ The replacement model has a smaller memory footprint than the model it replaces, allowing a larger batch size. | ✓ The first forward pass fails at the current batch size.
+    leaderboard score 0.36160 → 0.33044 (-0.03116)
+- expert 50376011 (Grandmaster) · hms · v221→v222   When expanding the number of ensemble members, proportionally reduce the inference batch size to keep peak memory within budget. Process one model at a time, accumulate predictions, and average at the end.
+    evidence: ✓ The first forward pass fails at the current batch size. | ✓ Parameters or activations dominate memory and supported reduced precision is available. | ✓ Predictions or probability metrics shift materially in prior reduced-precision trials. | ✓ The edit changes multiple variables simultaneously (e.g., precision and blend weights), confounding the effect of the resource reduction.
+    leaderboard score 0.24562 → 0.23868 (-0.00694)
+- expert 15372370 (Expert) · ranzcr · v3→v4   Reduce the batch size to fit within memory constraints and verify that the metric is unchanged. This is safe whenever the model's forward pass does not depend on batch statistics at inference time.
+    evidence: ✓ Model is in eval mode, so batch normalization uses fixed running stats, making predictions independent of batch size. | ✓ The edit changes multiple variables simultaneously (e.g., precision and blend weights), confounding the effect of the resource reduction.
+    leaderboard score 0.96342 → 0.96341 (-0.00001)
+- expert 15173072 (Contributor) · ranzcr · v13→v14   Increase the inference batch size as much as GPU memory allows for speed. Expect identical predictions and scores, since eval-mode batch norm and deterministic forward passes are independent of batch size.
+    evidence: ✗ The first forward pass fails at the current batch size. | ✓ Model is in eval mode, so batch normalization uses fixed running stats, making predictions independent of batch size. | ✓ The edit changes multiple variables simultaneously (e.g., precision and blend weights), confounding the effect of the resource reduction.
+    leaderboard score 0.96062 → 0.96062 (+0.00000)
+- expert 50496431 (Grandmaster) · hms · v62→v68   Start with a conservatively small batch size (e.g., one-eighth of the default) for the new model. Only increase after verifying that checkpoint loading is strict (no missing/unexpected keys) and that model configuration parameters exactly match the trained checkpoint. A sudden catastrophic score is 
+    evidence: ✓ The first forward pass fails at the current batch size. | ✓ Repeated inference passes (e.g., hack_count) multiply effective memory usage, requiring a smaller per-pass batch size. | ✗ The edit changes multiple variables simultaneously (e.g., precision and blend weights), confounding the effect of the resource reduction. | ✓ The replacement model has a smaller memory footprint than the model it replaces, allowing a larger batch size. | ✓ The runtime error at a specific batch size is not purely OOM but a batch-size-dependent shape or computation issue.
+    leaderboard score n/a → 0.30784
+- expert 50496431 (Grandmaster) · hms · v213→v214   Ensure inference DataLoaders use the same batch size as configured/expected. When debugging a score regression caused by multiple simultaneous changes, isolate infrastructure settings (batch size, data loading) as a separate variable—they can have outsized, non-obvious effects on predictions.
+    evidence: ✗ The edit changes multiple variables simultaneously (e.g., precision and blend weights), confounding the effect of the resource reduction.
+    leaderboard score 0.26971 → 0.22478 (-0.04493)

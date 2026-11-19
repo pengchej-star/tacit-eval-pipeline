@@ -1,0 +1,10 @@
+# Tune logit temperature before blending  `T.8.2.2`   2 edits, 0 experts
+2 scored cases, median improvement +0.00064, 2 improved
+
+
+- expert 77450317 (Grandmaster) · equity · v14→v15   Multiply the NN's pre-activation logits by a constant greater than 1 before applying the sigmoid, sharpening the output distribution. Then retune the ensemble blend coefficients to account for the changed scale. Evaluate on the leaderboard or validation to confirm the gain.
+    evidence: ✓ A component’s bounded activation compresses its contribution to a heterogeneous blend. | ✗ The task requires bounded values or row-normalized probabilities and current outputs violate that contract. | ✓ Only ordering is scored and added scaling or clipping has no validated benefit. | ✓ A previous calibration change (e.g., scaling multiplier) was associated with a score change, suggesting reverting or re-testing that specific setting is warranted. | ✓ A recently added or modified calibration step has not yet been submitted or validated, so its effect on the score is unknown.
+    leaderboard score 0.69597 → 0.69661 (+0.00064)
+- expert 77129691 (Master) · equity · v18→v19   Apply a multiplicative temperature scaling factor (e.g., 2×) to the logits before the sigmoid activation at inference time. This stretches the score distribution and can improve rank discrimination. Treat the scaling factor as a tunable hyperparameter and validate on the leaderboard or a held-out se
+    evidence: ✓ A component’s bounded activation compresses its contribution to a heterogeneous blend. | ✗ Only ordering is scored and added scaling or clipping has no validated benefit. | ✗ A previous calibration change (e.g., scaling multiplier) was associated with a score change, suggesting reverting or re-testing that specific setting is warranted. | ✓ A recently added or modified calibration step has not yet been submitted or validated, so its effect on the score is unknown.
+    leaderboard score 0.69481 → 0.69540 (+0.00059)

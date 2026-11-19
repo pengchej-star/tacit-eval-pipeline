@@ -1,0 +1,19 @@
+# Align rows and feature columns  `T.1.2.1`   5 edits, 0 experts
+2 scored cases, median improvement +0.24517, 1 improved
+
+
+- expert 7670859 (Contributor) · google · v34→v35   Never reorder training or test rows without ensuring that the final predictions are mapped back to the original row IDs before writing the submission file. When a score drops catastrophically (e.g., near zero or negative on a correlation metric), check ID alignment before investigating model quality
+    evidence: ✓ Joined features or prediction files have different identifier order or coverage. | ✗ Duplicate or conflicting code paths load or construct the same data, causing ambiguity about which version is actually used.
+    leaderboard score 0.37520 → -0.01424 (-0.38945)
+- expert 60197293 (Expert) · learning · v72→v74   After any column rename or addition, assert that every name in the saved feature-selection list exists in the current DataFrame columns before training or predicting. Print the intersection size and any missing names. Never submit without this check passing. Regenerate the feature-selection list whe
+    evidence: ✓ The first divergent value appears inside feature construction or the model forward pass.
+    leaderboard score n/a → 0.57175
+- expert 60197293 (Expert) · learning · v62→v71   Keep all feature sources as DataFrames with a shared index until the final step. Reset indices to ensure alignment, drop any ID/key columns from external predictions before concatenation, use column-aware concat, then assert the expected number of columns and no NaN values. Convert to a numeric arra
+    evidence: ✓ The first divergent value appears inside feature construction or the model forward pass. | ✓ Joined features or prediction files have different identifier order or coverage. | ✓ Duplicate or conflicting code paths load or construct the same data, causing ambiguity about which version is actually used. | ✓ Non-feature columns (e.g., IDs, targets, raw text) are inadvertently included in the model input feature matrix. | ✓ A feature used during training is conditionally excluded or missing at test time due to a flag or path difference.
+    leaderboard score n/a → n/a
+- expert 60197293 (Expert) · learning · v74→v80   Always merge auxiliary/external prediction features using an explicit key-based join (on the sample identifier column) rather than positional concatenation. When a catastrophic regression occurs after adding features, first disable the new features to confirm the base pipeline is intact, then re-ena
+    evidence: ✓ Joined features or prediction files have different identifier order or coverage. | ✓ A feature used during training is conditionally excluded or missing at test time due to a flag or path difference. | ✓ Duplicate or conflicting code paths load or construct the same data, causing ambiguity about which version is actually used.
+    leaderboard score 0.57175 → 0.81692 (+0.24517)
+- expert 60197293 (Expert) · learning · v88→v92   Before appending external columns to the feature list, explicitly drop all non-feature columns (identifiers, raw text, target labels). Print the resulting column names to verify. If a large score regression occurs after adding features, inspect whether identifier or target columns leaked into the fe
+    evidence: ✓ Non-feature columns (e.g., IDs, targets, raw text) are inadvertently included in the model input feature matrix. | ✓ A feature used during training is conditionally excluded or missing at test time due to a flag or path difference.
+    leaderboard score n/a → 0.81738

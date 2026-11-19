@@ -1,0 +1,13 @@
+# Match the temporal context  `T.4.5.3`   3 edits, 0 experts
+3 scored cases, median improvement -0.00077, 1 improved
+
+
+- expert 53424936 (Master) · hms · v1→v5   Ablate by removing the flanking windows, submit or validate with center-only, then restore them and compare. If the flanking windows yield even a small consistent gain, keep them; the cost is justified because ensembles amplify small per-component improvements.
+    evidence: ✓ Neighboring time windows contain plausible predictive context that is currently discarded. | ✗ The actual code edit changes a different parameter than the intended input-extent parameter, confounding the experiment. | ✗ Prior temporal-window parameter changes show the score is sensitive to the temporal extent, justifying further incremental tuning. | ✓ Labels describe a short interval but the model consumes a much longer or misaligned window.
+    leaderboard score 0.22859 → 0.22872 (+0.00013)
+- expert 49524919 (Grandmaster) · hms · v96→v98   Retrain or swap in auxiliary models whose input window matches the label's temporal scope. When the auxiliary model's input better aligns with the labeled segment, increase its blend weight (here roughly doubling the spectrogram weight) since its predictions become more informative.
+    evidence: ✓ Labels describe a short interval but the model consumes a much longer or misaligned window. | ✗ The proposed inference resolution differs from the checkpoint's training resolution, risking distribution shift. | ✓ The actual code edit changes a different parameter than the intended input-extent parameter, confounding the experiment. | ✓ Prior temporal-window parameter changes show the score is sensitive to the temporal extent, justifying further incremental tuning.
+    leaderboard score 0.26734 → 0.26658 (-0.00077)
+- expert 50496431 (Grandmaster) · hms · v138→v140   Adjust the window parameter in small increments and submit each change in isolation. If multiple changes are made simultaneously, the contribution of the window size cannot be attributed. Track the metric for each window size to find the sweet spot where the model has enough context without includin
+    evidence: ✓ The actual code edit changes a different parameter than the intended input-extent parameter, confounding the experiment. | ✓ Prior temporal-window parameter changes show the score is sensitive to the temporal extent, justifying further incremental tuning. | ✓ Neighboring time windows contain plausible predictive context that is currently discarded. | ✓ The score change from the last resolution/crop change is within run-to-run variance, so the effect is uncertain.
+    leaderboard score 0.25541 → 0.24785 (-0.00756)

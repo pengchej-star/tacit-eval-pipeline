@@ -1,0 +1,178 @@
+- **Choose the next improvement** `T`
+  - decide: what can I change to improve my solution? → Repair the prediction path | Improve the comparison | Change the learning information | Change the fitted predictor | Change how predictors are combined | Change prediction interpretation | Make a viable experiment cheaper
+  - desiderata · what fits this case?: The current execution fails or produces implausible predictions. · The score signal is confounded, noisy, or unrepresentative of test conditions. · Available examples or raw inputs contain useful information missing or distorted in the training matrix. · A valid, evaluable model shows underfitting, overfitting, objective mismatch, or a weak representation. · Several valid predictors or label-preserving views have complementary errors. · Validated predictions have a systematic calibration or discrete-label mismatch. · Runtime or memory prevents completing informative experiments or full inference.
+  - **Repair the prediction path** `T.1`
+    - decide: Which observed failure should I repair first? → Restore model compatibility | Repair silent data flow | Isolate the first failing component
+    - desiderata · what fits this case?: Failure begins when loading a new artifact or moving to another environment. · The notebook runs but produces implausible, missing, or invariant predictions. · Several new components have never completed an end-to-end run.
+    - desiderata · added from expert visits: The checkpoint loading process conflicts with or is undermined by default weight initialization (e.g., pretrained=True overriding custom weights, strict=False masking mismatches). · The model is not set to the correct inference mode (e.g., model.eval() missing), causing stochastic layers to behave incorrectly. · Inference preprocessing parameters or logic differ from what was used during training, creating a train-test mismatch. · There is a Python syntax error (wrong literal, missing comma, bad formatting) in newly added code that prevents parsing. · A method or keyword argument is called using the wrong API variant (e.g., native vs wrapper, wrong method name on the model object). · Variable or column names introduced or modified in recent edits do not match what downstream code references, causing NameError or KeyError. · A stray control-flow statement (continue, break, return) left from debugging alters the execution path. · A class or function lacks proper initialization or handling for the test/inference code path, causing an AttributeError. · A previous fix attempt left structural issues (indentation, branching) that still cause incorrect execution. · The model's final layer already applies an activation (e.g., softmax/sigmoid), making post-processing activation redundant or harmful. · A required import or dependency (module, function, class) is missing, causing a NameError or ImportError before the pipeline completes. · An intermediate variable or object is deleted or goes out of scope before a downstream step that still needs it. · A feature extraction step fails on edge-case inputs (empty splits, missing values, zero denominators) producing errors or NaNs. · Feature columns computed for the training set are missing from the test set (or vice versa), causing a shape or key mismatch at prediction time. · A function signature or calling convention does not match between definition and call site. · A type mismatch (numpy array vs DataFrame, tensor vs scalar) causes a downstream operation to fail. · The model graph construction fails because layers are not properly connected or input layers are missing.
+    - **Restore model compatibility** `T.1.1`
+      - decide: Which saved training contract is violated at inference? → Match architecture and weights | Restore training preprocessing | Repair dependencies and devices
+      - desiderata · what fits this case?: The checkpoint reports missing keys or incompatible layer dimensions. · The model loads, but tokenization, normalization, feature order, or input shape differs from training. · Execution stops at an import, file lookup, API call, or device transfer.
+      - desiderata · added from expert visits: Using load_model (which bundles architecture + weights) avoids the architecture recreation step that create_model + load_weights may introduce. · The notebook lacks code to write predictions into the submission dataframe and save submission.csv. · The post-processing or aggregation step references the wrong prediction variable or output. · The mismatched keys are auxiliary (e.g., extra loss head) and not needed at inference, so they can be safely ignored via strict=False. · Precomputed prediction files from external scripts are available and can bypass the broken in-notebook model pipeline. · A try/except fallback silently swallows model loading or inference failures, causing missing or zero predictions to be averaged into the ensemble.
+      - **Match architecture and weights** `T.1.1.1`
+      - **Restore training preprocessing** `T.1.1.2`
+      - **Repair dependencies and devices** `T.1.1.3`
+    - **Repair silent data flow** `T.1.2`
+      - decide: Where does the first incorrect intermediate output occur? → Align rows and feature columns | Correct ensemble arithmetic and routing | Correct feature and tensor computation | Repair output semantics and export
+      - desiderata · what fits this case?: Joined features or prediction files have different identifier order or coverage. · Some enabled models are skipped, repeated, or assigned the wrong fold or weight. · The first divergent value appears inside feature construction or the model forward pass. · Internal predictions are plausible but the exported values, sign, or schema are wrong.
+      - desiderata · added from expert visits: A framework or library API behaves differently from the expected pandas/numpy semantics (e.g., inplace, indexing), causing silent data corruption. · Duplicate or conflicting code paths load or construct the same data, causing ambiguity about which version is actually used. · Non-feature columns (e.g., IDs, targets, raw text) are inadvertently included in the model input feature matrix. · A feature used during training is conditionally excluded or missing at test time due to a flag or path difference. · The loaded dataframe is actually the training set (or wrong split) instead of the intended test set, detectable by row count. · The encoder or transformer fitted on training data encounters unseen categories at test time, causing errors or silent misencoding.
+      - **Align rows and feature columns** `T.1.2.1`
+      - **Correct ensemble arithmetic and routing** `T.1.2.2`
+      - **Correct feature and tensor computation** `T.1.2.3`
+      - **Repair output semantics and export** `T.1.2.4`
+    - **Isolate the first failing component** `T.1.3`
+  - **Improve the comparison** `T.2`
+    - decide: What prevents the next experiment from identifying a real improvement? → Separate competing explanations | Choose validation membership | Use the actual evaluation metric | Check validation-to-test agreement
+    - desiderata · what fits this case?: Recent score changes cannot be attributed to a single change or exceed neither repeat noise nor a plateau. · The current validation partition leaks related examples or misrepresents the test population. · Training selects models using a different metric, direction, or output convention from evaluation. · Configurations with better local validation repeatedly perform worse on external evaluation.
+    - desiderata · added from expert visits: Untested checkpoints or nearby epochs from existing runs remain that could better map the CV-to-LB relationship. · Fold-level predictions and indices are not persisted to disk, preventing independent offline recomputation of the metric. · A previously fixed bug in the custom metric or pipeline code has been inadvertently reintroduced by a later edit. · Early-stopping patience or the absence of early stopping causes the model to overfit or underfit the training metric, undermining validation signal. · The pipeline contains a runtime error (undefined variable, argument mismatch, missing import, or broken reference) that prevents training or inference from completing. · Ground-truth group labels (e.g., topic or source) are available and could replace synthetic or proxy groups in the cross-validation split. · Sample weighting has already been tried without improvement, suggesting fold composition (grouping/stratification) rather than gradient weighting is the bottleneck.
+    - **Separate competing explanations** `T.2.1`
+      - decide: How should I resolve an ambiguous score change? → Change one factor | Restore the last verified configuration | Measure repeated-run variation | Stop a saturated search
+      - desiderata · what fits this case?: Several factors changed between the two configurations being compared. · A large regression follows changes to a previously reproducible working configuration. · Unchanged runs vary by as much as the claimed improvement. · Recent probes of the same lever fail to exceed the established noise floor.
+      - **Change one factor** `T.2.1.1`
+      - **Restore the last verified configuration** `T.2.1.2`
+      - **Measure repeated-run variation** `T.2.1.3`
+      - **Stop a saturated search** `T.2.1.4`
+    - **Choose validation membership** `T.2.2`
+      - decide: Which validation partition best represents the prediction setting? → Preserve target balance | Keep related examples together | Validate on the target population | Adjust holdout or fold design
+      - desiderata · what fits this case?: The target distribution is imbalanced and ordinary random folds omit rare levels. · Rows share an entity, prompt, overlapping window, or other dependence that would cross random folds. · A known training subpopulation resembles the test population more than the rest. · The holdout removes a large share of usable training data or nested folds duplicate expensive fitting.
+      - desiderata · added from expert visits: The feature matrix passed to the CV splitter or clustering algorithm includes non-feature columns (e.g., target, identifiers) that corrupt group assignments. · The input representation used for unsupervised grouping (e.g., engineered features vs. TF-IDF) may not capture the similarity axis most relevant to the prediction setting. · A pre-existing or external source of group/topic labels is available that could replace unsupervised cluster assignments. · The synthetic (unsupervised) grouping does not align with the actual data-generating groups, making group-aware CV unreliable as a proxy for the test setting. · The fold construction logic inadvertently adds special-case indices to the validation fold, causing data leakage or biased validation estimates.
+      - **Preserve target balance** `T.2.2.1`
+      - **Keep related examples together** `T.2.2.2`
+      - **Validate on the target population** `T.2.2.3`
+      - **Adjust holdout or fold design** `T.2.2.4`
+    - **Use the actual evaluation metric** `T.2.3`
+    - **Check validation-to-test agreement** `T.2.4`
+  - **Change the learning information** `T.3`
+    - decide: Which part of the available information should I change next? → Change training examples | Choose a replacement representation | Choose feature retention
+    - desiderata · what fits this case?: The training population contains questionable labels, imbalance, or unused compatible examples. · Current inputs discard available temporal, semantic, spatial, or domain information. · Many feature blocks are redundant, noisy, or absent from a stale selection artifact.
+    - desiderata · added from expert visits: Feature engineering code contains bugs, reference errors, or incomplete implementations that produce incorrect or missing features. · Preprocessing steps (imputation, scaling, outlier removal) are unnecessary or harmful for the current model type. · A stacked or meta-feature is trained on the same data used for CV, introducing target leakage.
+    - **Change training examples** `T.3.1`
+      - decide: How should the training sample population change? → Filter or deduplicate examples | Reweight observed examples | Generate synthetic training examples | Add auxiliary labeled examples | Use pseudo-labeled examples | Alter training augmentation
+      - desiderata · what fits this case?: Training includes duplicates, overlapping windows, low-confidence labels, or a mismatched source. · Rare labels or the test-like subgroup receive little influence under the current loss. · Minority examples are sparse but interpolation is meaningful in the current feature space. · Compatible extra labeled examples exist but differ in quality or source. · Unlabeled examples and a validated teacher are available. · Training overfits and label-preserving perturbations are supported by the input semantics.
+      - desiderata · added from expert visits: Previous augmentation attempts beyond the current minimal setup degraded performance. · The class-weight or scale_pos_weight parameter is incompatible with the current objective function (e.g., regression instead of classification).
+      - **Filter or deduplicate examples** `T.3.1.1`
+      - **Reweight observed examples** `T.3.1.2`
+      - **Generate synthetic training examples** `T.3.1.3`
+      - **Add auxiliary labeled examples** `T.3.1.4`
+      - **Use pseudo-labeled examples** `T.3.1.5`
+      - **Alter training augmentation** `T.3.1.6`
+    - **Choose a replacement representation** `T.3.2`
+      - decide: Which representation should I test for the missing signal? → Summarize repeated observations | Encode language content | Preserve spatial or temporal structure
+      - desiderata · what fits this case?: The raw input consists of repeated numeric or categorical observations per entity. · The task is driven by text and the current representation misses lexical, semantic, or structural information. · The input is an image, signal, or spectrogram whose spatial or temporal representation is configurable.
+      - desiderata · added from expert visits: A KNN-based prediction method is available that can augment the learned representation with nearest-neighbor lookup from training embeddings.
+      - **Summarize repeated observations** `T.3.2.1`
+        - decide: Which information is missing from the current entity representation? → Aggregate entity histories | Encode temporal changes | Encode domain interactions | Change numeric or categorical preprocessing
+        - desiderata · what fits this case?: Each prediction entity has multiple records but the model sees only one record or a few summaries. · Time order and recent changes are discarded by current summaries. · Related measurements have meaningful contrasts not encoded in the current features. · Missingness, category handling, quantization, or scaling differs between model families.
+        - desiderata · added from expert visits: Public high-scoring solutions for this competition commonly use rich groupby aggregations and lag features as standard feature engineering. · A proposed aggregation (e.g., var) is mathematically redundant with an existing one (e.g., std) for the current model family. · Adding many aggregations caused pipeline failures or excessive complexity that prevented end-to-end execution. · Previous S_2 temporal encoding variants have consistently failed to improve over the baseline. · An aggregation type applied to numeric features has not yet been applied to categorical features (or vice versa). · Previously added lag-difference and lag-ratio features failed to improve the score over the simpler aggregation baseline. · Previous interaction and derived feature attempts have consistently failed to improve the score, suggesting the tree model already captures these relationships.
+        - **Aggregate entity histories** `T.3.2.1.1`
+        - **Encode temporal changes** `T.3.2.1.2`
+        - **Encode domain interactions** `T.3.2.1.3`
+        - **Change numeric or categorical preprocessing** `T.3.2.1.4`
+      - **Encode language content** `T.3.2.2`
+        - decide: Which text representation should be added or substituted? → Change text preparation | Use lexical or latent text features | Use structural and linguistic features | Use frozen pretrained embeddings | Use cross-fitted prediction features
+        - desiderata · what fits this case?: Current text preparation removes informative formatting, truncates relevant text, or introduces inconsistent metadata. · Lexical frequency or topic information is absent or dominated by very rare n-grams. · The target depends on document structure or language quality not explicitly represented. · The current features lack contextual semantics and suitable pretrained encoders are available. · Compatible out-of-fold predictions or leakage-safe auxiliary labels exist.
+        - **Change text preparation** `T.3.2.2.1`
+        - **Use lexical or latent text features** `T.3.2.2.2`
+        - **Use structural and linguistic features** `T.3.2.2.3`
+        - **Use frozen pretrained embeddings** `T.3.2.2.4`
+        - **Use cross-fitted prediction features** `T.3.2.2.5`
+      - **Preserve spatial or temporal structure** `T.3.2.3`
+        - decide: Which aspect of the spatial or temporal input should change? → Change image resolution | Change temporal window or spatial crop | Change time-frequency representation | Change filtering or normalization | Change modalities or channel layout
+        - desiderata · what fits this case?: Discriminative image detail is lost at the current resolution and the checkpoint supports another size. · The input window includes irrelevant context or misses the labeled interval or region. · Relevant frequency structure is unresolved or blurred by the current transform. · Outliers, fixed-frequency interference, or inconsistent input scale dominate the representation. · Unused channels or modalities contain potentially complementary information, or existing branches may be redundant.
+        - **Change image resolution** `T.3.2.3.1`
+        - **Change temporal window or spatial crop** `T.3.2.3.2`
+        - **Change time-frequency representation** `T.3.2.3.3`
+        - **Change filtering or normalization** `T.3.2.3.4`
+        - **Change modalities or channel layout** `T.3.2.3.5`
+    - **Choose feature retention** `T.3.3`
+      - decide: How should I reduce or refresh the feature set? → Tune the importance cutoff | Ablate whole feature blocks | Refit feature selection without leakage
+      - desiderata · what fits this case?: An importance-ranked list exists but its retention count is arbitrary or aggressive. · A recognizable feature block was recently added or removed with uncertain benefit. · Feature sources changed after the selection artifact was fitted, or selection used validation labels.
+      - desiderata · added from expert visits: Specific features are suspected to be weakly correlated with the target or redundant with existing model outputs, based on importance analysis or domain knowledge. · Recent hyperparameter changes (e.g., regularization, min_child_samples) may have shifted the optimal feature-selection ratio, requiring a fresh sweep. · The evaluation metric was recently changed, potentially invalidating previous feature-selection sweep results and requiring a fresh sweep. · There exist columns with very high missing-value rates that have not yet been explicitly considered for removal. · Features derived from multiple preprocessing variants of the same source are highly correlated and could be consolidated or deduplicated. · Model hyperparameters (depth, leaves, regularization) were tuned for a different feature-set size and may need co-tuning when the feature count changes substantially. · The expert chose to increase regularization instead of ablating suspect feature blocks, despite ablation being the more direct diagnostic step.
+      - **Tune the importance cutoff** `T.3.3.1`
+      - **Ablate whole feature blocks** `T.3.3.2`
+      - **Refit feature selection without leakage** `T.3.3.3`
+  - **Change the fitted predictor** `T.4`
+    - decide: Which part of the predictor should I replace or retune? → Choose the predictor family | Choose the training signal | Choose the training adjustment
+    - desiderata · what fits this case?: The current representation or inductive bias limits quality despite a converged fit. · Target construction or the loss is poorly aligned with the label and metric semantics. · The family is suitable but capacity, convergence, or checkpoint selection remains unresolved.
+    - desiderata · added from expert visits: The newly chosen model architecture or checkpoint fails to load or instantiate correctly, preventing any evaluation. · The second-order (hessian) approximation in the custom objective is a key component whose formulation materially affects optimization quality and score.
+    - **Choose the predictor family** `T.4.1`
+      - decide: What kind of predictor change addresses the current limitation? → Replace the pretrained backbone | Replace the tabular learner | Change pooling or the prediction head | Change feature fusion
+      - desiderata · what fits this case?: A suitable alternative pretrained family or size is available and current representation quality has plateaued. · The same feature matrix supports a learner with a different inductive bias or boosting strategy. · The backbone is strong but pooling or task heads may discard useful information. · Multiple aligned feature branches are already available but fusion collapses their information.
+      - **Replace the pretrained backbone** `T.4.1.1`
+      - **Replace the tabular learner** `T.4.1.2`
+      - **Change pooling or the prediction head** `T.4.1.3`
+      - **Change feature fusion** `T.4.1.4`
+    - **Choose the training signal** `T.4.2`
+      - decide: How should the objective or target encoding change? → Align the loss or prediction formulation | Center or rescale regression targets
+      - desiderata · what fits this case?: The current loss ignores ordinal, pairwise, distributional, or multi-output evaluation structure. · Regression target location or scale varies across folds or poorly matches the model output range.
+      - desiderata · added from expert visits: A constant-hessian (ones) baseline for the custom objective is known to be stable and competitive.
+      - **Align the loss or prediction formulation** `T.4.2.1`
+      - **Center or rescale regression targets** `T.4.2.2`
+    - **Choose the training adjustment** `T.4.3`
+      - decide: Which training limitation is visible in the current fit? → Tune tree structure | Tune regularization and subsampling | Tune learning rate and optimizer | Tune training duration and stopping | Select a compatible trained checkpoint
+      - desiderata · what fits this case?: Training fits well but validation worsens as depth or leaf count increases. · Generalization degrades despite adequate convergence and a fixed feature set. · Loss is unstable or learning is too slow at the current step size. · Training hits its round limit or stops while the monitored metric is still improving. · Several compatible snapshots already exist but have not been compared under one inference configuration.
+      - **Tune tree structure** `T.4.3.1`
+      - **Tune regularization and subsampling** `T.4.3.2`
+      - **Tune learning rate and optimizer** `T.4.3.3`
+      - **Tune training duration and stopping** `T.4.3.4`
+      - **Select a compatible trained checkpoint** `T.4.3.5`
+  - **Change how predictors are combined** `T.5`
+    - decide: Which ensemble intervention should I test next? → Choose ensemble membership | Choose the combination rule | Choose repeated inference views
+    - desiderata · what fits this case?: The pool includes untested candidates, redundant members, or unused folds or seeds. · The current members are fixed but scale, weights, or combination method remain unresolved. · The input has valid alternate views or the checkpoint supports useful repeated inference.
+    - desiderata · added from expert visits: The model architecture flag (e.g., multihead) does not match the checkpoints being loaded, causing a weight/architecture mismatch. · A single model with richer internal pooling/attention could replace the diversity currently achieved by combining multiple simpler models. · A specific current ensemble member is suspected of degrading overall performance based on isolation scores or prior blend evidence. · Input preprocessing parameters (e.g., crop offsets, temporal windows) should be co-varied with ensemble member changes, as they have shown score impact in prior edits.
+    - **Choose ensemble membership** `T.5.1`
+      - decide: How should the current member set change? → Add a complementary predictor | Prune or substitute members | Compare a single predictor with the blend | Change the number of fold checkpoints | Average independent training seeds
+      - desiderata · what fits this case?: A plausible candidate has errors different from the current ensemble on the same validation rows. · A member or group has weak or redundant marginal contribution in earlier ablations. · The full blend has never been compared with its strongest member under the same evaluation. · Compatible unused fold checkpoints exist or fold quality varies substantially. · Independent training seeds produce materially different errors on the same examples.
+      - **Add a complementary predictor** `T.5.1.1`
+      - **Prune or substitute members** `T.5.1.2`
+      - **Compare a single predictor with the blend** `T.5.1.3`
+      - **Change the number of fold checkpoints** `T.5.1.4`
+      - **Average independent training seeds** `T.5.1.5`
+    - **Choose the combination rule** `T.5.2`
+      - decide: What combination rule fits the available prediction evidence? → Average predictions uniformly | Tune constrained blend weights | Rank-normalize before blending | Choose probability-space or logit-space averaging | Fit a cross-validated meta-learner
+      - desiderata · what fits this case?: Weight estimates are unstable or no independent out-of-fold predictions support fitting them. · Members have unequal quality and aligned validation predictions are available. · The metric uses ordering and members have incompatible score scales or outliers. · The metric evaluates class distributions and logits or calibrated probabilities are available. · Sufficient cross-fitted predictions exist to learn a stable combination without leakage.
+      - **Average predictions uniformly** `T.5.2.1`
+      - **Tune constrained blend weights** `T.5.2.2`
+      - **Rank-normalize before blending** `T.5.2.3`
+      - **Choose probability-space or logit-space averaging** `T.5.2.4`
+      - **Fit a cross-validated meta-learner** `T.5.2.5`
+    - **Choose repeated inference views** `T.5.3`
+      - decide: Which label-preserving inference variation is supported? → Average deterministic symmetry views | Average crops or resolutions | Average stochastic inference passes | Average model weights
+      - desiderata · what fits this case?: A known spatial or channel symmetry preserves the target. · Several crops or resolutions retain complementary labeled content. · The model supports stochastic inference and its repeated passes differ meaningfully. · Compatible snapshots from the same architecture and training trajectory are available.
+      - desiderata · added from expert visits: Flip TTA was previously disabled or removed and can now be re-enabled to test its current effect. · The marginal gain from the proposed TTA variation has not yet been measured for the current model/ensemble configuration. · The proposed TTA variation was previously tried and caused a score regression. · TTA effectiveness varies across checkpoint versions or ensemble configurations, requiring re-evaluation rather than assuming prior results hold. · Disabling a currently-enabled TTA is a valid ablation to isolate its contribution to the current setup. · Prediction entropy varies enough across samples to warrant conditioning TTA behavior on uncertainty. · A parameter controls the number of deterministic augmented views averaged at inference time. · The proposed TTA technique is a standard approach used in strong public solutions for this competition. · TTA's variance-reduction benefit depends on the current ensemble size — fewer models make TTA more valuable, more models may make it redundant.
+      - **Average deterministic symmetry views** `T.5.3.1`
+      - **Average crops or resolutions** `T.5.3.2`
+      - **Average stochastic inference passes** `T.5.3.3`
+      - **Average model weights** `T.5.3.4`
+  - **Change prediction interpretation** `T.6`
+    - decide: Which output adjustment matches the observed error and metric? → Map outputs to discrete targets | Correct continuous outputs
+    - desiderata · what fits this case?: The required labels are discrete or the rank metric is sensitive to ties created by target granularity. · Valid continuous or probability predictions have a reproducible calibration or subgroup bias.
+    - desiderata · added from expert visits: The submission pipeline or scoring may clip or transform predictions in a way that interacts with prediction scale. · The evaluation metric is invariant to monotonic transformations of predictions, so scale changes should not affect the score. · The OptimizedRounder is producing inconsistent or potentially overfitted thresholds, making a simpler baseline comparison worthwhile. · Complex distribution-matching post-processing may be masking or amplifying errors in the upstream loss function. · A previously tried threshold-based binning method (e.g., pd.cut) performed worse than an earlier rounding approach. · The prediction array dtype is incompatible with DataFrame construction or CSV serialization, causing format errors rather than a calibration issue. · The post-processing code contains a typo or bug that prevents it from executing correctly.
+    - **Map outputs to discrete targets** `T.6.1`
+      - decide: Which discretization rule should convert the continuous predictions? → Optimize global thresholds | Match a supported label distribution | Use group or target-specific cutpoints | Handle degenerate ties explicitly
+      - desiderata · what fits this case?: Labels are ordered discrete values and continuous errors cross meaningful class boundaries. · Held-out and expected test label frequencies are stable enough to justify a distribution constraint. · Groups or output columns show distinct calibration with adequate held-out sample counts. · Binning creates constant predictions or many ties in columns scored by a rank metric.
+      - **Optimize global thresholds** `T.6.1.1`
+      - **Match a supported label distribution** `T.6.1.2`
+      - **Use group or target-specific cutpoints** `T.6.1.3`
+      - **Handle degenerate ties explicitly** `T.6.1.4`
+    - **Correct continuous outputs** `T.6.2`
+      - decide: Which observed calibration discrepancy should be adjusted? → Correct location or scale bias | Calibrate class probabilities | Apply a gated auxiliary correction
+      - desiderata · what fits this case?: Validation residuals show a systematic location or scale error. · Probability vectors are valid but classwise calibration is consistently biased. · An auxiliary classifier or metadata rule identifies a subset with reproducible directional residuals.
+      - desiderata · added from expert visits: A zero-variance or otherwise stable reference sample exists that can anchor the bias correction. · The proposed correction risks overfitting to training-distribution statistics given the size or noise level of the test set. · Raw model outputs may exceed the valid target range or hit exact boundaries.
+      - **Correct location or scale bias** `T.6.2.1`
+      - **Calibrate class probabilities** `T.6.2.2`
+      - **Apply a gated auxiliary correction** `T.6.2.3`
+  - **Make a viable experiment cheaper** `T.7`
+    - decide: Which measured bottleneck should I remove? → Reduce peak memory | Cache stable intermediate artifacts | Use a reduced development run | Consolidate configuration and preserve outputs | Replace a slow computation with an equivalent implementation
+    - desiderata · what fits this case?: Runs fail or become unstable at a measured memory peak. · Repeated trials recompute identical upstream features or base predictions. · A full run is expensive before basic correctness or a coarse candidate can be assessed. · Repeated manual path, flag, or member-list edits cause configuration drift. · Profiling identifies a computational kernel whose output can be checked independently.
+    - **Reduce peak memory** `T.7.1`
+      - decide: What dominates peak memory in the failing stage? → Process rows in chunks | Release completed stages | Reduce batch or precision footprint
+      - desiderata · what fits this case?: The complete dataset or feature matrix dominates memory, but independent row groups can be processed separately. · Memory accumulates across finished models or framework stages. · A single forward batch exceeds memory or padding wastes most tokens.
+      - desiderata · added from expert visits: Releasing or deleting completed intermediate objects causes downstream errors or was already attempted without resolving OOM. · Precomputed artifacts (embeddings, cached features) are available that can replace expensive in-process computation and its associated memory footprint. · Duplicated or redundant code paths create unnecessary copies of large intermediate arrays that inflate peak memory.
+      - **Process rows in chunks** `T.7.1.1`
+      - **Release completed stages** `T.7.1.2`
+      - **Reduce batch or precision footprint** `T.7.1.3`
+    - **Cache stable intermediate artifacts** `T.7.2`
+    - **Use a reduced development run** `T.7.3`
+    - **Consolidate configuration and preserve outputs** `T.7.4`
+    - **Replace a slow computation with an equivalent implementation** `T.7.5`

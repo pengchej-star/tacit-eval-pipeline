@@ -1,0 +1,73 @@
+# Fit a regularized stacker on out-of-fold predictions  `T.5.3.7`   23 edits, 0 experts
+19 scored cases, median improvement +0.00000, 10 improved
+
+
+- expert 27502740 (Grandmaster) · amex · v8→v10   Try both approaches: first use the external predictions as an additional input feature (stacking), then try a simple weighted average of the two models' outputs with the weight chosen by a fine-grained grid search (e.g., 100 steps) on the OOF metric. Post-hoc blending often outperforms stacking when
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs. | ✓ The available meta-features contain in-sample predictions or have unverifiable fold provenance. | ✓ Members differ in useful contribution and held-out predictions support weight comparisons.
+    leaderboard score 0.79461 → 0.79588 (+0.00126)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v19→v20   Try a regularized linear stacker (e.g., ridge regression) trained on base-model outputs. If it scores worse than the simple average on the leaderboard or cross-validation, revert to averaging — on small datasets the meta-learner often overfits even with regularization, and a plain mean is a safer ag
+    evidence: ✓ Families have unequal numbers of checkpoints that would otherwise determine their influence. | ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs. | ✓ The available meta-features contain in-sample predictions or have unverifiable fold provenance.
+    leaderboard score 0.47407 → 0.48052 (+0.00645)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v24→v27   Test the meta-model output alone against the existing blend. If it scores worse, keep the diverse blend and instead add the meta-model as one more member in the weighted average rather than using it as the sole prediction source. Heterogeneous members from a different architecture often contribute c
+    evidence: ✗ Members have similar quality or optimized combinations have unstable held-out gains. | ✓ Members differ in useful contribution and held-out predictions support weight comparisons. | ✓ Families have unequal numbers of checkpoints that would otherwise determine their influence.
+    leaderboard score 0.45857 → 0.45549 (-0.00308)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v27→v33   Ablate the stacking layer by submitting with only the base model predictions. Compare the resulting score to the full pipeline score. If the gap is large, keep and refine the stacking layer; if negligible, simplify the pipeline.
+    evidence: ✗ Enough OOF examples exist to learn stable complementary relationships among base outputs.
+    leaderboard score 0.45549 → 0.48138 (+0.02589)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v33→v34   Re-enable the stacking meta-model inference path first as a standalone submission to measure its isolated contribution before blending it with other predictions. This establishes a baseline for the meta-model's value in the final ensemble.
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs.
+    leaderboard score 0.48138 → 0.46949 (-0.01189)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v43→v44   Try replacing the manual blend with a regularized linear stacker trained on OOF predictions. Compare the leaderboard or held-out score; if the stacker scores worse, the manual blend is likely more robust on small data and should be kept. On tiny datasets, a simple average or hand-tuned weights often
+    evidence: ✓ Members differ in useful contribution and held-out predictions support weight comparisons. | ✓ Families have unequal numbers of checkpoints that would otherwise determine their influence. | ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs.
+    leaderboard score 0.45414 → 0.46571 (+0.01157)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v65→v67   Before committing, compare the stacked meta-model output against the simple average on the leaderboard or a reliable local CV. A trained meta-model can overfit when the training set is small or when the base models are highly correlated, so it may underperform a simple average despite being more exp
+    evidence: ✓ Families have unequal numbers of checkpoints that would otherwise determine their influence. | ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs. | ✓ Members have similar quality or optimized combinations have unstable held-out gains. | ✓ Members differ in useful contribution and held-out predictions support weight comparisons.
+    leaderboard score 0.45576 → 0.46804 (+0.01228)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v90→v91   Replace hand-tuned weighted averaging with a simple linear stacking model (e.g., ridge regression) trained on out-of-fold predictions. Collect each base model's test predictions as feature columns, load the pre-fitted per-fold meta-models, and use their output as the final prediction. This automates
+    evidence: ✓ Members differ in useful contribution and held-out predictions support weight comparisons. | ✓ Families have unequal numbers of checkpoints that would otherwise determine their influence. | ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs.
+    leaderboard score 0.45242 → 0.45039 (-0.00204)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v98→v100   Run both meta-learner stacks at inference, then take a simple equal-weight average of their outputs. Verify that each stack uses its own trained weights (a common bug is accidentally sharing the same weight files). Print or log each stack's output to confirm they differ before averaging.
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs.
+    leaderboard score 0.45076 → 0.45001 (-0.00075)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v116→v117   Replace the simple-average component with the meta-learner's output in the blend while keeping other components and weights fixed. The meta-learner can learn optimal per-model weights and correct biases, typically yielding a small but consistent improvement over naive averaging.
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs.
+    leaderboard score n/a → 0.44809
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v134→v137   Try alternative meta-learner variants (e.g., kernel or Bayesian versions of the same regularized linear model) one at a time, submitting each. If none beats the baseline, revert to the original meta-learner rather than continuing to explore variants—small datasets rarely reward more complex meta-lea
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs.
+    leaderboard score 0.44776 → 0.44975 (+0.00199)
+- expert 18851026 (Master) · commonlitreadabilityprize · v2→v4   Start with a simple linear model (ordinary or ridge regression) as the stacking meta-learner. Compare against a kernel-based or nonlinear model. On small, low-dimensional meta-feature sets the linear model often wins because it avoids overfitting; prefer it unless the nonlinear variant clearly impro
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs.
+    leaderboard score 0.45969 → 0.46423 (+0.00453)
+- expert 18851026 (Master) · commonlitreadabilityprize · v5→v6   Try reverting the regularization parameter to its default. If the blended score does not change, the ensemble is robust to moderate shifts in one meta-learner's regularization, and further tuning effort on that parameter can be deprioritized.
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs.
+    leaderboard score 0.45816 → 0.45816 (+0.00000)
+- expert 18851026 (Master) · commonlitreadabilityprize · v8→v9   Add a tree-based regressor (e.g., random forest) as a third meta-learner in the stacking blend. Keep the addition mostly experimental (e.g., partially commented out or low weight) and verify on the leaderboard that it does not overfit the small meta-training set before committing to it.
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs. | ✓ The available meta-features contain in-sample predictions or have unverifiable fold provenance.
+    leaderboard score 0.45924 → 0.45852 (-0.00072)
+- expert 18350823 (Expert) · commonlitreadabilityprize · v9→v12   Prefer simple fixed blend weights over adaptive/conditional schemes. Test the adaptive approach, but if it does not clearly improve the score, revert to fixed weights. On tiny evaluation sets, the noise from adaptive selection typically outweighs any benefit.
+    evidence: ✗ Enough OOF examples exist to learn stable complementary relationships among base outputs. | ✗ The available meta-features contain in-sample predictions or have unverifiable fold provenance. | ✓ Members have similar quality or optimized combinations have unstable held-out gains.
+    leaderboard score 0.46308 → 0.46275 (-0.00033)
+- expert 18757376 (Expert) · commonlitreadabilityprize · v1→v2   Treat each base model's prediction as a feature, stack them into a matrix, and feed it to several diverse linear and non-linear meta-learners (e.g., regularized regression, kernel methods, tree-based models) trained on out-of-fold data. Average the meta-learners' outputs for the final prediction. Th
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs. | ✓ The available meta-features contain in-sample predictions or have unverifiable fold provenance.
+    leaderboard score n/a → 0.46324
+- expert 18757376 (Expert) · commonlitreadabilityprize · v3→v4   Keep the meta-stage simple (linear or low-capacity models, few input features) when the dataset is small. Adding handcrafted features and flexible meta-learners increases overfitting risk at the stacking level. If a probe shows degradation, revert and instead focus on improving or diversifying the b
+    evidence: ✗ Enough OOF examples exist to learn stable complementary relationships among base outputs. | ✓ The available meta-features contain in-sample predictions or have unverifiable fold provenance.
+    leaderboard score 0.46300 → 0.46496 (+0.00196)
+- expert 73937748 (Master) · equity · v29→v34   Replace the weight-optimization blending with a regularized linear model (e.g., ridge regression) trained on the rank-transformed OOF predictions in a cross-validated stacking scheme. This lets the meta-learner learn per-model coefficients with shrinkage. Add greedy backward feature elimination on t
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs. | ✓ The available meta-features contain in-sample predictions or have unverifiable fold provenance. | ✓ Members have similar quality or optimized combinations have unstable held-out gains. | ✓ Members differ in useful contribution and held-out predictions support weight comparisons.
+    leaderboard score n/a → n/a
+- expert 73937748 (Master) · equity · v31→v35   Start with a moderate default regularization strength. If automated tuning of the meta-learner's hyperparameters does not improve the holdout/LB score, prefer the simpler default — with few meta-features, the optimization surface is noisy and tuning can overfit. Ensure the search range is wide enoug
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs. | ✓ The available meta-features contain in-sample predictions or have unverifiable fold provenance.
+    leaderboard score 0.69032 → n/a
+- expert 73937748 (Master) · equity · v41→v45   Try grouping base models by their target transformation, fitting a separate linear meta-learner per group, then blending group-level predictions with learned weights. Compare this against a single meta-learner with greedy feature (model) elimination. If neither improves over the simpler baseline, th
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs. | ✓ Families have unequal numbers of checkpoints that would otherwise determine their influence. | ✓ Member scales differ or raw versus rank aggregation has changed preference across configurations. | ✓ The available meta-features contain in-sample predictions or have unverifiable fold provenance.
+    leaderboard score 0.68995 → 0.68967 (-0.00028)
+- expert 73937748 (Master) · equity · v48→v51   Try the simpler weighted blend, but compare carefully against the stacking baseline. A constrained blend (weights summing to one, all positive) may underperform a regularized linear model that can learn coefficients freely. If the constrained version underperforms, relax constraints (allow negative 
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs. | ✓ Members have similar quality or optimized combinations have unstable held-out gains. | ✓ Members differ in useful contribution and held-out predictions support weight comparisons. | ✓ Member scales differ or raw versus rank aggregation has changed preference across configurations. | ✓ A candidate is anti-correlated with residual error after accounting for stronger members.
+    leaderboard score 0.69172 → 0.69100 (-0.00071)
+- expert 73937748 (Master) · equity · v52→v54   If switching from L2 to L1 regularization in the meta-learner causes a large score drop, revert immediately. L1 can zero out useful contributors when base-model predictions are correlated, making L2 the safer default for stacking ensembles of many similar models. Instead of changing the meta-learner
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs. | ✓ Families have unequal numbers of checkpoints that would otherwise determine their influence.
+    leaderboard score 0.69155 → 0.69113 (-0.00042)
+- expert 73937748 (Master) · equity · v55→v56   Widen the search range for the regularization parameter (increase the upper bound) and tighten the convergence tolerance floor (decrease the lower bound) so the optimizer can explore both stronger regularization and more precise fits. Submit to verify the wider range helps.
+    evidence: ✓ Enough OOF examples exist to learn stable complementary relationships among base outputs.
+    leaderboard score 0.68977 → 0.69178 (+0.00202)

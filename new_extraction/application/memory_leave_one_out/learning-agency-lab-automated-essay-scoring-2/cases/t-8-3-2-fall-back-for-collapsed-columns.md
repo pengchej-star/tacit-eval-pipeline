@@ -1,0 +1,8 @@
+# Fall back for collapsed columns  `T.8.3.2`   2 edits, 0 experts
+
+- expert 7018718 (Expert) · google · v37→v45   After discretization, check each column for degeneracy (all values identical). For any degenerate column, revert to the original continuous predictions. Prefer an exact constant-check over a variance threshold, as the threshold can be fragile. Also rescale surviving discretized columns to a standard
+    evidence: ✓ Targets occupy a small set of repeated levels while model outputs are fully continuous. | ✓ Existing binning collapses one or more prediction columns to a constant. | ✓ Base model predictions produce meaningful, non-degenerate orderings that would benefit from discretization rather than being harmed by it. | ✓ The implementation contains a bug where edge cases (e.g., empty arrays, off-by-one errors) cause incorrect or degenerate overwrites.
+    leaderboard score n/a → 0.42580
+- expert 7018718 (Expert) · google · v49→v50   After binning, check whether the result has more than one distinct value. If it has collapsed to a constant, fall back to the original continuous predictions for that column to preserve ranking information.
+    evidence: ✓ Targets occupy a small set of repeated levels while model outputs are fully continuous. | ✓ Existing binning collapses one or more prediction columns to a constant. | ✓ Base model predictions produce meaningful, non-degenerate orderings that would benefit from discretization rather than being harmed by it. | ✓ The implementation contains a bug where edge cases (e.g., empty arrays, off-by-one errors) cause incorrect or degenerate overwrites.
+    leaderboard score n/a → n/a

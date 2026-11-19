@@ -1,0 +1,13 @@
+# Trial a concave probability transform  `T.7.4.4`   3 edits, 0 experts
+2 scored cases, median improvement +0.00037, 2 improved
+
+
+- expert 15164527 (Expert) · ranzcr · v4→v5   Apply a concave power transform (exponent < 1, e.g., square root) to each model's predicted probabilities before the weighted blend. This spreads predictions away from 0/1, which can improve discrimination under AUC. Submit and compare; the gain is typically small, so verify it is consistent and not
+    evidence: ✓ The metric is rank-based and member score distributions differ in calibration or scale. | ✗ A nonlinear power transform (e.g., sqrt) has already been tried and its effect is known. | ✗ With only one model source, rank averaging is a no-op or potentially harmful compared to raw predictions. | ✗ A bug in the blending code was corrupting predictions, making previous domain-comparison results unreliable.
+    leaderboard score 0.96642 → 0.96679 (+0.00037)
+- expert 15164527 (Expert) · ranzcr · v6→v13   Try a concave power transform (exponent between 0.3 and 0.7) on each model's predictions before weighted averaging. If it helps, consider switching to rank-based averaging instead, which achieves a similar effect without needing to choose the exponent.
+    evidence: ✓ The metric is rank-based and member score distributions differ in calibration or scale. | ✓ Overconfident member probabilities cluster near the boundaries and their magnitude dominates the blend. | ✓ A nonlinear power transform (e.g., sqrt) has already been tried and its effect is known. | ✓ The ensemble composition or model architecture has changed since the last domain-transform experiment, so its effect may differ now. | ✗ With only one model source, rank averaging is a no-op or potentially harmful compared to raw predictions. | ✓ Simple weight tuning of the arithmetic blend has already been tried and yielded only marginal improvement.
+    leaderboard score 0.96755 → 0.96772 (+0.00018)
+- expert 15203842 (Grandmaster) · ranzcr · v12→v13   Try a power-mean blend: raise each model's predictions to a fractional exponent (e.g., 0.5, i.e., square root) before averaging. This compresses high probabilities less and can better separate classes. Compare the leaderboard score against the simple average to decide whether to keep it.
+    evidence: ✓ The metric is rank-based and member score distributions differ in calibration or scale. | ✗ A nonlinear power transform (e.g., sqrt) has already been tried and its effect is known. | ✓ Simple weight tuning of the arithmetic blend has already been tried and yielded only marginal improvement. | ✗ With only one model source, rank averaging is a no-op or potentially harmful compared to raw predictions.
+    leaderboard score n/a → 0.96772

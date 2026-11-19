@@ -1,0 +1,10 @@
+# Normalize prediction columns  `T.7.4.3`   2 edits, 0 experts
+1 scored cases, median improvement +0.00023, 1 improved
+
+
+- expert 75584724 (Master) · equity · v8→v11   Test with and without standardization of the meta-features (fit scaler on out-of-fold predictions, apply to test). Compare leaderboard or validation scores for both settings. If the difference is negligible or negative, keep raw predictions—ranking-based metrics are invariant to monotone transforms 
+    evidence: ✓ The metric is rank-based and member score distributions differ in calibration or scale. | ✓ Stacking or weighted blending mixes columns with different scales or outlier-heavy outputs. | ✗ With only one model source, rank averaging is a no-op or potentially harmful compared to raw predictions. | ✓ An alternative blend strategy (e.g., sigmoid, logit-space) was implemented but never scored on the leaderboard. | ✗ Compatible pre-softmax logits are available and the task scores categorical probability distributions. | ✓ Simple weight tuning of the arithmetic blend has already been tried and yielded only marginal improvement.
+    leaderboard score n/a → 0.69408
+- expert 75584724 (Master) · equity · v12→v13   Try a median-and-IQR-based scaler (robust to outliers) instead of a mean-and-variance scaler for normalizing individual model predictions before weight optimization. Compare leaderboard or validation scores to confirm the benefit.
+    evidence: ✓ The metric is rank-based and member score distributions differ in calibration or scale. | ✓ Stacking or weighted blending mixes columns with different scales or outlier-heavy outputs. | ✓ The ensemble composition or model architecture has changed since the last domain-transform experiment, so its effect may differ now. | ✓ Simple weight tuning of the arithmetic blend has already been tried and yielded only marginal improvement. | ✗ With only one model source, rank averaging is a no-op or potentially harmful compared to raw predictions.
+    leaderboard score 0.69376 → 0.69399 (+0.00023)

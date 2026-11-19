@@ -1,0 +1,28 @@
+# Make inference deterministic  `T.8.1.3`   8 edits, 0 experts
+6 scored cases, median improvement -0.00038, 0 improved
+
+
+- expert 18350823 (Expert) · commonlitreadabilityprize · v20→v22   Check whether the model is in eval mode (dropout inactive) before spending iterations tuning dropout at inference time. If the model is in eval mode, changing dropout probability has no effect on deterministic predictions. Only tune inference-time dropout if the code explicitly keeps dropout active 
+    evidence: ✓ Repeated inference changes scores unexpectedly or dropout settings are being tuned while inactive. | ✓ The TTA change is isolated from other simultaneous modifications so its effect can be attributed cleanly. | ✓ The loaded checkpoint weights are compatible with the modified model architecture (layer names, output dimensions). | ✓ Single-model inference scores substantially worse than multi-model ensemble, leaving room for TTA or additional inference views to close the gap. | ✗ The TTA code change has not yet been submitted for scoring, so its actual effect is unverified.
+    leaderboard score 0.46191 → 0.46191 (+0.00000)
+- expert 18350823 (Expert) · commonlitreadabilityprize · v26→v27   Disable all stochastic layers (dropout, droppath) during inference so each forward pass is deterministic, and increase the number of random-seed replicates being averaged. These changes reduce prediction variance and can yield a larger improvement than weight tuning alone.
+    evidence: ✓ A small noisy task may benefit from stochastic head averaging and dropout can be activated deliberately. | ✓ Repeated inference changes scores unexpectedly or dropout settings are being tuned while inactive. | ✗ The TTA change is isolated from other simultaneous modifications so its effect can be attributed cleanly.
+    leaderboard score 0.46069 → 0.45945 (-0.00124)
+- expert 18350823 (Expert) · commonlitreadabilityprize · v29→v30   Recognize that in standard evaluation mode, dropout is disabled regardless of the config value, so changing it has no effect on deterministic inference. Only if multi-sample dropout or explicit training-mode inference is used will the dropout probability matter at test time.
+    evidence: ✓ Repeated inference changes scores unexpectedly or dropout settings are being tuned while inactive. | ✗ The TTA change is isolated from other simultaneous modifications so its effect can be attributed cleanly.
+    leaderboard score 0.45931 → 0.45931 (+0.00000)
+- expert 77129691 (Master) · equity · v2→v3   Seed all RNG sources (language-level, array library, framework CPU and GPU) and enable deterministic backend flags. Be aware this can slightly hurt performance: deterministic GPU kernels may be slower or change optimization trajectories, and locking seeds removes beneficial stochastic diversity in e
+    evidence: ✓ Repeated inference changes scores unexpectedly or dropout settings are being tuned while inactive. | ✓ The TTA code change has not yet been submitted for scoring, so its actual effect is unverified.
+    leaderboard score 0.69005 → 0.68967 (-0.00038)
+- expert 75924487 (Master) · equity · v3→v4   Audit every stochastic call in the pipeline—data transforms, splits, weight initialization—and pass a fixed seed to each. Verify reproducibility by running twice and confirming identical out-of-fold predictions before drawing conclusions from variant comparisons.
+    evidence: ✓ Repeated inference changes scores unexpectedly or dropout settings are being tuned while inactive. | ✗ The TTA change is isolated from other simultaneous modifications so its effect can be attributed cleanly.
+    leaderboard score 0.69213 → n/a
+- expert 50376011 (Grandmaster) · hms · v12→v14   Test worker count changes in isolation (same model, same data) to confirm scores are stable. If scores shift, fix the worker count and random seeds. If stable, treat worker count as a performance-only knob and vary it freely.
+    evidence: ✓ Repeated inference changes scores unexpectedly or dropout settings are being tuned while inactive. | ✗ The TTA change is isolated from other simultaneous modifications so its effect can be attributed cleanly.
+    leaderboard score 0.45471 → 0.42003 (-0.03468)
+- expert 50376011 (Grandmaster) · hms · v180→v181   Disable dynamic input adaptation (e.g., dynamic shapes, dynamic batching) during the special inference mode to force deterministic tensor shapes. Compare the resulting score against the variance baseline to confirm the fix is real.
+    evidence: ✓ Repeated inference changes scores unexpectedly or dropout settings are being tuned while inactive. | ✓ Single-model inference scores substantially worse than multi-model ensemble, leaving room for TTA or additional inference views to close the gap. | ✓ The TTA change is isolated from other simultaneous modifications so its effect can be attributed cleanly.
+    leaderboard score 0.25409 → 0.24620 (-0.00789)
+- expert 13521245 (Grandmaster) · ranzcr · v3→v5   Disable random augmentations during inference (or use deterministic TTA with fixed seeds) before drawing conclusions from score changes. If scores vary across identical runs, attribute the variance to non-determinism rather than to any intentional change, and fix the source before iterating on other
+    evidence: ✓ Repeated inference changes scores unexpectedly or dropout settings are being tuned while inactive. | ✓ The TTA change is isolated from other simultaneous modifications so its effect can be attributed cleanly. | ✓ The task has label-preserving transformations represented by the trained model.
+    leaderboard score n/a → 0.80169

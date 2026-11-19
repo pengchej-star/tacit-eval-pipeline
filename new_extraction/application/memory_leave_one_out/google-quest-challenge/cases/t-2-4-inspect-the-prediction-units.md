@@ -1,0 +1,5 @@
+# Inspect the prediction units  `T.2.4`   1 edits, 0 experts
+
+- expert 28093671 (Contributor) · amex · v1→v3   Load the data, parse date columns, sort by entity and time, group columns by naming prefix to understand feature families, compute missing-value counts per column, and tabulate the distribution of row counts per entity. This reveals whether entities have uniform history length and which feature grou
+    evidence: ✓ The raw dataset structure and prediction unit have not been established. | ✗ Two or more independent runs produced near-identical CV scores, enabling a direct test of CV-to-LB agreement. | ✓ A known code bug (variable name error, type mismatch, uninitialized variable, or incorrect construction) is corrupting results or blocking execution. | ✗ Multiple edits, noisy scores, or a regression obscure the effect of the latest experiment. | ✗ The inference-time architecture (e.g., pooling) does not match the training-time architecture of the loaded checkpoint. | ✗ The blend/ensemble weight search has run many iterations with diminishing returns.
+    leaderboard score n/a → n/a

@@ -1,0 +1,3 @@
+Wrote `output/tree.json`, `output/desiderata.json`, `output/notes.md`, and `output/validate.py`.
+
+Validation passed: 1,465 items placed, 2 unassigned, 80 leaves, 27 decision nodes, 106 checks.

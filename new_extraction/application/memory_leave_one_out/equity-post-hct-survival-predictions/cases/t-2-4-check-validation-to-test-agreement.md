@@ -1,0 +1,10 @@
+# Check validation-to-test agreement  `T.2.4`   2 edits, 0 experts
+2 scored cases, median improvement +0.00652, 1 improved
+
+
+- expert 15082684 (Master) · ranzcr · v3→v14   Submit a handful of checkpoints spanning different runs and epochs to calibrate the CV-to-LB correlation. Be aware that the checkpoint with the highest validation score may not win on the public test set due to distribution shift or overfitting to the validation fold. If the first checkpoint already
+    evidence: ✓ Untested checkpoints or nearby epochs from existing runs remain that could better map the CV-to-LB relationship. | ✗ The pipeline contains a runtime error (undefined variable, argument mismatch, missing import, or broken reference) that prevents training or inference from completing. | ✓ Configurations with better local validation repeatedly perform worse on external evaluation. | ✓ Recent score changes cannot be attributed to a single change or exceed neither repeat noise nor a plateau.
+    leaderboard score 0.96040 → 0.95388 (-0.00652)
+- expert 15082684 (Master) · ranzcr · v24→v29   Submit a small number of checkpoints spanning the range of validation scores to verify monotonic alignment between validation and test metrics. If two checkpoints with the same validation score from independent runs yield nearly identical test scores, treat validation as a reliable proxy and reduce 
+    evidence: ✓ Configurations with better local validation repeatedly perform worse on external evaluation. | ✓ Untested checkpoints or nearby epochs from existing runs remain that could better map the CV-to-LB relationship. | ✗ The pipeline contains a runtime error (undefined variable, argument mismatch, missing import, or broken reference) that prevents training or inference from completing.
+    leaderboard score 0.96249 → 0.96901 (+0.00652)

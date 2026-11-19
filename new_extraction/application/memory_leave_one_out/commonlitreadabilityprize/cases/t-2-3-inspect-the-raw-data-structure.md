@@ -1,0 +1,5 @@
+# Inspect the raw data structure  `T.2.3`   1 edits, 0 experts
+
+- expert 28093671 (Contributor) · amex · v1→v3   Load the data, parse date columns, sort by entity and time, group columns by naming prefix to understand feature families, compute missing-value counts per column, and tabulate the distribution of row counts per entity. This reveals whether entities have uniform history length and which feature grou
+    evidence: ✓ The data unit, temporal structure and missingness have not been established. | ✗ Existing scores come from a known-valid split but the cause or reproducibility of a change is unclear. | ✗ Reported validation gains disagree systematically with independent evaluations or the intended metric. | ✗ The current parameter search has too few data points to identify the optimum. | ✗ Each successive addition to the ensemble has yielded improvement, suggesting the search space is not yet saturated. | ✗ The baseline is far enough from competitive that bundling multiple known-good changes is more efficient than sequential ablation.
+    leaderboard score n/a → n/a

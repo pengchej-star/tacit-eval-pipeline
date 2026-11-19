@@ -1,0 +1,94 @@
+# Compare a single predictor with the blend  `T.5.1.3`   30 edits, 0 experts
+26 scored cases, median improvement +0.00308, 17 improved
+
+
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v60→v65   Test the single-family subset alone to measure its standalone quality, then incrementally re-add the other components. If the simplified version scores worse, the diversity from multiple families is genuinely contributing. Restore the full blend and focus on weight tuning rather than removing member
+    evidence: ✓ A member or group has weak or redundant marginal contribution in earlier ablations. | ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ Compatible unused fold checkpoints exist or fold quality varies substantially. | ✓ A plausible candidate has errors different from the current ensemble on the same validation rows.
+    leaderboard score 0.45499 → 0.45576 (+0.00077)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v85→v86   Isolate the new backbone by submitting its fold-averaged predictions alone. If the score is worse than the ensemble, the backbone is valuable only as a diversity contributor, not a replacement. Re-incorporate it into the blend rather than using it solo.
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ Compatible unused fold checkpoints exist or fold quality varies substantially.
+    leaderboard score 0.45142 → 0.46303 (+0.01161)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v85→v86   Probe each backbone family in isolation by submitting its fold-averaged predictions. If every single-family probe underperforms the multi-family blend by a consistent margin, treat cross-family diversity as essential and keep all families in the final ensemble.
+    evidence: ✓ A member or group has weak or redundant marginal contribution in earlier ablations. | ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ Compatible unused fold checkpoints exist or fold quality varies substantially.
+    leaderboard score 0.45142 → 0.46303 (+0.01161)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v113→v114   Isolate the new model by disabling all other ensemble components and submit its raw predictions. Compare the standalone score to the ensemble baseline to gauge whether and how much weight it should receive in the blend.
+    evidence: ✓ A member or group has weak or redundant marginal contribution in earlier ablations. | ✗ The full blend has never been compared with its strongest member under the same evaluation.
+    leaderboard score n/a → 0.46520
+- expert 18550705 (Master) · commonlitreadabilityprize · v1→v2   First improve individual model representations (backbone choice, pooling strategy) and verify the gain in isolation. Once single-model quality plateaus, add the improved models as diverse members of an ensemble or stacking pipeline. This ordering ensures each ensemble member is strong before combini
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation.
+    leaderboard score 0.45966 → 0.45681 (-0.00285)
+- expert 18350823 (Expert) · commonlitreadabilityprize · v14→v15   Save each component's standalone predictions as a separate submission file during inference. Submit both the ensemble and the single-component file to compare their scores, revealing whether the component is individually strong or only helpful through diversity in the blend.
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation.
+    leaderboard score 0.46250 → 0.46161 (-0.00088)
+- expert 18350823 (Expert) · commonlitreadabilityprize · v15→v16   Submit the single strong component alone as a probe. If the score degrades (as is typical when the ensemble provides complementary error cancellation), revert to the ensemble and instead adjust blend weights to give the strong component more influence.
+    evidence: ✓ A member or group has weak or redundant marginal contribution in earlier ablations. | ✓ The full blend has never been compared with its strongest member under the same evaluation.
+    leaderboard score 0.46161 → 0.47653 (+0.01491)
+- expert 18350823 (Expert) · commonlitreadabilityprize · v15→v16   Submit each component model individually to measure the gap between the best single model and the ensemble. If the gap is substantial (e.g., several percent of the metric), continue investing in blend-weight optimization rather than simplifying.
+    evidence: ✓ A member or group has weak or redundant marginal contribution in earlier ablations. | ✓ The full blend has never been compared with its strongest member under the same evaluation.
+    leaderboard score 0.46161 → 0.47653 (+0.01491)
+- expert 17371717 (Master) · commonlitreadabilityprize · v5→v7   Probe by building the single improved model and comparing against the ensemble baseline. Expect that a single model, even with better pooling, is unlikely to match the diversity benefit of ensembling multiple variants. If the single model scores worse, revert to the ensemble approach or use the new 
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ Compatible unused fold checkpoints exist or fold quality varies substantially.
+    leaderboard score 0.47148 → 0.47432 (+0.00284)
+- expert 17371717 (Master) · commonlitreadabilityprize · v10→v12   Do not assume ensembling gains transfer across model configurations. When a fundamental change (architecture, head design) is made, first evaluate the single-model baseline, then add ensembling. If the single-model score is already worse than the prior best, ensembling on top is unlikely to close th
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ Independent training seeds produce materially different errors on the same examples.
+    leaderboard score 0.47528 → 0.47587 (+0.00059)
+- expert 53424936 (Master) · hms · v12→v13   Before discarding a complex ensemble for a cleaner pipeline, treat the refactored version as an experiment: submit it and compare. If the score regresses, the diversity in the old ensemble was load-bearing and should be preserved or gradually replaced rather than removed wholesale.
+    evidence: ✗ The full blend has never been compared with its strongest member under the same evaluation. | ✓ Compatible unused fold checkpoints exist or fold quality varies substantially.
+    leaderboard score 0.22786 → 0.23094 (+0.00308)
+- expert 50376011 (Grandmaster) · hms · v67→v68   Re-test the previously best ensemble configuration (same member indices and equal weights) on the updated checkpoints. If it still improves over the single-model baseline, keep it; otherwise revert to the single model and search for a new combination.
+    evidence: ✓ A plausible candidate has errors different from the current ensemble on the same validation rows. | ✓ The full blend has never been compared with its strongest member under the same evaluation.
+    leaderboard score 0.33346 → 0.32583 (-0.00762)
+- expert 50376011 (Grandmaster) · hms · v70→v74   Run each ensemble member individually and compare its score to the full ensemble. If every single member scores worse, the ensemble diversity is genuinely helping. If one member matches or beats the ensemble, simplify to that member and investigate why others hurt.
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✗ A member or group has weak or redundant marginal contribution in earlier ablations. | ✓ Compatible unused fold checkpoints exist or fold quality varies substantially. | ✓ A plausible candidate has errors different from the current ensemble on the same validation rows.
+    leaderboard score 0.32116 → 0.32513 (+0.00397)
+- expert 50376011 (Grandmaster) · hms · v94→v97   Avoid spending many submissions testing individual ensemble members after the ensemble is already validated. Instead, use held-out validation to assess member quality offline. If leaderboard submissions are limited or noisy, keep the best ensemble as the baseline and only test modifications that add
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ Compatible unused fold checkpoints exist or fold quality varies substantially. | ✓ A member or group has weak or redundant marginal contribution in earlier ablations.
+    leaderboard score 0.31316 → 0.33459 (+0.02142)
+- expert 50376011 (Grandmaster) · hms · v228→v229   Temporarily replace the ensemble with a single member and submit. Compare the single-member score to the ensemble score. If the gap is large (here ~0.08 on a 0.23 baseline), the ensemble is clearly beneficial and should be kept or expanded.
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation.
+    leaderboard score 0.23565 → 0.31671 (+0.08106)
+- expert 49524919 (Grandmaster) · hms · v85→v88   Submit each model's predictions individually to the leaderboard to rank their standalone quality. Use these rankings to decide inclusion and to set blend weights proportional to individual performance, then verify the full blend still beats the best single model before finalizing.
+    evidence: ✓ A member or group has weak or redundant marginal contribution in earlier ablations. | ✓ The full blend has never been compared with its strongest member under the same evaluation.
+    leaderboard score 0.27935 → 0.26916 (-0.01019)
+- expert 49524919 (Grandmaster) · hms · v158→v162   Systematically submit each model group in isolation, record its standalone score, then submit the full blend. If the blend beats every individual member, keep it; if a member scores worse than the blend margin, consider dropping it. This ablation should be repeated whenever checkpoints or members ch
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ A member or group has weak or redundant marginal contribution in earlier ablations. | ✓ Compatible unused fold checkpoints exist or fold quality varies substantially.
+    leaderboard score 0.23032 → 0.22875 (-0.00157)
+- expert 52860091 (Grandmaster) · hms · v43→v48   Set up a separate output directory and import path for the new codebase. Run data conversion and inference independently, saving outputs with distinct version-tagged filenames. Verify the new predictions in isolation (submit or validate alone) before blending, so any integration bugs are caught befo
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ Compatible unused fold checkpoints exist or fold quality varies substantially. | ✓ A plausible candidate has errors different from the current ensemble on the same validation rows. | ✓ A member or group has weak or redundant marginal contribution in earlier ablations.
+    leaderboard score 0.25606 → 0.27952 (+0.02346)
+- expert 52551258 (Expert) · hms · v16→v17   Test the new model in isolation first, disabling all other ensemble members. If it already beats the full ensemble, use it as the new baseline and build future ensembles around it. A stronger single model often outperforms an ensemble of weaker ones.
+    evidence: ✓ A member or group has weak or redundant marginal contribution in earlier ablations. | ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ Compatible unused fold checkpoints exist or fold quality varies substantially.
+    leaderboard score 0.31128 → 0.28185 (-0.02943)
+- expert 53762022 (Contributor) · hms · v7→v8   Submit the single best component's raw predictions as an ablation. Compare the gap to the blended score. If the gap is large (e.g., error more than doubles), the ensemble synergy is critical and effort should go into maintaining or improving the blend rather than relying on any single model.
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation.
+    leaderboard score 0.40866 → 0.68408 (+0.27542)
+- expert 53762022 (Contributor) · hms · v8→v9   Submit each ensemble member's predictions individually to the leaderboard (or evaluate on a held-out fold). If a component scores far below the ensemble, prioritize improving that component's pipeline (features, preprocessing, validation) rather than continuing to tune blend coefficients.
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation.
+    leaderboard score 0.68408 → 0.36230 (-0.32178)
+- expert 52200959 (Master) · hms · v8→v11   Submit each component model individually to the leaderboard (or evaluate on a held-out fold) to rank them by standalone performance. Use this ranking to inform ensemble weighting or pruning: the weakest standalone models may still help via diversity, but knowing the ranking guides which combinations
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ A plausible candidate has errors different from the current ensemble on the same validation rows.
+    leaderboard score 0.34134 → 0.41926 (+0.07792)
+- expert 52200959 (Master) · hms · v8→v11   Evaluate each component in isolation and compare against the ensemble score. If the ensemble substantially outperforms even the best single component, all members likely contribute through diversity. If the gap is small, consider simplifying to fewer components and reallocating effort to improving t
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ A plausible candidate has errors different from the current ensemble on the same validation rows.
+    leaderboard score 0.34134 → 0.41926 (+0.07792)
+- expert 52200959 (Master) · hms · v19→v23   Submit each variant alone in a quick sweep (one submission per variant, changing only the variant identifier). Record each variant's leaderboard score, then use those scores as inverse-error weights when blending all variants into a final ensemble.
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ A plausible candidate has errors different from the current ensemble on the same validation rows. | ✓ A member or group has weak or redundant marginal contribution in earlier ablations.
+    leaderboard score n/a → 0.36365
+- expert 52200959 (Master) · hms · v20→v23   Treat the per-variant leaderboard scores as quality estimates and feed them into a weighted blend rather than selecting a single winner. Variants that score poorly alone can still contribute complementary signal in an ensemble, so do not discard them based solely on standalone performance.
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ A plausible candidate has errors different from the current ensemble on the same validation rows. | ✗ A member or group has weak or redundant marginal contribution in earlier ablations.
+    leaderboard score 0.37168 → 0.36365 (-0.00803)
+- expert 55431616 (Grandmaster) · learning · v11→v13   Strip the ensemble back to the single stronger model, simplify infrastructure, and simultaneously improve the cross-validation scheme (use stratified folds for imbalanced/ordinal targets) and align the training objective with the evaluation metric. Evaluate the cleaner pipeline before re-adding comp
+    evidence: ✓ A member or group has weak or redundant marginal contribution in earlier ablations. | ✓ The full blend has never been compared with its strongest member under the same evaluation.
+    leaderboard score 0.81502 → 0.81762 (+0.00261)
+- expert 60197293 (Expert) · learning · v28→v35   Ablate the ensemble by disabling one member entirely and submitting the single-model pipeline. If the score barely changes, drop the weaker member to reduce complexity and free capacity for other improvements. A difference smaller than typical leaderboard noise (a few ten-thousandths) means the remo
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ A member or group has weak or redundant marginal contribution in earlier ablations.
+    leaderboard score 0.81799 → 0.81788 (-0.00011)
+- expert 55987255 (Master) · learning · v50→v56   Progressively reduce the weaker model's blend weight toward zero across several runs while monitoring the validation metric. If performance improves or stays flat as the weight decreases, the secondary model is adding noise rather than diversity; remove it entirely to simplify the pipeline and reduc
+    evidence: ✓ A member or group has weak or redundant marginal contribution in earlier ablations. | ✓ The full blend has never been compared with its strongest member under the same evaluation.
+    leaderboard score n/a → n/a
+- expert 55987255 (Master) · learning · v56→v57   Test the single best model alone as a baseline before blending. If the single model scores higher than the ensemble, inspect the ensemble code and weaker members for bugs or detrimental contributions before re-introducing them.
+    evidence: ✓ A member or group has weak or redundant marginal contribution in earlier ablations. | ✓ The full blend has never been compared with its strongest member under the same evaluation.
+    leaderboard score n/a → 0.82112
+- expert 15164527 (Expert) · ranzcr · v43→v44   Re-enable all verified components simultaneously and combine them with rank-based blending. Expect the reassembled ensemble to exceed the previous best if the new components are genuinely additive, since the debugging phase likely fixed subtle errors that were previously degrading some members' cont
+    evidence: ✓ The full blend has never been compared with its strongest member under the same evaluation. | ✓ Compatible unused fold checkpoints exist or fold quality varies substantially.
+    leaderboard score 0.96052 → 0.96832 (+0.00780)

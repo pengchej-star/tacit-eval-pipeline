@@ -1,0 +1,10 @@
+# Preserve raw member magnitudes  `T.7.4.1`   2 edits, 0 experts
+1 scored cases, median improvement +0.00172, 1 improved
+
+
+- expert 75145694 (Expert) · equity · v23→v26   Combine ensemble members on their raw (or probability-scale) outputs to preserve relative magnitude information, then apply a single rank transformation to the final blended prediction before submission. Compare this against per-model ranking and no ranking to confirm the best approach.
+    evidence: ✓ The metric is rank-based and member score distributions differ in calibration or scale. | ✓ Rank conversion was already tried in a prior version and its effect size is known. | ✓ Simple weight tuning of the arithmetic blend has already been tried and yielded only marginal improvement. | ✗ With only one model source, rank averaging is a no-op or potentially harmful compared to raw predictions. | ✓ A bug in the blending code was corrupting predictions, making previous domain-comparison results unreliable. | ✓ The model head or architecture changed since the last rank-vs-raw comparison, so the previous winner may no longer hold.
+    leaderboard score 0.68851 → 0.69023 (+0.00172)
+- expert 77276039 (Expert) · equity · v2→v3   Use a weighted average of raw predictions instead of rank-averaging when any downstream post-processing step adds or scales the combined score. Assign explicit weights to each model and merge predictions on the sample identifier before averaging, so the resulting scores retain interpretable magnitud
+    evidence: ✓ Useful score magnitudes or calibrated additive corrections are already validated. | ✓ Rank conversion was already tried in a prior version and its effect size is known. | ✗ Rank conversion has not yet been tested with the current model/ensemble configuration.
+    leaderboard score n/a → n/a

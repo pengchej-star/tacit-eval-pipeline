@@ -1,0 +1,31 @@
+# Weight model groups separately  `T.7.3.4`   9 edits, 0 experts
+8 scored cases, median improvement -0.00075, 2 improved
+
+
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v20→v27   First average the homogeneous fold-level predictions into a single group prediction to avoid over-representing one family. Then blend the group prediction with predictions from other architectures and the meta-model using a small weighted average. Sweep the weights and membership (add/remove members
+    evidence: ✓ Model families contain unequal numbers of folds or variants. | ✗ Members have comparable quality and tuned weights have not reliably improved the simple average. | ✓ Component quality differs reproducibly or a member’s predictions have changed since weights were tuned. | ✓ Current weights depend on statistics of a very small or varying inference sample.
+    leaderboard score 0.48052 → 0.45549 (-0.02503)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v59→v60   Test the hierarchical blend against the flat blend on the leaderboard. If the additional averaging layer does not improve the score, prefer the simpler flat blend — extra averaging tends to regress predictions toward the mean and can dilute the strongest individual signals when the component predict
+    evidence: ✓ Model families contain unequal numbers of folds or variants. | ✓ Current weights depend on statistics of a very small or varying inference sample.
+    leaderboard score n/a → 0.45499
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v81→v85   For each fold, compute a weighted combination of the different models' predictions for that fold, then average the fold-level blended predictions with equal weight (1/number-of-folds). This preserves fold-specific signal diversity and can outperform a single global weighted average.
+    evidence: ✗ Members have comparable quality and tuned weights have not reliably improved the simple average. | ✓ Component quality differs reproducibly or a member’s predictions have changed since weights were tuned. | ✓ Model families contain unequal numbers of folds or variants.
+    leaderboard score 0.45684 → 0.45142 (-0.00542)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v98→v100   Run both meta-learner stacks at inference, then take a simple equal-weight average of their outputs. Verify that each stack uses its own trained weights (a common bug is accidentally sharing the same weight files). Print or log each stack's output to confirm they differ before averaging.
+    evidence: ✓ Model families contain unequal numbers of folds or variants. | ✓ Component quality differs reproducibly or a member’s predictions have changed since weights were tuned.
+    leaderboard score 0.45076 → 0.45001 (-0.00075)
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v105→v109   Create intermediate blends of architecturally similar models first (e.g., average all variants of one family), then combine these intermediate blends with other sources using simple fractional weights. Sweep weights in coarse increments (e.g., 1/8 steps), submitting each to observe the effect. When 
+    evidence: ✓ Model families contain unequal numbers of folds or variants. | ✓ Current weights depend on statistics of a very small or varying inference sample. | ✓ Component quality differs reproducibly or a member’s predictions have changed since weights were tuned.
+    leaderboard score 0.45982 → 0.44854 (-0.01128)
+- expert 18837555 (Expert) · commonlitreadabilityprize · v13→v16   Try hierarchical averaging: first average within each model group, then average the group-level means. This equalizes the influence of groups regardless of how many members each has. Compare against flat averaging and against up-weighting individual strong groups. Use leaderboard or validation feedb
+    evidence: ✓ Model families contain unequal numbers of folds or variants. | ✓ Current weights depend on statistics of a very small or varying inference sample. | ✓ Members have comparable quality and tuned weights have not reliably improved the simple average.
+    leaderboard score 0.45676 → 0.45709 (+0.00033)
+- expert 18757376 (Expert) · commonlitreadabilityprize · v4→v5   Blend the stacking output with the simple average of base-model predictions using a fixed weight (e.g., majority weight on stacking, minority on raw average). Tune the ratio in small increments guided by CV or leaderboard feedback; a modest share for the raw average often regularizes the final predi
+    evidence: ✓ Component quality differs reproducibly or a member’s predictions have changed since weights were tuned. | ✓ Model families contain unequal numbers of folds or variants.
+    leaderboard score 0.46496 → 0.46261 (-0.00236)
+- expert 73937748 (Master) · equity · v41→v45   Try grouping base models by their target transformation, fitting a separate linear meta-learner per group, then blending group-level predictions with learned weights. Compare this against a single meta-learner with greedy feature (model) elimination. If neither improves over the simpler baseline, th
+    evidence: ✓ Model families contain unequal numbers of folds or variants. | ✓ Component quality differs reproducibly or a member’s predictions have changed since weights were tuned. | ✗ Members have comparable quality and tuned weights have not reliably improved the simple average.
+    leaderboard score 0.68995 → 0.68967 (-0.00028)
+- expert 6803050 (Master) · google · v49→v50   Average predictions within each checkpoint group separately, then blend the group averages with unequal weights (e.g., 0.4/0.6) favoring the stronger group. Apply distribution-matching postprocessing after blending. If the blend improves over either group alone, keep it; otherwise simplify back to t
+    evidence: ✓ Component quality differs reproducibly or a member’s predictions have changed since weights were tuned. | ✓ Model families contain unequal numbers of folds or variants.
+    leaderboard score 0.36824 → 0.37898 (+0.01074)

@@ -1,0 +1,165 @@
+- **Choose the next intervention** `T`
+  - decide: what can I change to improve my solution? → Repair the pipeline | Make comparisons trustworthy | Change the input signal | Change the learner or fitting rule | Combine predictive signals | Calibrate final outputs | Make the next experiment feasible
+  - desiderata · what fits this case?: The current run fails or its predictions violate an expected invariant. · A score change cannot yet be attributed to a reproducible intervention. · The current inputs discard useful structure or contain demonstrated noise. · Valid inputs and evaluation still expose underfitting, overfitting or objective mismatch. · Several valid predictors are available or a predictor has measurable variance. · Valid raw predictions violate target structure or show a correctable held-out bias. · Runtime, memory or repeated computation prevents completing informative experiments.
+  - **Repair the pipeline** `T.1`
+    - decide: Which observed failure should I correct first? → Repair dependencies and device setup | Match the model to its checkpoint | Verify checkpoint selection and file discovery | Join features and predictions by identifier | Reuse fitted encoders and preprocessing | Correct prediction arithmetic and data flow | Correct metric and objective implementations | Verify the actual submitted predictions | Isolate a failing stage on a small sample | Check prediction parity after refactoring
+    - desiderata · what fits this case?: Execution fails during import, file access or device initialization. · The loaded checkpoint disagrees with the model architecture or vocabulary. · The selected checkpoint files are missing, ambiguous or different from the intended run. · Rows or feature columns can be reordered or mismatched across pipeline stages. · Inference encodings or missing-value treatment differ from those used in training. · The ensemble output cannot be reproduced from its intended component arrays and weights. · Evaluation callbacks fail or disagree with independently computed values. · The output file is missing, constant, stale or produced from the wrong input data. · Several stages are unverified and the first faulty transformation is unknown. · A code or artifact refactor was intended to preserve predictions but may have changed them.
+    - **Repair dependencies and device setup** `T.1.1`
+    - **Match the model to its checkpoint** `T.1.2`
+    - **Verify checkpoint selection and file discovery** `T.1.3`
+    - **Join features and predictions by identifier** `T.1.4`
+    - **Reuse fitted encoders and preprocessing** `T.1.5`
+    - **Correct prediction arithmetic and data flow** `T.1.6`
+    - **Correct metric and objective implementations** `T.1.7`
+    - **Verify the actual submitted predictions** `T.1.8`
+    - **Isolate a failing stage on a small sample** `T.1.9`
+    - **Check prediction parity after refactoring** `T.1.10`
+  - **Make comparisons trustworthy** `T.2`
+    - decide: What evidence is missing before I choose another model change? → Establish a measured baseline | Resolve attribution | Measure unchanged-run variation | Choose validation evidence | Bracket a parameter using local validation | Stop a saturated search and change the intervention | Profile the prediction unit and data structure
+    - desiderata · what fits this case?: No valid end-to-end prediction and evaluation result exists yet. · Several edits changed together or a regression has no clear cause. · Reported gains are small relative to suspected stochastic or evaluation-set variation. · The existing validation split is absent, unstable or disagrees with the target evaluation. · One numeric parameter remains uncertain and reliable local scores can distinguish its settings. · Repeated nearby trials have failed to improve the best verified result. · The unit of prediction and structure of repeated raw records are not yet understood.
+    - **Establish a measured baseline** `T.2.1`
+    - **Resolve attribution** `T.2.2`
+      - decide: How should I disentangle the recent score change? → Change or ablate one factor | Restore the last verified configuration | Test a small interaction grid
+      - desiderata · what fits this case?: Several independently adjustable factors changed together. · A recent modification caused a substantial regression relative to a reproducible saved baseline. · The preferred setting has reversed when another tightly coupled setting changed.
+      - **Change or ablate one factor** `T.2.2.1`
+      - **Restore the last verified configuration** `T.2.2.2`
+      - **Test a small interaction grid** `T.2.2.3`
+    - **Measure unchanged-run variation** `T.2.3`
+    - **Choose validation evidence** `T.2.4`
+      - decide: Which validation construction best matches the intended prediction setting? → Use target-stratified folds | Use disjoint group-aware folds | Audit subgroup-specific fold construction | Adjust held-out training allocation | Audit validation against held-out rankings
+      - desiderata · what fits this case?: Target imbalance or sparse target ranges leave random folds unrepresentative. · Rows share entities or topics whose information would cross an ordinary random split. · A known training subgroup differs from the expected test population. · A large holdout materially reduces training data and its estimates no longer change model selection. · Local validation and external evaluation rank the same candidate models differently. · The proposed split places the same row or entity in both training and validation.
+      - desiderata · added from expert visits: There remain untested checkpoints from available training runs that could further calibrate the CV-to-LB relationship. · Inference-time data transforms differ from training-time transforms, causing a systematic mismatch between CV and LB performance. · Alternative holdout sizes have not been tested and could yield a better bias-variance trade-off for validation. · A previous validation-scheme change was confounded by simultaneous hyperparameter changes, so the effect of the scheme change alone is unknown. · The clustering or grouping algorithm used to construct validation folds receives the intended feature inputs (not metadata or wrong columns). · The features used to derive synthetic groups (e.g., KMeans clusters) may not capture the semantic similarity that drives the real distribution shift. · The number of distinct groups (topics/entities) is known and informs the feasible number of CV splits for grouped cross-validation. · External or previously loaded topic/group metadata is available and could serve as a natural grouping variable for grouped CV. · The fold-construction code operates on the full dataset rather than an unintended subset. · No local validation mechanism currently exists, so changes can only be evaluated via leaderboard submission. · The holdout set is being (re-)enabled specifically for tuning a new model architecture rather than for final evaluation.
+      - **Use target-stratified folds** `T.2.4.1`
+      - **Use disjoint group-aware folds** `T.2.4.2`
+      - **Audit subgroup-specific fold construction** `T.2.4.3`
+      - **Adjust held-out training allocation** `T.2.4.4`
+      - **Audit validation against held-out rankings** `T.2.4.5`
+    - **Bracket a parameter using local validation** `T.2.5`
+    - **Stop a saturated search and change the intervention** `T.2.6`
+    - **Profile the prediction unit and data structure** `T.2.7`
+  - **Change the input signal** `T.3`
+    - decide: Which input intervention addresses the missing or noisy signal? → Represent the available information | Select or refresh features | Change training examples
+    - desiderata · what fits this case?: Raw data contains structure not represented by current features. · The feature set is large, changed recently or contains suspected unhelpful groups. · Label quality, imbalance or limited coverage constrains the current learner.
+    - **Represent the available information** `T.3.1`
+      - decide: Which representation should I test for the available raw information? → Add entity-history summaries | Add temporal deviation or window features | Add targeted domain interactions | Add text structure and linguistic statistics | Tune sparse text representations | Add frozen semantic embeddings | Add leakage-free auxiliary predictions | Encode metadata or paired text explicitly | Test minimal versus domain-specific text cleaning | Test numeric preprocessing against native handling | Match and sweep image resolution | Match image normalization to training | Adjust sequence truncation
+      - desiderata · what fits this case?: Several observations belong to one prediction entity and only a small summary is currently used. · Order and recency contain variation that full-history summaries conceal. · Related columns or metadata imply a signal not expressed in the present features. · Text structure or error patterns vary with the target beyond the current representation. · Lexical frequency or local word patterns are absent or poorly covered by current features. · Semantic embeddings are absent, or existing embedding sources have uncertain marginal value. · Another model or related labeled source provides predictive information absent from current inputs. · Distinct text roles or observed metadata are lost by the current input encoding. · A cleaning or tokenization rule changes information relevant to the target or checkpoint. · Current numeric preprocessing may erase missingness or impose transformations the learner does not need. · The inference image size differs from training or may discard task-relevant detail. · Image input statistics differ from the checkpoint’s training preprocessing. · A meaningful fraction of task-relevant text is truncated.
+      - **Add entity-history summaries** `T.3.1.1`
+      - **Add temporal deviation or window features** `T.3.1.2`
+      - **Add targeted domain interactions** `T.3.1.3`
+      - **Add text structure and linguistic statistics** `T.3.1.4`
+      - **Tune sparse text representations** `T.3.1.5`
+      - **Add frozen semantic embeddings** `T.3.1.6`
+      - **Add leakage-free auxiliary predictions** `T.3.1.7`
+      - **Encode metadata or paired text explicitly** `T.3.1.8`
+      - **Test minimal versus domain-specific text cleaning** `T.3.1.9`
+      - **Test numeric preprocessing against native handling** `T.3.1.10`
+      - **Match and sweep image resolution** `T.3.1.11`
+      - **Match image normalization to training** `T.3.1.12`
+      - **Adjust sequence truncation** `T.3.1.13`
+    - **Select or refresh features** `T.3.2`
+      - decide: What kind of feature reduction or refresh is justified? → Tune the retained feature count | Ablate suspect feature groups | Compare feature-ranking methods | Regenerate selection artifacts after input changes
+      - desiderata · what fits this case?: Many low-ranked features remain and their contribution is uncertain. · A specific feature family is redundant, noisy or previously harmful. · Available importance methods disagree about which features to retain. · A saved feature list was built for a different feature schema.
+      - **Tune the retained feature count** `T.3.2.1`
+      - **Ablate suspect feature groups** `T.3.2.2`
+      - **Compare feature-ranking methods** `T.3.2.3`
+      - **Regenerate selection artifacts after input changes** `T.3.2.4`
+    - **Change training examples** `T.3.3`
+      - decide: Which training-population adjustment should I test? → Filter or down-weight noisy and mismatched examples | Tune class or subgroup weights | Test synthetic feature-space augmentation | Tune label-preserving image augmentation
+      - desiderata · what fits this case?: A known subset has unreliable labels or differs from the intended test population. · Rare classes or target-like subgroups have insufficient influence on fitting. · A sparse subgroup has too few examples and plausible interpolation neighbors exist. · Training images exhibit nuisance variation that valid augmentation could reproduce.
+      - desiderata · added from expert visits: A previous train/validation split ratio change did not improve the score, suggesting the current ratio should be reverted or kept. · Previous attempts to add stronger augmentation degraded performance compared to the mild-augmentation baseline. · The upward sweep of class/positive-class weights has been completed and showed degradation at high values, motivating exploration in a different direction. · The expert is currently sweeping class weights below 1.0 and has not yet found the optimum in that region. · The competition metric is ranking-based or ordinal, so class reweighting may be invariant or harmful because it affects calibration rather than score ordering. · Previous attempts to adjust loss-function constants alone did not yield consistent improvements. · The best leaderboard score was achieved without augmentation, and all augmented versions scored lower. · The scale_pos_weight parameter is applicable and correctly interpreted under the current objective (e.g., regression, not just binary classification).
+      - **Filter or down-weight noisy and mismatched examples** `T.3.3.1`
+      - **Tune class or subgroup weights** `T.3.3.2`
+      - **Test synthetic feature-space augmentation** `T.3.3.3`
+      - **Tune label-preserving image augmentation** `T.3.3.4`
+  - **Change the learner or fitting rule** `T.4`
+    - decide: Which modeling constraint should I change next? → Choose a model formulation | Choose the fitting objective | Adjust training dynamics
+    - desiderata · what fits this case?: The existing formulation has plateaued and a materially different candidate is available. · The current training signal differs from what evaluation rewards. · Learning curves show that current fitting settings are inadequate.
+    - desiderata · added from expert visits: The prediction method (e.g., predict vs predict_proba) is mismatched with the model API or evaluation requirements. · A previously underperforming candidate may have failed due to ancillary settings (ensemble weights, checkpoint selection, pipeline bugs) rather than inherent model weakness. · The custom objective's parameters vary across folds or subgroups, causing inconsistent loss landscapes that destabilize training. · A structural pipeline change (e.g., stratification, new features) has shifted the optimal value of a fitting hyperparameter that was previously tuned.
+    - **Choose a model formulation** `T.4.1`
+      - decide: Which model formulation should I compare with the current one? → Compare pretrained backbones or capacities | Compare boosting algorithms or libraries | Change pooling, attention or prediction heads | Compare regression, classification and ordinal outputs | Probe direct language-model scoring
+      - desiderata · what fits this case?: Available backbones differ in capacity or domain pretraining relevant to the task. · The tuned current tree method has plateaued and another boosting implementation is available. · A minimal or poorly matched prediction head limits an otherwise useful representation. · The present output activation or label formulation mismatches the target structure. · A generative model could score the text but its output reliability is unverified.
+      - **Compare pretrained backbones or capacities** `T.4.1.1`
+      - **Compare boosting algorithms or libraries** `T.4.1.2`
+      - **Change pooling, attention or prediction heads** `T.4.1.3`
+      - **Compare regression, classification and ordinal outputs** `T.4.1.4`
+      - **Probe direct language-model scoring** `T.4.1.5`
+    - **Choose the fitting objective** `T.4.2`
+      - decide: Which target or objective change is supported by the metric? → Compare censoring-aware target transforms | Test consistent target centering | Compare loss functions or objective parameters | Choose the early-stopping metric | Choose a training interface with required controls
+      - desiderata · what fits this case?: Outcomes contain censoring or the metric evaluates risk ranking within known subgroups. · Target centering differs across folds or from the inference output scale. · The current loss optimizes a surrogate that poorly tracks the held-out metric. · The best epoch or iteration under the current stopping metric is not best under the target metric. · The current API obscures required probability output or evaluation controls.
+      - desiderata · added from expert visits: A known best value for the target-transform parameter exists from prior experiments and can serve as the baseline for further sweeps. · The training sample distribution does not match the test distribution, and resampling or reweighting could better align the target. · Ensemble weighting or blending interacts with the target centering change, so isolation is needed to attribute the effect. · Subgroup-specific baseline distributions differ materially, so a global target transform distorts within-group rankings. · The target-transform parameter (e.g., COLLAPSE) directly controls the censoring-aware transform and small changes produce measurable metric differences. · The existing ensemble already includes a model using the proposed target transform, so adding another would be redundant rather than diversifying.
+      - **Compare censoring-aware target transforms** `T.4.2.1`
+      - **Test consistent target centering** `T.4.2.2`
+      - **Compare loss functions or objective parameters** `T.4.2.3`
+      - **Choose the early-stopping metric** `T.4.2.4`
+      - **Choose a training interface with required controls** `T.4.2.5`
+    - **Adjust training dynamics** `T.4.3`
+      - decide: Which training control matches the observed learning behavior? → Tune tree depth and leaf capacity | Tune penalties, subsampling or dropout | Tune learning rate with sufficient training budget | Tune epochs, rounds or stopping patience | Compare optimizer or learning-rate schedule | Train and persist models with proper cross-validation | Average compatible model weights
+      - desiderata · what fits this case?: Training fit or the train-validation gap suggests an inappropriate tree capacity. · The fitted model overfits or current regularization suppresses useful signal. · Training is unstable or stops before a lower-rate run can converge. · Validation improvement continues at the cap or has already reversed before the selected checkpoint. · Convergence behavior suggests the current optimization schedule is a bottleneck. · An ensemble member lacks reproducible fold-trained models or unbiased validation predictions. · Compatible snapshots occupy nearby useful solutions and individual predictions vary.
+      - desiderata · added from expert visits: The current boosting mode (e.g., DART) makes early-stopping callbacks unreliable, requiring manual iteration tuning. · GPU acceleration is available and would meaningfully speed up training iterations. · GPU training caused instability or errors requiring fallback to CPU. · Missing-value handling was toggled off or commented out and re-enabling it may improve training stability. · The training loop currently lacks early-stopping and iteration-logging callbacks. · Multiple hyperparameters are being changed simultaneously without isolating individual effects. · The models share a single generic parameter dictionary rather than having model-specific tuned configurations. · Reducing per-model training cost frees compute budget for downstream search (e.g., blend-weight optimization).
+      - **Tune tree depth and leaf capacity** `T.4.3.1`
+      - **Tune penalties, subsampling or dropout** `T.4.3.2`
+      - **Tune learning rate with sufficient training budget** `T.4.3.3`
+      - **Tune epochs, rounds or stopping patience** `T.4.3.4`
+      - **Compare optimizer or learning-rate schedule** `T.4.3.5`
+      - **Train and persist models with proper cross-validation** `T.4.3.6`
+      - **Average compatible model weights** `T.4.3.7`
+  - **Combine predictive signals** `T.5`
+    - decide: Which combination change should I evaluate? → Choose ensemble membership | Reduce prediction variance | Choose aggregation
+    - desiderata · what fits this case?: The current set may omit complementary signal or include harmful members. · A single predictor is unstable and repeatable alternatives are available. · Valid model outputs differ in quality, scale or complementary error.
+    - desiderata · added from expert visits: A previous combination attempt failed due to a configuration mismatch or bug, so the result may not reflect the true potential of that combination. · No reliable local validation metric is available, so blend/weight selection must rely on leaderboard feedback. · The blending/ensemble code has a bug (e.g., variable name error, wrong file reference, denominator mismatch) that causes the output to not reflect the intended combination. · Weight-only tuning of the current blend has plateaued, suggesting a structural change (add/remove member or change method) is needed. · A previously tried combination method (e.g., adaptive blending, stacking) did not improve over the simpler baseline approach. · The existing blend weights were calibrated for a different set of members and are now stale. · Hierarchical or grouped blending (e.g., averaging within model families first) could better balance contributions from unequally-sized groups. · The current combination method (e.g., rank-averaging) cannot down-weight a weaker member, requiring removal instead of reweighting.
+    - **Choose ensemble membership** `T.5.1`
+      - decide: Which membership change is justified by marginal contribution? → Add a complementary model family | Add diversity from training or input variants | Select members by marginal ensemble contribution | Restore validated ensemble members | Compare matched checkpoint variants | Select fold or full-data checkpoints
+      - desiderata · what fits this case?: The ensemble’s errors are shared across similar members and a distinct candidate is available. · Existing models share an architecture but alternative training or feature recipes yield different errors. · Some available members may add noise or redundancy despite acceptable standalone scores. · Removing or disabling previously validated members caused a regression. · Several compatible trained checkpoints differ in seed, recipe or training stage. · Fold quality or training-regime mismatch may make some available checkpoints harmful. · A candidate improves standalone score but adds no gain in prior fixed-weight inclusion tests.
+      - **Add a complementary model family** `T.5.1.1`
+      - **Add diversity from training or input variants** `T.5.1.2`
+      - **Select members by marginal ensemble contribution** `T.5.1.3`
+      - **Restore validated ensemble members** `T.5.1.4`
+      - **Compare matched checkpoint variants** `T.5.1.5`
+      - **Select fold or full-data checkpoints** `T.5.1.6`
+    - **Reduce prediction variance** `T.5.2`
+      - decide: Which repetition adds useful independent information? → Average more cross-validation folds | Average independent training seeds | Average valid transformed input views | Evaluate stochastic dropout inference | Average compatible training snapshots
+      - desiderata · what fits this case?: Useful fold-trained checkpoints are omitted or too few folds limit training coverage. · Predictions vary across trained seeds beyond the expected evaluation noise. · The task is invariant to candidate transformations and predictions vary across those views. · Dropout is active or intentionally proposed at inference and creates nontrivial prediction variance. · Several stopping-rule or training-stage snapshots have complementary errors.
+      - **Average more cross-validation folds** `T.5.2.1`
+      - **Average independent training seeds** `T.5.2.2`
+      - **Average valid transformed input views** `T.5.2.3`
+      - **Evaluate stochastic dropout inference** `T.5.2.4`
+      - **Average compatible training snapshots** `T.5.2.5`
+    - **Choose aggregation** `T.5.3`
+      - decide: How should aligned member predictions be combined? → Use a uniform arithmetic average | Tune fixed blend weights | Test signed blend weights | Compare raw and rank-normalized averaging | Normalize member scales before blending | Average within families before blending | Fit a regularized stacker on out-of-fold predictions
+      - desiderata · what fits this case?: Members have similar quality or optimized combinations have unstable held-out gains. · Members differ in useful contribution and held-out predictions support weight comparisons. · A candidate is anti-correlated with residual error after accounting for stronger members. · Member scales differ or raw versus rank aggregation has changed preference across configurations. · Member scales or outliers distort their intended relative contributions. · Families have unequal numbers of checkpoints that would otherwise determine their influence. · Enough OOF examples exist to learn stable complementary relationships among base outputs. · The available meta-features contain in-sample predictions or have unverifiable fold provenance.
+      - **Use a uniform arithmetic average** `T.5.3.1`
+      - **Tune fixed blend weights** `T.5.3.2`
+      - **Test signed blend weights** `T.5.3.3`
+      - **Compare raw and rank-normalized averaging** `T.5.3.4`
+      - **Normalize member scales before blending** `T.5.3.5`
+      - **Average within families before blending** `T.5.3.6`
+      - **Fit a regularized stacker on out-of-fold predictions** `T.5.3.7`
+  - **Calibrate final outputs** `T.6`
+    - decide: Which output transformation matches the observed prediction defect? → Map outputs to labels | Correct a validated prediction offset or orientation | Calibrate output range before discretization | Reshape component probabilities before combination | Apply a validated auxiliary or metadata correction | Ablate and revalidate the current post-processing
+    - desiderata · what fits this case?: The target has a restricted range or a small ordered set of values. · Predictions have an inverted convention or a reproducible additive bias. · Prediction ranges mismatch the required support or the calibration distribution. · Component confidence distributions are mismatched and their nonlinear combination changes ordering. · An auxiliary classifier or observable rule predicts a specific systematic residual. · Post-processing was tuned before an upstream change or its contribution is unknown.
+    - desiderata · added from expert visits: The evaluation metric is rank-based, so rank-preserving transforms (e.g., min-max scaling) cannot change the score for a single model. · Published top solutions or domain knowledge indicate specific post-processing techniques (e.g., discretization, host-based masking) that are known to be effective. · The current post-processing code contains a bug (typo, wrong operator, or missing branch) that prevents it from executing correctly.
+    - **Map outputs to labels** `T.6.1`
+      - decide: How should continuous predictions be mapped to the target support? → Retain raw continuous predictions | Use simple fixed rounding or bins | Optimize ordered thresholds on held-out predictions | Test target-frequency mapping | Compare global and group-specific calibration
+      - desiderata · what fits this case?: The metric depends on order and proposed transformations only erase or perturb useful ordering. · Labels occupy known ordered levels and learned thresholds are not reliably better. · Continuous outputs carry signal but fixed cutpoints systematically misallocate ordinal labels. · Target-level frequencies are stable enough that a reference distribution may improve mapping. · Residual distributions differ reproducibly across groups available at inference. · Previously optimized cutpoints fail to improve a separate held-out set.
+      - **Retain raw continuous predictions** `T.6.1.1`
+      - **Use simple fixed rounding or bins** `T.6.1.2`
+      - **Optimize ordered thresholds on held-out predictions** `T.6.1.3`
+      - **Test target-frequency mapping** `T.6.1.4`
+      - **Compare global and group-specific calibration** `T.6.1.5`
+    - **Correct a validated prediction offset or orientation** `T.6.2`
+    - **Calibrate output range before discretization** `T.6.3`
+    - **Reshape component probabilities before combination** `T.6.4`
+    - **Apply a validated auxiliary or metadata correction** `T.6.5`
+    - **Ablate and revalidate the current post-processing** `T.6.6`
+  - **Make the next experiment feasible** `T.7`
+    - decide: Which execution change removes the measured resource bottleneck? → Use a controlled reduced-cost development mode | Process complete entities in chunks | Release intermediates between model stages | Reduce or bucket inference batches | Compare reduced-precision inference | Cache reusable features, predictions and search results | Separate and verify model-specific inference paths | Train remaining folds across sessions | Accelerate evaluation with numerical parity checks
+    - desiderata · what fits this case?: Full runs are too expensive to locate errors or screen candidate settings. · The full dataset or feature matrix exceeds available memory. · Peak memory rises across successive model or feature stages. · Inference fails at large batches or padding dominates sequence computation. · Model inference dominates memory and supported lower precision may reduce its footprint. · Most run time recomputes artifacts unchanged by the current experiment. · Multiple variants share fragile duplicated code or overwrite each other’s artifacts. · The required fold training cannot finish within one session but completed checkpoints can be persisted. · Repeated metric computation dominates search time rather than model fitting.
+    - **Use a controlled reduced-cost development mode** `T.7.1`
+    - **Process complete entities in chunks** `T.7.2`
+    - **Release intermediates between model stages** `T.7.3`
+    - **Reduce or bucket inference batches** `T.7.4`
+    - **Compare reduced-precision inference** `T.7.5`
+    - **Cache reusable features, predictions and search results** `T.7.6`
+    - **Separate and verify model-specific inference paths** `T.7.7`
+    - **Train remaining folds across sessions** `T.7.8`
+    - **Accelerate evaluation with numerical parity checks** `T.7.9`

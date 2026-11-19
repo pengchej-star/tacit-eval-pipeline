@@ -1,0 +1,7 @@
+# Limit the pooled feature dimension  `T.4.2.4`   1 edits, 0 experts
+1 scored cases, median improvement +0.00856, 1 improved
+
+
+- expert 49576186 (Expert) · hms · v103→v105   Test with and without truncation on the leaderboard. If the full-dimensional vector degrades the score, revert to the truncated version — the extra dimensions may introduce noise or overfitting when the classification head is small relative to the feature dimension.
+    evidence: ✓ The classifier consumes a truncated backbone embedding and full-dimensional checkpoints are available. | ✗ The expert has already tried this exact retention ratio in a previous version, making this a repeated rather than novel experiment. | ✓ No leaderboard scores have been submitted for recent versions, so the expert lacks external validation to confirm the current feature-selection ratio is optimal. | ✓ A submitted leaderboard score from a recent retention-ratio step provides a concrete baseline for comparison. | ✓ The edit changes multiple hyperparameters simultaneously alongside the feature-selection change, confounding diagnosis of what helped. | ✓ A recent pipeline or hyperparameter change (e.g., eval metric switch, regularization update) may have shifted the optimal feature-selection ratio, motivating a re-sweep.
+    leaderboard score 0.27315 → 0.28170 (+0.00856)

@@ -1,0 +1,22 @@
+# Probe a coordinated package  `T.2.4.5`   6 edits, 0 experts
+5 scored cases, median improvement +0.00117, 3 improved
+
+
+- expert 77129691 (Master) · equity · v21→v22   When reverting, do not simply restore the old code verbatim. Instead, adjust two or three coupled hyperparameters (e.g., increase learning rate while reducing epoch count, or change batch size) so the reverted configuration is re-optimized. This often yields a score better than the pre-experiment ba
+    evidence: ✓ Several functional changes were made between the last two scored versions. | ✓ The current configuration has a repeatable large regression against a reproducible saved baseline. | ✗ There is no competitive operating point and the proposed changes must be compatible as a package.
+    leaderboard score 0.69451 → 0.69568 (+0.00117)
+- expert 73937748 (Master) · equity · v3→v5   Attack on multiple fronts simultaneously: (1) engineer domain-informed interaction and ratio features, (2) create several survival-target transforms so each model sees a different view of the label, (3) add a third gradient-boosted tree variant, and (4) use a hyperparameter search tool to optimize b
+    evidence: ✓ Several functional changes were made between the last two scored versions. | ✗ A rewrite was intended to preserve model behavior exactly. | ✓ There is no competitive operating point and the proposed changes must be compatible as a package. | ✗ Several valid probes of the current lever have failed to exceed the observed variability.
+    leaderboard score 0.67907 → 0.68705 (+0.00798)
+- expert 52551258 (Expert) · hms · v2→v3   When the gap to competitive performance is large and multiple improvements are each strongly motivated by domain knowledge or known solutions, bundle them into a single refactor. Verify the combined effect on the leaderboard. Reserve incremental ablation for later fine-tuning once the score is in a 
+    evidence: ✓ Several functional changes were made between the last two scored versions. | ✗ A rewrite was intended to preserve model behavior exactly. | ✓ There is no competitive operating point and the proposed changes must be compatible as a package.
+    leaderboard score 0.65796 → 0.37116 (-0.28680)
+- expert 53762022 (Contributor) · hms · v10→v12   Use one or two probes to identify the dominant model and the direction of improvement, then bundle the refined blend weights with other orthogonal improvements (e.g., better checkpoints or architecture tweaks) into a single submission rather than submitting each incremental weight change separately.
+    evidence: ✗ Several functional changes were made between the last two scored versions. | ✓ The current configuration has a repeatable large regression against a reproducible saved baseline. | ✓ There is no competitive operating point and the proposed changes must be compatible as a package. | ✓ Several valid probes of the current lever have failed to exceed the observed variability.
+    leaderboard score 0.39598 → n/a
+- expert 55621328 (Master) · learning · v36→v37   Change both levers at once: switch to a different trained checkpoint and simultaneously re-tune the rounding thresholds. If the combined change improves the score, follow up by isolating each lever to understand individual contributions. This is efficient when submission budget is limited and the tw
+    evidence: ✓ Several functional changes were made between the last two scored versions. | ✗ There is no competitive operating point and the proposed changes must be compatible as a package. | ✗ Several valid probes of the current lever have failed to exceed the observed variability.
+    leaderboard score 0.81031 → 0.81536 (+0.00505)
+- expert 50496431 (Grandmaster) · hms · v74→v75   When making an ensemble change that is expected to improve the score, bundle a small spectrogram parameter tweak (e.g., halving the hop length for finer time resolution, tightening the crop) in the same submission. If the combined change improves, keep both; if not, revert the spectrogram change sep
+    evidence: ✓ Several functional changes were made between the last two scored versions. | ✗ Identical code has produced materially different predictions or scores. | ✗ A rewrite was intended to preserve model behavior exactly. | ✗ There is no competitive operating point and the proposed changes must be compatible as a package.
+    leaderboard score 0.28218 → 0.27839 (-0.00379)

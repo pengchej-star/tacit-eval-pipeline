@@ -1,0 +1,5 @@
+# Refit on all labeled data  `T.2.2.1.6`   1 edits, 0 experts
+
+- expert 29588171 (Master) · amex · v24→v34   When a model's blend weight is very small and early stopping is not used, train on the full labeled set to maximize the quality of its small contribution. Reserve a validation split only when the model's weight is large enough that overfitting would materially hurt the blend.
+    evidence: ✗ Model choices are frozen and independent validation has already selected the configuration. | ✗ Early stopping or further hyperparameter selection still relies on the reserved holdout. | ✓ Reducing holdout/validation size gives more training data, which may improve score when the dataset is small or the model is a minor blend component. | ✓ The current CV splitting operates on a subset rather than the full dataset, potentially excluding useful training rows.
+    leaderboard score n/a → 0.79980

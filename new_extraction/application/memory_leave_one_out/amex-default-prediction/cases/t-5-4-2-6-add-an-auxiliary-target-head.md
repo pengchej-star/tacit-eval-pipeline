@@ -1,0 +1,13 @@
+# Add an auxiliary target head  `T.5.4.2.6`   3 edits, 0 experts
+1 scored cases, median improvement +0.00790, 1 improved
+
+
+- expert 17371717 (Master) · commonlitreadabilityprize · v19→v20   Add a parallel classification head that predicts the target binned into discrete categories. Train with both regression and classification losses. At inference, use the regression output (or blend both). This can regularize the model and provide complementary signal, especially on small datasets.
+    evidence: ✗ Targets are probability distributions and the evaluation uses distributional divergence. | ✗ Outputs are independent labels or bounded independent targets rather than mutually exclusive classes. | ✗ The metric rewards pair ordering while training uses only pointwise errors. | ✗ Labels occupy an ordered finite scale. | ✓ A meaningful auxiliary classification target can be derived without extra unavailable labels.
+    leaderboard score n/a → 0.46543
+- expert 17371717 (Master) · commonlitreadabilityprize · v33→v36   Test the model with and without the auxiliary classification head while keeping other factors fixed. If the regression-only configuration scores better, drop the auxiliary head—on small datasets the extra head can introduce noise that outweighs its regularization benefit.
+    evidence: ✗ Targets are probability distributions and the evaluation uses distributional divergence. | ✗ The metric rewards pair ordering while training uses only pointwise errors. | ✗ Labels occupy an ordered finite scale. | ✓ A meaningful auxiliary classification target can be derived without extra unavailable labels.
+    leaderboard score 0.46357 → 0.47147 (+0.00790)
+- expert 6803050 (Master) · google · v27→v30   Try loading the joint checkpoints and adapting the inference architecture to include the auxiliary head. Compare leaderboard scores against the single-head baseline. If the joint model underperforms, revert to the simpler single-head architecture—auxiliary heads that help training do not always help
+    evidence: ✗ Targets are probability distributions and the evaluation uses distributional divergence. | ✓ Outputs are independent labels or bounded independent targets rather than mutually exclusive classes. | ✓ A meaningful auxiliary classification target can be derived without extra unavailable labels. | ✓ The metric rewards pair ordering while training uses only pointwise errors. | ✓ Labels occupy an ordered finite scale.
+    leaderboard score n/a → 0.35475

@@ -1,0 +1,10 @@
+# Filter suspected label errors  `T.3.1.1`   2 edits, 0 experts
+1 scored cases, median improvement +0.00034, 1 improved
+
+
+- expert 77450317 (Grandmaster) · equity · v17→v19   Load the precomputed outlier IDs and filter them from the training set before fitting. Treat this as a quick probe: make the minimal code change, re-run, and compare validation or leaderboard scores to the baseline. If no improvement is observed, revert.
+    evidence: ✓ Large out-of-fold residuals coincide with independently suspected label errors. | ✓ A previous version implementing this change was not submitted/scored, so a re-run is needed to obtain the leaderboard score. | ✓ The current baseline already achieves a competitive score, so this change is an incremental experiment rather than a fix for a known problem. | ✓ The change is explicitly framed as a reversible experiment with a plan to revert if it worsens the score. | ✗ Bundling complementary training improvements with the data selection change may compensate for any individual weakness. | ✓ A pre-computed artifact (e.g., outlier list) already exists and is ready to be loaded for this change.
+    leaderboard score 0.69690 → n/a
+- expert 77129691 (Master) · equity · v22→v23   Pre-compute outlier scores (e.g., via out-of-fold residuals or prediction confidence thresholds) and remove the flagged samples from training. Use a held-out or public leaderboard score to verify the removal helps rather than hurts. Keep the threshold moderate to avoid discarding too much signal.
+    evidence: ✓ Large out-of-fold residuals coincide with independently suspected label errors. | ✓ The current baseline already achieves a competitive score, so this change is an incremental experiment rather than a fix for a known problem. | ✗ A previous attempt at the same type of change (data selection/filtering) caused a measurable score regression. | ✗ Bundling complementary training improvements with the data selection change may compensate for any individual weakness. | ✓ A pre-computed artifact (e.g., outlier list) already exists and is ready to be loaded for this change.
+    leaderboard score 0.69568 → 0.69602 (+0.00034)

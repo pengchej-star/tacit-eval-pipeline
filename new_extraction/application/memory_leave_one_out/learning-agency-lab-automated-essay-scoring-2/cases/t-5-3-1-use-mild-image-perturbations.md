@@ -1,0 +1,10 @@
+# Use mild image perturbations  `T.5.3.1`   2 edits, 0 experts
+1 scored cases, median improvement +0.00797, 1 improved
+
+
+- expert 13542132 (Master) · ranzcr · v2→v3   Add a simple brightness or contrast perturbation as the first augmentation. Use a small fixed offset or random range. Evaluate on the leaderboard; brightness-type augmentations can yield surprisingly large gains on radiograph tasks because they help the model generalize across exposure variations.
+    evidence: ✓ Image intensity varies naturally but strong augmentation has previously distorted useful structure. | ✗ The model sees spectrograms and should tolerate missing local time-frequency evidence. | ✗ Geometric transforms (e.g., rotation) have not been previously tried and are now being introduced into the augmentation pipeline. | ✗ The previous augmentation run did not clearly improve over the non-augmented baseline, so a re-run is needed to distinguish signal from variance.
+    leaderboard score 0.94363 → 0.95160 (+0.00797)
+- expert 13542132 (Master) · ranzcr · v9→v13   Start with very mild augmentation (small brightness perturbation only). When adding geometric transforms (rotation) or stronger color jitter, keep magnitudes small (a few percent variation) and test each addition individually. If the score drops, revert immediately rather than trying to compensate w
+    evidence: ✓ Image intensity varies naturally but strong augmentation has previously distorted useful structure. | ✗ The model sees spectrograms and should tolerate missing local time-frequency evidence. | ✗ Geometric transforms (e.g., rotation) have not been previously tried and are now being introduced into the augmentation pipeline. | ✓ The previous augmentation run did not clearly improve over the non-augmented baseline, so a re-run is needed to distinguish signal from variance. | ✓ The proposed augmentation code was already scaffolded or commented out in a prior version and only needs to be activated, not written from scratch.
+    leaderboard score n/a → 0.94397

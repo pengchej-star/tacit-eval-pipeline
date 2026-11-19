@@ -1,0 +1,10 @@
+# Add a retrieval predictor  `T.6.1.5`   2 edits, 0 experts
+2 scored cases, median improvement +0.04445, 2 improved
+
+
+- expert 17616127 (Contributor) · commonlitreadabilityprize · v125→v130   Implement a retrieval feature generator that encodes texts with a pretrained bi-encoder, finds top-k nearest training examples, and uses their labels as features for the meta-learner. Compare the new ensemble score against the baseline. If the retrieval-augmented version scores worse, keep the origi
+    evidence: ✓ The current family has plateaued despite useful features and controlled tuning. | ✓ Similar labeled examples exist and a leakage-free retrieval index can be built for each validation fold. | ✗ The candidate backbone or model family was previously tested and underperformed, so switching back requires a clear rationale for why results would differ now. | ✓ Pretrained embeddings are available but end-to-end fine-tuning is noisy or expensive. | ✗ The tuned standard tree booster still appears to overfit and a dropout-based variant is supported. | ✓ The alternative predictor family has been tested in only a few configurations and has not yet matched the current best, leaving uncertainty about whether further tuning could close the gap.
+    leaderboard score 0.44825 → 0.45693 (+0.00868)
+- expert 52551258 (Expert) · hms · v7→v9   Test the complex variant on the leaderboard. If it scores worse, revert promptly. Do not assume added complexity helps; treat it as a probe and keep the simpler model as the default unless the complex one clearly wins.
+    evidence: ✓ The candidate backbone or model family was previously tested and underperformed, so switching back requires a clear rationale for why results would differ now. | ✓ Similar labeled examples exist and a leakage-free retrieval index can be built for each validation fold. | ✗ The tuned standard tree booster still appears to overfit and a dropout-based variant is supported.
+    leaderboard score 0.32513 → 0.36957 (+0.04445)

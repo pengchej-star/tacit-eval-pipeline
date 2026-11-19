@@ -1,0 +1,7 @@
+# Normalize each member before averaging  `T.7.4.6`   1 edits, 0 experts
+1 scored cases, median improvement -0.00044, 0 improved
+
+
+- expert 50376011 (Grandmaster) · hms · v112→v113   Apply the softmax (or other normalization) to each individual model's output before averaging across ensemble members, so that the ensemble operates in probability space. Verify by comparing leaderboard or validation scores against the alternative order, and keep whichever is better.
+    evidence: ✗ The metric is rank-based and member score distributions differ in calibration or scale. | ✓ Compatible pre-softmax logits are available and the task scores categorical probability distributions. | ✓ Current inputs to an arithmetic average are unnormalized outputs although the blend is intended to average distributions. | ✓ With only one model source, rank averaging is a no-op or potentially harmful compared to raw predictions. | ✓ A rank or normalization transform is still applied in the submission/inference code despite the blending stage being changed to operate on raw outputs. | ✓ A bug in the blending code was corrupting predictions, making previous domain-comparison results unreliable.
+    leaderboard score 0.30121 → 0.30077 (-0.00044)

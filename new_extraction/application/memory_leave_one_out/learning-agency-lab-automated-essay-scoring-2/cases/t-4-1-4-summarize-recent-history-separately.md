@@ -1,0 +1,5 @@
+# Summarize recent history separately  `T.4.1.4`   1 edits, 0 experts
+
+- expert 27836972 (Expert) · amex · v55→v62   Compute aggregations (e.g., mean) over only the last N records per entity, where N is a small fraction of the typical sequence length. Add these as new features alongside the full-history aggregations. Start with a small window (e.g., last 3 records), confirm improvement, then optionally sweep the w
+    evidence: ✗ The number and ordering of records per prediction entity are not yet established. | ✗ No working entity-level feature baseline exists. | ✗ Only the last observation or one central statistic is currently retained. | ✓ Full-history aggregates obscure behavior near the prediction time. | ✓ Entities have ordered histories whose recent changes are not represented. | ✓ Prior interaction/derived feature experiments have consistently failed to improve over the current best baseline score.
+    leaderboard score n/a → n/a

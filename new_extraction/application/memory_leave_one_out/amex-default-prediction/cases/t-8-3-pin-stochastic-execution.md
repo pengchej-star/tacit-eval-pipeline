@@ -1,0 +1,22 @@
+# Pin stochastic execution  `T.8.3`   6 edits, 0 experts
+3 scored cases, median improvement -0.00789, 0 improved
+
+
+- expert 77129691 (Master) · equity · v2→v3   Seed all RNG sources (language-level, array library, framework CPU and GPU) and enable deterministic backend flags. Be aware this can slightly hurt performance: deterministic GPU kernels may be slower or change optimization trajectories, and locking seeds removes beneficial stochastic diversity in e
+    evidence: ✗ The full run exceeds memory capacity or repeatedly fails on large batches. | ✗ Runtime is dominated by repeated preprocessing, incomplete-stage restarts, or a profiled slow operation. | ✓ Identical inputs and artifacts produce different predictions because stochastic execution remains uncontrolled. | ✗ A recent configuration change broke execution, and the pipeline has not yet been verified to run end-to-end successfully.
+    leaderboard score 0.69005 → 0.68967 (-0.00038)
+- expert 75584724 (Master) · equity · v14→v15   Save the best-found weights as hard-coded constants behind a configuration flag. At submission time, enable the flag to skip the stochastic search and apply fixed weights directly, guaranteeing identical outputs every run.
+    evidence: ✓ Runtime is dominated by repeated preprocessing, incomplete-stage restarts, or a profiled slow operation. | ✓ Identical inputs and artifacts produce different predictions because stochastic execution remains uncontrolled. | ✗ A recent configuration change broke execution, and the pipeline has not yet been verified to run end-to-end successfully.
+    leaderboard score 0.69419 → n/a
+- expert 75924487 (Master) · equity · v3→v4   Audit every stochastic call in the pipeline—data transforms, splits, weight initialization—and pass a fixed seed to each. Verify reproducibility by running twice and confirming identical out-of-fold predictions before drawing conclusions from variant comparisons.
+    evidence: ✓ Identical inputs and artifacts produce different predictions because stochastic execution remains uncontrolled. | ✗ A recent configuration change broke execution, and the pipeline has not yet been verified to run end-to-end successfully.
+    leaderboard score 0.69213 → n/a
+- expert 50376011 (Grandmaster) · hms · v12→v14   Test worker count changes in isolation (same model, same data) to confirm scores are stable. If scores shift, fix the worker count and random seeds. If stable, treat worker count as a performance-only knob and vary it freely.
+    evidence: ✓ Identical inputs and artifacts produce different predictions because stochastic execution remains uncontrolled. | ✗ A recent configuration change broke execution, and the pipeline has not yet been verified to run end-to-end successfully.
+    leaderboard score 0.45471 → 0.42003 (-0.03468)
+- expert 50376011 (Grandmaster) · hms · v180→v181   Disable dynamic input adaptation (e.g., dynamic shapes, dynamic batching) during the special inference mode to force deterministic tensor shapes. Compare the resulting score against the variance baseline to confirm the fix is real.
+    evidence: ✗ The full run exceeds memory capacity or repeatedly fails on large batches. | ✓ Identical inputs and artifacts produce different predictions because stochastic execution remains uncontrolled. | ✗ A variable deletion or comment-out removes a definition still referenced downstream, causing a runtime error. | ✓ Dead code, redundant assignments, or unused imports have accumulated, creating maintenance overhead and risk of stale-reference errors. | ✗ A recent configuration change broke execution, and the pipeline has not yet been verified to run end-to-end successfully.
+    leaderboard score 0.25409 → 0.24620 (-0.00789)
+- expert 13521245 (Grandmaster) · ranzcr · v3→v5   Disable random augmentations during inference (or use deterministic TTA with fixed seeds) before drawing conclusions from score changes. If scores vary across identical runs, attribute the variance to non-determinism rather than to any intentional change, and fix the source before iterating on other
+    evidence: ✓ Identical inputs and artifacts produce different predictions because stochastic execution remains uncontrolled. | ✗ A variable deletion or comment-out removes a definition still referenced downstream, causing a runtime error. | ✗ A recent configuration change broke execution, and the pipeline has not yet been verified to run end-to-end successfully.
+    leaderboard score n/a → 0.80169
