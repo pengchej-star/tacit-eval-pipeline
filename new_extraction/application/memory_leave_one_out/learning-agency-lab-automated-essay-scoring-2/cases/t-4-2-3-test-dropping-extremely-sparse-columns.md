@@ -1,5 +1,5 @@
 # Test dropping extremely sparse columns  `T.4.2.3`   1 edits, 0 experts
 
-- expert 27799930 (Contributor) · amex · v71→v72   Identify columns with high missing-value rates and explicitly drop them before aggregation and training. Verify on validation that dropping them does not hurt the metric. This complements importance-based selection by targeting a different failure mode (sparse signal).
+- expert 27799930 · amex · v71→v72   Identify columns with high missing-value rates and explicitly drop them before aggregation and training. Verify on validation that dropping them does not hurt the metric. This complements importance-based selection by targeting a different failure mode (sparse signal).
     evidence: ✓ A wide feature table has stable cross-fold importance estimates. | ✓ A particular added feature family coincided with a regression or is error-prone. | ✓ Some columns are almost entirely missing. | ✗ The classifier consumes a truncated backbone embedding and full-dimensional checkpoints are available. | ✓ The previous aggressive feature cut (low retention ratio) may have removed useful features, as indicated by no improvement or regression in validation. | ✗ The expert has already tried this exact retention ratio in a previous version, making this a repeated rather than novel experiment.
-    leaderboard score n/a → n/a
+    leaderboard score n/a → n/a (higher is better)

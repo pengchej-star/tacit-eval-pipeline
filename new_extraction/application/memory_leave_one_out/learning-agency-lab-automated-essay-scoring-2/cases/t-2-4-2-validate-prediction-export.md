@@ -1,14 +1,14 @@
 # Validate prediction export  `T.2.4.2`   4 edits, 0 experts
 
-- expert 73671444 (Grandmaster) · equity · v8→v9   Always write the final predictions to the exact filename the platform expects (typically 'submission.csv'). When refactoring inference code, verify the output filename has not been inadvertently changed.
+- expert 73671444 · equity · v8→v9   Always write the final predictions to the exact filename the platform expects (typically 'submission.csv'). When refactoring inference code, verify the output filename has not been inadvertently changed.
     evidence: ✗ The pipeline fails before completing even one sample or model. | ✓ Inference finishes but the expected prediction file is absent or malformed.
-    leaderboard score n/a → 0.68636
-- expert 7823861 (nan) · google · v30→v31   Ensure the final submission dataframe is explicitly saved to the expected file path at the end of the notebook. Also check for subtle syntax errors (e.g., bitwise vs. comparison operators) that silently corrupt values without raising exceptions.
+    leaderboard score n/a → 0.68636 (higher is better)
+- expert 7823861 · google · v30→v31   Ensure the final submission dataframe is explicitly saved to the expected file path at the end of the notebook. Also check for subtle syntax errors (e.g., bitwise vs. comparison operators) that silently corrupt values without raising exceptions.
     evidence: ✗ The pipeline fails before completing even one sample or model. | ✓ Inference finishes but the expected prediction file is absent or malformed. | ✓ Repeated patches leave duplicated transformations or hidden dependencies that prevent reliable fixes. | ✓ The current pipeline runs end-to-end but produces a significantly worse score than a prior known-good version, indicating a quality regression.
-    leaderboard score n/a → 0.45136
-- expert 7548275 (Expert) · google · v11→v15   Never gate the final output/submission generation behind a debug flag. Keep debug gates only around expensive intermediate steps (training, heavy feature extraction). Ensure the output-writing code runs unconditionally so that a valid submission is always produced.
+    leaderboard score n/a → 0.45136 (higher is better)
+- expert 7548275 · google · v11→v15   Never gate the final output/submission generation behind a debug flag. Keep debug gates only around expensive intermediate steps (training, heavy feature extraction). Ensure the output-writing code runs unconditionally so that a valid submission is always produced.
     evidence: ✓ Debug/development mode flags or reduced hyperparameters are still active, preventing a production-quality full run. | ✓ A feature (e.g., TTA, ensembling) was deliberately disabled for debugging and now needs to be re-enabled and validated. | ✗ The current pipeline runs end-to-end but produces a significantly worse score than a prior known-good version, indicating a quality regression. | ✓ Inference finishes but the expected prediction file is absent or malformed.
-    leaderboard score n/a → 0.00596
-- expert 52860091 (Grandmaster) · hms · v1→v4   After wiring up the pipeline, inspect the output file (e.g., print the first rows of the submission) to confirm it has the right shape and plausible values. Then do at least one identical re-run to confirm determinism and reproducibility before submitting. Only after a confirmed valid score, begin s
+    leaderboard score n/a → 0.00596 (higher is better)
+- expert 52860091 · hms · v1→v4   After wiring up the pipeline, inspect the output file (e.g., print the first rows of the submission) to confirm it has the right shape and plausible values. Then do at least one identical re-run to confirm determinism and reproducibility before submitting. Only after a confirmed valid score, begin s
     evidence: ✓ Inference finishes but the expected prediction file is absent or malformed. | ✗ The pipeline fails before completing even one sample or model. | ✗ Repeated patches leave duplicated transformations or hidden dependencies that prevent reliable fixes. | ✗ The current pipeline runs end-to-end but produces a significantly worse score than a prior known-good version, indicating a quality regression.
-    leaderboard score n/a → 0.35973
+    leaderboard score n/a → 0.35973 (lower is better)

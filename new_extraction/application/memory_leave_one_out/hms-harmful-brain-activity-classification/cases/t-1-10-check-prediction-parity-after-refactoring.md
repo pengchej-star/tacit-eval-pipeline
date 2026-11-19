@@ -1,61 +1,61 @@
 # Check prediction parity after refactoring  `T.1.10`   19 edits, 0 experts
-15 scored cases, median improvement +0.00058, 8 improved
+15 scored cases (improvement signed by each competition's direction), median +0.00016, 9 improved
 
 
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v117→v121   Make the refactor incrementally: first verify that each component produces valid outputs (fix broken paths/references), then re-enable components one group at a time, and finally tune the blending. Submit after each incremental fix to isolate which change caused the regression.
+- expert 17616127 · commonlitreadabilityprize · v117→v121   Make the refactor incrementally: first verify that each component produces valid outputs (fix broken paths/references), then re-enable components one group at a time, and finally tune the blending. Submit after each incremental fix to isolate which change caused the regression.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights. | ✓ The selected checkpoint files are missing, ambiguous or different from the intended run.
-    leaderboard score 0.44809 → 0.44803 (-0.00006)
-- expert 18550705 (Master) · commonlitreadabilityprize · v10→v11   Remove all dead feature-engineering code and unused dataset classes in a single cleanup pass, then resubmit. Even if the code appears unreachable, its removal can fix hidden side effects on random seeds, data ordering, or memory, yielding a small but real score improvement.
+    leaderboard score 0.44809 → 0.44803 (lower is better; improved by 0.00006)
+- expert 18550705 · commonlitreadabilityprize · v10→v11   Remove all dead feature-engineering code and unused dataset classes in a single cleanup pass, then resubmit. Even if the code appears unreachable, its removal can fix hidden side effects on random seeds, data ordering, or memory, yielding a small but real score improvement.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✗ The loaded checkpoint disagrees with the model architecture or vocabulary. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score 0.45300 → 0.45284 (-0.00016)
-- expert 18851026 (Master) · commonlitreadabilityprize · v30→v32   Before refactoring, record the exact submission file or predictions as a reference. After cleanup, compare new predictions element-wise against the reference to confirm numerical equivalence before submitting. Any discrepancy signals that the refactor accidentally changed the pipeline (e.g., dropped
+    leaderboard score 0.45300 → 0.45284 (lower is better; improved by 0.00016)
+- expert 18851026 · commonlitreadabilityprize · v30→v32   Before refactoring, record the exact submission file or predictions as a reference. After cleanup, compare new predictions element-wise against the reference to confirm numerical equivalence before submitting. Any discrepancy signals that the refactor accidentally changed the pipeline (e.g., dropped
     evidence: ✓ A code or artifact refactor was intended to preserve predictions but may have changed them. | ✗ Execution fails during import, file access or device initialization.
-    leaderboard score 0.45835 → 0.45914 (+0.00080)
-- expert 77450317 (Grandmaster) · equity · v26→v28   Before and after the refactor, generate predictions on the same data and compare them numerically (e.g., correlation or max absolute difference) to confirm the outputs are identical. Submit the refactored version promptly to catch regressions early, rather than batching further changes on top of an 
+    leaderboard score 0.45835 → 0.45914 (lower is better; worse by 0.00080)
+- expert 77450317 · equity · v26→v28   Before and after the refactor, generate predictions on the same data and compare them numerically (e.g., correlation or max absolute difference) to confirm the outputs are identical. Submit the refactored version promptly to catch regressions early, rather than batching further changes on top of an 
     evidence: ✓ The ensemble output cannot be reproduced from its intended component arrays and weights. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score 0.69702 → n/a
-- expert 75924487 (Master) · equity · v3→v4   Audit every stochastic call in the pipeline—data transforms, splits, weight initialization—and pass a fixed seed to each. Verify reproducibility by running twice and confirming identical out-of-fold predictions before drawing conclusions from variant comparisons.
+    leaderboard score 0.69702 → n/a (higher is better)
+- expert 75924487 · equity · v3→v4   Audit every stochastic call in the pipeline—data transforms, splits, weight initialization—and pass a fixed seed to each. Verify reproducibility by running twice and confirming identical out-of-fold predictions before drawing conclusions from variant comparisons.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score 0.69213 → n/a
-- expert 75924487 (Master) · equity · v9→v10   Periodically audit and remove all unused imports, dead code blocks, and deprecated model paths in a single cleanup pass. Combine this with a submission to verify no regression. This often exposes subtle issues (e.g., stale variable references) whose fix yields a small but real gain.
+    leaderboard score 0.69213 → n/a (higher is better)
+- expert 75924487 · equity · v9→v10   Periodically audit and remove all unused imports, dead code blocks, and deprecated model paths in a single cleanup pass. Combine this with a submission to verify no regression. This often exposes subtle issues (e.g., stale variable references) whose fix yields a small but real gain.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score 0.69350 → 0.69408 (+0.00058)
-- expert 73937748 (Master) · equity · v15→v20   After loading pretrained models, ensure the predict function returns both out-of-fold and test predictions. Validate the OOF concordance/metric locally before submitting. If the score drops catastrophically, check that all model outputs are actually collected and passed to the ensemble blend, then i
+    leaderboard score 0.69350 → 0.69408 (higher is better; improved by 0.00058)
+- expert 73937748 · equity · v15→v20   After loading pretrained models, ensure the predict function returns both out-of-fold and test predictions. Validate the OOF concordance/metric locally before submitting. If the score drops catastrophically, check that all model outputs are actually collected and passed to the ensemble blend, then i
     evidence: ✓ The ensemble output cannot be reproduced from its intended component arrays and weights. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them. | ✗ Execution fails during import, file access or device initialization. | ✓ The output file is missing, constant, stale or produced from the wrong input data. | ✓ Rows or feature columns can be reordered or mismatched across pipeline stages. | ✓ Inference encodings or missing-value treatment differ from those used in training.
-    leaderboard score 0.68814 → 0.68894 (+0.00080)
-- expert 73937748 (Master) · equity · v36→v38   Refactor in small increments, submitting after each to confirm the score stays within noise of the previous best. Expect tiny fluctuations (order of 0.001) from non-determinism or subtle ordering changes. Only proceed to substantive changes once the refactored code reproduces the baseline score.
+    leaderboard score 0.68814 → 0.68894 (higher is better; improved by 0.00080)
+- expert 73937748 · equity · v36→v38   Refactor in small increments, submitting after each to confirm the score stays within noise of the previous best. Expect tiny fluctuations (order of 0.001) from non-determinism or subtle ordering changes. Only proceed to substantive changes once the refactored code reproduces the baseline score.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score 0.69026 → 0.69012 (-0.00013)
-- expert 73937748 (Master) · equity · v38→v41   Switch the model source in one step and submit to measure the raw impact. Then incrementally re-enable model families (e.g., one algorithm type at a time) and submit after each addition. This isolates which families help or hurt under the new artifacts and guides which to keep in the final ensemble.
+    leaderboard score 0.69026 → 0.69012 (higher is better; worse by 0.00013)
+- expert 73937748 · equity · v38→v41   Switch the model source in one step and submit to measure the raw impact. Then incrementally re-enable model families (e.g., one algorithm type at a time) and submit after each addition. This isolates which families help or hurt under the new artifacts and guides which to keep in the final ensemble.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score 0.69012 → 0.68995 (-0.00018)
-- expert 73937748 (Master) · equity · v61→v62   Separate purely non-functional changes (import cleanup, code reorganization) from functional changes (new metric implementation) into distinct commits. Submit the non-functional change first to confirm no regression, then submit the functional change. If both must ship together, compare OOF scores l
+    leaderboard score 0.69012 → 0.68995 (higher is better; worse by 0.00018)
+- expert 73937748 · equity · v61→v62   Separate purely non-functional changes (import cleanup, code reorganization) from functional changes (new metric implementation) into distinct commits. Submit the non-functional change first to confirm no regression, then submit the functional change. If both must ship together, compare OOF scores l
     evidence: ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score 0.69321 → 0.69306 (-0.00015)
-- expert 7018718 (Expert) · google · v45→v46   Change only one component per submission: first swap the checkpoint with existing post-processing intact, then (if stable) refactor code imports, then adjust post-processing. When multiple changes are bundled and the score drops, the cause is ambiguous and recovery requires extra iterations.
+    leaderboard score 0.69321 → 0.69306 (higher is better; worse by 0.00015)
+- expert 7018718 · google · v45→v46   Change only one component per submission: first swap the checkpoint with existing post-processing intact, then (if stable) refactor code imports, then adjust post-processing. When multiple changes are bundled and the score drops, the cause is ambiguous and recovery requires extra iterations.
     evidence: ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score 0.42580 → 0.38762 (-0.03819)
-- expert 55621328 (Master) · learning · v14→v17   Submit a sanity-check prediction from the new pipeline as early as possible, ideally before making further changes. If the score drops significantly, the mismatch is caught early. Ensure that any special tokenizer modifications (custom tokens, preprocessing) used during training are replicated exact
+    leaderboard score 0.42580 → 0.38762 (higher is better; worse by 0.03819)
+- expert 55621328 · learning · v14→v17   Submit a sanity-check prediction from the new pipeline as early as possible, ideally before making further changes. If the score drops significantly, the mismatch is caught early. Ensure that any special tokenizer modifications (custom tokens, preprocessing) used during training are replicated exact
     evidence: ✓ A code or artifact refactor was intended to preserve predictions but may have changed them. | ✓ Inference encodings or missing-value treatment differ from those used in training. | ✓ Execution fails during import, file access or device initialization.
-    leaderboard score 0.80527 → n/a
-- expert 55621328 (Master) · learning · v82→v87   Before tuning the new pipeline extensively, first reproduce the exact same model and configuration that achieved the best score in the old pipeline. If the new pipeline cannot match that score with identical inputs, treat the gap as a bug to fix rather than a tuning problem. Only begin exploring new
+    leaderboard score 0.80527 → n/a (higher is better)
+- expert 55621328 · learning · v82→v87   Before tuning the new pipeline extensively, first reproduce the exact same model and configuration that achieved the best score in the old pipeline. If the new pipeline cannot match that score with identical inputs, treat the gap as a bug to fix rather than a tuning problem. Only begin exploring new
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score 0.82193 → 0.81038 (-0.01155)
-- expert 55621328 (Master) · learning · v87→v89   Run both pipelines with identical model checkpoints, ensemble weights, and rounding thresholds, changing only the script. Compare leaderboard scores to isolate the effect of the pipeline logic. Keep the first run unsubmitted if needed, submit the second, and attribute any score difference to the pip
+    leaderboard score 0.82193 → 0.81038 (higher is better; worse by 0.01155)
+- expert 55621328 · learning · v87→v89   Run both pipelines with identical model checkpoints, ensemble weights, and rounding thresholds, changing only the script. Compare leaderboard scores to isolate the effect of the pipeline logic. Keep the first run unsubmitted if needed, submit the second, and attribute any score difference to the pip
     evidence: ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score 0.81038 → 0.81590 (+0.00552)
-- expert 55621328 (Master) · learning · v110→v111   Isolate the cause by reverting one variable at a time: first swap back to known-good checkpoints while keeping the new script, or vice versa. If reverting checkpoints recovers most of the score, the checkpoints (or their training) are the issue. This one-variable-at-a-time diagnosis avoids wasting s
+    leaderboard score 0.81038 → 0.81590 (higher is better; improved by 0.00552)
+- expert 55621328 · learning · v110→v111   Isolate the cause by reverting one variable at a time: first swap back to known-good checkpoints while keeping the new script, or vice versa. If reverting checkpoints recovers most of the score, the checkpoints (or their training) are the issue. This one-variable-at-a-time diagnosis avoids wasting s
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score 0.79974 → 0.80843 (+0.00868)
-- expert 60197293 (Expert) · learning · v44→v45   Systematically check whether key pipeline toggles (e.g., feature selection, preprocessing flags) were inadvertently disabled during the editing sequence. Re-enable them one at a time and measure the effect. A single boolean flag controlling feature selection can account for a meaningful score differ
+    leaderboard score 0.79974 → 0.80843 (higher is better; improved by 0.00868)
+- expert 60197293 · learning · v44→v45   Systematically check whether key pipeline toggles (e.g., feature selection, preprocessing flags) were inadvertently disabled during the editing sequence. Re-enable them one at a time and measure the effect. A single boolean flag controlling feature selection can account for a meaningful score differ
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score 0.81754 → 0.81867 (+0.00113)
-- expert 60197293 (Expert) · learning · v73→v74   Before submitting, run the full pipeline end-to-end locally and verify: (1) cross-validation metric is close to the previous best, (2) prediction distribution on the validation fold matches the label distribution, (3) the number of features at train time equals the number at test time. Only submit o
+    leaderboard score 0.81754 → 0.81867 (higher is better; improved by 0.00113)
+- expert 60197293 · learning · v73→v74   Before submitting, run the full pipeline end-to-end locally and verify: (1) cross-validation metric is close to the previous best, (2) prediction distribution on the validation fold matches the label distribution, (3) the number of features at train time equals the number at test time. Only submit o
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score n/a → 0.57175
-- expert 15082684 (Master) · ranzcr · v1→v3   Systematically remove all training-specific code (fold splitting, training augmentations, metric logging, evaluation aggregation). Keep only: model definition, checkpoint loading, test-time transforms, dataset/dataloader for test data, the inference loop, and submission file creation. After strippin
+    leaderboard score n/a → 0.57175 (higher is better)
+- expert 15082684 · ranzcr · v1→v3   Systematically remove all training-specific code (fold splitting, training augmentations, metric logging, evaluation aggregation). Keep only: model definition, checkpoint loading, test-time transforms, dataset/dataloader for test data, the inference loop, and submission file creation. After strippin
     evidence: ✓ Execution fails during import, file access or device initialization. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them. | ✓ The selected checkpoint files are missing, ambiguous or different from the intended run.
-    leaderboard score 0.95346 → 0.96040 (+0.00694)
-- expert 13542132 (Master) · ranzcr · v1→v2   Before tuning anything, refactor the notebook: remove duplicates, centralize all key hyperparameters into single variables referenced everywhere, ensure the data loading and preprocessing pipeline is consistent end-to-end, and verify the submission format. This establishes a reliable baseline to ite
+    leaderboard score 0.95346 → 0.96040 (higher is better; improved by 0.00694)
+- expert 13542132 · ranzcr · v1→v2   Before tuning anything, refactor the notebook: remove duplicates, centralize all key hyperparameters into single variables referenced everywhere, ensure the data loading and preprocessing pipeline is consistent end-to-end, and verify the submission format. This establishes a reliable baseline to ite
     evidence: ✓ Execution fails during import, file access or device initialization. | ✓ Inference encodings or missing-value treatment differ from those used in training. | ✓ The output file is missing, constant, stale or produced from the wrong input data. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score 0.94137 → 0.94363 (+0.00226)
+    leaderboard score 0.94137 → 0.94363 (higher is better; improved by 0.00226)

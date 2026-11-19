@@ -1,40 +1,40 @@
 # Add diversity from training or input variants  `T.5.1.2`   12 edits, 0 experts
-7 scored cases, median improvement +0.00006, 5 improved
+7 scored cases (improvement signed by each competition's direction), median +0.00000, 4 improved
 
 
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v49→v50   Swap in the alternative fold predictions and evaluate on the leaderboard. If the score degrades further, abandon that augmentation variant and return to the previously best-performing ensemble composition rather than continuing to explore weaker components.
+- expert 17616127 · commonlitreadabilityprize · v49→v50   Swap in the alternative fold predictions and evaluate on the leaderboard. If the score degrades further, abandon that augmentation variant and return to the previously best-performing ensemble composition rather than continuing to explore weaker components.
     evidence: ✓ Existing models share an architecture but alternative training or feature recipes yield different errors. | ✓ Removing or disabling previously validated members caused a regression. | ✓ Several compatible trained checkpoints differ in seed, recipe or training stage.
-    leaderboard score 0.47952 → 0.49902 (+0.01950)
-- expert 75584724 (Master) · equity · v2→v3   Introduce additional target-transformation variants (e.g., rank-based or nonlinear monotone transforms of the survival target) into the pipeline configuration for each model family. Run each new variant through the same cross-validation and include its predictions in the ensemble candidate pool.
+    leaderboard score 0.47952 → 0.49902 (lower is better; worse by 0.01950)
+- expert 75584724 · equity · v2→v3   Introduce additional target-transformation variants (e.g., rank-based or nonlinear monotone transforms of the survival target) into the pipeline configuration for each model family. Run each new variant through the same cross-validation and include its predictions in the ensemble candidate pool.
     evidence: ✓ Existing models share an architecture but alternative training or feature recipes yield different errors. | ✗ Removing or disabling previously validated members caused a regression. | ✓ Several compatible trained checkpoints differ in seed, recipe or training stage.
-    leaderboard score n/a → n/a
-- expert 75584724 (Master) · equity · v3→v6   Expand the pool by varying three axes independently: (1) the model family (different gradient-boosting implementations, neural networks), (2) the target transformation applied before training, and (3) the feature-engineering pipeline (with/without). Collect out-of-fold predictions from each variant 
+    leaderboard score n/a → n/a (higher is better)
+- expert 75584724 · equity · v3→v6   Expand the pool by varying three axes independently: (1) the model family (different gradient-boosting implementations, neural networks), (2) the target transformation applied before training, and (3) the feature-engineering pipeline (with/without). Collect out-of-fold predictions from each variant 
     evidence: ✓ The ensemble’s errors are shared across similar members and a distinct candidate is available. | ✓ Existing models share an architecture but alternative training or feature recipes yield different errors. | ✓ Several compatible trained checkpoints differ in seed, recipe or training stage.
-    leaderboard score n/a → 0.69427
-- expert 73671444 (Grandmaster) · equity · v11→v16   Test each target-transformation variant solo to rank them, then blend the top variants together. Even a variant that is weaker solo can improve the ensemble if its target transformation captures different aspects of the outcome. Include two or three diverse transformations rather than duplicating th
+    leaderboard score n/a → 0.69427 (higher is better)
+- expert 73671444 · equity · v11→v16   Test each target-transformation variant solo to rank them, then blend the top variants together. Even a variant that is weaker solo can improve the ensemble if its target transformation captures different aspects of the outcome. Include two or three diverse transformations rather than duplicating th
     evidence: ✓ Existing models share an architecture but alternative training or feature recipes yield different errors. | ✓ Several compatible trained checkpoints differ in seed, recipe or training stage. | ✓ Some available members may add noise or redundancy despite acceptable standalone scores.
-    leaderboard score 0.68643 → 0.68639 (-0.00004)
-- expert 73671444 (Grandmaster) · equity · v19→v21   Test a pure single-model submission and an equal-weight blend. If the difference is negligible, keep the equal blend for robustness but do not invest further in tuning weights between these two. Instead, seek diversity from a genuinely different model family or feature set. Adding more correlated mo
+    leaderboard score 0.68643 → 0.68639 (higher is better; worse by 0.00004)
+- expert 73671444 · equity · v19→v21   Test a pure single-model submission and an equal-weight blend. If the difference is negligible, keep the equal blend for robustness but do not invest further in tuning weights between these two. Instead, seek diversity from a genuinely different model family or feature set. Adding more correlated mo
     evidence: ✓ The ensemble’s errors are shared across similar members and a distinct candidate is available. | ✓ Existing models share an architecture but alternative training or feature recipes yield different errors. | ✓ Several compatible trained checkpoints differ in seed, recipe or training stage. | ✓ Some available members may add noise or redundancy despite acceptable standalone scores.
-    leaderboard score 0.69416 → 0.69417 (+0.00000)
-- expert 75924487 (Master) · equity · v3→v4   Create a variant of an existing model by toggling a feature-engineering step (e.g., automated feature generation or domain transforms) while keeping the architecture identical. Save out-of-fold predictions from both the original and the variant as separate ensemble members. This adds diversity witho
+    leaderboard score 0.69416 → 0.69417 (higher is better; improved by 0.00000)
+- expert 75924487 · equity · v3→v4   Create a variant of an existing model by toggling a feature-engineering step (e.g., automated feature generation or domain transforms) while keeping the architecture identical. Save out-of-fold predictions from both the original and the variant as separate ensemble members. This adds diversity witho
     evidence: ✓ Existing models share an architecture but alternative training or feature recipes yield different errors.
-    leaderboard score 0.69213 → n/a
-- expert 75924487 (Master) · equity · v5→v6   Train the same model type multiple times, each with a different target transformation, generate out-of-fold and test predictions from each, and add all as candidate columns for a stacking or blending ensembler. This increases diversity cheaply because only the label encoding changes, not the feature
+    leaderboard score 0.69213 → n/a (higher is better)
+- expert 75924487 · equity · v5→v6   Train the same model type multiple times, each with a different target transformation, generate out-of-fold and test predictions from each, and add all as candidate columns for a stacking or blending ensembler. This increases diversity cheaply because only the label encoding changes, not the feature
     evidence: ✓ Existing models share an architecture but alternative training or feature recipes yield different errors. | ✓ Several compatible trained checkpoints differ in seed, recipe or training stage.
-    leaderboard score n/a → 0.69331
-- expert 75145694 (Expert) · equity · v3→v4   Create multiple regression targets from the same survival data using distinct statistical transforms of the censored outcome. Train separate base models on each target variant and blend their predictions. Even small per-model gains compound when the transforms are sufficiently decorrelated.
+    leaderboard score n/a → 0.69331 (higher is better)
+- expert 75145694 · equity · v3→v4   Create multiple regression targets from the same survival data using distinct statistical transforms of the censored outcome. Train separate base models on each target variant and blend their predictions. Even small per-model gains compound when the transforms are sufficiently decorrelated.
     evidence: ✓ The ensemble’s errors are shared across similar members and a distinct candidate is available. | ✓ Existing models share an architecture but alternative training or feature recipes yield different errors.
-    leaderboard score 0.68865 → 0.68888 (+0.00022)
-- expert 75145694 (Expert) · equity · v28→v29   Create experiment-specific feature pipelines so each member model gets tailored features. Compute multiple survival-derived labels (e.g., cumulative hazard and survival probability transforms) as alternative regression targets. Standardize numeric features per-experiment. Expect small but consistent
+    leaderboard score 0.68865 → 0.68888 (higher is better; improved by 0.00022)
+- expert 75145694 · equity · v28→v29   Create experiment-specific feature pipelines so each member model gets tailored features. Compute multiple survival-derived labels (e.g., cumulative hazard and survival probability transforms) as alternative regression targets. Standardize numeric features per-experiment. Expect small but consistent
     evidence: ✓ The ensemble’s errors are shared across similar members and a distinct candidate is available. | ✓ Existing models share an architecture but alternative training or feature recipes yield different errors.
-    leaderboard score 0.69133 → 0.69139 (+0.00006)
-- expert 73937748 (Master) · equity · v11→v12   When multiplying ensemble members by crossing model families with target transformations, monitor the blended score carefully. A large jump in member count can dilute strong models with mediocre ones, lowering the overall score. Add variants incrementally and validate each addition's marginal contri
+    leaderboard score 0.69133 → 0.69139 (higher is better; improved by 0.00006)
+- expert 73937748 · equity · v11→v12   When multiplying ensemble members by crossing model families with target transformations, monitor the blended score carefully. A large jump in member count can dilute strong models with mediocre ones, lowering the overall score. Add variants incrementally and validate each addition's marginal contri
     evidence: ✓ The ensemble’s errors are shared across similar members and a distinct candidate is available. | ✓ Existing models share an architecture but alternative training or feature recipes yield different errors. | ✗ Removing or disabling previously validated members caused a regression. | ✓ Several compatible trained checkpoints differ in seed, recipe or training stage.
-    leaderboard score 0.68948 → 0.68793 (-0.00155)
-- expert 73937748 (Master) · equity · v51→v52   Design a new target transformation (e.g., an exponential or power transform of ranks) that preserves ordering but reshapes the target distribution, train the same model families on this new target, and include their predictions in the ensemble blend. Verify that the blended validation metric improve
+    leaderboard score 0.68948 → 0.68793 (higher is better; worse by 0.00155)
+- expert 73937748 · equity · v51→v52   Design a new target transformation (e.g., an exponential or power transform of ranks) that preserves ordering but reshapes the target distribution, train the same model families on this new target, and include their predictions in the ensemble blend. Verify that the blended validation metric improve
     evidence: ✓ The ensemble’s errors are shared across similar members and a distinct candidate is available. | ✓ Existing models share an architecture but alternative training or feature recipes yield different errors.
-    leaderboard score 0.69100 → 0.69155 (+0.00055)
-- expert 73937748 (Master) · equity · v59→v60   Run the same model architecture on two or more distinct input representations (e.g., raw features vs. engineered features) and treat each run's out-of-fold predictions as a separate ensemble member. Feed all variants into the meta-learner so it can exploit the complementary information.
+    leaderboard score 0.69100 → 0.69155 (higher is better; improved by 0.00055)
+- expert 73937748 · equity · v59→v60   Run the same model architecture on two or more distinct input representations (e.g., raw features vs. engineered features) and treat each run's out-of-fold predictions as a separate ensemble member. Feed all variants into the meta-learner so it can exploit the complementary information.
     evidence: ✓ Existing models share an architecture but alternative training or feature recipes yield different errors.
-    leaderboard score n/a → 0.69283
+    leaderboard score n/a → 0.69283 (higher is better)

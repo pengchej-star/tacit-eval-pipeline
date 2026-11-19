@@ -1,13 +1,13 @@
 # Remove or restore an output correction  `T.8.4.3`   3 edits, 0 experts
-3 scored cases, median improvement -0.03090, 1 improved
+3 scored cases (improvement signed by each competition's direction), median -0.03090, 1 improved
 
 
-- expert 73671444 (Grandmaster) · equity · v24→v26   Ablate the post-processing step in isolation (keep models the same) and measure the score change. If the drop is large, treat the post-processing as essential infrastructure and do not remove it while experimenting with model membership. Restore it before further tuning.
+- expert 73671444 · equity · v24→v26   Ablate the post-processing step in isolation (keep models the same) and measure the score change. If the drop is large, treat the post-processing as essential infrastructure and do not remove it while experimenting with model membership. Restore it before further tuning.
     evidence: ✓ The current post-processing was tuned for older checkpoints or its contribution is unverified.
-    leaderboard score 0.68425 → 0.68463 (+0.00039)
-- expert 7018718 (Expert) · google · v45→v46   Ablate the post-processing by removing it while keeping the model, and compare scores. If the score drops substantially, the post-processing is a major contributor and should be preserved and refined rather than discarded when changing other pipeline components. When swapping model checkpoints, alwa
+    leaderboard score 0.68425 → 0.68463 (higher is better; improved by 0.00039)
+- expert 7018718 · google · v45→v46   Ablate the post-processing by removing it while keeping the model, and compare scores. If the score drops substantially, the post-processing is a major contributor and should be preserved and refined rather than discarded when changing other pipeline components. When swapping model checkpoints, alwa
     evidence: ✓ The current post-processing was tuned for older checkpoints or its contribution is unverified.
-    leaderboard score 0.42580 → 0.38762 (-0.03819)
-- expert 7548275 (Expert) · google · v28→v29   Disable the post-processing in a single ablation submission to measure its isolated contribution. If the score drops meaningfully, re-enable it; if it is neutral or harmful with the new ensemble, remove or re-tune it. This one-toggle test is cheap and gives a clear signal.
+    leaderboard score 0.42580 → 0.38762 (higher is better; worse by 0.03819)
+- expert 7548275 · google · v28→v29   Disable the post-processing in a single ablation submission to measure its isolated contribution. If the score drops meaningfully, re-enable it; if it is neutral or harmful with the new ensemble, remove or re-tune it. This one-toggle test is cheap and gives a clear signal.
     evidence: ✓ The current post-processing was tuned for older checkpoints or its contribution is unverified.
-    leaderboard score 0.42963 → 0.39873 (-0.03090)
+    leaderboard score 0.42963 → 0.39873 (higher is better; worse by 0.03090)

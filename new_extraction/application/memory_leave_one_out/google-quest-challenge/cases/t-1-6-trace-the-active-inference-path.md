@@ -1,124 +1,124 @@
 # Trace the active inference path  `T.1.6`   40 edits, 0 experts
-19 scored cases, median improvement -0.00003, 9 improved
+19 scored cases (improvement signed by each competition's direction), median +0.00633, 16 improved
 
 
-- expert 27836972 (Expert) · amex · v2→v4   Temporarily inline the function body into separate notebook cells, inserting inspection points (display shape, column names, value distributions) after each transformation step. Once the logic is verified correct, re-encapsulate it into a reusable function.
+- expert 27836972 · amex · v2→v4   Temporarily inline the function body into separate notebook cells, inserting inspection points (display shape, column names, value distributions) after each transformation step. Once the logic is verified correct, re-encapsulate it into a reusable function.
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ Sample identifiers or feature columns differ between prediction sources or stages. | ✗ A checkpoint swap introduced missing keys, incompatible dimensions, or tokenizer differences. | ✗ The executed ensemble does not match its configured members or weights.
-    leaderboard score n/a → n/a
-- expert 27836972 (Expert) · amex · v52→v53   Build derived column names programmatically by concatenating the base name with the required suffix in a loop or helper function, rather than listing full names manually. Add an assertion or existence check before computing the derived feature so missing columns surface immediately.
+    leaderboard score n/a → n/a (higher is better)
+- expert 27836972 · amex · v52→v53   Build derived column names programmatically by concatenating the base name with the required suffix in a loop or helper function, rather than listing full names manually. Add an assertion or existence check before computing the derived feature so missing columns surface immediately.
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score n/a → n/a
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v111→v113   Fix bugs one at a time in separate iterations, re-running after each fix. Common culprits in hastily written code include language-specific literal casing (boolean values), misspelled library prefixes, and wrong variable names. Address the first error that surfaces, re-run, and repeat until the pipe
+    leaderboard score n/a → n/a (higher is better)
+- expert 17616127 · commonlitreadabilityprize · v111→v113   Fix bugs one at a time in separate iterations, re-running after each fix. Common culprits in hastily written code include language-specific literal casing (boolean values), misspelled library prefixes, and wrong variable names. Address the first error that surfaces, re-run, and repeat until the pipe
     evidence: ✓ Execution stops at an import, file access, device operation, or library call.
-    leaderboard score n/a → n/a
-- expert 77450317 (Grandmaster) · equity · v29→v30   Focus first on data-flow correctness: verify that feature encodings (embedding dimensions, categorical mappings) match the new model's expectations, that prediction keys are consistent across training and inference, and that duplicate or misnamed outputs are eliminated. These mechanical bugs typical
+    leaderboard score n/a → n/a (lower is better)
+- expert 77450317 · equity · v29→v30   Focus first on data-flow correctness: verify that feature encodings (embedding dimensions, categorical mappings) match the new model's expectations, that prediction keys are consistent across training and inference, and that duplicate or misnamed outputs are eliminated. These mechanical bugs typical
     evidence: ✓ Written predictions have the wrong direction, range, normalization, or source variable. | ✗ Execution stops at an import, file access, device operation, or library call. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score 0.69547 → 0.69668 (+0.00121)
-- expert 77129691 (Master) · equity · v11→v12   After adding a new model component, verify that every data-dependent preprocessing step (bin computation, normalization, encoding) references the correct split variable. Check variable names at the boundary between the data pipeline and the new model before running the full training loop.
+    leaderboard score 0.69547 → 0.69668 (higher is better; improved by 0.00121)
+- expert 77129691 · equity · v11→v12   After adding a new model component, verify that every data-dependent preprocessing step (bin computation, normalization, encoding) references the correct split variable. Check variable names at the boundary between the data pipeline and the new model before running the full training loop.
     evidence: ✓ Execution stops at an import, file access, device operation, or library call.
-    leaderboard score n/a → 0.69423
-- expert 73671444 (Grandmaster) · equity · v4→v6   When swapping model families, fully remove the old model's preprocessing and prediction code before submitting. If the score collapses after adding a new model, suspect interference from residual old-pipeline code rather than a problem with the new model itself. Clean up first, then verify.
+    leaderboard score n/a → 0.69423 (higher is better)
+- expert 73671444 · equity · v4→v6   When swapping model families, fully remove the old model's preprocessing and prediction code before submitting. If the score collapses after adding a new model, suspect interference from residual old-pipeline code rather than a problem with the new model itself. Clean up first, then verify.
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score 0.66967 → 0.67991 (+0.01024)
-- expert 75145694 (Expert) · equity · v63→v66   Fix the post-processing bug first and re-evaluate before reverting the weight changes. If the fix partially recovers the score, the remaining gap is attributable to the weight change, which can then be reverted independently. Isolate changes to diagnose which modification caused the regression.
+    leaderboard score 0.66967 → 0.67991 (higher is better; improved by 0.01024)
+- expert 75145694 · equity · v63→v66   Fix the post-processing bug first and re-evaluate before reverting the weight changes. If the fix partially recovers the score, the remaining gap is attributable to the weight change, which can then be reverted independently. Isolate changes to diagnose which modification caused the regression.
     evidence: ✓ The executed ensemble does not match its configured members or weights. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score 0.69329 → 0.69348 (+0.00019)
-- expert 73937748 (Master) · equity · v16→v18   When building an ensemble inference pipeline, explicitly verify that the function returning predictions outputs both validation and test arrays. After any refactor, check that the submission file contains non-trivial, varying predictions for every test row before submitting.
+    leaderboard score 0.69329 → 0.69348 (higher is better; improved by 0.00019)
+- expert 73937748 · equity · v16→v18   When building an ensemble inference pipeline, explicitly verify that the function returning predictions outputs both validation and test arrays. After any refactor, check that the submission file contains non-trivial, varying predictions for every test row before submitting.
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ The executed ensemble does not match its configured members or weights. | ✓ Written predictions have the wrong direction, range, normalization, or source variable. | ✗ Execution stops at an import, file access, device operation, or library call.
-    leaderboard score n/a → n/a
-- expert 53424936 (Master) · hms · v17→v20   When a complex model underperforms expectations at inference, systematically check for data-processing bugs (e.g., features computed using training-only metadata like label offsets that are unavailable at test time). Fix such leaks by using test-compatible defaults, then scale up the fold ensemble a
+    leaderboard score n/a → n/a (higher is better)
+- expert 53424936 · hms · v17→v20   When a complex model underperforms expectations at inference, systematically check for data-processing bugs (e.g., features computed using training-only metadata like label offsets that are unavailable at test time). Fix such leaks by using test-compatible defaults, then scale up the fold ensemble a
     evidence: ✓ The executed ensemble does not match its configured members or weights. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ Execution stops at an import, file access, device operation, or library call.
-    leaderboard score n/a → 0.22756
-- expert 53424936 (Master) · hms · v19→v20   Audit every preprocessing function for dependencies on label-derived quantities. Replace any such dependency with a test-compatible default (e.g., a fixed canonical offset). After fixing, verify the score recovers or improves beyond the simpler baseline.
+    leaderboard score n/a → 0.22756 (lower is better)
+- expert 53424936 · hms · v19→v20   Audit every preprocessing function for dependencies on label-derived quantities. Replace any such dependency with a test-compatible default (e.g., a fixed canonical offset). After fixing, verify the score recovers or improves beyond the simpler baseline.
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score n/a → 0.22756
-- expert 49524919 (Grandmaster) · hms · v3→v6   First fix any data-loading or preprocessing bugs and disable test-time augmentation to establish a clean single-pass baseline. Only after confirming the baseline is reasonable, toggle augmentation on and measure its isolated effect. If the gain is negligible, focus effort on improving the model weig
+    leaderboard score n/a → 0.22756 (lower is better)
+- expert 49524919 · hms · v3→v6   First fix any data-loading or preprocessing bugs and disable test-time augmentation to establish a clean single-pass baseline. Only after confirming the baseline is reasonable, toggle augmentation on and measure its isolated effect. If the gain is negligible, focus effort on improving the model weig
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score 0.51664 → 0.51388 (-0.00276)
-- expert 49524919 (Grandmaster) · hms · v47→v49   After a regression from a combined architecture+checkpoint change, inspect the forward pass carefully for correctness bugs before concluding the architecture or checkpoints are worse. Fix any bugs first, then re-evaluate. Only after confirming correctness should you continue sweeping checkpoints or 
+    leaderboard score 0.51664 → 0.51388 (lower is better; improved by 0.00276)
+- expert 49524919 · hms · v47→v49   After a regression from a combined architecture+checkpoint change, inspect the forward pass carefully for correctness bugs before concluding the architecture or checkpoints are worse. Fix any bugs first, then re-evaluate. Only after confirming correctness should you continue sweeping checkpoints or 
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ A checkpoint swap introduced missing keys, incompatible dimensions, or tokenizer differences.
-    leaderboard score 0.41674 → 0.41042 (-0.00633)
-- expert 49524919 (Grandmaster) · hms · v95→v96   Before blending, verify that each model component actually produces non-trivial predictions (e.g., check array shapes or print summary statistics). Inspect loop bodies for stray early-exit or skip statements that may have been left from debugging.
+    leaderboard score 0.41674 → 0.41042 (lower is better; improved by 0.00633)
+- expert 49524919 · hms · v95→v96   Before blending, verify that each model component actually produces non-trivial predictions (e.g., check array shapes or print summary statistics). Inspect loop bodies for stray early-exit or skip statements that may have been left from debugging.
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score 0.35192 → 0.26734 (-0.08457)
-- expert 49524919 (Grandmaster) · hms · v98→v103   Before submitting, audit the full inference loop for leftover skip/continue/break statements that bypass newly added components, and verify that the submission output references the intended blended prediction variable rather than a single-model or stale variable. Each such fix can yield a meaningfu
+    leaderboard score 0.35192 → 0.26734 (lower is better; improved by 0.08457)
+- expert 49524919 · hms · v98→v103   Before submitting, audit the full inference loop for leftover skip/continue/break statements that bypass newly added components, and verify that the submission output references the intended blended prediction variable rather than a single-model or stale variable. Each such fix can yield a meaningfu
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ Written predictions have the wrong direction, range, normalization, or source variable. | ✗ Execution stops at an import, file access, device operation, or library call. | ✓ The executed ensemble does not match its configured members or weights.
-    leaderboard score 0.26658 → 0.24931 (-0.01727)
-- expert 49524919 (Grandmaster) · hms · v136→v139   After each integration step, verify that every model in the pipeline actually produces predictions (check for stray early-exit or skip statements). Only evaluate the new model's contribution after confirming the full ensemble runs end-to-end, then rebalance blend weights.
+    leaderboard score 0.26658 → 0.24931 (lower is better; improved by 0.01727)
+- expert 49524919 · hms · v136→v139   After each integration step, verify that every model in the pipeline actually produces predictions (check for stray early-exit or skip statements). Only evaluate the new model's contribution after confirming the full ensemble runs end-to-end, then rebalance blend weights.
     evidence: ✓ The executed ensemble does not match its configured members or weights. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ Written predictions have the wrong direction, range, normalization, or source variable.
-    leaderboard score 0.24011 → 0.23959 (-0.00053)
-- expert 49524919 (Grandmaster) · hms · v142→v146   Check that the correct intermediate data is being fed into the new feature extraction (e.g., preprocessed vs. raw signals). A single variable name error at the input of the pipeline is the most common cause of catastrophic regression. Fix the input wiring first before evaluating whether the new feat
+    leaderboard score 0.24011 → 0.23959 (lower is better; improved by 0.00053)
+- expert 49524919 · hms · v142→v146   Check that the correct intermediate data is being fed into the new feature extraction (e.g., preprocessed vs. raw signals). A single variable name error at the input of the pipeline is the most common cause of catastrophic regression. Fix the input wiring first before evaluating whether the new feat
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score 0.26137 → 0.27167 (+0.01030)
-- expert 49576186 (Expert) · hms · v48→v49   Before continuing to iterate on features or architecture, audit the tensor shapes and concatenation operations in the model graph for silent shape mismatches. Fix any axis or dimension bugs first, add diagnostic plots (e.g., training loss curves), and re-evaluate. A single shape bug can nullify many
+    leaderboard score 0.26137 → 0.27167 (lower is better; worse by 0.01030)
+- expert 49576186 · hms · v48→v49   Before continuing to iterate on features or architecture, audit the tensor shapes and concatenation operations in the model graph for silent shape mismatches. Fix any axis or dimension bugs first, add diagnostic plots (e.g., training loss curves), and re-evaluate. A single shape bug can nullify many
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score 0.38574 → 0.35728 (-0.02845)
-- expert 49576186 (Expert) · hms · v60→v70   Submit immediately after the refactor to establish a baseline, then fix one bug per iteration (data loading errors, column name mismatches, missing test-mode logic). Submit periodically to track whether fixes are recovering performance. Expect multiple fix iterations before the refactored pipeline m
+    leaderboard score 0.38574 → 0.35728 (lower is better; improved by 0.02845)
+- expert 49576186 · hms · v60→v70   Submit immediately after the refactor to establish a baseline, then fix one bug per iteration (data loading errors, column name mismatches, missing test-mode logic). Submit periodically to track whether fixes are recovering performance. Expect multiple fix iterations before the refactored pipeline m
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ Execution stops at an import, file access, device operation, or library call. | ✓ Sample identifiers or feature columns differ between prediction sources or stages.
-    leaderboard score 0.41959 → 0.35346 (-0.06613)
-- expert 52860091 (Grandmaster) · hms · v1→v4   After wiring up the pipeline, inspect the output file (e.g., print the first rows of the submission) to confirm it has the right shape and plausible values. Then do at least one identical re-run to confirm determinism and reproducibility before submitting. Only after a confirmed valid score, begin s
+    leaderboard score 0.41959 → 0.35346 (lower is better; improved by 0.06613)
+- expert 52860091 · hms · v1→v4   After wiring up the pipeline, inspect the output file (e.g., print the first rows of the submission) to confirm it has the right shape and plausible values. Then do at least one identical re-run to confirm determinism and reproducibility before submitting. Only after a confirmed valid score, begin s
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ Execution stops at an import, file access, device operation, or library call.
-    leaderboard score n/a → 0.35973
-- expert 52860091 (Grandmaster) · hms · v5→v7   When swapping model artifacts in a config-driven pipeline, verify that all required configuration overrides (e.g., environment mode, paths, runtime flags) are set correctly for the target execution context. If a run produces no submission, check the configuration layer before suspecting the model fi
+    leaderboard score n/a → 0.35973 (lower is better)
+- expert 52860091 · hms · v5→v7   When swapping model artifacts in a config-driven pipeline, verify that all required configuration overrides (e.g., environment mode, paths, runtime flags) are set correctly for the target execution context. If a run produces no submission, check the configuration layer before suspecting the model fi
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score 0.36479 → 0.34843 (-0.01636)
-- expert 55621328 (Master) · learning · v9→v10   Check the shape and type of the threshold array passed to the rounding function. A common bug is passing a 2D array where a 1D array is expected (or vice versa), which can silently produce wrong bin assignments. Verify with a small example that the rounding output matches expectations before submitt
+    leaderboard score 0.36479 → 0.34843 (lower is better; improved by 0.01636)
+- expert 55621328 · learning · v9→v10   Check the shape and type of the threshold array passed to the rounding function. A common bug is passing a 2D array where a 1D array is expected (or vice versa), which can silently produce wrong bin assignments. Verify with a small example that the rounding output matches expectations before submitt
     evidence: ✓ Written predictions have the wrong direction, range, normalization, or source variable. | ✓ Execution stops at an import, file access, device operation, or library call. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score n/a → 0.80442
-- expert 55621328 (Master) · learning · v14→v17   Submit a sanity-check prediction from the new pipeline as early as possible, ideally before making further changes. If the score drops significantly, the mismatch is caught early. Ensure that any special tokenizer modifications (custom tokens, preprocessing) used during training are replicated exact
+    leaderboard score n/a → 0.80442 (higher is better)
+- expert 55621328 · learning · v14→v17   Submit a sanity-check prediction from the new pipeline as early as possible, ideally before making further changes. If the score drops significantly, the mismatch is caught early. Ensure that any special tokenizer modifications (custom tokens, preprocessing) used during training are replicated exact
     evidence: ✓ Execution stops at an import, file access, device operation, or library call. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ A checkpoint swap introduced missing keys, incompatible dimensions, or tokenizer differences.
-    leaderboard score 0.80527 → n/a
-- expert 55621328 (Master) · learning · v23→v27   Make one atomic change per iteration, tracing the data flow from the changed component forward. First toggle the suspected cause to confirm it, then add or fix each downstream dependency one at a time (e.g., extract a new field, propagate it through the dataset, fix its type). Submit or validate aft
+    leaderboard score 0.80527 → n/a (higher is better)
+- expert 55621328 · learning · v23→v27   Make one atomic change per iteration, tracing the data flow from the changed component forward. First toggle the suspected cause to confirm it, then add or fix each downstream dependency one at a time (e.g., extract a new field, propagate it through the dataset, fix its type). Submit or validate aft
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ A checkpoint swap introduced missing keys, incompatible dimensions, or tokenizer differences. | ✓ Sample identifiers or feature columns differ between prediction sources or stages.
-    leaderboard score n/a → 0.80527
-- expert 55431616 (Grandmaster) · learning · v16→v17   Ensure every aggregation alias is unique by systematically naming them after the statistic and parameter (e.g., 'q50' for the 50th percentile). After adding or changing bucket boundaries, verify the resulting DataFrame columns and spot-check a few rows to confirm no columns were silently dropped or 
+    leaderboard score n/a → 0.80527 (higher is better)
+- expert 55431616 · learning · v16→v17   Ensure every aggregation alias is unique by systematically naming them after the statistic and parameter (e.g., 'q50' for the 50th percentile). After adding or changing bucket boundaries, verify the resulting DataFrame columns and spot-check a few rows to confirm no columns were silently dropped or 
     evidence: ✗ A checkpoint swap introduced missing keys, incompatible dimensions, or tokenizer differences. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score n/a → n/a
-- expert 59253662 (Contributor) · learning · v2→v7   Fix one bug per commit and re-run after each fix to isolate errors. Prioritize: (1) variable name collisions between pipeline stages, (2) wrong dataframe/array references in train vs. predict calls, (3) type conversion issues at boundaries between libraries, (4) file path portability. Only move to t
+    leaderboard score n/a → n/a (higher is better)
+- expert 59253662 · learning · v2→v7   Fix one bug per commit and re-run after each fix to isolate errors. Prioritize: (1) variable name collisions between pipeline stages, (2) wrong dataframe/array references in train vs. predict calls, (3) type conversion issues at boundaries between libraries, (4) file path portability. Only move to t
     evidence: ✓ Execution stops at an import, file access, device operation, or library call. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✗ Written predictions have the wrong direction, range, normalization, or source variable. | ✓ Sample identifiers or feature columns differ between prediction sources or stages.
-    leaderboard score n/a → n/a
-- expert 60197293 (Expert) · learning · v1→v6   Add one model at a time and confirm it trains and predicts before adding the next. Use a simple fixed-weight blending wrapper so the combination logic is trivial to debug. For environment-dependent settings like GPU selection, first remove them to get a working baseline, then re-add with a runtime a
+    leaderboard score n/a → n/a (higher is better)
+- expert 60197293 · learning · v1→v6   Add one model at a time and confirm it trains and predicts before adding the next. Use a simple fixed-weight blending wrapper so the combination logic is trivial to debug. For environment-dependent settings like GPU selection, first remove them to get a working baseline, then re-add with a runtime a
     evidence: ✓ Execution stops at an import, file access, device operation, or library call. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ The executed ensemble does not match its configured members or weights.
-    leaderboard score 0.81907 → n/a
-- expert 60197293 (Expert) · learning · v44→v45   Systematically check whether key pipeline toggles (e.g., feature selection, preprocessing flags) were inadvertently disabled during the editing sequence. Re-enable them one at a time and measure the effect. A single boolean flag controlling feature selection can account for a meaningful score differ
+    leaderboard score 0.81907 → n/a (higher is better)
+- expert 60197293 · learning · v44→v45   Systematically check whether key pipeline toggles (e.g., feature selection, preprocessing flags) were inadvertently disabled during the editing sequence. Re-enable them one at a time and measure the effect. A single boolean flag controlling feature selection can account for a meaningful score differ
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score 0.81754 → 0.81867 (+0.00113)
-- expert 60197293 (Expert) · learning · v107→v124   After writing the pipeline, add assertion checks and small print statements at every handoff point: verify collection sizes after loading, assert dataframe shapes and key columns after each merge, and check array dimensions before model input. Run the pipeline on a tiny subset first. This catches mo
+    leaderboard score 0.81754 → 0.81867 (higher is better; improved by 0.00113)
+- expert 60197293 · learning · v107→v124   After writing the pipeline, add assertion checks and small print statements at every handoff point: verify collection sizes after loading, assert dataframe shapes and key columns after each merge, and check array dimensions before model input. Run the pipeline on a tiny subset first. This catches mo
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✗ Execution stops at an import, file access, device operation, or library call. | ✗ A checkpoint swap introduced missing keys, incompatible dimensions, or tokenizer differences. | ✓ Sample identifiers or feature columns differ between prediction sources or stages.
-    leaderboard score n/a → 0.81847
-- expert 55987255 (Master) · learning · v46→v47   After changing the number of output components in any feature-generation step, search the entire codebase for every hard-coded reference to the old component count—especially column name lists, loop ranges, and array slices—and update them all to match the new value. Ideally, derive the count from t
+    leaderboard score n/a → 0.81847 (higher is better)
+- expert 55987255 · learning · v46→v47   After changing the number of output components in any feature-generation step, search the entire codebase for every hard-coded reference to the old component count—especially column name lists, loop ranges, and array slices—and update them all to match the new value. Ideally, derive the count from t
     evidence: ✓ Sample identifiers or feature columns differ between prediction sources or stages. | ✗ A checkpoint swap introduced missing keys, incompatible dimensions, or tokenizer differences. | ✓ Execution stops at an import, file access, device operation, or library call.
-    leaderboard score n/a → 0.81750
-- expert 55987255 (Master) · learning · v185→v192   Use an add-then-prune cycle: add all candidate features, run the pipeline to surface errors, remove or fix broken groups one at a time, then re-add them individually. Before submitting, verify that every derived feature (especially ratios using a denominator column) references the correct column nam
+    leaderboard score n/a → 0.81750 (higher is better)
+- expert 55987255 · learning · v185→v192   Use an add-then-prune cycle: add all candidate features, run the pipeline to surface errors, remove or fix broken groups one at a time, then re-add them individually. Before submitting, verify that every derived feature (especially ratios using a denominator column) references the correct column nam
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ Execution stops at an import, file access, device operation, or library call. | ✓ Sample identifiers or feature columns differ between prediction sources or stages. | ✗ A checkpoint swap introduced missing keys, incompatible dimensions, or tokenizer differences.
-    leaderboard score n/a → 0.81128
-- expert 55591012 (Grandmaster) · learning · v2→v9   Fix one error per iteration in the order they appear at runtime. Keep each edit minimal (one variable, one fallback path) so the cause of any new failure is unambiguous. Do not submit to the leaderboard until the pipeline produces a complete, valid output file.
+    leaderboard score n/a → 0.81128 (higher is better)
+- expert 55591012 · learning · v2→v9   Fix one error per iteration in the order they appear at runtime. Keep each edit minimal (one variable, one fallback path) so the cause of any new failure is unambiguous. Do not submit to the leaderboard until the pipeline produces a complete, valid output file.
     evidence: ✓ Execution stops at an import, file access, device operation, or library call. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ Sample identifiers or feature columns differ between prediction sources or stages. | ✗ A checkpoint swap introduced missing keys, incompatible dimensions, or tokenizer differences.
-    leaderboard score n/a → 0.81083
-- expert 15082684 (Master) · ranzcr · v2→v3   After each round of code removal, search for all variable names that were defined in deleted blocks and verify they are not referenced elsewhere. Check that data-loading statements appear after all required definitions (transforms, configs). Run the notebook sequentially cell-by-cell to catch orderi
+    leaderboard score n/a → 0.81083 (higher is better)
+- expert 15082684 · ranzcr · v2→v3   After each round of code removal, search for all variable names that were defined in deleted blocks and verify they are not referenced elsewhere. Check that data-loading statements appear after all required definitions (transforms, configs). Run the notebook sequentially cell-by-cell to catch orderi
     evidence: ✓ Execution stops at an import, file access, device operation, or library call.
-    leaderboard score n/a → 0.96040
-- expert 15164527 (Expert) · ranzcr · v30→v31   Re-enable each disabled component one at a time: restore the full loop over all folds, reinstate the correctly-sized prediction container, uncomment all model inference calls, and re-enable the blending logic. Submit and verify the score matches or is close to the pre-debugging baseline to confirm n
+    leaderboard score n/a → 0.96040 (higher is better)
+- expert 15164527 · ranzcr · v30→v31   Re-enable each disabled component one at a time: restore the full loop over all folds, reinstate the correctly-sized prediction container, uncomment all model inference calls, and re-enable the blending logic. Submit and verify the score matches or is close to the pre-debugging baseline to confirm n
     evidence: ✓ The executed ensemble does not match its configured members or weights. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score 0.96220 → 0.96797 (+0.00578)
-- expert 15164527 (Expert) · ranzcr · v39→v43   Accept that a single model's isolated score will be lower than the full ensemble. Use the isolated run only to verify the model loads and produces reasonable (not random) predictions. Once the standalone score is in a plausible range for a single model, re-enable all ensemble members and check wheth
+    leaderboard score 0.96220 → 0.96797 (higher is better; improved by 0.00578)
+- expert 15164527 · ranzcr · v39→v43   Accept that a single model's isolated score will be lower than the full ensemble. Use the isolated run only to verify the model loads and produces reasonable (not random) predictions. Once the standalone score is in a plausible range for a single model, re-enable all ensemble members and check wheth
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score 0.96055 → 0.96052 (-0.00003)
-- expert 15173072 (Contributor) · ranzcr · v6→v7   Treat a score near random chance as evidence that model weights are not effectively loaded or applied. Check: (1) the model is set to evaluation mode, (2) the architecture definition matches the checkpoint's layer names, (3) input preprocessing (normalization mean/std, resolution) matches what was u
+    leaderboard score 0.96055 → 0.96052 (higher is better; worse by 0.00003)
+- expert 15173072 · ranzcr · v6→v7   Treat a score near random chance as evidence that model weights are not effectively loaded or applied. Check: (1) the model is set to evaluation mode, (2) the architecture definition matches the checkpoint's layer names, (3) input preprocessing (normalization mean/std, resolution) matches what was u
     evidence: ✗ Execution stops at an import, file access, device operation, or library call. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score n/a → 0.50990
-- expert 15173072 (Contributor) · ranzcr · v7→v8   Check that (1) the model is set to evaluation mode so dropout and batch-norm behave correctly, and (2) the checkpoint file actually matches the model architecture being constructed. Fix both before investigating other issues.
+    leaderboard score n/a → 0.50990 (higher is better)
+- expert 15173072 · ranzcr · v7→v8   Check that (1) the model is set to evaluation mode so dropout and batch-norm behave correctly, and (2) the checkpoint file actually matches the model architecture being constructed. Fix both before investigating other issues.
     evidence: ✓ A checkpoint swap introduced missing keys, incompatible dimensions, or tokenizer differences. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score 0.50990 → 0.55637 (+0.04647)
-- expert 15173072 (Contributor) · ranzcr · v7→v12   Enumerate every stage of the pipeline — checkpoint loading, model mode, input preprocessing (normalization stats, resolution), forward pass settings (DataParallel, precision), and output post-processing (scaling, sigmoid vs. logits). Fix and verify each in turn. Pay special attention to the output s
+    leaderboard score 0.50990 → 0.55637 (higher is better; improved by 0.04647)
+- expert 15173072 · ranzcr · v7→v12   Enumerate every stage of the pipeline — checkpoint loading, model mode, input preprocessing (normalization stats, resolution), forward pass settings (DataParallel, precision), and output post-processing (scaling, sigmoid vs. logits). Fix and verify each in turn. Pay special attention to the output s
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ A checkpoint swap introduced missing keys, incompatible dimensions, or tokenizer differences. | ✗ Execution stops at an import, file access, device operation, or library call. | ✗ The executed ensemble does not match its configured members or weights. | ✓ Written predictions have the wrong direction, range, normalization, or source variable.
-    leaderboard score 0.50990 → 0.95987 (+0.44997)
-- expert 50496431 (Grandmaster) · hms · v1→v5   Systematically address three categories: (1) ensure the dataset class returns only inputs (not labels) during inference, matching what the inference loop expects; (2) consolidate imports into one clean block, removing duplicates and unused libraries that may cause import errors in the inference envi
+    leaderboard score 0.50990 → 0.95987 (higher is better; improved by 0.44997)
+- expert 50496431 · hms · v1→v5   Systematically address three categories: (1) ensure the dataset class returns only inputs (not labels) during inference, matching what the inference loop expects; (2) consolidate imports into one clean block, removing duplicates and unused libraries that may cause import errors in the inference envi
     evidence: ✓ Execution stops at an import, file access, device operation, or library call. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score n/a → 0.42903
-- expert 50496431 (Grandmaster) · hms · v9→v10   Before diagnosing modeling issues, verify that all intended components are actually executing: check for commented-out code, disabled flags, or skipped loops. A missing component in the ensemble will make the new addition appear to replace rather than complement the existing one, masking the true en
+    leaderboard score n/a → 0.42903 (lower is better)
+- expert 50496431 · hms · v9→v10   Before diagnosing modeling issues, verify that all intended components are actually executing: check for commented-out code, disabled flags, or skipped loops. A missing component in the ensemble will make the new addition appear to replace rather than complement the existing one, masking the true en
     evidence: ✓ The executed ensemble does not match its configured members or weights. | ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation.
-    leaderboard score 0.41124 → 0.36955 (-0.04169)
-- expert 50496431 (Grandmaster) · hms · v34→v38   Add the new model in isolation first and verify its standalone predictions are reasonable (print them) before blending. After integration, add verbose logging of each model's individual predictions. Check that test-time augmentation (e.g., flip TTA) is compatible with the new input dimensionality—re
+    leaderboard score 0.41124 → 0.36955 (lower is better; improved by 0.04169)
+- expert 50496431 · hms · v34→v38   Add the new model in isolation first and verify its standalone predictions are reasonable (print them) before blending. After integration, add verbose logging of each model's individual predictions. Check that test-time augmentation (e.g., flip TTA) is compatible with the new input dimensionality—re
     evidence: ✓ Substantive changes leave predictions unchanged or a silent fallback bypasses the intended computation. | ✓ The executed ensemble does not match its configured members or weights. | ✓ Execution stops at an import, file access, device operation, or library call.
-    leaderboard score 0.33708 → 0.41902 (+0.08195)
+    leaderboard score 0.33708 → 0.41902 (lower is better; worse by 0.08195)

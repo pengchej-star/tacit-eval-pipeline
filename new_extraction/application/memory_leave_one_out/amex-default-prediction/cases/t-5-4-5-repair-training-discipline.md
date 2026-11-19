@@ -1,22 +1,22 @@
 # Repair training discipline  `T.5.4.5`   6 edits, 0 experts
-6 scored cases, median improvement +0.00038, 5 improved
+6 scored cases (improvement signed by each competition's direction), median +0.00038, 6 improved
 
 
-- expert 75584724 (Master) · equity · v6→v7   Restructure the neural network training into proper K-fold cross-validation with per-fold model saving, tune its architecture/training hyperparameters, and regenerate its out-of-fold and test predictions for the ensemble. Even small improvements in a single ensemble member can translate to modest bu
+- expert 75584724 · equity · v6→v7   Restructure the neural network training into proper K-fold cross-validation with per-fold model saving, tune its architecture/training hyperparameters, and regenerate its out-of-fold and test predictions for the ensemble. Even small improvements in a single ensemble member can translate to modest bu
     evidence: ✗ A tree learner’s depth, leaf count, or penalties constrain the observed fit. | ✓ A weak component lacks consistent folds, proper batching, or saved per-fold models. | ✗ A recent code or config change has not yet been scored, so a rerun is needed before drawing conclusions. | ✓ Multiple hyperparameter axes are being changed simultaneously without isolating each effect.
-    leaderboard score 0.69427 → 0.69453 (+0.00027)
-- expert 75924487 (Master) · equity · v8→v9   Rewrite the neural network training to use the same K-Fold splits as other ensemble members, save each fold's trained weights separately, and tune architecture hyperparameters. Expect the direct LB gain to be marginal; the main value is a cleaner, more reliable ensemble member that enables future ga
+    leaderboard score 0.69427 → 0.69453 (higher is better; improved by 0.00027)
+- expert 75924487 · equity · v8→v9   Rewrite the neural network training to use the same K-Fold splits as other ensemble members, save each fold's trained weights separately, and tune architecture hyperparameters. Expect the direct LB gain to be marginal; the main value is a cleaner, more reliable ensemble member that enables future ga
     evidence: ✗ A tree learner’s depth, leaf count, or penalties constrain the observed fit. | ✓ A weak component lacks consistent folds, proper batching, or saved per-fold models. | ✓ Multiple hyperparameter axes are being changed simultaneously without isolating each effect.
-    leaderboard score 0.69347 → 0.69350 (+0.00003)
-- expert 73937748 (Master) · equity · v60→v61   Refactor the neural network training to use the framework's standard dataset/dataloader abstractions, train a separate model per cross-validation fold, save each fold's weights to disk, and generate out-of-fold predictions from the corresponding held-out fold. This improves prediction quality and re
+    leaderboard score 0.69347 → 0.69350 (higher is better; improved by 0.00003)
+- expert 73937748 · equity · v60→v61   Refactor the neural network training to use the framework's standard dataset/dataloader abstractions, train a separate model per cross-validation fold, save each fold's weights to disk, and generate out-of-fold predictions from the corresponding held-out fold. This improves prediction quality and re
     evidence: ✗ A tree learner’s depth, leaf count, or penalties constrain the observed fit. | ✓ A weak component lacks consistent folds, proper batching, or saved per-fold models. | ✗ A recent code or config change has not yet been scored, so a rerun is needed before drawing conclusions. | ✓ Multiple hyperparameter axes are being changed simultaneously without isolating each effect.
-    leaderboard score 0.69283 → 0.69321 (+0.00038)
-- expert 73937748 (Master) · equity · v60→v61   Audit each ensemble member's training pipeline for engineering deficiencies (inconsistent cross-validation, missing batch loading, no model checkpointing, suboptimal hyperparameters). Fixing these issues in the least-rigorous component can yield incremental but real gains without increasing ensemble
+    leaderboard score 0.69283 → 0.69321 (higher is better; improved by 0.00038)
+- expert 73937748 · equity · v60→v61   Audit each ensemble member's training pipeline for engineering deficiencies (inconsistent cross-validation, missing batch loading, no model checkpointing, suboptimal hyperparameters). Fixing these issues in the least-rigorous component can yield incremental but real gains without increasing ensemble
     evidence: ✗ A tree learner’s depth, leaf count, or penalties constrain the observed fit. | ✓ A weak component lacks consistent folds, proper batching, or saved per-fold models. | ✗ A recent code or config change has not yet been scored, so a rerun is needed before drawing conclusions. | ✓ Multiple hyperparameter axes are being changed simultaneously without isolating each effect.
-    leaderboard score 0.69283 → 0.69321 (+0.00038)
-- expert 53762022 (Contributor) · hms · v8→v9   Refactor the data and feature pipeline: add domain-appropriate signal preprocessing (e.g., filtering, derived features), switch to a grouped stratified cross-validation scheme that respects the data's group structure, and rebuild the out-of-fold and inference flow before returning to ensemble tuning
+    leaderboard score 0.69283 → 0.69321 (higher is better; improved by 0.00038)
+- expert 53762022 · hms · v8→v9   Refactor the data and feature pipeline: add domain-appropriate signal preprocessing (e.g., filtering, derived features), switch to a grouped stratified cross-validation scheme that respects the data's group structure, and rebuild the out-of-fold and inference flow before returning to ensemble tuning
     evidence: ✓ A weak component lacks consistent folds, proper batching, or saved per-fold models. | ✓ A recent code or config change has not yet been scored, so a rerun is needed before drawing conclusions. | ✓ A recent hyperparameter change was too large a jump and should be reverted before trying another axis. | ✓ Multiple hyperparameter axes are being changed simultaneously without isolating each effect.
-    leaderboard score 0.68408 → 0.36230 (-0.32178)
-- expert 55621328 (Master) · learning · v68→v71   First validate the new recipe with a smaller, cheaper model variant. If it performs competitively with the current best, scale up to the larger backbone to capture the combined gain from both the recipe improvement and the larger capacity.
+    leaderboard score 0.68408 → 0.36230 (lower is better; improved by 0.32178)
+- expert 55621328 · learning · v68→v71   First validate the new recipe with a smaller, cheaper model variant. If it performs competitively with the current best, scale up to the larger backbone to capture the combined gain from both the recipe improvement and the larger capacity.
     evidence: ✓ A weak component lacks consistent folds, proper batching, or saved per-fold models. | ✓ A recent code or config change has not yet been scored, so a rerun is needed before drawing conclusions.
-    leaderboard score 0.81082 → 0.82319 (+0.01237)
+    leaderboard score 0.81082 → 0.82319 (higher is better; improved by 0.01237)

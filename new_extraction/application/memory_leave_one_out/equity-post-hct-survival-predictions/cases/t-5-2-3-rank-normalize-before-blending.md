@@ -1,49 +1,49 @@
 # Rank-normalize before blending  `T.5.2.3`   15 edits, 0 experts
-11 scored cases, median improvement +0.00141, 10 improved
+11 scored cases (improvement signed by each competition's direction), median +0.00141, 10 improved
 
 
-- expert 13848868 (Grandmaster) · ranzcr · v1→v6   Toggle rank-conversion on and off as a binary flag while holding other settings constant. If the effect is inconsistent across configurations and the magnitude is very small (order of 0.0001–0.001), prefer the simpler raw-averaging approach and move on to higher-impact levers.
+- expert 13848868 · ranzcr · v1→v6   Toggle rank-conversion on and off as a binary flag while holding other settings constant. If the effect is inconsistent across configurations and the magnitude is very small (order of 0.0001–0.001), prefer the simpler raw-averaging approach and move on to higher-impact levers.
     evidence: ✓ The metric uses ordering and members have incompatible score scales or outliers. | ✗ The metric evaluates class distributions and logits or calibrated probabilities are available.
-    leaderboard score 0.92999 → 0.93869 (+0.00870)
-- expert 13848868 (Grandmaster) · ranzcr · v7→v10   Re-evaluate the toggle after every model or pipeline change by submitting both variants. Do not carry forward the previous conclusion; treat it as a cheap A/B test that must be re-run whenever upstream predictions change.
+    leaderboard score 0.92999 → 0.93869 (higher is better; improved by 0.00870)
+- expert 13848868 · ranzcr · v7→v10   Re-evaluate the toggle after every model or pipeline change by submitting both variants. Do not carry forward the previous conclusion; treat it as a cheap A/B test that must be re-run whenever upstream predictions change.
     evidence: ✓ The metric uses ordering and members have incompatible score scales or outliers.
-    leaderboard score 0.94135 → 0.94330 (+0.00195)
-- expert 13848868 (Grandmaster) · ranzcr · v14→v16   Treat the choice between raw-score averaging and rank-based averaging as a binary hyperparameter. After any change to the model or ensemble setup, test both options with leaderboard or validation submissions. Do not assume the previous winner still holds.
+    leaderboard score 0.94135 → 0.94330 (higher is better; improved by 0.00195)
+- expert 13848868 · ranzcr · v14→v16   Treat the choice between raw-score averaging and rank-based averaging as a binary hyperparameter. After any change to the model or ensemble setup, test both options with leaderboard or validation submissions. Do not assume the previous winner still holds.
     evidence: ✓ The metric uses ordering and members have incompatible score scales or outliers.
-    leaderboard score n/a → 0.94293
-- expert 13848868 (Grandmaster) · ranzcr · v17→v21   After any significant model change, re-test both raw-score averaging and rank-averaging by toggling the post-processing flag and submitting. Do not carry over the conclusion from a previous model; treat it as an independent binary decision each time the prediction distribution changes.
+    leaderboard score n/a → 0.94293 (higher is better)
+- expert 13848868 · ranzcr · v17→v21   After any significant model change, re-test both raw-score averaging and rank-averaging by toggling the post-processing flag and submitting. Do not carry over the conclusion from a previous model; treat it as an independent binary decision each time the prediction distribution changes.
     evidence: ✓ The metric uses ordering and members have incompatible score scales or outliers. | ✓ The metric evaluates class distributions and logits or calibrated probabilities are available.
-    leaderboard score 0.93993 → 0.95233 (+0.01240)
-- expert 13848868 (Grandmaster) · ranzcr · v21→v28   Re-evaluate the toggle for every new model variant by submitting both settings. Do not assume the result from a previous model configuration carries over. This costs one extra submission per model change but prevents carrying a suboptimal post-processing choice forward.
+    leaderboard score 0.93993 → 0.95233 (higher is better; improved by 0.01240)
+- expert 13848868 · ranzcr · v21→v28   Re-evaluate the toggle for every new model variant by submitting both settings. Do not assume the result from a previous model configuration carries over. This costs one extra submission per model change but prevents carrying a suboptimal post-processing choice forward.
     evidence: ✓ The metric uses ordering and members have incompatible score scales or outliers.
-    leaderboard score 0.95233 → 0.94904 (-0.00329)
-- expert 13848868 (Grandmaster) · ranzcr · v29→v30   After every non-trivial model change, re-test both post-processing options. Do not assume the previously better setting carries over. Submit both variants and keep whichever scores higher for that model configuration.
+    leaderboard score 0.95233 → 0.94904 (higher is better; worse by 0.00329)
+- expert 13848868 · ranzcr · v29→v30   After every non-trivial model change, re-test both post-processing options. Do not assume the previously better setting carries over. Submit both variants and keep whichever scores higher for that model configuration.
     evidence: ✓ The metric uses ordering and members have incompatible score scales or outliers.
-    leaderboard score 0.94661 → 0.94719 (+0.00058)
-- expert 13848868 (Grandmaster) · ranzcr · v31→v36   Toggle between raw-score averaging and rank-based averaging at each major configuration change and compare on the leaderboard or validation set. The winner can flip depending on the model and configuration, so always re-check after any architecture or resolution change rather than assuming one metho
+    leaderboard score 0.94661 → 0.94719 (higher is better; improved by 0.00058)
+- expert 13848868 · ranzcr · v31→v36   Toggle between raw-score averaging and rank-based averaging at each major configuration change and compare on the leaderboard or validation set. The winner can flip depending on the model and configuration, so always re-check after any architecture or resolution change rather than assuming one metho
     evidence: ✓ The metric uses ordering and members have incompatible score scales or outliers. | ✓ The metric evaluates class distributions and logits or calibrated probabilities are available.
-    leaderboard score 0.95418 → 0.95509 (+0.00091)
-- expert 13848868 (Grandmaster) · ranzcr · v37→v39   Treat the choice between rank-based and raw-score fold averaging as a binary toggle that must be re-evaluated after every significant model change. Submit both variants and keep whichever scores better; do not assume the previous winner still holds.
+    leaderboard score 0.95418 → 0.95509 (higher is better; improved by 0.00091)
+- expert 13848868 · ranzcr · v37→v39   Treat the choice between rank-based and raw-score fold averaging as a binary toggle that must be re-evaluated after every significant model change. Submit both variants and keep whichever scores better; do not assume the previous winner still holds.
     evidence: ✓ The metric uses ordering and members have incompatible score scales or outliers.
-    leaderboard score 0.95762 → 0.96074 (+0.00312)
-- expert 13848868 (Grandmaster) · ranzcr · v39→v41   After every significant model change, test both raw-score averaging and rank-based averaging. Expect that stronger, better-calibrated models will more often favor raw averaging, while rank averaging may help weaker or poorly calibrated ensembles. Do not assume the post-processing choice transfers wh
+    leaderboard score 0.95762 → 0.96074 (higher is better; improved by 0.00312)
+- expert 13848868 · ranzcr · v39→v41   After every significant model change, test both raw-score averaging and rank-based averaging. Expect that stronger, better-calibrated models will more often favor raw averaging, while rank averaging may help weaker or poorly calibrated ensembles. Do not assume the post-processing choice transfers wh
     evidence: ✓ The metric uses ordering and members have incompatible score scales or outliers.
-    leaderboard score 0.96074 → 0.96470 (+0.00396)
-- expert 7018718 (Expert) · google · v3→v4   Run a controlled A/B test by toggling the rank-blending option off while keeping everything else fixed, and compare leaderboard or validation scores. Do not assume rank averaging always helps; verify empirically for each model configuration.
+    leaderboard score 0.96074 → 0.96470 (higher is better; improved by 0.00396)
+- expert 7018718 · google · v3→v4   Run a controlled A/B test by toggling the rank-blending option off while keeping everything else fixed, and compare leaderboard or validation scores. Do not assume rank averaging always helps; verify empirically for each model configuration.
     evidence: ✓ The metric uses ordering and members have incompatible score scales or outliers. | ✗ The metric evaluates class distributions and logits or calibrated probabilities are available.
-    leaderboard score 0.37770 → 0.37851 (+0.00081)
-- expert 7018718 (Expert) · google · v9→v13   Systematically try each candidate aggregation strategy (raw mean, rank-based averaging, nonlinear transformation) one at a time, keeping everything else fixed, and compare leaderboard or validation scores. If none improves over the simplest baseline, keep the baseline. Do not combine multiple change
+    leaderboard score 0.37770 → 0.37851 (higher is better; improved by 0.00081)
+- expert 7018718 · google · v9→v13   Systematically try each candidate aggregation strategy (raw mean, rank-based averaging, nonlinear transformation) one at a time, keeping everything else fixed, and compare leaderboard or validation scores. If none improves over the simplest baseline, keep the baseline. Do not combine multiple change
     evidence: ✓ The metric uses ordering and members have incompatible score scales or outliers. | ✓ The metric evaluates class distributions and logits or calibrated probabilities are available.
-    leaderboard score n/a → 0.38367
-- expert 7018718 (Expert) · google · v14→v18   Try at least three combination strategies—rank-based averaging, sigmoid-transformed averaging, and simple mean—submitting each separately. Expect small differences; choose the best empirically rather than assuming one dominates, since the optimal strategy depends on how well-calibrated individual fo
+    leaderboard score n/a → 0.38367 (higher is better)
+- expert 7018718 · google · v14→v18   Try at least three combination strategies—rank-based averaging, sigmoid-transformed averaging, and simple mean—submitting each separately. Expect small differences; choose the best empirically rather than assuming one dominates, since the optimal strategy depends on how well-calibrated individual fo
     evidence: ✓ The metric uses ordering and members have incompatible score scales or outliers. | ✗ The metric evaluates class distributions and logits or calibrated probabilities are available.
-    leaderboard score 0.38367 → 0.38508 (+0.00141)
-- expert 7018718 (Expert) · google · v32→v34   Test both strategies while holding all other variables (checkpoint, preprocessing, architecture) constant. If the target labels occupy only a few discrete levels, raw averaging may preserve the relative ordering better than rank averaging because rank averaging can introduce unnecessary ties or dist
+    leaderboard score 0.38367 → 0.38508 (higher is better; improved by 0.00141)
+- expert 7018718 · google · v32→v34   Test both strategies while holding all other variables (checkpoint, preprocessing, architecture) constant. If the target labels occupy only a few discrete levels, raw averaging may preserve the relative ordering better than rank averaging because rank averaging can introduce unnecessary ties or dist
     evidence: ✓ The metric uses ordering and members have incompatible score scales or outliers. | ✗ The metric evaluates class distributions and logits or calibrated probabilities are available.
-    leaderboard score n/a → 0.37705
-- expert 7670859 (Contributor) · google · v13→v15   Start with simple arithmetic averaging of prediction arrays, then iteratively add or remove sources while inspecting the distribution of blended predictions (e.g., histograms). If a source degrades the blend or has misaligned distributions, drop it. Use diagnostic plots at each step to verify that t
+    leaderboard score n/a → 0.37705 (higher is better)
+- expert 7670859 · google · v13→v15   Start with simple arithmetic averaging of prediction arrays, then iteratively add or remove sources while inspecting the distribution of blended predictions (e.g., histograms). If a source degrades the blend or has misaligned distributions, drop it. Use diagnostic plots at each step to verify that t
     evidence: ✓ The metric uses ordering and members have incompatible score scales or outliers. | ✗ The metric evaluates class distributions and logits or calibrated probabilities are available.
-    leaderboard score n/a → n/a
-- expert 15164527 (Expert) · ranzcr · v12→v15   Convert each model's predictions to per-column ranks (using double argsort), then take a weighted average of ranks. This removes calibration differences and is naturally suited to rank-based metrics. Compare against probability averaging to confirm the gain.
+    leaderboard score n/a → n/a (higher is better)
+- expert 15164527 · ranzcr · v12→v15   Convert each model's predictions to per-column ranks (using double argsort), then take a weighted average of ranks. This removes calibration differences and is naturally suited to rank-based metrics. Compare against probability averaging to confirm the gain.
     evidence: ✓ Weight estimates are unstable or no independent out-of-fold predictions support fitting them. | ✓ The metric uses ordering and members have incompatible score scales or outliers. | ✓ The metric evaluates class distributions and logits or calibrated probabilities are available. | ✓ Members have unequal quality and aligned validation predictions are available. | ✗ Sufficient cross-fitted predictions exist to learn a stable combination without leakage.
-    leaderboard score 0.96760 → 0.96778 (+0.00017)
+    leaderboard score 0.96760 → 0.96778 (higher is better; improved by 0.00017)

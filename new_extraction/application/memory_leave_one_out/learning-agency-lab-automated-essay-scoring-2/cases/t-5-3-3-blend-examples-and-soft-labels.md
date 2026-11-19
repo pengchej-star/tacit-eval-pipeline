@@ -1,5 +1,5 @@
 # Blend examples and soft labels  `T.5.3.3`   1 edits, 0 experts
 
-- expert 49576186 (Expert) · hms · v58→v60   Extend mixup to blend three samples with a dominant weight on the primary sample (e.g., 0.8) and split the remainder randomly between two other samples. Ensure NaN values in inputs are zeroed before mixing. Evaluate in isolation or with minimal other changes to attribute any score change correctly.
+- expert 49576186 · hms · v58→v60   Extend mixup to blend three samples with a dominant weight on the primary sample (e.g., 0.8) and split the remainder randomly between two other samples. Ensure NaN values in inputs are zeroed before mixing. Evaluate in isolation or with minimal other changes to attribute any score change correctly.
     evidence: ✓ Labels are soft distributions and the existing training code already supports weighted example mixing. | ✓ The proposed augmentation code was already scaffolded or commented out in a prior version and only needs to be activated, not written from scratch. | ✓ The previous augmentation run did not clearly improve over the non-augmented baseline, so a re-run is needed to distinguish signal from variance. | ✗ Geometric transforms (e.g., rotation) have not been previously tried and are now being introduced into the augmentation pipeline.
-    leaderboard score n/a → 0.41959
+    leaderboard score n/a → 0.41959 (lower is better)

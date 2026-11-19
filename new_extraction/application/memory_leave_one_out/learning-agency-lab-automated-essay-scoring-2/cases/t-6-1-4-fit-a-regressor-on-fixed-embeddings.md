@@ -1,10 +1,10 @@
 # Fit a regressor on fixed embeddings  `T.6.1.4`   2 edits, 0 experts
-2 scored cases, median improvement +0.00725, 2 improved
+2 scored cases (improvement signed by each competition's direction), median +0.00725, 1 improved
 
 
-- expert 18350823 (Expert) · commonlitreadabilityprize · v31→v32   Extract fixed embeddings from a pretrained (or fine-tuned) transformer, train a kernel-based regressor (e.g., SVR) with cross-validation on those embeddings, and blend its predictions with the transformer ensemble. Evaluate on the leaderboard or held-out set. If the score does not improve, the froze
+- expert 18350823 · commonlitreadabilityprize · v31→v32   Extract fixed embeddings from a pretrained (or fine-tuned) transformer, train a kernel-based regressor (e.g., SVR) with cross-validation on those embeddings, and blend its predictions with the transformer ensemble. Evaluate on the leaderboard or held-out set. If the score does not improve, the froze
     evidence: ✓ The current family has plateaued despite useful features and controlled tuning. | ✓ Pretrained embeddings are available but end-to-end fine-tuning is noisy or expensive. | ✗ The candidate backbone or model family was previously tested and underperformed, so switching back requires a clear rationale for why results would differ now. | ✓ A structurally different model family (e.g., 1D CNN/RNN on raw signals) is a known strong complementary approach in top solutions for this task.
-    leaderboard score 0.45968 → 0.46045 (+0.00077)
-- expert 7670859 (Contributor) · google · v9→v12   Extract dense sentence embeddings from one or more pretrained encoders, compute pairwise similarity features between input text fields, add categorical features, and train lightweight models (shallow neural nets, regularized linear models) with cross-validation on these features. Blend their predict
+    leaderboard score 0.45968 → 0.46045 (lower is better; worse by 0.00077)
+- expert 7670859 · google · v9→v12   Extract dense sentence embeddings from one or more pretrained encoders, compute pairwise similarity features between input text fields, add categorical features, and train lightweight models (shallow neural nets, regularized linear models) with cross-validation on these features. Blend their predict
     evidence: ✓ The current family has plateaued despite useful features and controlled tuning. | ✓ Pretrained embeddings are available but end-to-end fine-tuning is noisy or expensive. | ✗ The tuned standard tree booster still appears to overfit and a dropout-based variant is supported. | ✗ The candidate backbone or model family was previously tested and underperformed, so switching back requires a clear rationale for why results would differ now. | ✓ A structurally different model family (e.g., 1D CNN/RNN on raw signals) is a known strong complementary approach in top solutions for this task. | ✓ A domain-relevant or structurally different pretrained backbone is available.
-    leaderboard score 0.38252 → 0.38976 (+0.00725)
+    leaderboard score 0.38252 → 0.38976 (higher is better; improved by 0.00725)

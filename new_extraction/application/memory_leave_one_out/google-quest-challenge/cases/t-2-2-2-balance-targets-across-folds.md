@@ -1,16 +1,16 @@
 # Balance targets across folds  `T.2.2.2`   4 edits, 0 experts
-1 scored cases, median improvement +0.00261, 1 improved
+1 scored cases (improvement signed by each competition's direction), median +0.00261, 1 improved
 
 
-- expert 27799930 (Contributor) · amex · v48→v52   Use stratified folds to maintain consistent class ratios across folds. Implement the competition metric as a custom evaluation function so early stopping and model selection optimize the true objective. Moderately reduce early-stopping patience to avoid overfitting on the training metric while still
+- expert 27799930 · amex · v48→v52   Use stratified folds to maintain consistent class ratios across folds. Implement the competition metric as a custom evaluation function so early stopping and model selection optimize the true objective. Moderately reduce early-stopping patience to avoid overfitting on the training metric while still
     evidence: ✗ Samples share entities, topics, overlapping windows, or other dependence groups. | ✓ Fold target distributions differ despite otherwise exchangeable sampling units. | ✗ Related observations cross current train and validation boundaries. | ✓ The validation design change is bundled with other simultaneous changes (hyperparameters, GPU config, callbacks), making it impossible to isolate its effect. | ✓ The current model type or hyperparameters differ from those used when the validation split was last tuned, so the optimal split may have changed.
-    leaderboard score n/a → 0.79418
-- expert 18851026 (Master) · commonlitreadabilityprize · v26→v28   Discretize the continuous target into bins and apply stratified K-fold splitting on those bins. This ensures each fold mirrors the overall target distribution, stabilizing both the CV metric and the out-of-fold predictions used for stacking.
+    leaderboard score n/a → 0.79418 (higher is better)
+- expert 18851026 · commonlitreadabilityprize · v26→v28   Discretize the continuous target into bins and apply stratified K-fold splitting on those bins. This ensures each fold mirrors the overall target distribution, stabilizing both the CV metric and the out-of-fold predictions used for stacking.
     evidence: ✓ Fold target distributions differ despite otherwise exchangeable sampling units. | ✓ The validation design change is bundled with other simultaneous changes (hyperparameters, GPU config, callbacks), making it impossible to isolate its effect. | ✗ Samples share entities, topics, overlapping windows, or other dependence groups. | ✗ Related observations cross current train and validation boundaries.
-    leaderboard score n/a → 0.45803
-- expert 55431616 (Grandmaster) · learning · v11→v13   Use stratified cross-validation splits that preserve the target distribution in every fold, so that per-fold threshold optimization and objective alignment reflect the true test-time distribution.
+    leaderboard score n/a → 0.45803 (lower is better)
+- expert 55431616 · learning · v11→v13   Use stratified cross-validation splits that preserve the target distribution in every fold, so that per-fold threshold optimization and objective alignment reflect the true test-time distribution.
     evidence: ✓ Fold target distributions differ despite otherwise exchangeable sampling units. | ✓ An identifiable training subgroup differs from the expected test population. | ✓ The validation design change is bundled with other simultaneous changes (hyperparameters, GPU config, callbacks), making it impossible to isolate its effect. | ✓ The current model type or hyperparameters differ from those used when the validation split was last tuned, so the optimal split may have changed.
-    leaderboard score 0.81502 → 0.81762 (+0.00261)
-- expert 55987255 (Master) · learning · v117→v118   Before calling a stratified splitter, cast the target to integer (or bin it into a small number of discrete classes). For ordinal targets stored as floats, round or truncate to int. Verify the number of unique values in the cast target is small and matches the expected number of classes.
+    leaderboard score 0.81502 → 0.81762 (higher is better; improved by 0.00261)
+- expert 55987255 · learning · v117→v118   Before calling a stratified splitter, cast the target to integer (or bin it into a small number of discrete classes). For ordinal targets stored as floats, round or truncate to int. Verify the number of unique values in the cast target is small and matches the expected number of classes.
     evidence: ✓ Samples share entities, topics, overlapping windows, or other dependence groups. | ✓ Fold target distributions differ despite otherwise exchangeable sampling units. | ✓ An identifiable training subgroup differs from the expected test population. | ✓ The CV splitter object has not been properly instantiated or imported before the CV loop executes. | ✗ The validation design change is bundled with other simultaneous changes (hyperparameters, GPU config, callbacks), making it impossible to isolate its effect.
-    leaderboard score n/a → n/a
+    leaderboard score n/a → n/a (higher is better)

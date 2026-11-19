@@ -1,28 +1,28 @@
 # Add fixed semantic embeddings  `T.4.3.2`   8 edits, 0 experts
-6 scored cases, median improvement +0.00111, 3 improved
+6 scored cases (improvement signed by each competition's direction), median +0.00111, 3 improved
 
 
-- expert 58130512 (Master) · learning · v16→v18   Extract mean-pooled hidden states from the pretrained model and concatenate them as dense columns alongside existing features. Submit and compare. Be aware that high-dimensional dense embeddings may not combine well with sparse features in tree models and can increase overfitting; if the gain is sma
+- expert 58130512 · learning · v16→v18   Extract mean-pooled hidden states from the pretrained model and concatenate them as dense columns alongside existing features. Submit and compare. Be aware that high-dimensional dense embeddings may not combine well with sparse features in tree models and can increase overfitting; if the gain is sma
     evidence: ✓ The current representation lacks semantic information available from a compatible pretrained encoder. | ✓ Recent feature additions increased dimension without a reliable validation gain. | ✓ Word order fragments or corpus-frequency filters are missing from the current text representation. | ✓ The saved feature-selection list predates the current feature matrix.
-    leaderboard score 0.81644 → 0.81755 (+0.00111)
-- expert 58130512 (Master) · learning · v21→v23   Re-test the feature set in isolation on top of the new best configuration. If the leaderboard score does not improve or barely changes, remove the features again. Avoid bundling the feature addition with other changes (e.g., CV logic modifications) so that each effect can be attributed cleanly.
+    leaderboard score 0.81644 → 0.81755 (higher is better; improved by 0.00111)
+- expert 58130512 · learning · v21→v23   Re-test the feature set in isolation on top of the new best configuration. If the leaderboard score does not improve or barely changes, remove the features again. Avoid bundling the feature addition with other changes (e.g., CV logic modifications) so that each effect can be attributed cleanly.
     evidence: ✓ The current representation lacks semantic information available from a compatible pretrained encoder. | ✓ Recent feature additions increased dimension without a reliable validation gain. | ✓ The saved feature-selection list predates the current feature matrix.
-    leaderboard score 0.82080 → 0.81980 (-0.00099)
-- expert 58130512 (Master) · learning · v24→v27   Sweep three configurations: embeddings with the original feature set, no embeddings with a re-tuned feature set, and embeddings with a re-tuned feature set. The feature-selection list must be regenerated to account for the presence or absence of embedding columns; reusing an old list mismatches the 
+    leaderboard score 0.82080 → 0.81980 (higher is better; worse by 0.00099)
+- expert 58130512 · learning · v24→v27   Sweep three configurations: embeddings with the original feature set, no embeddings with a re-tuned feature set, and embeddings with a re-tuned feature set. The feature-selection list must be regenerated to account for the presence or absence of embedding columns; reusing an old list mismatches the 
     evidence: ✓ The current representation lacks semantic information available from a compatible pretrained encoder. | ✓ Recent feature additions increased dimension without a reliable validation gain. | ✓ The saved feature-selection list predates the current feature matrix.
-    leaderboard score 0.81752 → 0.82049 (+0.00298)
-- expert 58130512 (Master) · learning · v56→v57   Add diverse pretrained backbones (varying architecture families and sizes) to the embedding ensemble and concatenate their pooled hidden states. Monitor whether the increased dimensionality helps or hurts by comparing validation/leaderboard scores. If the gain is marginal or negative, the extra dime
+    leaderboard score 0.81752 → 0.82049 (higher is better; improved by 0.00298)
+- expert 58130512 · learning · v56→v57   Add diverse pretrained backbones (varying architecture families and sizes) to the embedding ensemble and concatenate their pooled hidden states. Monitor whether the increased dimensionality helps or hurts by comparing validation/leaderboard scores. If the gain is marginal or negative, the extra dime
     evidence: ✓ Word order fragments or corpus-frequency filters are missing from the current text representation. | ✓ The current representation lacks semantic information available from a compatible pretrained encoder. | ✓ Recent feature additions increased dimension without a reliable validation gain. | ✓ The saved feature-selection list predates the current feature matrix.
-    leaderboard score 0.81732 → 0.81922 (+0.00189)
-- expert 55987255 (Master) · learning · v5→v8   Compute fixed-length document embeddings from a pretrained sentence encoder (sum and normalize sentence vectors), append them as additional columns, and verify the pipeline runs before tuning the tree model. Add explicit memory cleanup and necessary imports to handle the larger memory footprint of t
+    leaderboard score 0.81732 → 0.81922 (higher is better; improved by 0.00189)
+- expert 55987255 · learning · v5→v8   Compute fixed-length document embeddings from a pretrained sentence encoder (sum and normalize sentence vectors), append them as additional columns, and verify the pipeline runs before tuning the tree model. Add explicit memory cleanup and necessary imports to handle the larger memory footprint of t
     evidence: ✓ The current representation lacks semantic information available from a compatible pretrained encoder. | ✓ Recent feature additions increased dimension without a reliable validation gain.
-    leaderboard score 0.81791 → n/a
-- expert 55987255 (Master) · learning · v10→v12   Concatenate the pretrained embeddings to the existing feature matrix and evaluate on the leaderboard. If the score drops, the embeddings likely add noise that the tree model cannot exploit without fine-tuning or dimensionality reduction. Revert the addition and consider either reducing embedding dim
+    leaderboard score 0.81791 → n/a (higher is better)
+- expert 55987255 · learning · v10→v12   Concatenate the pretrained embeddings to the existing feature matrix and evaluate on the leaderboard. If the score drops, the embeddings likely add noise that the tree model cannot exploit without fine-tuning or dimensionality reduction. Revert the addition and consider either reducing embedding dim
     evidence: ✓ The current representation lacks semantic information available from a compatible pretrained encoder. | ✓ Recent feature additions increased dimension without a reliable validation gain.
-    leaderboard score 0.81914 → 0.81757 (-0.00158)
-- expert 55987255 (Master) · learning · v38→v39   Extract dense embeddings (e.g., mean-pooled hidden states) from the pretrained model and use them as input features to the tree-based model, rather than relying on the model's generated text predictions. This preserves the rich representation while letting the supervised learner handle calibration a
+    leaderboard score 0.81914 → 0.81757 (higher is better; worse by 0.00158)
+- expert 55987255 · learning · v38→v39   Extract dense embeddings (e.g., mean-pooled hidden states) from the pretrained model and use them as input features to the tree-based model, rather than relying on the model's generated text predictions. This preserves the rich representation while letting the supervised learner handle calibration a
     evidence: ✓ The current representation lacks semantic information available from a compatible pretrained encoder. | ✓ Recent feature additions increased dimension without a reliable validation gain.
-    leaderboard score 0.81711 → 0.71784 (-0.09927)
-- expert 55987255 (Master) · learning · v39→v41   Extract fixed-size embeddings from the pretrained model's encoder (using mean pooling over hidden states), cache them to disk, and append each embedding dimension as a new feature column for the tree-based model. This converts the language model into a feature extractor rather than a predictor.
+    leaderboard score 0.81711 → 0.71784 (higher is better; worse by 0.09927)
+- expert 55987255 · learning · v39→v41   Extract fixed-size embeddings from the pretrained model's encoder (using mean pooling over hidden states), cache them to disk, and append each embedding dimension as a new feature column for the tree-based model. This converts the language model into a feature extractor rather than a predictor.
     evidence: ✓ The current representation lacks semantic information available from a compatible pretrained encoder. | ✓ Recent feature additions increased dimension without a reliable validation gain.
-    leaderboard score 0.71784 → n/a
+    leaderboard score 0.71784 → n/a (higher is better)

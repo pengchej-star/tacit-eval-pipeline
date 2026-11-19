@@ -1,25 +1,25 @@
 # Average predictions uniformly  `T.5.2.1`   7 edits, 0 experts
-4 scored cases, median improvement +0.00033, 2 improved
+4 scored cases (improvement signed by each competition's direction), median +0.00135, 3 improved
 
 
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v59→v60   Test the hierarchical blend against the flat blend on the leaderboard. If the additional averaging layer does not improve the score, prefer the simpler flat blend — extra averaging tends to regress predictions toward the mean and can dilute the strongest individual signals when the component predict
+- expert 17616127 · commonlitreadabilityprize · v59→v60   Test the hierarchical blend against the flat blend on the leaderboard. If the additional averaging layer does not improve the score, prefer the simpler flat blend — extra averaging tends to regress predictions toward the mean and can dilute the strongest individual signals when the component predict
     evidence: ✓ Weight estimates are unstable or no independent out-of-fold predictions support fitting them. | ✓ Members have unequal quality and aligned validation predictions are available. | ✗ The metric uses ordering and members have incompatible score scales or outliers. | ✗ The metric evaluates class distributions and logits or calibrated probabilities are available.
-    leaderboard score n/a → 0.45499
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v98→v100   Run both meta-learner stacks at inference, then take a simple equal-weight average of their outputs. Verify that each stack uses its own trained weights (a common bug is accidentally sharing the same weight files). Print or log each stack's output to confirm they differ before averaging.
+    leaderboard score n/a → 0.45499 (lower is better)
+- expert 17616127 · commonlitreadabilityprize · v98→v100   Run both meta-learner stacks at inference, then take a simple equal-weight average of their outputs. Verify that each stack uses its own trained weights (a common bug is accidentally sharing the same weight files). Print or log each stack's output to confirm they differ before averaging.
     evidence: ✓ Weight estimates are unstable or no independent out-of-fold predictions support fitting them. | ✗ The metric uses ordering and members have incompatible score scales or outliers. | ✗ The metric evaluates class distributions and logits or calibrated probabilities are available.
-    leaderboard score 0.45076 → 0.45001 (-0.00075)
-- expert 18837555 (Expert) · commonlitreadabilityprize · v13→v16   Try hierarchical averaging: first average within each model group, then average the group-level means. This equalizes the influence of groups regardless of how many members each has. Compare against flat averaging and against up-weighting individual strong groups. Use leaderboard or validation feedb
+    leaderboard score 0.45076 → 0.45001 (lower is better; improved by 0.00075)
+- expert 18837555 · commonlitreadabilityprize · v13→v16   Try hierarchical averaging: first average within each model group, then average the group-level means. This equalizes the influence of groups regardless of how many members each has. Compare against flat averaging and against up-weighting individual strong groups. Use leaderboard or validation feedb
     evidence: ✓ Weight estimates are unstable or no independent out-of-fold predictions support fitting them. | ✗ The metric evaluates class distributions and logits or calibrated probabilities are available. | ✗ Sufficient cross-fitted predictions exist to learn a stable combination without leakage. | ✗ Members have unequal quality and aligned validation predictions are available.
-    leaderboard score 0.45676 → 0.45709 (+0.00033)
-- expert 7573212 (Contributor) · google · v7→v8   Revert to equal-weight averaging and redirect effort to a different improvement lever (e.g., output post-processing or model diversity) rather than continuing to search over blend weights without reliable validation signal.
+    leaderboard score 0.45676 → 0.45709 (lower is better; worse by 0.00033)
+- expert 7573212 · google · v7→v8   Revert to equal-weight averaging and redirect effort to a different improvement lever (e.g., output post-processing or model diversity) rather than continuing to search over blend weights without reliable validation signal.
     evidence: ✓ Weight estimates are unstable or no independent out-of-fold predictions support fitting them.
-    leaderboard score 0.37898 → n/a
-- expert 55591012 (Grandmaster) · learning · v26→v27   Before submitting a blended file, verify that (1) row IDs are aligned between the two files, (2) prediction scales and distributions are compatible, and (3) the blend improves on a local validation set. A catastrophic score drop signals a merge or alignment bug. Always validate locally before submit
+    leaderboard score 0.37898 → n/a (higher is better)
+- expert 55591012 · learning · v26→v27   Before submitting a blended file, verify that (1) row IDs are aligned between the two files, (2) prediction scales and distributions are compatible, and (3) the blend improves on a local validation set. A catastrophic score drop signals a merge or alignment bug. Always validate locally before submit
     evidence: ✓ Weight estimates are unstable or no independent out-of-fold predictions support fitting them. | ✗ Sufficient cross-fitted predictions exist to learn a stable combination without leakage.
-    leaderboard score n/a → 0.55086
-- expert 15372370 (Expert) · ranzcr · v6→v7   Switch to simple (equal-weight) averaging of predictions across all folds of a single cross-validation run. Fold-averaging is more stable because the models share the same architecture and training recipe, reducing the risk of miscalibrated blend weights.
+    leaderboard score n/a → 0.55086 (higher is better)
+- expert 15372370 · ranzcr · v6→v7   Switch to simple (equal-weight) averaging of predictions across all folds of a single cross-validation run. Fold-averaging is more stable because the models share the same architecture and training recipe, reducing the risk of miscalibrated blend weights.
     evidence: ✓ Weight estimates are unstable or no independent out-of-fold predictions support fitting them. | ✗ Members have unequal quality and aligned validation predictions are available. | ✗ Sufficient cross-fitted predictions exist to learn a stable combination without leakage.
-    leaderboard score 0.96670 → 0.96804 (+0.00135)
-- expert 50496431 (Grandmaster) · hms · v101→v104   Reset to a simple equal-weight (mean) ensemble as a stable baseline. Then upgrade or swap individual members one at a time, re-adding each only after confirming it improves the mean blend. This isolates each member's contribution without introducing fragile weight tuning.
+    leaderboard score 0.96670 → 0.96804 (higher is better; improved by 0.00135)
+- expert 50496431 · hms · v101→v104   Reset to a simple equal-weight (mean) ensemble as a stable baseline. Then upgrade or swap individual members one at a time, re-adding each only after confirming it improves the mean blend. This isolates each member's contribution without introducing fragile weight tuning.
     evidence: ✓ Weight estimates are unstable or no independent out-of-fold predictions support fitting them. | ✗ The metric uses ordering and members have incompatible score scales or outliers. | ✗ Sufficient cross-fitted predictions exist to learn a stable combination without leakage. | ✓ Members have unequal quality and aligned validation predictions are available. | ✓ The metric evaluates class distributions and logits or calibrated probabilities are available.
-    leaderboard score 0.27434 → 0.27115 (-0.00318)
+    leaderboard score 0.27434 → 0.27115 (lower is better; improved by 0.00318)

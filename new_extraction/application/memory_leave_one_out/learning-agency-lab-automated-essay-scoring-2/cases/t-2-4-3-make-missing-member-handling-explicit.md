@@ -1,13 +1,13 @@
 # Make missing-member handling explicit  `T.2.4.3`   3 edits, 0 experts
-2 scored cases, median improvement +0.30792, 2 improved
+2 scored cases (improvement signed by each competition's direction), median +0.30792, 2 improved
 
 
-- expert 7548275 (Expert) · google · v12→v13   Wrap each file read inside a try/except block so that missing or corrupt files are skipped. The ensemble then averages over whichever models did produce outputs, ensuring a submission is always generated even if some components fail.
+- expert 7548275 · google · v12→v13   Wrap each file read inside a try/except block so that missing or corrupt files are skipped. The ensemble then averages over whichever models did produce outputs, ensuring a submission is always generated even if some components fail.
     evidence: ✓ Some ensemble output files are missing or fallback arrays are placeholders. | ✗ Debug/development mode flags or reduced hyperparameters are still active, preventing a production-quality full run.
-    leaderboard score n/a → n/a
-- expert 7548275 (Expert) · google · v17→v18   For each model in the ensemble, wrap the file-loading step in a try/except. On failure, fall back to a pre-uploaded set of known-good predictions stored as a separate data asset. After merging all available predictions, fill any remaining NaNs and re-normalize before writing the submission. This gua
+    leaderboard score n/a → n/a (higher is better)
+- expert 7548275 · google · v17→v18   For each model in the ensemble, wrap the file-loading step in a try/except. On failure, fall back to a pre-uploaded set of known-good predictions stored as a separate data asset. After merging all available predictions, fill any remaining NaNs and re-normalize before writing the submission. This gua
     evidence: ✓ Some ensemble output files are missing or fallback arrays are placeholders. | ✓ Repeated patches leave duplicated transformations or hidden dependencies that prevent reliable fixes. | ✗ Debug/development mode flags or reduced hyperparameters are still active, preventing a production-quality full run. | ✓ The current pipeline runs end-to-end but produces a significantly worse score than a prior known-good version, indicating a quality regression.
-    leaderboard score -0.00372 → 0.30420 (+0.30792)
-- expert 7548275 (Expert) · google · v20→v21   After fixing the upstream issue that originally required the fallback, disable or remove the fallback code path entirely. Verify with a submission that no residual contamination remains. Even small score improvements confirm the fallback was still active.
+    leaderboard score -0.00372 → 0.30420 (higher is better; improved by 0.30792)
+- expert 7548275 · google · v20→v21   After fixing the upstream issue that originally required the fallback, disable or remove the fallback code path entirely. Verify with a submission that no residual contamination remains. Even small score improvements confirm the fallback was still active.
     evidence: ✗ The pipeline fails before completing even one sample or model. | ✗ Inference finishes but the expected prediction file is absent or malformed. | ✓ Some ensemble output files are missing or fallback arrays are placeholders. | ✓ Repeated patches leave duplicated transformations or hidden dependencies that prevent reliable fixes. | ✗ A proposed change (e.g., higher resolution, larger model) significantly increases compute cost, making a full end-to-end run risky without a quick sanity check first. | ✓ Debug/development mode flags or reduced hyperparameters are still active, preventing a production-quality full run.
-    leaderboard score 0.39772 → 0.39778 (+0.00006)
+    leaderboard score 0.39772 → 0.39778 (higher is better; improved by 0.00006)

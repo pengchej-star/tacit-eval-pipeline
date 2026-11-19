@@ -1,16 +1,16 @@
 # Tune head dropout  `T.6.4.4`   4 edits, 0 experts
-3 scored cases, median improvement +0.00279, 3 improved
+3 scored cases (improvement signed by each competition's direction), median +0.00279, 3 improved
 
 
-- expert 7613444 (Contributor) · google · v5→v6   Add dropout layers to each branch's classification head between the pooled representation and the output layer. Expect a small but consistent improvement; verify on the held-out metric before combining with other changes.
+- expert 7613444 · google · v5→v6   Add dropout layers to each branch's classification head between the pooled representation and the output layer. Expect a small but consistent improvement; verify on the held-out metric before combining with other changes.
     evidence: ✓ The pretrained backbone fits training data well but the added head overfits. | ✓ A recent change to the loss function or architecture invalidates previously tuned hyperparameters, requiring re-tuning of LR and regularization.
-    leaderboard score 0.39802 → 0.39832 (+0.00030)
-- expert 7253130 (Contributor) · google · v3→v5   Re-tune the learning rate and dropout in small sequential steps, changing one at a time and submitting after each change to isolate effects. Start by lowering the learning rate (the loss surface changed) and reducing dropout, then adjust dropout back up if the lower rate already stabilizes training.
+    leaderboard score 0.39802 → 0.39832 (higher is better; improved by 0.00030)
+- expert 7253130 · google · v3→v5   Re-tune the learning rate and dropout in small sequential steps, changing one at a time and submitting after each change to isolate effects. Start by lowering the learning rate (the loss surface changed) and reducing dropout, then adjust dropout back up if the lower rate already stabilizes training.
     evidence: ✗ The output activation or training loss imposes assumptions inconsistent with the labels or task metric. | ✓ A recent change to the loss function or architecture invalidates previously tuned hyperparameters, requiring re-tuning of LR and regularization. | ✓ A previous optimization trial was confounded by a bug or misconfiguration, so its results cannot be used as valid evidence. | ✓ The pretrained backbone fits training data well but the added head overfits.
-    leaderboard score n/a → 0.36997
-- expert 7253130 (Contributor) · google · v9→v11   Change one or two hyperparameters at a time in small increments, submit each variant, and compare. When a joint change improves the score, keep it. When a partial revert worsens the score, revert toward the configuration that scored best. This greedy coordinate-style search is practical when each ev
+    leaderboard score n/a → 0.36997 (higher is better)
+- expert 7253130 · google · v9→v11   Change one or two hyperparameters at a time in small increments, submit each variant, and compare. When a joint change improves the score, keep it. When a partial revert worsens the score, revert toward the configuration that scored best. This greedy coordinate-style search is practical when each ev
     evidence: ✓ The pretrained backbone fits training data well but the added head overfits. | ✗ The output activation or training loss imposes assumptions inconsistent with the labels or task metric. | ✓ A recent change to the loss function or architecture invalidates previously tuned hyperparameters, requiring re-tuning of LR and regularization. | ✓ A previous optimization trial was confounded by a bug or misconfiguration, so its results cannot be used as valid evidence. | ✓ Training is unstable or converges too slowly under the current fine-tuning rate.
-    leaderboard score 0.37253 → 0.37532 (+0.00279)
-- expert 13702907 (Contributor) · ranzcr · v15→v16   Simultaneously reduce the dropout rate (e.g., roughly halve it) and swap in a checkpoint trained with different or longer training. Changing two correlated levers together is acceptable when each alone is cheap to test and the plateau is persistent.
+    leaderboard score 0.37253 → 0.37532 (higher is better; improved by 0.00279)
+- expert 13702907 · ranzcr · v15→v16   Simultaneously reduce the dropout rate (e.g., roughly halve it) and swap in a checkpoint trained with different or longer training. Changing two correlated levers together is acceptable when each alone is cheap to test and the plateau is persistent.
     evidence: ✓ The pretrained backbone fits training data well but the added head overfits. | ✓ A recent change to the loss function or architecture invalidates previously tuned hyperparameters, requiring re-tuning of LR and regularization. | ✓ A previous optimization trial was confounded by a bug or misconfiguration, so its results cannot be used as valid evidence.
-    leaderboard score 0.94937 → 0.95396 (+0.00460)
+    leaderboard score 0.94937 → 0.95396 (higher is better; improved by 0.00460)

@@ -1,13 +1,13 @@
 # Change signal filtering  `T.4.4.2`   3 edits, 0 experts
-2 scored cases, median improvement -0.00573, 0 improved
+2 scored cases (improvement signed by each competition's direction), median +0.05551, 2 improved
 
 
-- expert 50496431 (Grandmaster) · hms · v171→v172   Apply a notch filter at the known interference frequency before any further signal processing (bandpass, spectrogram). This removes a predictable artifact that can leak into frequency-domain features and hurt generalization. Verify the effect by submitting with and without the filter while keeping o
+- expert 50496431 · hms · v171→v172   Apply a notch filter at the known interference frequency before any further signal processing (bandpass, spectrogram). This removes a predictable artifact that can leak into frequency-domain features and hurt generalization. Verify the effect by submitting with and without the filter while keeping o
     evidence: ✓ Raw traces show a known interference frequency or substantial out-of-band energy. | ✗ The most recent front-end changes have not yet been scored, so the immediate next step is a scoring run rather than a new front-end experiment.
-    leaderboard score 0.28928 → 0.23376 (-0.05551)
-- expert 50496431 (Grandmaster) · hms · v181→v182   Swap the filtering backend (e.g., from an FIR library filter to a low-order IIR Butterworth via a scientific-computing library) while keeping the same cutoff frequencies. Compare leaderboard or validation scores to decide which filter to keep. A low filter order (e.g., 2) reduces ringing and phase d
+    leaderboard score 0.28928 → 0.23376 (lower is better; improved by 0.05551)
+- expert 50496431 · hms · v181→v182   Swap the filtering backend (e.g., from an FIR library filter to a low-order IIR Butterworth via a scientific-computing library) while keeping the same cutoff frequencies. Compare leaderboard or validation scores to decide which filter to keep. A low filter order (e.g., 2) reduces ringing and phase d
     evidence: ✓ Raw traces show a known interference frequency or substantial out-of-band energy. | ✓ Only fixed checkpoints are available and the proposed front end differs from their training pipeline. | ✗ The most recent front-end changes have not yet been scored, so the immediate next step is a scoring run rather than a new front-end experiment. | ✓ The current bandpass filter implementation may introduce excessive ringing, latency, or computational cost compared to a simpler alternative.
-    leaderboard score 0.23815 → 0.23243 (-0.00573)
-- expert 50496431 (Grandmaster) · hms · v208→v210   Test a higher filter order in one experiment. If the score does not clearly improve, revert to the lower order, since a sharper filter risks removing information the model expects. Keep the filter order consistent with what was used during training whenever possible.
+    leaderboard score 0.23815 → 0.23243 (lower is better; improved by 0.00573)
+- expert 50496431 · hms · v208→v210   Test a higher filter order in one experiment. If the score does not clearly improve, revert to the lower order, since a sharper filter risks removing information the model expects. Keep the filter order consistent with what was used during training whenever possible.
     evidence: ✓ Only fixed checkpoints are available and the proposed front end differs from their training pipeline. | ✗ The most recent front-end changes have not yet been scored, so the immediate next step is a scoring run rather than a new front-end experiment. | ✓ The current bandpass filter implementation may introduce excessive ringing, latency, or computational cost compared to a simpler alternative. | ✓ The proposed front-end change was previously bundled with other modifications and has never been ablated in isolation. | ✓ The best-scoring configuration used a higher sampling rate or wider filter band than what is currently proposed.
-    leaderboard score 0.25986 → n/a
+    leaderboard score 0.25986 → n/a (lower is better)

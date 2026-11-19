@@ -1,19 +1,19 @@
 # Add a complementary model branch  `T.4.6.2`   5 edits, 0 experts
-5 scored cases, median improvement -0.02304, 0 improved
+5 scored cases (improvement signed by each competition's direction), median +0.02304, 5 improved
 
 
-- expert 49524919 (Grandmaster) · hms · v35→v46   Build a separate 1D temporal model pipeline on the raw signal data, with modality-specific preprocessing and augmentation. Debug it as a standalone submission first to verify it produces competitive predictions before attempting to ensemble it with the image-based model.
+- expert 49524919 · hms · v35→v46   Build a separate 1D temporal model pipeline on the raw signal data, with modality-specific preprocessing and augmentation. Debug it as a standalone submission first to verify it produces competitive predictions before attempting to ensemble it with the image-based model.
     evidence: ✓ A different modality or representation carries information the current branch cannot see. | ✓ A branch's standalone score is substantially worse than the other branch, indicating it still needs improvement before ensembling. | ✓ A full-modality baseline score exists to compare the ablation against.
-    leaderboard score 0.53319 → 0.46059 (-0.07259)
-- expert 49576186 (Expert) · hms · v2→v4   Add a 1D convolutional branch that processes the raw time-series in parallel with the spectrogram branch. Also switch normalization from per-patch to per-sample scope, and verify the bandpass filter design matches the frequency range of interest. Expect a meaningful but not dramatic first-step gain.
+    leaderboard score 0.53319 → 0.46059 (lower is better; improved by 0.07259)
+- expert 49576186 · hms · v2→v4   Add a 1D convolutional branch that processes the raw time-series in parallel with the spectrogram branch. Also switch normalization from per-patch to per-sample scope, and verify the bandpass filter design matches the frequency range of interest. Expect a meaningful but not dramatic first-step gain.
     evidence: ✓ A different modality or representation carries information the current branch cannot see. | ✗ A previous attempt to increase input channels worsened the score, suggesting adding more channels may not help. | ✓ A full-modality baseline score exists to compare the ablation against. | ✗ A branch's standalone score is substantially worse than the other branch, indicating it still needs improvement before ensembling.
-    leaderboard score 0.42923 → 0.40619 (-0.02304)
-- expert 49576186 (Expert) · hms · v70→v76   Add the new modality as a separate input branch, ensure per-sample grouping and target normalization are consistent across modalities, set deterministic seeds for reproducibility, and restore proven preprocessing parameters (e.g., resolution) that may have been inadvertently changed. If intermediate
+    leaderboard score 0.42923 → 0.40619 (lower is better; improved by 0.02304)
+- expert 49576186 · hms · v70→v76   Add the new modality as a separate input branch, ensure per-sample grouping and target normalization are consistent across modalities, set deterministic seeds for reproducibility, and restore proven preprocessing parameters (e.g., resolution) that may have been inadvertently changed. If intermediate
     evidence: ✓ A different modality or representation carries information the current branch cannot see. | ✓ A full-modality baseline score exists to compare the ablation against. | ✗ A previous attempt to increase input channels worsened the score, suggesting adding more channels may not help. | ✓ The signal extraction indexing uses an incorrect sampling rate or offset, causing misaligned input segments.
-    leaderboard score 0.35346 → 0.34054 (-0.01292)
-- expert 49576186 (Expert) · hms · v113→v125   Restore all modalities, then systematically refine the spectrogram branch (windowing function, FFT size, frequency range, colormap for rendered spectrograms) and the cross-validation split strategy (pure group-based instead of stratified). Change one or two preprocessing details per iteration and su
+    leaderboard score 0.35346 → 0.34054 (lower is better; improved by 0.01292)
+- expert 49576186 · hms · v113→v125   Restore all modalities, then systematically refine the spectrogram branch (windowing function, FFT size, frequency range, colormap for rendered spectrograms) and the cross-validation split strategy (pure group-based instead of stratified). Change one or two preprocessing details per iteration and su
     evidence: ✓ A different modality or representation carries information the current branch cannot see. | ✓ The backbone capacity is insufficient for the number of input channels or modality complexity, requiring a larger model variant. | ✓ A full-modality baseline score exists to compare the ablation against. | ✓ A prior ablation removing one branch showed degradation compared to the full-modality baseline, confirming that branch's contribution.
-    leaderboard score 0.35418 → 0.26861 (-0.08558)
-- expert 49576186 (Expert) · hms · v181→v183   Create a parallel input branch from the same raw signal but with different temporal sampling, window length, or frequency resolution. Give it its own convolutional feature extractor and merge its embeddings with the existing branches before the classification head. Evaluate on the leaderboard to con
+    leaderboard score 0.35418 → 0.26861 (lower is better; improved by 0.08558)
+- expert 49576186 · hms · v181→v183   Create a parallel input branch from the same raw signal but with different temporal sampling, window length, or frequency resolution. Give it its own convolutional feature extractor and merge its embeddings with the existing branches before the classification head. Evaluate on the leaderboard to con
     evidence: ✓ A different modality or representation carries information the current branch cannot see. | ✗ A previous attempt to increase input channels worsened the score, suggesting adding more channels may not help. | ✓ A full-modality baseline score exists to compare the ablation against.
-    leaderboard score 0.27700 → 0.25555 (-0.02145)
+    leaderboard score 0.27700 → 0.25555 (lower is better; improved by 0.02145)

@@ -1,52 +1,52 @@
 # Use frozen pretrained embeddings  `T.3.1.5`   16 edits, 0 experts
-10 scored cases, median improvement -0.00099, 4 improved
+10 scored cases (improvement signed by each competition's direction), median -0.00099, 4 improved
 
 
-- expert 7670859 (Contributor) · google · v18→v27   Extract sentence embeddings from one or more pretrained encoders for each text field, compute pairwise similarity features (e.g., dot-product between question and answer embeddings), one-hot encode categorical metadata, concatenate everything into a feature matrix, train lightweight models on it, an
+- expert 7670859 · google · v18→v27   Extract sentence embeddings from one or more pretrained encoders for each text field, compute pairwise similarity features (e.g., dot-product between question and answer embeddings), one-hot encode categorical metadata, concatenate everything into a feature matrix, train lightweight models on it, an
     evidence: ✗ The task predicts entities with repeated time-ordered records but uses only one record or a narrow summary. | ✓ Known relationships or metadata have predictive meaning absent from the current columns. | ✓ A pretrained encoder is available and existing lexical features miss semantic similarity. | ✓ A related predictor has valid out-of-fold predictions aligned to the current training rows.
-    leaderboard score n/a → 0.39282
-- expert 58130512 (Master) · learning · v16→v18   Extract mean-pooled hidden states from the pretrained model and concatenate them as dense columns alongside existing features. Submit and compare. Be aware that high-dimensional dense embeddings may not combine well with sparse features in tree models and can increase overfitting; if the gain is sma
+    leaderboard score n/a → 0.39282 (higher is better)
+- expert 58130512 · learning · v16→v18   Extract mean-pooled hidden states from the pretrained model and concatenate them as dense columns alongside existing features. Submit and compare. Be aware that high-dimensional dense embeddings may not combine well with sparse features in tree models and can increase overfitting; if the gain is sma
     evidence: ✗ The task predicts entities with repeated time-ordered records but uses only one record or a narrow summary. | ✓ A pretrained encoder is available and existing lexical features miss semantic similarity.
-    leaderboard score 0.81644 → 0.81755 (+0.00111)
-- expert 58130512 (Master) · learning · v21→v23   Re-test the feature set in isolation on top of the new best configuration. If the leaderboard score does not improve or barely changes, remove the features again. Avoid bundling the feature addition with other changes (e.g., CV logic modifications) so that each effect can be attributed cleanly.
+    leaderboard score 0.81644 → 0.81755 (higher is better; improved by 0.00111)
+- expert 58130512 · learning · v21→v23   Re-test the feature set in isolation on top of the new best configuration. If the leaderboard score does not improve or barely changes, remove the features again. Avoid bundling the feature addition with other changes (e.g., CV logic modifications) so that each effect can be attributed cleanly.
     evidence: ✗ The task predicts entities with repeated time-ordered records but uses only one record or a narrow summary. | ✓ A pretrained encoder is available and existing lexical features miss semantic similarity.
-    leaderboard score 0.82080 → 0.81980 (-0.00099)
-- expert 58130512 (Master) · learning · v24→v27   Sweep three configurations: embeddings with the original feature set, no embeddings with a re-tuned feature set, and embeddings with a re-tuned feature set. The feature-selection list must be regenerated to account for the presence or absence of embedding columns; reusing an old list mismatches the 
+    leaderboard score 0.82080 → 0.81980 (higher is better; worse by 0.00099)
+- expert 58130512 · learning · v24→v27   Sweep three configurations: embeddings with the original feature set, no embeddings with a re-tuned feature set, and embeddings with a re-tuned feature set. The feature-selection list must be regenerated to account for the presence or absence of embedding columns; reusing an old list mismatches the 
     evidence: ✓ A pretrained encoder is available and existing lexical features miss semantic similarity.
-    leaderboard score 0.81752 → 0.82049 (+0.00298)
-- expert 58130512 (Master) · learning · v29→v30   Use the pretrained model's out-of-fold scalar predictions (or low-dimensional task outputs) rather than its full hidden vectors as stacking features. These are lower-dimensional, already task-aligned, and less prone to overfitting in the downstream model.
+    leaderboard score 0.81752 → 0.82049 (higher is better; improved by 0.00298)
+- expert 58130512 · learning · v29→v30   Use the pretrained model's out-of-fold scalar predictions (or low-dimensional task outputs) rather than its full hidden vectors as stacking features. These are lower-dimensional, already task-aligned, and less prone to overfitting in the downstream model.
     evidence: ✓ A pretrained encoder is available and existing lexical features miss semantic similarity. | ✓ A related predictor has valid out-of-fold predictions aligned to the current training rows.
-    leaderboard score 0.82105 → n/a
-- expert 58130512 (Master) · learning · v56→v57   Add diverse pretrained backbones (varying architecture families and sizes) to the embedding ensemble and concatenate their pooled hidden states. Monitor whether the increased dimensionality helps or hurts by comparing validation/leaderboard scores. If the gain is marginal or negative, the extra dime
+    leaderboard score 0.82105 → n/a (higher is better)
+- expert 58130512 · learning · v56→v57   Add diverse pretrained backbones (varying architecture families and sizes) to the embedding ensemble and concatenate their pooled hidden states. Monitor whether the increased dimensionality helps or hurts by comparing validation/leaderboard scores. If the gain is marginal or negative, the extra dime
     evidence: ✗ The task predicts entities with repeated time-ordered records but uses only one record or a narrow summary. | ✓ A pretrained encoder is available and existing lexical features miss semantic similarity.
-    leaderboard score 0.81732 → 0.81922 (+0.00189)
-- expert 58130512 (Master) · learning · v113→v115   Test both a compact and an expanded embedding configuration via held-out or leaderboard evaluation. Prefer the compact set unless the expanded one shows a clear gain, because tree models can overfit to high-dimensional, correlated embedding features. Use a precomputed feature-importance or intersect
+    leaderboard score 0.81732 → 0.81922 (higher is better; improved by 0.00189)
+- expert 58130512 · learning · v113→v115   Test both a compact and an expanded embedding configuration via held-out or leaderboard evaluation. Prefer the compact set unless the expanded one shows a clear gain, because tree models can overfit to high-dimensional, correlated embedding features. Use a precomputed feature-importance or intersect
     evidence: ✗ The task predicts entities with repeated time-ordered records but uses only one record or a narrow summary. | ✓ A pretrained encoder is available and existing lexical features miss semantic similarity.
-    leaderboard score n/a → 0.82235
-- expert 58130512 (Master) · learning · v119→v121   Treat the set of embedding models and the precomputed feature-selection list as a coupled pair. Sweep them together: for each candidate set of embedding models, use or regenerate a matched feature-selection list, submit, and compare. Avoid mixing a feature list built for one model set with a differe
+    leaderboard score n/a → 0.82235 (higher is better)
+- expert 58130512 · learning · v119→v121   Treat the set of embedding models and the precomputed feature-selection list as a coupled pair. Sweep them together: for each candidate set of embedding models, use or regenerate a matched feature-selection list, submit, and compare. Avoid mixing a feature list built for one model set with a differe
     evidence: ✗ The task predicts entities with repeated time-ordered records but uses only one record or a narrow summary. | ✓ A pretrained encoder is available and existing lexical features miss semantic similarity.
-    leaderboard score 0.81999 → 0.82240 (+0.00241)
-- expert 58130512 (Master) · learning · v128→v132   When expanding the embedding feature set, always pair the expansion with an updated feature-selection step that filters to the most informative subset. Submit and compare against the baseline before further changes. If the expanded set does not beat the smaller set after feature selection, revert to
+    leaderboard score 0.81999 → 0.82240 (higher is better; improved by 0.00241)
+- expert 58130512 · learning · v128→v132   When expanding the embedding feature set, always pair the expansion with an updated feature-selection step that filters to the most informative subset. Submit and compare against the baseline before further changes. If the expanded set does not beat the smaller set after feature selection, revert to
     evidence: ✗ The task predicts entities with repeated time-ordered records but uses only one record or a narrow summary. | ✓ A pretrained encoder is available and existing lexical features miss semantic similarity.
-    leaderboard score n/a → n/a
-- expert 55987255 (Master) · learning · v5→v8   Compute fixed-length document embeddings from a pretrained sentence encoder (sum and normalize sentence vectors), append them as additional columns, and verify the pipeline runs before tuning the tree model. Add explicit memory cleanup and necessary imports to handle the larger memory footprint of t
+    leaderboard score n/a → n/a (higher is better)
+- expert 55987255 · learning · v5→v8   Compute fixed-length document embeddings from a pretrained sentence encoder (sum and normalize sentence vectors), append them as additional columns, and verify the pipeline runs before tuning the tree model. Add explicit memory cleanup and necessary imports to handle the larger memory footprint of t
     evidence: ✗ The task predicts entities with repeated time-ordered records but uses only one record or a narrow summary. | ✓ A pretrained encoder is available and existing lexical features miss semantic similarity.
-    leaderboard score 0.81791 → n/a
-- expert 55987255 (Master) · learning · v10→v12   Concatenate the pretrained embeddings to the existing feature matrix and evaluate on the leaderboard. If the score drops, the embeddings likely add noise that the tree model cannot exploit without fine-tuning or dimensionality reduction. Revert the addition and consider either reducing embedding dim
+    leaderboard score 0.81791 → n/a (higher is better)
+- expert 55987255 · learning · v10→v12   Concatenate the pretrained embeddings to the existing feature matrix and evaluate on the leaderboard. If the score drops, the embeddings likely add noise that the tree model cannot exploit without fine-tuning or dimensionality reduction. Revert the addition and consider either reducing embedding dim
     evidence: ✗ The task predicts entities with repeated time-ordered records but uses only one record or a narrow summary. | ✓ A pretrained encoder is available and existing lexical features miss semantic similarity.
-    leaderboard score 0.81914 → 0.81757 (-0.00158)
-- expert 55987255 (Master) · learning · v38→v39   Before committing, treat this as a probe: submit the blended prediction and compare against the baseline. Autoregressive models prompted to output scores often produce noisy, poorly calibrated ordinal predictions that degrade ensemble quality. If the score drops substantially, pivot to extracting th
+    leaderboard score 0.81914 → 0.81757 (higher is better; worse by 0.00158)
+- expert 55987255 · learning · v38→v39   Before committing, treat this as a probe: submit the blended prediction and compare against the baseline. Autoregressive models prompted to output scores often produce noisy, poorly calibrated ordinal predictions that degrade ensemble quality. If the score drops substantially, pivot to extracting th
     evidence: ✗ The task predicts entities with repeated time-ordered records but uses only one record or a narrow summary. | ✓ A pretrained encoder is available and existing lexical features miss semantic similarity. | ✗ A related predictor has valid out-of-fold predictions aligned to the current training rows.
-    leaderboard score 0.81711 → 0.71784 (-0.09927)
-- expert 55987255 (Master) · learning · v38→v39   Extract dense embeddings (e.g., mean-pooled hidden states) from the pretrained model and use them as input features to the tree-based model, rather than relying on the model's generated text predictions. This preserves the rich representation while letting the supervised learner handle calibration a
+    leaderboard score 0.81711 → 0.71784 (higher is better; worse by 0.09927)
+- expert 55987255 · learning · v38→v39   Extract dense embeddings (e.g., mean-pooled hidden states) from the pretrained model and use them as input features to the tree-based model, rather than relying on the model's generated text predictions. This preserves the rich representation while letting the supervised learner handle calibration a
     evidence: ✗ The task predicts entities with repeated time-ordered records but uses only one record or a narrow summary. | ✓ A pretrained encoder is available and existing lexical features miss semantic similarity. | ✗ A related predictor has valid out-of-fold predictions aligned to the current training rows.
-    leaderboard score 0.81711 → 0.71784 (-0.09927)
-- expert 55987255 (Master) · learning · v39→v41   Extract fixed-size embeddings from the pretrained model's encoder (using mean pooling over hidden states), cache them to disk, and append each embedding dimension as a new feature column for the tree-based model. This converts the language model into a feature extractor rather than a predictor.
+    leaderboard score 0.81711 → 0.71784 (higher is better; worse by 0.09927)
+- expert 55987255 · learning · v39→v41   Extract fixed-size embeddings from the pretrained model's encoder (using mean pooling over hidden states), cache them to disk, and append each embedding dimension as a new feature column for the tree-based model. This converts the language model into a feature extractor rather than a predictor.
     evidence: ✗ The task predicts entities with repeated time-ordered records but uses only one record or a narrow summary. | ✓ A pretrained encoder is available and existing lexical features miss semantic similarity. | ✗ A related predictor has valid out-of-fold predictions aligned to the current training rows.
-    leaderboard score 0.71784 → n/a
-- expert 55987255 (Master) · learning · v57→v58   Be cautious when adding more embedding models: additional high-dimensional features can introduce noise, increase overfitting risk, and dilute signal in the tree model. After adding new embedding sources, compare validation performance carefully; if the score drops, revert and instead consider dimen
+    leaderboard score 0.71784 → n/a (higher is better)
+- expert 55987255 · learning · v57→v58   Be cautious when adding more embedding models: additional high-dimensional features can introduce noise, increase overfitting risk, and dilute signal in the tree model. After adding new embedding sources, compare validation performance carefully; if the score drops, revert and instead consider dimen
     evidence: ✗ The task predicts entities with repeated time-ordered records but uses only one record or a narrow summary. | ✓ A pretrained encoder is available and existing lexical features miss semantic similarity.
-    leaderboard score 0.82112 → 0.81777 (-0.00335)
-- expert 55987255 (Master) · learning · v80→v88   Before committing many iterations, validate the new feature source on local CV first. Dense embeddings from a pretrained encoder plus a linear stacking regressor can introduce noise or distribution mismatch if the external data's label semantics differ from the target. If the stacked features hurt t
+    leaderboard score 0.82112 → 0.81777 (higher is better; worse by 0.00335)
+- expert 55987255 · learning · v80→v88   Before committing many iterations, validate the new feature source on local CV first. Dense embeddings from a pretrained encoder plus a linear stacking regressor can introduce noise or distribution mismatch if the external data's label semantics differ from the target. If the stacked features hurt t
     evidence: ✓ A pretrained encoder is available and existing lexical features miss semantic similarity. | ✗ A related predictor has valid out-of-fold predictions aligned to the current training rows. | ✗ The task predicts entities with repeated time-ordered records but uses only one record or a narrow summary.
-    leaderboard score 0.82029 → 0.81560 (-0.00469)
+    leaderboard score 0.82029 → 0.81560 (higher is better; worse by 0.00469)

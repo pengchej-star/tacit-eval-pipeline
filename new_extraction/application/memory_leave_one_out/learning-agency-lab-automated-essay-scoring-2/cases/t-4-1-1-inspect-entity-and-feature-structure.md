@@ -1,5 +1,5 @@
 # Inspect entity and feature structure  `T.4.1.1`   1 edits, 0 experts
 
-- expert 28093671 (Contributor) · amex · v1→v3   Load the data, parse date columns, sort by entity and time, group columns by naming prefix to understand feature families, compute missing-value counts per column, and tabulate the distribution of row counts per entity. This reveals whether entities have uniform history length and which feature grou
+- expert 28093671 · amex · v1→v3   Load the data, parse date columns, sort by entity and time, group columns by naming prefix to understand feature families, compute missing-value counts per column, and tabulate the distribution of row counts per entity. This reveals whether entities have uniform history length and which feature grou
     evidence: ✓ The number and ordering of records per prediction entity are not yet established. | ✓ No working entity-level feature baseline exists. | ✗ Previously added aggregations or derived features caused score regression or no improvement and should be reverted. | ✗ The proposed aggregation change reverses a recent edit, re-adding features that were just removed. | ✗ A candidate aggregation is mathematically redundant with existing aggregations already in the feature set. | ✗ A previously added date/time encoding variant has not yet been validated via submission.
-    leaderboard score n/a → n/a
+    leaderboard score n/a → n/a (higher is better)

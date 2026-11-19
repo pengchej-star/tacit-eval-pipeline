@@ -1,7 +1,7 @@
 # Refit with more labeled rows  `T.3.1.6`   1 edits, 0 experts
-1 scored cases, median improvement +0.00076, 1 improved
+1 scored cases (improvement signed by each competition's direction), median +0.00076, 1 improved
 
 
-- expert 7670859 (Contributor) · google · v27→v31   Use the fixed holdout only for local debugging and hyperparameter selection. For the final submission, disable the holdout and train on all available data using k-fold cross-validation, so every example contributes to the model. Compare leaderboard scores with and without the holdout to confirm the 
+- expert 7670859 · google · v27→v31   Use the fixed holdout only for local debugging and hyperparameter selection. For the final submission, disable the holdout and train on all available data using k-fold cross-validation, so every example contributes to the model. Compare leaderboard scores with and without the holdout to confirm the 
     evidence: ✓ The configuration is selected and a development-only holdout still excludes training rows. | ✓ The current baseline already achieves a competitive score, so this change is an incremental experiment rather than a fix for a known problem. | ✓ Reliable offline (CV) validation is unavailable, so leaderboard submissions are required to evaluate each variant. | ✓ Bundling complementary training improvements with the data selection change may compensate for any individual weakness. | ✓ The change is explicitly framed as a reversible experiment with a plan to revert if it worsens the score. | ✓ A previous version implementing this change was not submitted/scored, so a re-run is needed to obtain the leaderboard score.
-    leaderboard score 0.39282 → 0.39358 (+0.00076)
+    leaderboard score 0.39282 → 0.39358 (higher is better; improved by 0.00076)

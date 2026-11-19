@@ -1,7 +1,7 @@
 # Deduplicate overlapping observations  `T.3.1.3`   1 edits, 0 experts
-1 scored cases, median improvement -0.04703, 0 improved
+1 scored cases (improvement signed by each competition's direction), median +0.04703, 1 improved
 
 
-- expert 49576186 (Expert) · hms · v78→v81   Aggregate labels to the unique observation level, remove overlapping windows so each appears once, balance the resulting set across classes, and cache the cleaned dataset for reproducibility. This reduces noise from duplicates and ensures the model sees a representative class distribution.
+- expert 49576186 · hms · v78→v81   Aggregate labels to the unique observation level, remove overlapping windows so each appears once, balance the resulting set across classes, and cache the cleaned dataset for reproducibility. This reduces noise from duplicates and ensures the model sees a representative class distribution.
     evidence: ✓ Training includes duplicated observations or overlapping windows from the same event. | ✓ The current baseline already achieves a competitive score, so this change is an incremental experiment rather than a fix for a known problem. | ✓ Previous experiments showed that the best known score used all data without the proposed filtering, so the filtering may not help. | ✓ A previous attempt at the same type of change (data selection/filtering) caused a measurable score regression. | ✓ Bundling complementary training improvements with the data selection change may compensate for any individual weakness. | ✗ The previous edit used the wrong variable/flag for the intended subgroup selection, and this run is a single-variable fix to isolate the correct effect.
-    leaderboard score 0.32680 → 0.27977 (-0.04703)
+    leaderboard score 0.32680 → 0.27977 (lower is better; improved by 0.04703)

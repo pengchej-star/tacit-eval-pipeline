@@ -1,139 +1,139 @@
 # Add a different model family  `T.7.2.1`   45 edits, 0 experts
-38 scored cases, median improvement -0.00069, 15 improved
+38 scored cases (improvement signed by each competition's direction), median +0.00289, 36 improved
 
 
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v74→v75   Add fold predictions from a third, architecturally distinct backbone. Blend them as a separate group (equal-weight average of its folds), then combine that group with the existing ensemble at roughly equal weight. Submit and compare; a meaningful metric drop confirms the new backbone adds complement
+- expert 17616127 · commonlitreadabilityprize · v74→v75   Add fold predictions from a third, architecturally distinct backbone. Blend them as a separate group (equal-weight average of its folds), then combine that group with the existing ensemble at roughly equal weight. Submit and compare; a meaningful metric drop confirms the new backbone adds complement
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.45558 → 0.45173 (-0.00385)
-- expert 18550705 (Master) · commonlitreadabilityprize · v9→v10   Add a backbone from a different pretraining family (e.g., one using disentangled attention) that is known to be strong on the task's domain. Pair it with modern training practices (weight-decay-corrected optimizer, learning-rate warmup, mixed precision). If the new member improves the ensemble metri
+    leaderboard score 0.45558 → 0.45173 (lower is better; improved by 0.00385)
+- expert 18550705 · commonlitreadabilityprize · v9→v10   Add a backbone from a different pretraining family (e.g., one using disentangled attention) that is known to be strong on the task's domain. Pair it with modern training practices (weight-decay-corrected optimizer, learning-rate warmup, mixed precision). If the new member improves the ensemble metri
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.45411 → 0.45300 (-0.00111)
-- expert 18523075 (Expert) · commonlitreadabilityprize · v1→v2   Integrate the new backbone into the inference pipeline, assign it an initial blend weight, and submit to check whether the ensemble score improves. If it does, keep it; if not, remove it before further tuning.
+    leaderboard score 0.45411 → 0.45300 (lower is better; improved by 0.00111)
+- expert 18523075 · commonlitreadabilityprize · v1→v2   Integrate the new backbone into the inference pipeline, assign it an initial blend weight, and submit to check whether the ensemble score improves. If it does, keep it; if not, remove it before further tuning.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated.
-    leaderboard score 0.46079 → 0.45976 (-0.00103)
-- expert 18523075 (Expert) · commonlitreadabilityprize · v4→v5   Add the architecturally distinct backbone as a new ensemble member with its own wrapper for embedding extraction, assign it a blend weight, and enforce that all weights sum to one. Expect a smaller but still positive incremental gain from the diversity it adds.
+    leaderboard score 0.46079 → 0.45976 (lower is better; improved by 0.00103)
+- expert 18523075 · commonlitreadabilityprize · v4→v5   Add the architecturally distinct backbone as a new ensemble member with its own wrapper for embedding extraction, assign it a blend weight, and enforce that all weights sum to one. Expect a smaller but still positive incremental gain from the diversity it adds.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.45730 → 0.45684 (-0.00046)
-- expert 18523075 (Expert) · commonlitreadabilityprize · v7→v8   Add a backbone from a different pretraining family (e.g., replaced-token-detection vs. masked-language-modeling) and equalize blend weights initially. If the leaderboard improves, keep it; the gain comes from error decorrelation rather than individual model strength.
+    leaderboard score 0.45730 → 0.45684 (lower is better; improved by 0.00046)
+- expert 18523075 · commonlitreadabilityprize · v7→v8   Add a backbone from a different pretraining family (e.g., replaced-token-detection vs. masked-language-modeling) and equalize blend weights initially. If the leaderboard improves, keep it; the gain comes from error decorrelation rather than individual model strength.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.45870 → 0.45565 (-0.00305)
-- expert 18837555 (Expert) · commonlitreadabilityprize · v12→v13   Average the new checkpoints' predictions into a single group prediction, then include that group as one additional equal-weight term in the ensemble mean. Even with many existing members, a new diverse group can yield a small incremental gain. Monitor the leaderboard or CV to confirm the addition he
+    leaderboard score 0.45870 → 0.45565 (lower is better; improved by 0.00305)
+- expert 18837555 · commonlitreadabilityprize · v12→v13   Average the new checkpoints' predictions into a single group prediction, then include that group as one additional equal-weight term in the ensemble mean. Even with many existing members, a new diverse group can yield a small incremental gain. Monitor the leaderboard or CV to confirm the addition he
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated.
-    leaderboard score 0.45714 → 0.45676 (-0.00038)
-- expert 18350823 (Expert) · commonlitreadabilityprize · v12→v14   Add a model trained in a different framework (different computational graph, optimizer state, numerical precision) on the same backbone. First validate the blend idea cheaply using a saved prediction file as a proxy, then build the full inference pipeline and tune blend weights, giving the new membe
+    leaderboard score 0.45714 → 0.45676 (lower is better; improved by 0.00038)
+- expert 18350823 · commonlitreadabilityprize · v12→v14   Add a model trained in a different framework (different computational graph, optimizer state, numerical precision) on the same backbone. First validate the blend idea cheaply using a saved prediction file as a proxy, then build the full inference pipeline and tune blend weights, giving the new membe
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members. | ✓ Training seeds produce substantial variance while architecture and fold setup remain fixed.
-    leaderboard score 0.46275 → 0.46250 (-0.00026)
-- expert 77129691 (Master) · equity · v10→v12   Introduce a structurally different model family (e.g., an MLP with learned feature embeddings alongside a tree-based or attention-based model). Ensure the new model uses compatible but distinct preprocessing (e.g., different categorical encoding, numeric embeddings). Blend its predictions with the e
+    leaderboard score 0.46275 → 0.46250 (lower is better; improved by 0.00026)
+- expert 77129691 · equity · v10→v12   Introduce a structurally different model family (e.g., an MLP with learned feature embeddings alongside a tree-based or attention-based model). Ensure the new model uses compatible but distinct preprocessing (e.g., different categorical encoding, numeric embeddings). Blend its predictions with the e
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members. | ✓ Training seeds produce substantial variance while architecture and fold setup remain fixed.
-    leaderboard score 0.69054 → 0.69423 (+0.00368)
-- expert 73671444 (Grandmaster) · equity · v7→v9   Train models with a second gradient-boosted tree implementation on the same folds. Rank-transform each model's predictions separately to put them on a common scale, then blend the rank-transformed outputs with a weighted average. Start with roughly equal weights and tune from there.
+    leaderboard score 0.69054 → 0.69423 (higher is better; improved by 0.00368)
+- expert 73671444 · equity · v7→v9   Train models with a second gradient-boosted tree implementation on the same folds. Rank-transform each model's predictions separately to put them on a common scale, then blend the rank-transformed outputs with a weighted average. Start with roughly equal weights and tune from there.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated.
-    leaderboard score 0.68415 → 0.68636 (+0.00221)
-- expert 73671444 (Grandmaster) · equity · v16→v18   Add structurally diverse model families (different tree implementations, linear models, neural networks) in bulk, but invest a dedicated step in unifying their prediction scales (e.g., consistent rank transforms) and postprocessing before evaluating. The diversity benefit is realized only when the i
+    leaderboard score 0.68415 → 0.68636 (higher is better; improved by 0.00221)
+- expert 73671444 · equity · v16→v18   Add structurally diverse model families (different tree implementations, linear models, neural networks) in bulk, but invest a dedicated step in unifying their prediction scales (e.g., consistent rank transforms) and postprocessing before evaluating. The diversity benefit is realized only when the i
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.68639 → n/a
-- expert 73671444 (Grandmaster) · equity · v18→v19   Introduce a structurally different tree-boosting implementation (e.g., histogram-based regressors from a general ML library vs. specialized boosting libraries) trained on the same or complementary targets. Rank-transform each model's output before blending so scale differences don't dominate, then e
+    leaderboard score 0.68639 → n/a (higher is better)
+- expert 73671444 · equity · v18→v19   Introduce a structurally different tree-boosting implementation (e.g., histogram-based regressors from a general ML library vs. specialized boosting libraries) trained on the same or complementary targets. Rank-transform each model's output before blending so scale differences don't dominate, then e
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated.
-    leaderboard score n/a → 0.69416
-- expert 75145694 (Expert) · equity · v4→v6   Add neural survival models (e.g., partial-likelihood-based deep networks with entity embeddings for categoricals) to the ensemble incrementally. For each addition, verify on the leaderboard or validation that the blended score improves before adding the next model family. Use standard preprocessing 
+    leaderboard score n/a → 0.69416 (higher is better)
+- expert 75145694 · equity · v4→v6   Add neural survival models (e.g., partial-likelihood-based deep networks with entity embeddings for categoricals) to the ensemble incrementally. For each addition, verify on the leaderboard or validation that the blended score improves before adding the next model family. Use standard preprocessing 
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.68888 → 0.69053 (+0.00165)
-- expert 75145694 (Expert) · equity · v27→v28   Add a member from a model family not yet represented in the ensemble (increasing diversity), then rebalance all member weights. Even a small-weight contribution from a diverse learner can improve a rank-based ensemble because it introduces uncorrelated ranking errors.
+    leaderboard score 0.68888 → 0.69053 (higher is better; improved by 0.00165)
+- expert 75145694 · equity · v27→v28   Add a member from a model family not yet represented in the ensemble (increasing diversity), then rebalance all member weights. Even a small-weight contribution from a diverse learner can improve a rank-based ensemble because it introduces uncorrelated ranking errors.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated.
-    leaderboard score 0.69111 → 0.69133 (+0.00022)
-- expert 75145694 (Expert) · equity · v31→v32   Wrap the new model type in a compatible inference pipeline (e.g., adding imputation or scaling steps it needs) so it can produce predictions on the same test data, then include it in the rank-based blend with a small initial weight. Retune all blend weights after adding the new member.
+    leaderboard score 0.69111 → 0.69133 (higher is better; improved by 0.00022)
+- expert 75145694 · equity · v31→v32   Wrap the new model type in a compatible inference pipeline (e.g., adding imputation or scaling steps it needs) so it can produce predictions on the same test data, then include it in the rank-based blend with a small initial weight. Retune all blend weights after adding the new member.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated.
-    leaderboard score 0.69146 → 0.69285 (+0.00139)
-- expert 75145694 (Expert) · equity · v57→v59   Integrate the new model with a small blend weight, add any model-specific preprocessing as a dedicated feature pipeline branch, and use debug prints to verify predictions look reasonable before submitting. Even at plateau, a single new diverse member can yield small but consistent gains.
+    leaderboard score 0.69146 → 0.69285 (higher is better; improved by 0.00139)
+- expert 75145694 · equity · v57→v59   Integrate the new model with a small blend weight, add any model-specific preprocessing as a dedicated feature pipeline branch, and use debug prints to verify predictions look reasonable before submitting. Even at plateau, a single new diverse member can yield small but consistent gains.
     evidence: ✗ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.69317 → 0.69324 (+0.00007)
-- expert 75145694 (Expert) · equity · v61→v62   Add a model from a structurally different family (e.g., kernel-based) with its own feature preprocessing pipeline. Even if the standalone model is weaker, its uncorrelated errors can improve the blend. Assign it a small weight initially and verify the ensemble score improves before committing.
+    leaderboard score 0.69317 → 0.69324 (higher is better; improved by 0.00007)
+- expert 75145694 · equity · v61→v62   Add a model from a structurally different family (e.g., kernel-based) with its own feature preprocessing pipeline. Even if the standalone model is weaker, its uncorrelated errors can improve the blend. Assign it a small weight initially and verify the ensemble score improves before committing.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score n/a → 0.69354
-- expert 73937748 (Master) · equity · v2→v3   Train a second gradient-boosted tree variant (different library/algorithm) on the same folds and target, then rank-average the two models' out-of-fold and test predictions. Rank averaging is a safe default when models output scores on different scales.
+    leaderboard score n/a → 0.69354 (higher is better)
+- expert 73937748 · equity · v2→v3   Train a second gradient-boosted tree variant (different library/algorithm) on the same folds and target, then rank-average the two models' out-of-fold and test predictions. Rank averaging is a safe default when models output scores on different scales.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated.
-    leaderboard score 0.67618 → 0.67907 (+0.00289)
-- expert 73937748 (Master) · equity · v3→v5   Attack on multiple fronts simultaneously: (1) engineer domain-informed interaction and ratio features, (2) create several survival-target transforms so each model sees a different view of the label, (3) add a third gradient-boosted tree variant, and (4) use a hyperparameter search tool to optimize b
+    leaderboard score 0.67618 → 0.67907 (higher is better; improved by 0.00289)
+- expert 73937748 · equity · v3→v5   Attack on multiple fronts simultaneously: (1) engineer domain-informed interaction and ratio features, (2) create several survival-target transforms so each model sees a different view of the label, (3) add a third gradient-boosted tree variant, and (4) use a hyperparameter search tool to optimize b
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members. | ✓ Different valid outcome transforms produce complementary residuals for the same task.
-    leaderboard score 0.67907 → 0.68705 (+0.00798)
-- expert 73937748 (Master) · equity · v6→v7   Add another gradient-boosted model variant (different library or configuration) to the ensemble stack, adjust hyperparameters to ensure the new model is complementary rather than redundant, and re-optimize blend weights. Expect modest but consistent gains from increased diversity.
+    leaderboard score 0.67907 → 0.68705 (higher is better; improved by 0.00798)
+- expert 73937748 · equity · v6→v7   Add another gradient-boosted model variant (different library or configuration) to the ensemble stack, adjust hyperparameters to ensure the new model is complementary rather than redundant, and re-optimize blend weights. Expect modest but consistent gains from increased diversity.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated.
-    leaderboard score 0.68648 → 0.68768 (+0.00120)
-- expert 73937748 (Master) · equity · v20→v21   Add an AutoML-style model that internally selects diverse learners (stacking, neural nets, etc.) as a new ensemble member. Feed it enriched features (domain-driven interactions and composites) that the existing members may not exploit. Generate its out-of-fold predictions and include them in the exi
+    leaderboard score 0.68648 → 0.68768 (higher is better; improved by 0.00120)
+- expert 73937748 · equity · v20→v21   Add an AutoML-style model that internally selects diverse learners (stacking, neural nets, etc.) as a new ensemble member. Feed it enriched features (domain-driven interactions and composites) that the existing members may not exploit. Generate its out-of-fold predictions and include them in the exi
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.68894 → 0.69032 (+0.00138)
-- expert 73937748 (Master) · equity · v45→v46   Add a neural network trained on the same cross-validation folds with appropriate preprocessing (encoding, scaling, imputation) as a new ensemble member. The architectural diversity between tree models and neural networks provides complementary predictions that improve the blended score.
+    leaderboard score 0.68894 → 0.69032 (higher is better; improved by 0.00138)
+- expert 73937748 · equity · v45→v46   Add a neural network trained on the same cross-validation folds with appropriate preprocessing (encoding, scaling, imputation) as a new ensemble member. The architectural diversity between tree models and neural networks provides complementary predictions that improve the blended score.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.68967 → 0.69140 (+0.00173)
-- expert 7548275 (Expert) · google · v26→v28   Add the new model's predictions to the blend by running its inference to produce per-fold outputs, then include them in the existing weighted-averaging or rank-optimized blending step. Evaluate on the leaderboard to confirm the gain; a larger model from the same family often adds complementary signa
+    leaderboard score 0.68967 → 0.69140 (higher is better; improved by 0.00173)
+- expert 7548275 · google · v26→v28   Add the new model's predictions to the blend by running its inference to produce per-fold outputs, then include them in the existing weighted-averaging or rank-optimized blending step. Evaluate on the leaderboard to confirm the gain; a larger model from the same family often adds complementary signa
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated.
-    leaderboard score 0.42449 → 0.42963 (+0.00514)
-- expert 53747598 (Master) · hms · v8→v11   Add diversity along multiple orthogonal axes: first add seed variants of existing architectures (low-risk, reduces variance), then add different backbone families (adds architectural diversity), then add models trained on different input configurations (adds representation diversity). For each new m
+    leaderboard score 0.42449 → 0.42963 (higher is better; improved by 0.00514)
+- expert 53747598 · hms · v8→v11   Add diversity along multiple orthogonal axes: first add seed variants of existing architectures (low-risk, reduces variance), then add different backbone families (adds architectural diversity), then add models trained on different input configurations (adds representation diversity). For each new m
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members. | ✓ Training seeds produce substantial variance while architecture and fold setup remain fixed.
-    leaderboard score n/a → n/a
-- expert 53747598 (Master) · hms · v14→v15   Introduce architecturally diverse backbones (e.g., mixing convolutional and transformer-based models), add test-time augmentation, and enrich input preprocessing (additional augmentation pipelines, alternative input representations). Blend these heterogeneous predictions with the existing ensemble. 
+    leaderboard score n/a → n/a (lower is better)
+- expert 53747598 · hms · v14→v15   Introduce architecturally diverse backbones (e.g., mixing convolutional and transformer-based models), add test-time augmentation, and enrich input preprocessing (additional augmentation pipelines, alternative input representations). Blend these heterogeneous predictions with the existing ensemble. 
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score n/a → 0.22838
-- expert 53747598 (Master) · hms · v25→v30   Add the new checkpoints to the ensemble, then iteratively tune blend weights in small increments around the current best ratio. After each weight change, evaluate on the leaderboard or a reliable validation set. Prefer near-equal weighting as a starting point and shift weight toward the component th
+    leaderboard score n/a → 0.22838 (lower is better)
+- expert 53747598 · hms · v25→v30   Add the new checkpoints to the ensemble, then iteratively tune blend weights in small increments around the current best ratio. After each weight change, evaluate on the leaderboard or a reliable validation set. Prefer near-equal weighting as a starting point and shift weight toward the component th
     evidence: ✓ An available modality, feature set, or preprocessing variant is absent from current members. | ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ Additional compatible fold checkpoints are unused and prior fold additions have improved validation.
-    leaderboard score 0.22688 → 0.22587 (-0.00101)
-- expert 53424936 (Master) · hms · v5→v8   Add the new branch's checkpoints incrementally to the equal-weight ensemble average, submitting after each addition. This isolates the contribution of each new member and confirms diminishing-returns behavior. Continue adding folds until all available checkpoints are included or gains plateau.
+    leaderboard score 0.22688 → 0.22587 (lower is better; improved by 0.00101)
+- expert 53424936 · hms · v5→v8   Add the new branch's checkpoints incrementally to the equal-weight ensemble average, submitting after each addition. This isolates the contribution of each new member and confirms diminishing-returns behavior. Continue adding folds until all available checkpoints are included or gains plateau.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members. | ✓ Additional compatible fold checkpoints are unused and prior fold additions have improved validation.
-    leaderboard score 0.22872 → 0.22803 (-0.00069)
-- expert 53424936 (Master) · hms · v23→v24   Run inference with the new variant's fold checkpoints, average their outputs, and add the result to the existing ensemble blend. Compare the blended score to the previous best. If the score does not improve or regresses, the new member adds noise rather than diversity; remove it or down-weight it in
+    leaderboard score 0.22872 → 0.22803 (lower is better; improved by 0.00069)
+- expert 53424936 · hms · v23→v24   Run inference with the new variant's fold checkpoints, average their outputs, and add the result to the existing ensemble blend. Compare the blended score to the previous best. If the score does not improve or regresses, the new member adds noise rather than diversity; remove it or down-weight it in
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ Additional compatible fold checkpoints are unused and prior fold additions have improved validation.
-    leaderboard score 0.22645 → 0.22647 (+0.00002)
-- expert 50376011 (Grandmaster) · hms · v7→v8   Run inference with each checkpoint independently, then average (or blend) their predicted probability distributions before submission. Start with a simple uniform average across all available checkpoints; this typically reduces variance and improves calibration without any tuning.
+    leaderboard score 0.22645 → 0.22647 (lower is better; worse by 0.00002)
+- expert 50376011 · hms · v7→v8   Run inference with each checkpoint independently, then average (or blend) their predicted probability distributions before submission. Start with a simple uniform average across all available checkpoints; this typically reduces variance and improves calibration without any tuning.
     evidence: none recorded
-    leaderboard score 0.44961 → 0.40047 (-0.04914)
-- expert 50376011 (Grandmaster) · hms · v58→v59   Add a second checkpoint to the ensemble with equal weight and matching inference configuration. When two models that individually score similarly are averaged, the blend often outperforms either alone by reducing prediction variance. Start with uniform weights before tuning.
+    leaderboard score 0.44961 → 0.40047 (lower is better; improved by 0.04914)
+- expert 50376011 · hms · v58→v59   Add a second checkpoint to the ensemble with equal weight and matching inference configuration. When two models that individually score similarly are averaged, the blend often outperforms either alone by reducing prediction variance. Start with uniform weights before tuning.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated.
-    leaderboard score 0.36034 → 0.34053 (-0.01982)
-- expert 50376011 (Grandmaster) · hms · v68→v70   Systematically expand the ensemble by adding more diverse checkpoints. First verify the single-model baseline to confirm the ensemble is actually helping, then add members incrementally. Use equal weights unless there is evidence for differential quality. Reduce per-model batch size if memory is tig
+    leaderboard score 0.36034 → 0.34053 (lower is better; improved by 0.01982)
+- expert 50376011 · hms · v68→v70   Systematically expand the ensemble by adding more diverse checkpoints. First verify the single-model baseline to confirm the ensemble is actually helping, then add members incrementally. Use equal weights unless there is evidence for differential quality. Reduce per-model batch size if memory is tig
     evidence: ✓ Additional compatible fold checkpoints are unused and prior fold additions have improved validation.
-    leaderboard score 0.32583 → 0.32116 (-0.00468)
-- expert 50376011 (Grandmaster) · hms · v169→v170   Install any additional dependencies the new checkpoint needs, then add it to the ensemble alongside existing members. Verify that the combined ensemble improves the validation or leaderboard metric; if it does, the new checkpoint contributes complementary information.
+    leaderboard score 0.32583 → 0.32116 (lower is better; improved by 0.00468)
+- expert 50376011 · hms · v169→v170   Install any additional dependencies the new checkpoint needs, then add it to the ensemble alongside existing members. Verify that the combined ensemble improves the validation or leaderboard metric; if it does, the new checkpoint contributes complementary information.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.25069 → 0.24948 (-0.00121)
-- expert 49524919 (Grandmaster) · hms · v73→v76   Integrate the new backbone into the inference loop so it produces per-sample predictions in the same format. Average the two model families' outputs with equal weights as a starting point. If the combined score improves, keep both; then optionally tune the blend ratio.
+    leaderboard score 0.25069 → 0.24948 (lower is better; improved by 0.00121)
+- expert 49524919 · hms · v73→v76   Integrate the new backbone into the inference loop so it produces per-sample predictions in the same format. Average the two model families' outputs with equal weights as a starting point. If the combined score improves, keep both; then optionally tune the blend ratio.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.28380 → 0.27414 (-0.00966)
-- expert 49524919 (Grandmaster) · hms · v77→v84   Use individual swaps only as a sanity check that each candidate produces reasonable predictions. Then combine all candidates with equal weights in a single blend. Diversity across architectures often yields gains that pairwise comparisons cannot reveal, so do not discard a candidate solely because i
+    leaderboard score 0.28380 → 0.27414 (lower is better; improved by 0.00966)
+- expert 49524919 · hms · v77→v84   Use individual swaps only as a sanity check that each candidate produces reasonable predictions. Then combine all candidates with equal weights in a single blend. Diversity across architectures often yields gains that pairwise comparisons cannot reveal, so do not discard a candidate solely because i
     evidence: ✗ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.27234 → 0.26879 (-0.00355)
-- expert 49524919 (Grandmaster) · hms · v88→v90   Give the new architecture a small blend weight proportional to its relative standalone quality, re-run the full ensemble, and check whether the combined score improves. Even a model that is individually weaker can help if it is architecturally diverse, but verify with a submission rather than assumi
+    leaderboard score 0.27234 → 0.26879 (lower is better; improved by 0.00355)
+- expert 49524919 · hms · v88→v90   Give the new architecture a small blend weight proportional to its relative standalone quality, re-run the full ensemble, and check whether the combined score improves. Even a model that is individually weaker can help if it is architecturally diverse, but verify with a submission rather than assumi
     evidence: ✗ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.26916 → 0.26809 (-0.00107)
-- expert 52860091 (Grandmaster) · hms · v8→v11   Run inference separately with each checkpoint, save per-checkpoint prediction files, then average the predicted probability vectors and re-normalize so they sum to one. Start with a small number of checkpoints to confirm improvement, then incrementally add more. Expect diminishing but consistent gai
+    leaderboard score 0.26916 → 0.26809 (lower is better; improved by 0.00107)
+- expert 52860091 · hms · v8→v11   Run inference separately with each checkpoint, save per-checkpoint prediction files, then average the predicted probability vectors and re-normalize so they sum to one. Start with a small number of checkpoints to confirm improvement, then incrementally add more. Expect diminishing but consistent gai
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ Additional compatible fold checkpoints are unused and prior fold additions have improved validation.
-    leaderboard score 0.32858 → 0.29768 (-0.03090)
-- expert 52860091 (Grandmaster) · hms · v23→v27   Add the new architecture's fold predictions as an additional ensemble member. Start with a moderate weight for the new member (e.g., 30%) and adjust. Architecturally diverse members typically reduce ensemble error more than additional same-family members because their errors are less correlated.
+    leaderboard score 0.32858 → 0.29768 (lower is better; improved by 0.03090)
+- expert 52860091 · hms · v23→v27   Add the new architecture's fold predictions as an additional ensemble member. Start with a moderate weight for the new member (e.g., 30%) and adjust. Architecturally diverse members typically reduce ensemble error more than additional same-family members because their errors are less correlated.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.27421 → 0.26010 (-0.01411)
-- expert 52551258 (Expert) · hms · v2→v3   Replace the generic image backbone with an ensemble of domain-specific models (e.g., CNN-RNN on raw signals) that incorporate proper signal preprocessing (bandpass filtering, custom spectrograms). Load multiple fold checkpoints and average their predictions. Expect a large score jump—potentially hal
+    leaderboard score 0.27421 → 0.26010 (lower is better; improved by 0.01411)
+- expert 52551258 · hms · v2→v3   Replace the generic image backbone with an ensemble of domain-specific models (e.g., CNN-RNN on raw signals) that incorporate proper signal preprocessing (bandpass filtering, custom spectrograms). Load multiple fold checkpoints and average their predictions. Expect a large score jump—potentially hal
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members. | ✓ Additional compatible fold checkpoints are unused and prior fold additions have improved validation.
-    leaderboard score 0.65796 → 0.37116 (-0.28680)
-- expert 52551258 (Expert) · hms · v10→v13   Load each model family with its own preprocessing pipeline, run inference separately, and average their output probabilities. Verify the ensemble beats each family alone by also submitting each family individually. If one family alone scores worse than the ensemble, keep both; the diversity gain typ
+    leaderboard score 0.65796 → 0.37116 (lower is better; improved by 0.28680)
+- expert 52551258 · hms · v10→v13   Load each model family with its own preprocessing pipeline, run inference separately, and average their output probabilities. Verify the ensemble beats each family alone by also submitting each family individually. If one family alone scores worse than the ensemble, keep both; the diversity gain typ
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members. | ✓ Additional compatible fold checkpoints are unused and prior fold additions have improved validation.
-    leaderboard score 0.33179 → 0.30219 (-0.02960)
-- expert 52551258 (Expert) · hms · v14→v16   Add the new-modality model and submit. If the score degrades substantially, diagnose whether the new model's predictions are miscalibrated or the ensemble weighting is off. Simplify by removing weaker members or test-time augmentation overhead, then re-submit. If the new modality still hurts, remove
+    leaderboard score 0.33179 → 0.30219 (lower is better; improved by 0.02960)
+- expert 52551258 · hms · v14→v16   Add the new-modality model and submit. If the score degrades substantially, diagnose whether the new model's predictions are miscalibrated or the ensemble weighting is off. Simplify by removing weaker members or test-time augmentation overhead, then re-submit. If the new modality still hurts, remove
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 0.31017 → 0.31128 (+0.00111)
-- expert 15203842 (Grandmaster) · ranzcr · v6→v10   Build a dedicated inference pipeline for the new backbone with test-time augmentation (e.g., horizontal flip, average predictions), verify it runs correctly, then blend its predictions with the existing ensemble. Even a small per-label AUC gain from a stronger backbone compounds across many labels i
+    leaderboard score 0.31017 → 0.31128 (lower is better; worse by 0.00111)
+- expert 15203842 · ranzcr · v6→v10   Build a dedicated inference pipeline for the new backbone with test-time augmentation (e.g., horizontal flip, average predictions), verify it runs correctly, then blend its predictions with the existing ensemble. Even a small per-label AUC gain from a stronger backbone compounds across many labels i
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score n/a → 0.96756
-- expert 15173072 (Contributor) · ranzcr · v21→v28   Run inference with two checkpoints independently, then take a simple (equal-weight) average of their raw predictions. Start with equal weighting before trying unequal blends; unequal weights often hurt if not guided by reliable local validation.
+    leaderboard score n/a → 0.96756 (higher is better)
+- expert 15173072 · ranzcr · v21→v28   Run inference with two checkpoints independently, then take a simple (equal-weight) average of their raw predictions. Start with equal weighting before trying unequal blends; unequal weights often hurt if not guided by reliable local validation.
     evidence: ✓ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ Additional compatible fold checkpoints are unused and prior fold additions have improved validation. | ✓ One or more fold checkpoints are incompatible or repeatedly harm the full average on reliable validation.
-    leaderboard score 0.95243 → 0.96462 (+0.01220)
-- expert 50496431 (Grandmaster) · hms · v8→v10   Train a separate model on the second modality with its own preprocessing pipeline and checkpoints. Ensemble predictions from both modality-specific models by simple averaging. Expect the cross-modal ensemble to yield a substantially larger gain than within-modality tricks, because the modalities pro
+    leaderboard score 0.95243 → 0.96462 (higher is better; improved by 0.01220)
+- expert 50496431 · hms · v8→v10   Train a separate model on the second modality with its own preprocessing pipeline and checkpoints. Ensemble predictions from both modality-specific models by simple averaging. Expect the cross-modal ensemble to yield a substantially larger gain than within-modality tricks, because the modalities pro
     evidence: ✓ An available modality, feature set, or preprocessing variant is absent from current members. | ✓ Most active members share one architecture or algorithm and their residuals are highly correlated.
-    leaderboard score 0.42196 → 0.36955 (-0.05241)
-- expert 50496431 (Grandmaster) · hms · v60→v68   Add architecturally distinct models one at a time. For each new model family: implement a dedicated preprocessing pipeline matching its training setup, verify checkpoint compatibility with strict loading, start with a small batch size, and submit to confirm the ensemble improves. Expect modest but r
+    leaderboard score 0.42196 → 0.36955 (lower is better; improved by 0.05241)
+- expert 50496431 · hms · v60→v68   Add architecturally distinct models one at a time. For each new model family: implement a dedicated preprocessing pipeline matching its training setup, verify checkpoint compatibility with strict loading, start with a small batch size, and submit to confirm the ensemble improves. Expect modest but r
     evidence: ✓ An available modality, feature set, or preprocessing variant is absent from current members. | ✓ Most active members share one architecture or algorithm and their residuals are highly correlated.
-    leaderboard score 0.31262 → 0.30784 (-0.00478)
-- expert 50496431 (Grandmaster) · hms · v184→v185   Introduce the larger backbone as an additional ensemble member, reduce batch size to fit memory, and compare the ensemble score. If the score worsens, the larger model's checkpoints may need more training or the ensemble weights need rebalancing before the capacity increase pays off.
+    leaderboard score 0.31262 → 0.30784 (lower is better; improved by 0.00478)
+- expert 50496431 · hms · v184→v185   Introduce the larger backbone as an additional ensemble member, reduce batch size to fit memory, and compare the ensemble score. If the score worsens, the larger model's checkpoints may need more training or the ensemble weights need rebalancing before the capacity increase pays off.
     evidence: ✗ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score 1.96189 → 0.24428 (-1.71761)
-- expert 50496431 (Grandmaster) · hms · v210→v212   Add the new backbone's predictions to the ensemble and evaluate on the leaderboard. If the score does not improve or barely changes, the new model likely does not add sufficient diversity or quality. Remove it and keep the simpler, proven ensemble. One submission is enough to decide if the backbone 
+    leaderboard score 1.96189 → 0.24428 (lower is better; improved by 1.71761)
+- expert 50496431 · hms · v210→v212   Add the new backbone's predictions to the ensemble and evaluate on the leaderboard. If the score does not improve or barely changes, the new model likely does not add sufficient diversity or quality. Remove it and keep the simpler, proven ensemble. One submission is enough to decide if the backbone 
     evidence: ✗ Most active members share one architecture or algorithm and their residuals are highly correlated. | ✓ An available modality, feature set, or preprocessing variant is absent from current members.
-    leaderboard score n/a → 0.23478
+    leaderboard score n/a → 0.23478 (lower is better)

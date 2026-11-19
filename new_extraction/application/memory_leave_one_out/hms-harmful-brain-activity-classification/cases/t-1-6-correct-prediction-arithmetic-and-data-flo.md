@@ -1,79 +1,79 @@
 # Correct prediction arithmetic and data flow  `T.1.6`   25 edits, 0 experts
-11 scored cases, median improvement +0.00019, 8 improved
+11 scored cases (improvement signed by each competition's direction), median +0.00024, 11 improved
 
 
-- expert 28984551 (Contributor) · amex · v7→v9   After each integration step, verify that (1) each model group's predictions are stored under uniquely prefixed columns, (2) the averaging step references exactly the intended column prefixes, and (3) the final accumulation or slicing selects the correct columns/rows. Submit or validate after each fi
+- expert 28984551 · amex · v7→v9   After each integration step, verify that (1) each model group's predictions are stored under uniquely prefixed columns, (2) the averaging step references exactly the intended column prefixes, and (3) the final accumulation or slicing selects the correct columns/rows. Submit or validate after each fi
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights. | ✓ Rows or feature columns can be reordered or mismatched across pipeline stages.
-    leaderboard score n/a → 0.79520
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v47→v49   After writing the aggregation code, print or assert the shape and summary statistics (mean, std) of each component array and the final stacked array before submission. If any component is missing or has unexpected values, the bug surfaces immediately without needing a leaderboard probe.
+    leaderboard score n/a → 0.79520 (higher is better)
+- expert 17616127 · commonlitreadabilityprize · v47→v49   After writing the aggregation code, print or assert the shape and summary statistics (mean, std) of each component array and the final stacked array before submission. If any component is missing or has unexpected values, the bug surfaces immediately without needing a leaderboard probe.
     evidence: ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score n/a → 0.47952
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v71→v72   Always cast prediction vectors to a numeric array type before performing weighted averaging or any element-wise arithmetic. This is a zero-cost defensive step that prevents hard-to-detect bugs where list replication silently replaces element-wise operations.
+    leaderboard score n/a → 0.47952 (lower is better)
+- expert 17616127 · commonlitreadabilityprize · v71→v72   Always cast prediction vectors to a numeric array type before performing weighted averaging or any element-wise arithmetic. This is a zero-cost defensive step that prevents hard-to-detect bugs where list replication silently replaces element-wise operations.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score n/a → 0.45558
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v82→v85   Before debugging model weights or architecture, verify that all prediction arrays share the same data type (numeric arrays, not lists) so arithmetic broadcasting works correctly, and confirm that averaging weights sum to 1.0 with the correct denominator matching the actual number of components.
+    leaderboard score n/a → 0.45558 (lower is better)
+- expert 17616127 · commonlitreadabilityprize · v82→v85   Before debugging model weights or architecture, verify that all prediction arrays share the same data type (numeric arrays, not lists) so arithmetic broadcasting works correctly, and confirm that averaging weights sum to 1.0 with the correct denominator matching the actual number of components.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score n/a → 0.45142
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v87→v88   Before computing any weighted combination, explicitly convert every prediction vector to the same array type. Verify the output shape and a few sample values match expectations before writing the submission.
+    leaderboard score n/a → 0.45142 (lower is better)
+- expert 17616127 · commonlitreadabilityprize · v87→v88   Before computing any weighted combination, explicitly convert every prediction vector to the same array type. Verify the output shape and a few sample values match expectations before writing the submission.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✗ The loaded checkpoint disagrees with the model architecture or vocabulary. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score n/a → 0.45371
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v98→v100   After constructing each ensemble output, print or log summary statistics (mean, std, first few values) of every component. If two supposedly different ensembles produce identical outputs, inspect variable references. Always verify diversity before averaging.
+    leaderboard score n/a → 0.45371 (lower is better)
+- expert 17616127 · commonlitreadabilityprize · v98→v100   After constructing each ensemble output, print or log summary statistics (mean, std, first few values) of every component. If two supposedly different ensembles produce identical outputs, inspect variable references. Always verify diversity before averaging.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score 0.45076 → 0.45001 (-0.00075)
-- expert 18523075 (Expert) · commonlitreadabilityprize · v10→v11   Add a runtime check that blend weights sum to 1; when they do not, fall back to equal weighting across active members and recompute. Also audit the member list to disable any entry whose backbone is no longer loaded or contributing. This defensive normalization prevents silent score degradation from
+    leaderboard score 0.45076 → 0.45001 (lower is better; improved by 0.00075)
+- expert 18523075 · commonlitreadabilityprize · v10→v11   Add a runtime check that blend weights sum to 1; when they do not, fall back to equal weighting across active members and recompute. Also audit the member list to disable any entry whose backbone is no longer loaded or contributing. This defensive normalization prevents silent score degradation from
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score 0.45545 → 0.45525 (-0.00020)
-- expert 18851026 (Master) · commonlitreadabilityprize · v13→v15   Before submitting, verify that (1) all prediction dataframes have identical row counts and matching IDs by doing an explicit join/check, and (2) the blending formula references each model's predictions exactly once with correct variable names. Inspect the final blended array shape and a few sample v
+    leaderboard score 0.45545 → 0.45525 (lower is better; improved by 0.00020)
+- expert 18851026 · commonlitreadabilityprize · v13→v15   Before submitting, verify that (1) all prediction dataframes have identical row counts and matching IDs by doing an explicit join/check, and (2) the blending formula references each model's predictions exactly once with correct variable names. Inspect the final blended array shape and a few sample v
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ Rows or feature columns can be reordered or mismatched across pipeline stages. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights. | ✗ The loaded checkpoint disagrees with the model architecture or vocabulary. | ✓ The output file is missing, constant, stale or produced from the wrong input data.
-    leaderboard score n/a → 0.46134
-- expert 18851026 (Master) · commonlitreadabilityprize · v19→v20   Always average (divide by N) the predictions within a group before multiplying by the group weight, so the group's total contribution equals exactly the intended fraction regardless of how many members it contains.
+    leaderboard score n/a → 0.46134 (lower is better)
+- expert 18851026 · commonlitreadabilityprize · v19→v20   Always average (divide by N) the predictions within a group before multiplying by the group weight, so the group's total contribution equals exactly the intended fraction regardless of how many members it contains.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score 1.12557 → 0.45875 (-0.66681)
-- expert 18851026 (Master) · commonlitreadabilityprize · v18→v20   Whenever a member is added or removed from an ensemble group, immediately re-check and re-normalize the combination formula (averages, weight sums) so the total still sums to 1.0 or the intended proportion. Validate on a quick sanity check (e.g., prediction range) before submitting.
+    leaderboard score 1.12557 → 0.45875 (lower is better; improved by 0.66681)
+- expert 18851026 · commonlitreadabilityprize · v18→v20   Whenever a member is added or removed from an ensemble group, immediately re-check and re-normalize the combination formula (averages, weight sums) so the total still sums to 1.0 or the intended proportion. Validate on a quick sanity check (e.g., prediction range) before submitting.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights. | ✓ Rows or feature columns can be reordered or mismatched across pipeline stages.
-    leaderboard score n/a → 0.45875
-- expert 18851026 (Master) · commonlitreadabilityprize · v23→v24   After every change to ensemble membership, audit the averaging formula to ensure the divisor matches the actual number of terms. Be aware that fixing such a bug can worsen the score if the incorrect divisor was accidentally acting as a beneficial shrinkage factor — in that case, the real lever is me
+    leaderboard score n/a → 0.45875 (lower is better)
+- expert 18851026 · commonlitreadabilityprize · v23→v24   After every change to ensemble membership, audit the averaging formula to ensure the divisor matches the actual number of terms. Be aware that fixing such a bug can worsen the score if the incorrect divisor was accidentally acting as a beneficial shrinkage factor — in that case, the real lever is me
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score n/a → 0.45925
-- expert 18423958 (Master) · commonlitreadabilityprize · v20→v21   Inspect the arithmetic of the blending expression for syntax or operator errors (missing operators, wrong variable names, incorrect weight sums). A single missing operator in a weighted average can silently produce garbage predictions. Fix and re-run before concluding the new model hurts the ensembl
+    leaderboard score n/a → 0.45925 (lower is better)
+- expert 18423958 · commonlitreadabilityprize · v20→v21   Inspect the arithmetic of the blending expression for syntax or operator errors (missing operators, wrong variable names, incorrect weight sums). A single missing operator in a weighted average can silently produce garbage predictions. Fix and re-run before concluding the new model hurts the ensembl
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score n/a → 0.46031
-- expert 73671444 (Grandmaster) · equity · v4→v6   When swapping model families, fully remove the old model's preprocessing and prediction code before submitting. If the score collapses after adding a new model, suspect interference from residual old-pipeline code rather than a problem with the new model itself. Clean up first, then verify.
+    leaderboard score n/a → 0.46031 (lower is better)
+- expert 73671444 · equity · v4→v6   When swapping model families, fully remove the old model's preprocessing and prediction code before submitting. If the score collapses after adding a new model, suspect interference from residual old-pipeline code rather than a problem with the new model itself. Clean up first, then verify.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ Inference encodings or missing-value treatment differ from those used in training. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score 0.66967 → 0.67991 (+0.01024)
-- expert 75145694 (Expert) · equity · v11→v14   Add logging inside the fold loop to verify which code paths execute per fold. Ensure the prediction call is scoped to the same block where its required inputs are prepared. Submit or validate after each scoping change to confirm the correct placement, since the error is silent (no crash, just wrong 
+    leaderboard score 0.66967 → 0.67991 (higher is better; improved by 0.01024)
+- expert 75145694 · equity · v11→v14   Add logging inside the fold loop to verify which code paths execute per fold. Ensure the prediction call is scoped to the same block where its required inputs are prepared. Submit or validate after each scoping change to confirm the correct placement, since the error is silent (no crash, just wrong 
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score 0.69043 → 0.69067 (+0.00024)
-- expert 75145694 (Expert) · equity · v20→v21   Before blending, verify that all model outputs share the same monotonic direction with respect to the target. Compute rank correlations between each model's predictions and the others; if one is negatively correlated, negate its outputs. Add an explicit sign-correction step in the blending pipeline 
+    leaderboard score 0.69043 → 0.69067 (higher is better; improved by 0.00024)
+- expert 75145694 · equity · v20→v21   Before blending, verify that all model outputs share the same monotonic direction with respect to the target. Compute rank correlations between each model's predictions and the others; if one is negatively correlated, negate its outputs. Add an explicit sign-correction step in the blending pipeline 
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score 0.68959 → 0.68978 (+0.00020)
-- expert 75145694 (Expert) · equity · v30→v31   After any refactor of the inference loop, verify that the prediction call executes for every fold by adding an assertion or log statement that counts predictions per fold. If the same bug pattern has appeared before, add a permanent guard (e.g., assert that the number of prediction batches equals th
+    leaderboard score 0.68959 → 0.68978 (higher is better; improved by 0.00020)
+- expert 75145694 · equity · v30→v31   After any refactor of the inference loop, verify that the prediction call executes for every fold by adding an assertion or log statement that counts predictions per fold. If the same bug pattern has appeared before, add a permanent guard (e.g., assert that the number of prediction batches equals th
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score 0.69145 → 0.69146 (+0.00001)
-- expert 75145694 (Expert) · equity · v33→v34   After every code addition that modifies the inference loop, explicitly verify that the prediction call is inside the block where features are prepared. Consider extracting the feature-generation-then-predict pattern into a function to prevent scope/indentation errors from recurring.
+    leaderboard score 0.69145 → 0.69146 (higher is better; improved by 0.00001)
+- expert 75145694 · equity · v33→v34   After every code addition that modifies the inference loop, explicitly verify that the prediction call is inside the block where features are prepared. Consider extracting the feature-generation-then-predict pattern into a function to prevent scope/indentation errors from recurring.
     evidence: ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score 0.69296 → 0.69296 (+0.00000)
-- expert 75145694 (Expert) · equity · v36→v38   Before blending, verify the new model's prediction direction by checking its standalone concordance or correlation with the target. If the metric is sign-sensitive (e.g., concordance index), negate or rank-transform the predictions and compare. Add debug prints of prediction statistics to catch the 
+    leaderboard score 0.69296 → 0.69296 (higher is better; improved by 0.00000)
+- expert 75145694 · equity · v36→v38   Before blending, verify the new model's prediction direction by checking its standalone concordance or correlation with the target. If the metric is sign-sensitive (e.g., concordance index), negate or rank-transform the predictions and compare. Add debug prints of prediction statistics to catch the 
     evidence: ✓ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights. | ✓ The loaded checkpoint disagrees with the model architecture or vocabulary.
-    leaderboard score n/a → 0.69283
-- expert 75145694 (Expert) · equity · v41→v46   Isolate each member by running it solo or adding members one at a time. When a member degrades the blend, inspect its preprocessing pipeline (missing value handling, categorical encoding, fold-averaging logic) for mismatches with what the model expects. Fix each member's pipeline before re-enabling 
+    leaderboard score n/a → 0.69283 (higher is better)
+- expert 75145694 · equity · v41→v46   Isolate each member by running it solo or adding members one at a time. When a member degrades the blend, inspect its preprocessing pipeline (missing value handling, categorical encoding, fold-averaging logic) for mismatches with what the model expects. Fix each member's pipeline before re-enabling 
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights. | ✗ The loaded checkpoint disagrees with the model architecture or vocabulary. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them. | ✓ Inference encodings or missing-value treatment differ from those used in training.
-    leaderboard score 0.69056 → 0.69277 (+0.00222)
-- expert 75145694 (Expert) · equity · v63→v66   Fix the post-processing bug first and re-evaluate before reverting the weight changes. If the fix partially recovers the score, the remaining gap is attributable to the weight change, which can then be reverted independently. Isolate changes to diagnose which modification caused the regression.
+    leaderboard score 0.69056 → 0.69277 (higher is better; improved by 0.00222)
+- expert 75145694 · equity · v63→v66   Fix the post-processing bug first and re-evaluate before reverting the weight changes. If the fix partially recovers the score, the remaining gap is attributable to the weight change, which can then be reverted independently. Isolate changes to diagnose which modification caused the regression.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them.
-    leaderboard score 0.69329 → 0.69348 (+0.00019)
-- expert 77276039 (Expert) · equity · v21→v24   When a score regresses after refactoring, inspect the ensemble assembly code before re-tuning models. Check that every referenced file exists, that ranking tie-handling is explicit and consistent across all members, and that the included members are the intended ones. Toggle members one at a time an
+    leaderboard score 0.69329 → 0.69348 (higher is better; improved by 0.00019)
+- expert 77276039 · equity · v21→v24   When a score regresses after refactoring, inspect the ensemble assembly code before re-tuning models. Check that every referenced file exists, that ranking tie-handling is explicit and consistent across all members, and that the included members are the intended ones. Toggle members one at a time an
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights. | ✓ A code or artifact refactor was intended to preserve predictions but may have changed them. | ✗ The loaded checkpoint disagrees with the model architecture or vocabulary.
-    leaderboard score 0.69037 → 0.69188 (+0.00151)
-- expert 55621328 (Master) · learning · v31→v32   After averaging predictions across checkpoints, assert that the resulting tensor has the expected shape (num_samples × num_classes) before applying argmax. Print or log a few sample rows of the averaged probabilities to verify they sum to 1 and look reasonable before generating the submission.
+    leaderboard score 0.69037 → 0.69188 (higher is better; improved by 0.00151)
+- expert 55621328 · learning · v31→v32   After averaging predictions across checkpoints, assert that the resulting tensor has the expected shape (num_samples × num_classes) before applying argmax. Print or log a few sample rows of the averaged probabilities to verify they sum to 1 and look reasonable before generating the submission.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✗ The loaded checkpoint disagrees with the model architecture or vocabulary. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score n/a → 0.79585
-- expert 55987255 (Master) · learning · v56→v57   Before tuning an ensemble further, verify that each component's predictions are actually being used correctly. Simplify the pipeline to the minimal working version (single model, no wrapper) and confirm the score. Only re-add complexity once the baseline is verified bug-free.
+    leaderboard score n/a → 0.79585 (higher is better)
+- expert 55987255 · learning · v56→v57   Before tuning an ensemble further, verify that each component's predictions are actually being used correctly. Simplify the pipeline to the minimal working version (single model, no wrapper) and confirm the score. Only re-add complexity once the baseline is verified bug-free.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✗ The loaded checkpoint disagrees with the model architecture or vocabulary. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights.
-    leaderboard score n/a → 0.82112
-- expert 15173072 (Contributor) · ranzcr · v11→v12   Check whether the training labels were scaled (e.g., percentages vs. fractions). If so, apply the inverse scaling to predictions before submission. A dramatic score jump after rescaling confirms the mismatch. Always verify that the prediction range matches what the model was trained to output.
+    leaderboard score n/a → 0.82112 (higher is better)
+- expert 15173072 · ranzcr · v11→v12   Check whether the training labels were scaled (e.g., percentages vs. fractions). If so, apply the inverse scaling to predictions before submission. A dramatic score jump after rescaling confirms the mismatch. Always verify that the prediction range matches what the model was trained to output.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights. | ✓ The output file is missing, constant, stale or produced from the wrong input data.
-    leaderboard score n/a → 0.95987
-- expert 13702907 (Contributor) · ranzcr · v2→v3   Trace the exact variable that is written to the submission file and verify it is the same object that holds the ensemble-averaged predictions, not a leftover single-model output. A quick sanity check is to compare the written array's values against the ensemble array before saving.
+    leaderboard score n/a → 0.95987 (higher is better)
+- expert 13702907 · ranzcr · v2→v3   Trace the exact variable that is written to the submission file and verify it is the same object that holds the ensemble-averaged predictions, not a leftover single-model output. A quick sanity check is to compare the written array's values against the ensemble array before saving.
     evidence: ✗ Execution fails during import, file access or device initialization. | ✓ The ensemble output cannot be reproduced from its intended component arrays and weights. | ✓ The output file is missing, constant, stale or produced from the wrong input data.
-    leaderboard score n/a → 0.94606
+    leaderboard score n/a → 0.94606 (higher is better)

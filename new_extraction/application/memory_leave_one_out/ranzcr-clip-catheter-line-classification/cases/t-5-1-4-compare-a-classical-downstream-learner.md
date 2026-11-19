@@ -1,7 +1,7 @@
 # Compare a classical downstream learner  `T.5.1.4`   1 edits, 0 experts
-1 scored cases, median improvement -0.00016, 0 improved
+1 scored cases (improvement signed by each competition's direction), median -0.00016, 0 improved
 
 
-- expert 73671444 (Grandmaster) · equity · v3→v4   Swap the model backend and compare on the leaderboard. Expect minimal change when the underlying model class is nearly identical; reserve effort for trying a genuinely different model family (e.g., gradient-boosted trees) if the swap shows no gain.
+- expert 73671444 · equity · v3→v4   Swap the model backend and compare on the leaderboard. Expect minimal change when the underlying model class is nearly identical; reserve effort for trying a genuinely different model family (e.g., gradient-boosted trees) if the swap shows no gain.
     evidence: ✓ The current tabular learner has plateaued on a stable feature set. | ✓ Fixed embeddings or survival covariates provide a compact representation with limited labels. | ✓ Dataset wrapping and prediction-method differences are causing integration errors without a need for native-only controls. | ✓ The replacement fully swaps out one model family for another (rather than blending/adding alongside), risking loss of complementary signal from the removed component. | ✗ The proposed alternative was already tried and reverted in a prior iteration, so the replacement has already been evaluated. | ✓ The current model variant has reached a strong, stable best score that serves as a clear baseline for evaluating the alternative.
-    leaderboard score 0.66983 → 0.66967 (-0.00016)
+    leaderboard score 0.66983 → 0.66967 (higher is better; worse by 0.00016)

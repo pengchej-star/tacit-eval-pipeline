@@ -1,14 +1,14 @@
 # Stream complete sample groups  `T.8.3.1`   4 edits, 0 experts
 
-- expert 27389424 (Grandmaster) · amex · v5→v6   Split the test set into chunks by sample ID, run all ensemble members on each chunk, average within the chunk, and concatenate the averaged results. This keeps peak memory proportional to chunk size rather than full test size times number of models.
+- expert 27389424 · amex · v5→v6   Split the test set into chunks by sample ID, run all ensemble members on each chunk, average within the chunk, and concatenate the averaged results. This keeps peak memory proportional to chunk size rather than full test size times number of models.
     evidence: ✓ The dataset or feature matrix is too large even with only one model loaded. | ✓ Memory accumulates across completed models or feature stages.
-    leaderboard score n/a → n/a
-- expert 27799930 (Contributor) · amex · v20→v23   Partition the test data into chunks by entity ID boundaries, read only the required columns for each chunk, run the full feature-engineering and prediction pipeline per chunk, free memory explicitly between chunks, and concatenate the per-chunk predictions at the end. Increase the number of chunks i
+    leaderboard score n/a → n/a (higher is better)
+- expert 27799930 · amex · v20→v23   Partition the test data into chunks by entity ID boundaries, read only the required columns for each chunk, run the full feature-engineering and prediction pipeline per chunk, free memory explicitly between chunks, and concatenate the per-chunk predictions at the end. Increase the number of chunks i
     evidence: ✓ The dataset or feature matrix is too large even with only one model loaded. | ✓ Memory accumulates across completed models or feature stages. | ✓ Per-batch or per-chunk memory from large batch sizes still causes OOM after releasing completed model stages.
-    leaderboard score n/a → n/a
-- expert 28093671 (Contributor) · amex · v19→v24   Split the test set into chunks by unique entity IDs. Run feature engineering inside the per-chunk loop rather than on the full dataset. After predicting each chunk, explicitly delete intermediate objects and force garbage collection. Collect lightweight prediction DataFrames per chunk and concatenat
+    leaderboard score n/a → n/a (higher is better)
+- expert 28093671 · amex · v19→v24   Split the test set into chunks by unique entity IDs. Run feature engineering inside the per-chunk loop rather than on the full dataset. After predicting each chunk, explicitly delete intermediate objects and force garbage collection. Collect lightweight prediction DataFrames per chunk and concatenat
     evidence: ✓ The dataset or feature matrix is too large even with only one model loaded. | ✓ Memory accumulates across completed models or feature stages. | ✓ Premature deletion of a variable (e.g., X_train_fold) causes errors because a later pipeline stage still references it. | ✓ Per-batch or per-chunk memory from large batch sizes still causes OOM after releasing completed model stages.
-    leaderboard score n/a → n/a
-- expert 28093671 (Contributor) · amex · v21→v25   Ensure that any data needed for assembling outputs (e.g., entity IDs, metadata) is extracted before deleting the chunk. When working with categorical columns, check membership against the category index (the dtype's categories), not against the observed values, before adding new categories. Test the
+    leaderboard score n/a → n/a (higher is better)
+- expert 28093671 · amex · v21→v25   Ensure that any data needed for assembling outputs (e.g., entity IDs, metadata) is extracted before deleting the chunk. When working with categorical columns, check membership against the category index (the dtype's categories), not against the observed values, before adding new categories. Test the
     evidence: ✓ Premature deletion of a variable (e.g., X_train_fold) causes errors because a later pipeline stage still references it. | ✓ Per-chunk preprocessing encounters categories not present in the chunk but present in the dtype's category list, causing incorrect add_categories logic.
-    leaderboard score n/a → 0.66422
+    leaderboard score n/a → 0.66422 (higher is better)

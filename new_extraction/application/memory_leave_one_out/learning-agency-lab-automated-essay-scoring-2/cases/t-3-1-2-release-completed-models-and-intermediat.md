@@ -1,37 +1,37 @@
 # Release completed models and intermediates  `T.3.1.2`   11 edits, 0 experts
-1 scored cases, median improvement +0.00076, 1 improved
+1 scored cases (improvement signed by each competition's direction), median +0.00076, 1 improved
 
 
-- expert 27799930 (Contributor) · amex · v39→v44   Downcast every column to the smallest dtype that fits its range (e.g., 64-bit floats to 32-bit, counts to 8-bit integers). Delete every intermediate DataFrame immediately after it is merged or consumed, and call the garbage collector explicitly. In the CV loop, index into the master DataFrame with .
+- expert 27799930 · amex · v39→v44   Downcast every column to the smallest dtype that fits its range (e.g., 64-bit floats to 32-bit, counts to 8-bit integers). Delete every intermediate DataFrame immediately after it is merged or consumed, and call the garbage collector explicitly. In the CV loop, index into the master DataFrame with .
     evidence: ✗ Memory failure occurs in a single forward pass and grows with batch size. | ✓ Memory grows between sequential model runs because completed objects remain live. | ✓ The raw table or engineered feature table exceeds memory before model inference starts. | ✓ Model tensors dominate memory and the current pipeline uses full precision. | ✓ Duplicate DataFrame copies (e.g., X_train/X_test/y_train/y_test) are created in a loop instead of using index-based slicing into a single master DataFrame, roughly doubling memory usage.
-    leaderboard score n/a → n/a
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v63→v64   Insert explicit garbage collection calls (and, if applicable, clear GPU cache) between model inference blocks so that each model's memory is freed before the next is loaded. Enable the garbage collector early in the script and call it at transition points.
+    leaderboard score n/a → n/a (higher is better)
+- expert 17616127 · commonlitreadabilityprize · v63→v64   Insert explicit garbage collection calls (and, if applicable, clear GPU cache) between model inference blocks so that each model's memory is freed before the next is loaded. Enable the garbage collector early in the script and call it at transition points.
     evidence: ✗ The raw table or engineered feature table exceeds memory before model inference starts. | ✓ Memory grows between sequential model runs because completed objects remain live.
-    leaderboard score n/a → n/a
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v66→v67   Insert explicit garbage-collection calls (and, on GPU, cache-clearing calls) after each model's predictions are stored and before the next model is loaded. This frees intermediate buffers and keeps peak memory within limits.
+    leaderboard score n/a → n/a (lower is better)
+- expert 17616127 · commonlitreadabilityprize · v66→v67   Insert explicit garbage-collection calls (and, on GPU, cache-clearing calls) after each model's predictions are stored and before the next model is loaded. This frees intermediate buffers and keeps peak memory within limits.
     evidence: ✓ Memory grows between sequential model runs because completed objects remain live.
-    leaderboard score n/a → 0.46804
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v68→v69   Before deleting any object for memory savings, trace all downstream references to it. Only delete objects after their last use. When a pipeline fails to produce output after adding deletions, check whether deleted variables are still needed downstream.
+    leaderboard score n/a → 0.46804 (lower is better)
+- expert 17616127 · commonlitreadabilityprize · v68→v69   Before deleting any object for memory savings, trace all downstream references to it. Only delete objects after their last use. When a pipeline fails to produce output after adding deletions, check whether deleted variables are still needed downstream.
     evidence: ✓ Memory grows between sequential model runs because completed objects remain live. | ✓ A deleted or freed object is still referenced later in the pipeline, preventing actual memory reclamation.
-    leaderboard score n/a → 0.45939
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v133→v134   Call the runtime's garbage collector explicitly after each model's predictions are stored and the model is no longer needed. This forces deallocation of intermediate tensors and prevents cumulative memory buildup across sequential model loads.
+    leaderboard score n/a → 0.45939 (lower is better)
+- expert 17616127 · commonlitreadabilityprize · v133→v134   Call the runtime's garbage collector explicitly after each model's predictions are stored and the model is no longer needed. This forces deallocation of intermediate tensors and prevents cumulative memory buildup across sequential model loads.
     evidence: ✗ The raw table or engineered feature table exceeds memory before model inference starts. | ✓ Memory grows between sequential model runs because completed objects remain live.
-    leaderboard score n/a → 0.44776
-- expert 18350823 (Expert) · commonlitreadabilityprize · v35→v37   After each model finishes inference, delete the model object and all intermediate tensors, then call the language runtime's garbage collector and the GPU cache-clearing function. If still insufficient, reduce the number of inference replicas (e.g., fewer random seeds) to lower peak memory. Insert th
+    leaderboard score n/a → 0.44776 (lower is better)
+- expert 18350823 · commonlitreadabilityprize · v35→v37   After each model finishes inference, delete the model object and all intermediate tensors, then call the language runtime's garbage collector and the GPU cache-clearing function. If still insufficient, reduce the number of inference replicas (e.g., fewer random seeds) to lower peak memory. Insert th
     evidence: ✗ The raw table or engineered feature table exceeds memory before model inference starts. | ✓ Memory grows between sequential model runs because completed objects remain live. | ✗ Memory failure occurs in a single forward pass and grows with batch size. | ✗ A deleted or freed object is still referenced later in the pipeline, preventing actual memory reclamation. | ✓ Peak memory is driven by the number of sequential inference passes (e.g., seed replicas) kept simultaneously in memory. | ✗ Duplicate DataFrame copies (e.g., X_train/X_test/y_train/y_test) are created in a loop instead of using index-based slicing into a single master DataFrame, roughly doubling memory usage.
-    leaderboard score n/a → n/a
-- expert 75924487 (Master) · equity · v5→v6   After each model finishes inference, explicitly delete its objects and invoke garbage collection before loading the next model. Apply this pattern inside any loop that iterates over model variants.
+    leaderboard score n/a → n/a (lower is better)
+- expert 75924487 · equity · v5→v6   After each model finishes inference, explicitly delete its objects and invoke garbage collection before loading the next model. Apply this pattern inside any loop that iterates over model variants.
     evidence: ✓ Memory grows between sequential model runs because completed objects remain live. | ✗ A deleted or freed object is still referenced later in the pipeline, preventing actual memory reclamation. | ✓ Peak memory is driven by the number of sequential inference passes (e.g., seed replicas) kept simultaneously in memory.
-    leaderboard score n/a → 0.69331
-- expert 73937748 (Master) · equity · v35→v36   Loop over model variants one at a time: load the artifact, generate and store only the lightweight prediction arrays, then explicitly delete the model object and trigger garbage collection before proceeding to the next variant.
+    leaderboard score n/a → 0.69331 (higher is better)
+- expert 73937748 · equity · v35→v36   Loop over model variants one at a time: load the artifact, generate and store only the lightweight prediction arrays, then explicitly delete the model object and trigger garbage collection before proceeding to the next variant.
     evidence: ✓ Memory grows between sequential model runs because completed objects remain live.
-    leaderboard score n/a → 0.69026
-- expert 7670859 (Contributor) · google · v20→v23   After each model's embedding extraction, explicitly delete all large intermediate arrays, invoke the framework's session/cache clearing functions, and call the garbage collector before loading the next model. Keep only the final condensed feature arrays needed downstream.
+    leaderboard score n/a → 0.69026 (higher is better)
+- expert 7670859 · google · v20→v23   After each model's embedding extraction, explicitly delete all large intermediate arrays, invoke the framework's session/cache clearing functions, and call the garbage collector before loading the next model. Keep only the final condensed feature arrays needed downstream.
     evidence: ✓ Memory grows between sequential model runs because completed objects remain live. | ✗ Memory failure occurs in a single forward pass and grows with batch size. | ✗ A deleted or freed object is still referenced later in the pipeline, preventing actual memory reclamation. | ✗ Duplicate DataFrame copies (e.g., X_train/X_test/y_train/y_test) are created in a loop instead of using index-based slicing into a single master DataFrame, roughly doubling memory usage.
-    leaderboard score 0.39130 → n/a
-- expert 15164527 (Expert) · ranzcr · v2→v4   Explicitly delete each model object (and call garbage collection / cache clearing) immediately after its inference is complete, before loading the next model. If OOM still occurs, reduce the inference batch size by half and retry.
+    leaderboard score 0.39130 → n/a (higher is better)
+- expert 15164527 · ranzcr · v2→v4   Explicitly delete each model object (and call garbage collection / cache clearing) immediately after its inference is complete, before loading the next model. If OOM still occurs, reduce the inference batch size by half and retry.
     evidence: ✓ Memory grows between sequential model runs because completed objects remain live. | ✗ The raw table or engineered feature table exceeds memory before model inference starts. | ✗ A deleted or freed object is still referenced later in the pipeline, preventing actual memory reclamation. | ✓ Peak memory is driven by the number of sequential inference passes (e.g., seed replicas) kept simultaneously in memory. | ✓ Memory failure occurs in a single forward pass and grows with batch size.
-    leaderboard score n/a → 0.96642
-- expert 15164527 (Expert) · ranzcr · v5→v6   After each model finishes inference, explicitly delete the model object and its intermediate tensors, then call the runtime's garbage collector and GPU cache-clearing function before loading the next model. This prevents accumulated allocations from causing out-of-memory errors.
+    leaderboard score n/a → 0.96642 (higher is better)
+- expert 15164527 · ranzcr · v5→v6   After each model finishes inference, explicitly delete the model object and its intermediate tensors, then call the runtime's garbage collector and GPU cache-clearing function before loading the next model. This prevents accumulated allocations from causing out-of-memory errors.
     evidence: ✓ Memory grows between sequential model runs because completed objects remain live. | ✗ Memory failure occurs in a single forward pass and grows with batch size. | ✓ Peak memory is driven by the number of sequential inference passes (e.g., seed replicas) kept simultaneously in memory.
-    leaderboard score 0.96679 → 0.96755 (+0.00076)
+    leaderboard score 0.96679 → 0.96755 (higher is better; improved by 0.00076)

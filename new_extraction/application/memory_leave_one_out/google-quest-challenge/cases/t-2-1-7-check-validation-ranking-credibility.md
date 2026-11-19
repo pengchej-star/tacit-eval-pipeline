@@ -1,13 +1,13 @@
 # Check validation ranking credibility  `T.2.1.7`   3 edits, 0 experts
-3 scored cases, median improvement +0.00482, 2 improved
+3 scored cases (improvement signed by each competition's direction), median +0.00482, 2 improved
 
 
-- expert 15082684 (Master) · ranzcr · v3→v14   Submit a handful of checkpoints spanning different runs and epochs to calibrate the CV-to-LB correlation. Be aware that the checkpoint with the highest validation score may not win on the public test set due to distribution shift or overfitting to the validation fold. If the first checkpoint already
+- expert 15082684 · ranzcr · v3→v14   Submit a handful of checkpoints spanning different runs and epochs to calibrate the CV-to-LB correlation. Be aware that the checkpoint with the highest validation score may not win on the public test set due to distribution shift or overfitting to the validation fold. If the first checkpoint already
     evidence: ✗ Several factors changed in the same scored run. | ✗ No complete and scored end-to-end baseline exists. | ✓ Existing checkpoint results show uncertain agreement between validation and external evaluation. | ✓ Observed gains are comparable to prior run-to-run variation or the evaluation set is very small. | ✓ A recent change caused a large regression and a verified earlier configuration is recoverable. | ✓ Repeated nearby settings fail to improve beyond the measured noise level.
-    leaderboard score 0.96040 → 0.95388 (-0.00652)
-- expert 15082684 (Master) · ranzcr · v14→v16   Track both validation and leaderboard scores across all submissions. When a checkpoint with notably higher validation still underperforms on the leaderboard, suspect a mismatch in preprocessing, augmentation, or data distribution rather than continuing to select checkpoints by validation alone. Inve
+    leaderboard score 0.96040 → 0.95388 (higher is better; worse by 0.00652)
+- expert 15082684 · ranzcr · v14→v16   Track both validation and leaderboard scores across all submissions. When a checkpoint with notably higher validation still underperforms on the leaderboard, suspect a mismatch in preprocessing, augmentation, or data distribution rather than continuing to select checkpoints by validation alone. Inve
     evidence: ✓ Several factors changed in the same scored run. | ✓ Observed gains are comparable to prior run-to-run variation or the evaluation set is very small. | ✗ A recent change caused a large regression and a verified earlier configuration is recoverable. | ✓ Repeated nearby settings fail to improve beyond the measured noise level. | ✗ No complete and scored end-to-end baseline exists. | ✓ Existing checkpoint results show uncertain agreement between validation and external evaluation.
-    leaderboard score 0.95388 → 0.95870 (+0.00482)
-- expert 15082684 (Master) · ranzcr · v24→v29   Submit a small number of checkpoints spanning the range of validation scores to verify monotonic alignment between validation and test metrics. If two checkpoints with the same validation score from independent runs yield nearly identical test scores, treat validation as a reliable proxy and reduce 
+    leaderboard score 0.95388 → 0.95870 (higher is better; improved by 0.00482)
+- expert 15082684 · ranzcr · v24→v29   Submit a small number of checkpoints spanning the range of validation scores to verify monotonic alignment between validation and test metrics. If two checkpoints with the same validation score from independent runs yield nearly identical test scores, treat validation as a reliable proxy and reduce 
     evidence: ✗ Several factors changed in the same scored run. | ✓ Existing checkpoint results show uncertain agreement between validation and external evaluation. | ✗ No complete and scored end-to-end baseline exists.
-    leaderboard score 0.96249 → 0.96901 (+0.00652)
+    leaderboard score 0.96249 → 0.96901 (higher is better; improved by 0.00652)

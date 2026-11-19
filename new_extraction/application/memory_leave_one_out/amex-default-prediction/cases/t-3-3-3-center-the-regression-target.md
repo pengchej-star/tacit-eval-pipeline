@@ -1,5 +1,5 @@
 # Center the regression target  `T.3.3.3`   1 edits, 0 experts
 
-- expert 58130512 (Master) · learning · v103→v105   Try per-fold target centering (subtract each fold's training mean, then average the fold means to reconstruct the global offset at inference). Compare validation metrics against the fixed global shift. If per-fold centering shows no improvement or adds instability, revert to the simpler fixed shift 
+- expert 58130512 · learning · v103→v105   Try per-fold target centering (subtract each fold's training mean, then average the fold means to reconstruct the global offset at inference). Compare validation metrics against the fixed global shift. If per-fold centering shows no improvement or adds instability, revert to the simpler fixed shift 
     evidence: ✗ Outcomes include both event times and censoring indicators. | ✗ The metric evaluates named groups separately and group survival distributions differ. | ✓ Continuous regression targets have fold-dependent offsets and are not censored outcomes. | ✗ Some groups have too few events to estimate their own survival curves reliably. | ✓ Multiple target transformations exist but have not been individually evaluated on the leaderboard to determine which is best.
-    leaderboard score 0.82432 → n/a
+    leaderboard score 0.82432 → n/a (higher is better)

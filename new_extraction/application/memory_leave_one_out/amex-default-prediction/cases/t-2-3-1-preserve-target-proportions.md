@@ -1,13 +1,13 @@
 # Preserve target proportions  `T.2.3.1`   3 edits, 0 experts
-1 scored cases, median improvement +0.00261, 1 improved
+1 scored cases (improvement signed by each competition's direction), median +0.00261, 1 improved
 
 
-- expert 18851026 (Master) · commonlitreadabilityprize · v26→v28   Discretize the continuous target into bins and apply stratified K-fold splitting on those bins. This ensures each fold mirrors the overall target distribution, stabilizing both the CV metric and the out-of-fold predictions used for stacking.
+- expert 18851026 · commonlitreadabilityprize · v26→v28   Discretize the continuous target into bins and apply stratified K-fold splitting on those bins. This ensures each fold mirrors the overall target distribution, stabilizing both the CV metric and the out-of-fold predictions used for stacking.
     evidence: ✓ Examples are independent but random folds have markedly different target frequencies. | ✓ The target variable passed to StratifiedGroupKFold is float-valued rather than integer/discrete, which will cause an error or degenerate stratification. | ✓ The validation design change is bundled with other modifications (e.g., hyperparameters, GPU config, callbacks), preventing isolated evaluation of its effect. | ✗ Related examples share an entity or source that must be unseen at evaluation.
-    leaderboard score n/a → 0.45803
-- expert 55431616 (Grandmaster) · learning · v11→v13   Use stratified cross-validation splits that preserve the target distribution in every fold, so that per-fold threshold optimization and objective alignment reflect the true test-time distribution.
+    leaderboard score n/a → 0.45803 (lower is better)
+- expert 55431616 · learning · v11→v13   Use stratified cross-validation splits that preserve the target distribution in every fold, so that per-fold threshold optimization and objective alignment reflect the true test-time distribution.
     evidence: ✓ Examples are independent but random folds have markedly different target frequencies. | ✓ A known subgroup resembles the test population and is poorly represented in the current folds. | ✓ The validation design change is bundled with other modifications (e.g., hyperparameters, GPU config, callbacks), preventing isolated evaluation of its effect.
-    leaderboard score 0.81502 → 0.81762 (+0.00261)
-- expert 55987255 (Master) · learning · v117→v118   Before calling a stratified splitter, cast the target to integer (or bin it into a small number of discrete classes). For ordinal targets stored as floats, round or truncate to int. Verify the number of unique values in the cast target is small and matches the expected number of classes.
+    leaderboard score 0.81502 → 0.81762 (higher is better; improved by 0.00261)
+- expert 55987255 · learning · v117→v118   Before calling a stratified splitter, cast the target to integer (or bin it into a small number of discrete classes). For ordinal targets stored as floats, round or truncate to int. Verify the number of unique values in the cast target is small and matches the expected number of classes.
     evidence: ✓ The target variable passed to StratifiedGroupKFold is float-valued rather than integer/discrete, which will cause an error or degenerate stratification. | ✗ The validation design change is bundled with other modifications (e.g., hyperparameters, GPU config, callbacks), preventing isolated evaluation of its effect.
-    leaderboard score n/a → n/a
+    leaderboard score n/a → n/a (higher is better)

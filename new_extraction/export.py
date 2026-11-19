@@ -2,7 +2,7 @@
 import re
 from collections import defaultdict
 
-from common import CFG, MODE, OUT, index, jload
+from common import CFG, MODE, OUT, TASKS, index, jload
 import data
 from data import comp_of
 
@@ -11,6 +11,56 @@ A = OUT / "application"
 
 def slug(s):
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")[:48]
+
+
+def write_cases(trans, out=None):
+    """cases/<node>.md only. One line per item; the score change is signed by the competition's direction (positive delta = better)."""
+    out = out or OUT
+    A_ = out / "application"
+    TRANS_ = {t["step_id"]: t for t in trans}
+    tree = jload(out / "3_merged_tree.json")
+    visits = jload(out / "5_visits.json")
+    items = {i["id"]: i for i in jload(out / "2a_items.json")}
+    idx, reg = index(tree), jload(out / "4_desiderata.json")["registry"]
+    (A_ / "cases").mkdir(parents=True, exist_ok=True)
+    # cases/<node>.md
+    by_item = {}
+    for v in visits:
+        by_item.setdefault(v["item"], []).append(v)
+    ncases = 0
+    for n in idx.values():
+        if not n.get("items"):
+            continue
+        C = [f"# {n['name']}  `{n['id']}`   {len(n['items'])} edits, {len(n['experts'])} experts", ""]
+        deltas = []
+        for i in n["items"]:
+            it = items[i]
+            vs = by_item.get(i, [])
+            # evidence at the decision where this item's option was taken; several steps of one item -> majority state per check
+            votes = defaultdict(lambda: [0, 0])
+            for v in vs:
+                if v["child"] == n["id"]:
+                    for e, c in v["checks"].items():
+                        if c["state"] != "not_checked":
+                            votes[e][c["state"] == "yes"] += 1
+            top = sorted(votes, key=lambda e: -sum(votes[e]))[:6]
+            ev = [f"{'✓' if votes[e][1] >= votes[e][0] else '✗'} {reg[e]['check']}" for e in top]
+            t0, t1 = TRANS_.get(it["step_ids"][0]), TRANS_.get(it["step_ids"][-1])
+            so, sn = (t0["score_old"] if t0 else None), (t1["score_new"] if t1 else None)
+            hi = TASKS[it["comp"]]["direction"] == "max"
+            delta = (sn - so if hi else so - sn) if (so is not None and sn is not None) else None      # > 0 = better
+            sc = f"{data.fmt(so)} → {data.fmt(sn)}"
+            if delta is not None:
+                deltas.append(delta)
+            span = f"{t0['v_old']}→v{t1['v_new']}" if t0 and t1 else "?"
+            C.append(f"- expert {it['expert']} · {comp_of(it['expert']).split('-')[0]} · v{span}   {it['what'][:300]}\n"
+                     f"    evidence: {' | '.join(ev) or 'none recorded'}\n    {CFG['task']['progress_signal']} {sc}" + (f" ({'higher' if hi else 'lower'} is better; {'improved' if delta > 0 else 'worse' if delta < 0 else 'unchanged'} by {abs(delta):.5f})" if delta is not None else f" ({'higher' if hi else 'lower'} is better)"))
+        if deltas:
+            deltas.sort()
+            C.insert(1, f"{len(deltas)} scored cases (improvement signed by each competition's direction), median {deltas[len(deltas) // 2]:+.5f}, {sum(d > 0 for d in deltas)} improved\n")
+        (A_ / "cases" / f"{slug(n['id'] + '-' + n['name'])}.md").write_text("\n".join(C), encoding="utf-8")
+        ncases += 1
+    return ncases
 
 
 def run(trans):
@@ -83,42 +133,7 @@ def run(trans):
         (A / "attention" / f"{slug(n['id'] + '-' + n['name'])}.md").write_text("\n".join(M), encoding="utf-8")
         n_written += 1
 
-    # cases/<node>.md
-    by_item = {}
-    for v in visits:
-        by_item.setdefault(v["item"], []).append(v)
-    ncases = 0
-    for n in idx.values():
-        if not n.get("items"):
-            continue
-        C = [f"# {n['name']}  `{n['id']}`   {len(n['items'])} edits, {len(n['experts'])} experts", ""]
-        deltas = []
-        for i in n["items"]:
-            it = items[i]
-            vs = by_item.get(i, [])
-            # evidence at the decision where this item's option was taken; several steps of one item -> majority state per check
-            votes = defaultdict(lambda: [0, 0])
-            for v in vs:
-                if v["child"] == n["id"]:
-                    for e, c in v["checks"].items():
-                        if c["state"] != "not_checked":
-                            votes[e][c["state"] == "yes"] += 1
-            top = sorted(votes, key=lambda e: -sum(votes[e]))[:6]
-            ev = [f"{'✓' if votes[e][1] >= votes[e][0] else '✗'} {reg[e]['check']}" for e in top]
-            t0, t1 = TRANS_.get(it["step_ids"][0]), TRANS_.get(it["step_ids"][-1])
-            so, sn = (t0["score_old"] if t0 else None), (t1["score_new"] if t1 else None)
-            delta = sn - so if (so is not None and sn is not None) else None
-            sc = f"{data.fmt(so)} → {data.fmt(sn)}"
-            if delta is not None:
-                deltas.append(delta)
-            span = f"{t0['v_old']}→v{t1['v_new']}" if t0 and t1 else "?"
-            C.append(f"- expert {it['expert']} ({t0['tier'] if t0 else ''}) · {comp_of(it['expert']).split('-')[0]} · v{span}   {it['what'][:300]}\n"
-                     f"    evidence: {' | '.join(ev) or 'none recorded'}\n    {CFG['task']['progress_signal']} {sc}" + (f" ({delta:+.5f})" if delta is not None else ""))
-        if deltas:
-            deltas.sort()
-            C.insert(1, f"{len(deltas)} scored cases, median improvement {deltas[len(deltas) // 2]:+.5f}, {sum(d > 0 for d in deltas)} improved\n")
-        (A / "cases" / f"{slug(n['id'] + '-' + n['name'])}.md").write_text("\n".join(C), encoding="utf-8")
-        ncases += 1
+    ncases = write_cases(trans)
     print(f"export: taxonomy.md, registry ({len(reg)}), {n_written} attention files, {ncases} case files -> {A}")
 
 

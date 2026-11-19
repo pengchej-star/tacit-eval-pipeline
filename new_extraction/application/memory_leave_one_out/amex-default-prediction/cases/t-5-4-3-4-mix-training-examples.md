@@ -1,5 +1,5 @@
 # Mix training examples  `T.5.4.3.4`   1 edits, 0 experts
 
-- expert 49576186 (Expert) · hms · v58→v60   Extend mixup to blend three samples with a dominant weight on the primary sample (e.g., 0.8) and split the remainder randomly between two other samples. Ensure NaN values in inputs are zeroed before mixing. Evaluate in isolation or with minimal other changes to attribute any score change correctly.
+- expert 49576186 · hms · v58→v60   Extend mixup to blend three samples with a dominant weight on the primary sample (e.g., 0.8) and split the remainder randomly between two other samples. Ensure NaN values in inputs are zeroed before mixing. Evaluate in isolation or with minimal other changes to attribute any score change correctly.
     evidence: ✓ Labels are soft distributions and linear mixtures of examples are a plausible training perturbation. | ✓ Two-sample mixup is already implemented and functional in the current training pipeline. | ✓ NaN values exist in the input data (spectrograms or EEG) that could corrupt mixed or masked samples. | ✓ MixUp-style augmentation was previously tried and did not sufficiently address overfitting. | ✗ The task relies on exact orientation or a small localized event.
-    leaderboard score n/a → 0.41959
+    leaderboard score n/a → 0.41959 (lower is better)

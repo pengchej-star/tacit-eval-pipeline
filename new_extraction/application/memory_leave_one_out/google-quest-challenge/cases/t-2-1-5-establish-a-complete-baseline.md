@@ -1,16 +1,16 @@
 # Establish a complete baseline  `T.2.1.5`   4 edits, 0 experts
-1 scored cases, median improvement +0.00071, 1 improved
+1 scored cases (improvement signed by each competition's direction), median +0.00071, 1 improved
 
 
-- expert 28093671 (Contributor) · amex · v9→v10   Create a k-fold cross-validation loop with early stopping on a held-out fold. Include all preprocessing inside the loop to avoid leakage. Use GPU-accelerated tree training if available to shorten iteration time. Produce out-of-fold predictions so the full training set is scored.
+- expert 28093671 · amex · v9→v10   Create a k-fold cross-validation loop with early stopping on a held-out fold. Include all preprocessing inside the loop to avoid leakage. Use GPU-accelerated tree training if available to shorten iteration time. Produce out-of-fold predictions so the full training set is scored.
     evidence: ✗ A recent change caused a large regression and a verified earlier configuration is recoverable. | ✗ Repeated nearby settings fail to improve beyond the measured noise level. | ✓ No complete and scored end-to-end baseline exists. | ✗ One scalar control remains uncertain and earlier trials show a directional response. | ✗ Existing checkpoint results show uncertain agreement between validation and external evaluation. | ✓ The current baseline is far behind existing evidence and several coupled improvements form a compatible replacement.
-    leaderboard score n/a → n/a
-- expert 75145694 (Expert) · equity · v1→v3   In the first version, assemble a complete pipeline that includes: (1) a non-parametric survival transform (e.g., Kaplan-Meier probabilities) as the regression target, (2) importing one or more external pretrained models for blending, (3) a local evaluation function matching the competition metric, a
+    leaderboard score n/a → n/a (higher is better)
+- expert 75145694 · equity · v1→v3   In the first version, assemble a complete pipeline that includes: (1) a non-parametric survival transform (e.g., Kaplan-Meier probabilities) as the regression target, (2) importing one or more external pretrained models for blending, (3) a local evaluation function matching the competition metric, a
     evidence: ✓ No complete and scored end-to-end baseline exists. | ✓ The current baseline is far behind existing evidence and several coupled improvements form a compatible replacement. | ✓ Several factors changed in the same scored run. | ✗ Repeated nearby settings fail to improve beyond the measured noise level.
-    leaderboard score 0.68795 → 0.68865 (+0.00071)
-- expert 77386286 (Expert) · equity · v1→v2   Build and submit a complete end-to-end pipeline as quickly as possible to establish a numeric baseline. This anchors all future experiments and reveals whether the task is easy or hard relative to the leaderboard distribution.
+    leaderboard score 0.68795 → 0.68865 (higher is better; improved by 0.00071)
+- expert 77386286 · equity · v1→v2   Build and submit a complete end-to-end pipeline as quickly as possible to establish a numeric baseline. This anchors all future experiments and reveals whether the task is easy or hard relative to the leaderboard distribution.
     evidence: ✗ A recent change caused a large regression and a verified earlier configuration is recoverable. | ✗ Repeated nearby settings fail to improve beyond the measured noise level. | ✓ No complete and scored end-to-end baseline exists. | ✗ One scalar control remains uncertain and earlier trials show a directional response. | ✗ Existing checkpoint results show uncertain agreement between validation and external evaluation.
-    leaderboard score n/a → 0.69332
-- expert 53747598 (Master) · hms · v11→v12   Submit once the full pipeline is functionally complete—before tuning further—to establish a reliable baseline score. This confirms correctness end-to-end and provides a reference point so that subsequent changes (swapping checkpoints, adjusting weights) can be evaluated as improvements or regression
+    leaderboard score n/a → 0.69332 (higher is better)
+- expert 53747598 · hms · v11→v12   Submit once the full pipeline is functionally complete—before tuning further—to establish a reliable baseline score. This confirms correctness end-to-end and provides a reference point so that subsequent changes (swapping checkpoints, adjusting weights) can be evaluated as improvements or regression
     evidence: ✓ Several factors changed in the same scored run. | ✓ No complete and scored end-to-end baseline exists.
-    leaderboard score n/a → 0.23270
+    leaderboard score n/a → 0.23270 (lower is better)

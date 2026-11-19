@@ -1,28 +1,28 @@
 # Add temporal deviation or window features  `T.3.1.2`   8 edits, 0 experts
-1 scored cases, median improvement +0.00013, 1 improved
+1 scored cases (improvement signed by each competition's direction), median +0.00013, 1 improved
 
 
-- expert 27836972 (Expert) · amex · v7→v18   Try simple transformations first: days-since-reference-date (global max or per-group max), then include in standard aggregations or take only the 'last' value. Submit after each variant and compare to baseline. If no variant improves the score after several attempts, accept that the date feature add
+- expert 27836972 · amex · v7→v18   Try simple transformations first: days-since-reference-date (global max or per-group max), then include in standard aggregations or take only the 'last' value. Submit after each variant and compare to baseline. If no variant improves the score after several attempts, accept that the date feature add
     evidence: ✓ Several observations belong to one prediction entity and only a small summary is currently used. | ✓ Order and recency contain variation that full-history summaries conceal. | ✗ Text structure or error patterns vary with the target beyond the current representation. | ✗ Lexical frequency or local word patterns are absent or poorly covered by current features. | ✗ Semantic embeddings are absent, or existing embedding sources have uncertain marginal value. | ✗ Distinct text roles or observed metadata are lost by the current input encoding.
-    leaderboard score n/a → 0.79274
-- expert 27836972 (Expert) · amex · v18→v22   Prototype lag features on a small data sample with progress bars and debug prints. If implementation proves fragile or slow after a few iterations, abandon the approach and try a simpler feature transformation rather than sinking more time into debugging.
+    leaderboard score n/a → 0.79274 (higher is better)
+- expert 27836972 · amex · v18→v22   Prototype lag features on a small data sample with progress bars and debug prints. If implementation proves fragile or slow after a few iterations, abandon the approach and try a simpler feature transformation rather than sinking more time into debugging.
     evidence: ✓ Several observations belong to one prediction entity and only a small summary is currently used. | ✓ Order and recency contain variation that full-history summaries conceal.
-    leaderboard score 0.79274 → n/a
-- expert 27836972 (Expert) · amex · v30→v31   Create difference features between aggregations (e.g., last minus mean, capturing recent deviation from the average) and discretized/rounded copies of continuous features (capturing coarse-grained patterns). Remove the original fine-grained columns that the rounded versions replace to keep feature c
+    leaderboard score 0.79274 → n/a (higher is better)
+- expert 27836972 · amex · v30→v31   Create difference features between aggregations (e.g., last minus mean, capturing recent deviation from the average) and discretized/rounded copies of continuous features (capturing coarse-grained patterns). Remove the original fine-grained columns that the rounded versions replace to keep feature c
     evidence: ✓ Several observations belong to one prediction entity and only a small summary is currently used. | ✓ Order and recency contain variation that full-history summaries conceal.
-    leaderboard score n/a → 0.79492
-- expert 27836972 (Expert) · amex · v39→v43   Add first-aggregation and derived lag features (last minus first, last divided by first) incrementally. Submit after each addition and compare to the best known score. If the score drops, try removing the noisiest variant (e.g., the ratio) separately. If neither variant improves the score, revert th
+    leaderboard score n/a → 0.79492 (higher is better)
+- expert 27836972 · amex · v39→v43   Add first-aggregation and derived lag features (last minus first, last divided by first) incrementally. Submit after each addition and compare to the best known score. If the score drops, try removing the noisiest variant (e.g., the ratio) separately. If neither variant improves the score, revert th
     evidence: ✓ Several observations belong to one prediction entity and only a small summary is currently used. | ✓ Order and recency contain variation that full-history summaries conceal.
-    leaderboard score n/a → 0.79452
-- expert 27836972 (Expert) · amex · v55→v62   Compute aggregations (e.g., mean) over only the last N records per entity, where N is a small fraction of the typical sequence length. Add these as new features alongside the full-history aggregations. Start with a small window (e.g., last 3 records), confirm improvement, then optionally sweep the w
+    leaderboard score n/a → 0.79452 (higher is better)
+- expert 27836972 · amex · v55→v62   Compute aggregations (e.g., mean) over only the last N records per entity, where N is a small fraction of the typical sequence length. Add these as new features alongside the full-history aggregations. Start with a small window (e.g., last 3 records), confirm improvement, then optionally sweep the w
     evidence: ✓ Several observations belong to one prediction entity and only a small summary is currently used. | ✓ Order and recency contain variation that full-history summaries conceal. | ✗ Text structure or error patterns vary with the target beyond the current representation. | ✗ Lexical frequency or local word patterns are absent or poorly covered by current features. | ✗ Semantic embeddings are absent, or existing embedding sources have uncertain marginal value. | ✗ Distinct text roles or observed metadata are lost by the current input encoding.
-    leaderboard score n/a → n/a
-- expert 27836972 (Expert) · amex · v63→v67   Implement the difference features, but before committing to a submission, disable them and submit without them to establish a clean baseline. If the feature was tried multiple times before without success, treat it as low-priority and avoid spending many iterations refining the implementation before
+    leaderboard score n/a → n/a (higher is better)
+- expert 27836972 · amex · v63→v67   Implement the difference features, but before committing to a submission, disable them and submit without them to establish a clean baseline. If the feature was tried multiple times before without success, treat it as low-priority and avoid spending many iterations refining the implementation before
     evidence: ✓ Several observations belong to one prediction entity and only a small summary is currently used. | ✓ Order and recency contain variation that full-history summaries conceal.
-    leaderboard score n/a → 0.79497
-- expert 27836972 (Expert) · amex · v69→v70   Build interaction features using smoothed aggregates (e.g., recent-window means) rather than single-point values, and restrict to a small number of domain-motivated column pairs rather than a broad combinatorial expansion. This reduces noise while preserving meaningful signal.
+    leaderboard score n/a → 0.79497 (higher is better)
+- expert 27836972 · amex · v69→v70   Build interaction features using smoothed aggregates (e.g., recent-window means) rather than single-point values, and restrict to a small number of domain-motivated column pairs rather than a broad combinatorial expansion. This reduces noise while preserving meaningful signal.
     evidence: ✓ Several observations belong to one prediction entity and only a small summary is currently used. | ✓ Order and recency contain variation that full-history summaries conceal. | ✓ Related columns or metadata imply a signal not expressed in the present features.
-    leaderboard score n/a → n/a
-- expert 27799930 (Contributor) · amex · v65→v69   Create interaction features by combining semantically related columns (e.g., subtracting one group from another), and add custom aggregation functions (root-mean-square, mean-of-differences) applied selectively to feature subgroups rather than all columns. Pair this with aggressive dropping of low-i
+    leaderboard score n/a → n/a (higher is better)
+- expert 27799930 · amex · v65→v69   Create interaction features by combining semantically related columns (e.g., subtracting one group from another), and add custom aggregation functions (root-mean-square, mean-of-differences) applied selectively to feature subgroups rather than all columns. Pair this with aggressive dropping of low-i
     evidence: ✓ Several observations belong to one prediction entity and only a small summary is currently used. | ✓ Order and recency contain variation that full-history summaries conceal. | ✗ Text structure or error patterns vary with the target beyond the current representation. | ✗ Lexical frequency or local word patterns are absent or poorly covered by current features. | ✗ Semantic embeddings are absent, or existing embedding sources have uncertain marginal value. | ✗ Distinct text roles or observed metadata are lost by the current input encoding.
-    leaderboard score 0.79462 → 0.79475 (+0.00013)
+    leaderboard score 0.79462 → 0.79475 (higher is better; improved by 0.00013)

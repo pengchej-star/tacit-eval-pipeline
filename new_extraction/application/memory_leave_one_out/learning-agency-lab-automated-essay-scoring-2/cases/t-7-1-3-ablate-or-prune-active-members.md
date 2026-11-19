@@ -1,160 +1,160 @@
 # Ablate or prune active members  `T.7.1.3`   52 edits, 0 experts
-45 scored cases, median improvement -0.00104, 17 improved
+45 scored cases (improvement signed by each competition's direction), median +0.00119, 30 improved
 
 
-- expert 27502740 (Grandmaster) · amex · v6→v8   Before committing, compare the OOF metric of the manual blend against the original single-pipeline OOF metric. If the manual blend does not improve OOF, do not submit—it likely means the AutoML's internal combination was already near-optimal for that algorithm mix. Reserve manual blending for genuin
+- expert 27502740 · amex · v6→v8   Before committing, compare the OOF metric of the manual blend against the original single-pipeline OOF metric. If the manual blend does not improve OOF, do not submit—it likely means the AutoML's internal combination was already near-optimal for that algorithm mix. Reserve manual blending for genuin
     evidence: ✓ No same-split comparison establishes that the ensemble beats its strongest member. | ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.79501 → 0.79461 (-0.00040)
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v14→v18   Try averaging predictions from the homogeneous set, but compare against the existing diverse blend before committing. Diversity across architectures often matters more than quantity of same-architecture members; do not discard the heterogeneous blend unless the homogeneous one clearly wins on valida
+    leaderboard score 0.79501 → 0.79461 (higher is better; worse by 0.00040)
+- expert 17616127 · commonlitreadabilityprize · v14→v18   Try averaging predictions from the homogeneous set, but compare against the existing diverse blend before committing. Diversity across architectures often matters more than quantity of same-architecture members; do not discard the heterogeneous blend unless the homogeneous one clearly wins on valida
     evidence: ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors. | ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✗ No same-split comparison establishes that the ensemble beats its strongest member.
-    leaderboard score 0.47623 → 0.48999 (+0.01376)
-- expert 17616127 (Contributor) · commonlitreadabilityprize · v60→v65   Test the single-family subset alone to measure its standalone quality, then incrementally re-add the other components. If the simplified version scores worse, the diversity from multiple families is genuinely contributing. Restore the full blend and focus on weight tuning rather than removing member
+    leaderboard score 0.47623 → 0.48999 (lower is better; worse by 0.01376)
+- expert 17616127 · commonlitreadabilityprize · v60→v65   Test the single-family subset alone to measure its standalone quality, then incrementally re-add the other components. If the simplified version scores worse, the diversity from multiple families is genuinely contributing. Restore the full blend and focus on weight tuning rather than removing member
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence. | ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors. | ✓ No same-split comparison establishes that the ensemble beats its strongest member.
-    leaderboard score 0.45499 → 0.45576 (+0.00077)
-- expert 18550705 (Master) · commonlitreadabilityprize · v2→v9   First grow the ensemble by adding candidate models one at a time, recording the metric after each addition. Then prune: remove each member individually and keep the removal if the metric improves or stays flat. This greedy add-then-prune search identifies which members actually contribute complement
+    leaderboard score 0.45499 → 0.45576 (lower is better; worse by 0.00077)
+- expert 18550705 · commonlitreadabilityprize · v2→v9   First grow the ensemble by adding candidate models one at a time, recording the metric after each addition. Then prune: remove each member individually and keep the removal if the metric improves or stays flat. This greedy add-then-prune search identifies which members actually contribute complement
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors.
-    leaderboard score 0.45681 → 0.45411 (-0.00270)
-- expert 18550705 (Master) · commonlitreadabilityprize · v11→v12   Remove members one group at a time and simplify the combination mechanism (e.g., replace a neural stacking head with a learned weighted average). If the score degrades, the removed members carried complementary information and should be restored. Track each removal's effect individually rather than 
+    leaderboard score 0.45681 → 0.45411 (lower is better; improved by 0.00270)
+- expert 18550705 · commonlitreadabilityprize · v11→v12   Remove members one group at a time and simplify the combination mechanism (e.g., replace a neural stacking head with a learned weighted average). If the score degrades, the removed members carried complementary information and should be restored. Track each removal's effect individually rather than 
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.45284 → 0.45330 (+0.00046)
-- expert 18523075 (Expert) · commonlitreadabilityprize · v12→v15   Toggle candidate members on/off one at a time, submitting after each change to measure the marginal effect. Keep a member only if it improves the metric. When a member hurts, disable it before testing the next candidate. The best score observed during the sweep identifies the optimal subset.
+    leaderboard score 0.45284 → 0.45330 (lower is better; worse by 0.00046)
+- expert 18523075 · commonlitreadabilityprize · v12→v15   Toggle candidate members on/off one at a time, submitting after each change to measure the marginal effect. Keep a member only if it improves the metric. When a member hurts, disable it before testing the next candidate. The best score observed during the sweep identifies the optimal subset.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence. | ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors.
-    leaderboard score 0.45581 → 0.45516 (-0.00065)
-- expert 18426209 (Expert) · commonlitreadabilityprize · v3→v5   Temporarily equalize weights among existing members, then after adding the new member, test dropping the weakest original member entirely. The new diverse member may replace rather than supplement the weakest existing one, yielding a better two-model blend than a three-model blend.
+    leaderboard score 0.45581 → 0.45516 (lower is better; improved by 0.00065)
+- expert 18426209 · commonlitreadabilityprize · v3→v5   Temporarily equalize weights among existing members, then after adding the new member, test dropping the weakest original member entirely. The new diverse member may replace rather than supplement the weakest existing one, yielding a better two-model blend than a three-model blend.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors. | ✓ A stronger or different candidate is available for a known weak or redundant slot. | ✗ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.74137 → 0.46021 (-0.28116)
-- expert 18426209 (Expert) · commonlitreadabilityprize · v6→v7   Remove the suspected weak member and redistribute its weight equally among the remaining members. Compare the leaderboard or validation score before and after. If the score improves, keep the pruned ensemble; a member that degrades standalone performance often also degrades a blend even at low weigh
+    leaderboard score 0.74137 → 0.46021 (lower is better; improved by 0.28116)
+- expert 18426209 · commonlitreadabilityprize · v6→v7   Remove the suspected weak member and redistribute its weight equally among the remaining members. Compare the leaderboard or validation score before and after. If the score improves, keep the pruned ensemble; a member that degrades standalone performance often also degrades a blend even at low weigh
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.45828 → 0.45658 (-0.00171)
-- expert 18851026 (Master) · commonlitreadabilityprize · v20→v24   Toggle individual ensemble members in and out, submitting each configuration. A smaller-capacity model may outperform or complement better than a larger one if the larger model overfits. Remove members that do not improve the blend rather than always including all available predictions.
+    leaderboard score 0.45828 → 0.45658 (lower is better; improved by 0.00171)
+- expert 18851026 · commonlitreadabilityprize · v20→v24   Toggle individual ensemble members in and out, submitting each configuration. A smaller-capacity model may outperform or complement better than a larger one if the larger model overfits. Remove members that do not improve the blend rather than always including all available predictions.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors. | ✓ A stronger or different candidate is available for a known weak or redundant slot. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.45875 → 0.45925 (+0.00050)
-- expert 18851026 (Master) · commonlitreadabilityprize · v29→v30   Ablate by removing one original member at a time and submitting. If every subset that includes the new member scores worse than the original pair, revert to the original ensemble. Track all combinations' scores to avoid circular changes.
+    leaderboard score 0.45875 → 0.45925 (lower is better; worse by 0.00050)
+- expert 18851026 · commonlitreadabilityprize · v29→v30   Ablate by removing one original member at a time and submitting. If every subset that includes the new member scores worse than the original pair, revert to the original ensemble. Track all combinations' scores to avoid circular changes.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✗ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.45819 → 0.45835 (+0.00015)
-- expert 18423958 (Master) · commonlitreadabilityprize · v25→v26   Drop the weakest model family entirely from the ensemble rather than down-weighting it. Redistribute its weight among the remaining, stronger members and verify on the leaderboard or validation that the simpler blend improves.
+    leaderboard score 0.45819 → 0.45835 (lower is better; worse by 0.00015)
+- expert 18423958 · commonlitreadabilityprize · v25→v26   Drop the weakest model family entirely from the ensemble rather than down-weighting it. Redistribute its weight among the remaining, stronger members and verify on the leaderboard or validation that the simpler blend improves.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.46010 → 0.45875 (-0.00136)
-- expert 18350823 (Expert) · commonlitreadabilityprize · v22→v24   Incrementally reduce the weight of a suspected weak member while increasing the weight of stronger ones. If the leaderboard score improves, this confirms the weak member is hurting the blend and justifies investing effort to replace it with a better alternative.
+    leaderboard score 0.46010 → 0.45875 (lower is better; improved by 0.00136)
+- expert 18350823 · commonlitreadabilityprize · v22→v24   Incrementally reduce the weight of a suspected weak member while increasing the weight of stronger ones. If the leaderboard score improves, this confirms the weak member is hurting the blend and justifies investing effort to replace it with a better alternative.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.46191 → 0.46072 (-0.00119)
-- expert 18757376 (Expert) · commonlitreadabilityprize · v4→v6   Selectively disable individual ensemble members one at a time and adjust the blend weights between the stacking meta-model output and direct base-model predictions. Evaluate each removal/reweighting on the leaderboard or CV. Removing a weak contributor and shifting weight toward stronger components 
+    leaderboard score 0.46191 → 0.46072 (lower is better; improved by 0.00119)
+- expert 18757376 · commonlitreadabilityprize · v4→v6   Selectively disable individual ensemble members one at a time and adjust the blend weights between the stacking meta-model output and direct base-model predictions. Evaluate each removal/reweighting on the leaderboard or CV. Removing a weak contributor and shifting weight toward stronger components 
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✗ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.46496 → 0.46094 (-0.00403)
-- expert 77129691 (Master) · equity · v26→v27   When replacing a proven component wholesale with a new architecture, submit and check the leaderboard before building further on top. If the swap causes a regression, the original component likely contributed complementary signal. Prefer adding the new architecture alongside the existing one rather 
+    leaderboard score 0.46496 → 0.46094 (lower is better; improved by 0.00403)
+- expert 77129691 · equity · v26→v27   When replacing a proven component wholesale with a new architecture, submit and check the leaderboard before building further on top. If the swap causes a regression, the original component likely contributed complementary signal. Prefer adding the new architecture alongside the existing one rather 
     evidence: ✓ A stronger or different candidate is available for a known weak or redundant slot.
-    leaderboard score n/a → 0.69385
-- expert 75924487 (Master) · equity · v1→v2   Curate the set of base-model predictions fed to the meta-learner by explicitly listing which columns to keep. Remove models that are redundant or underperforming. Re-submit to verify the gain, since stochastic meta-learner training can cause score variance between identical runs.
+    leaderboard score n/a → 0.69385 (higher is better)
+- expert 75924487 · equity · v1→v2   Curate the set of base-model predictions fed to the meta-learner by explicitly listing which columns to keep. Remove models that are redundant or underperforming. Re-submit to verify the gain, since stochastic meta-learner training can cause score variance between identical runs.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.69156 → 0.69159 (+0.00003)
-- expert 75924487 (Master) · equity · v6→v8   Run an A/B test: submit once with all base-model outputs and once with a hand-picked subset. Compare leaderboard or validation scores. If the curated subset wins, keep it; weak or redundant members add noise that the meta-learner cannot fully ignore.
+    leaderboard score 0.69156 → 0.69159 (higher is better; improved by 0.00003)
+- expert 75924487 · equity · v6→v8   Run an A/B test: submit once with all base-model outputs and once with a hand-picked subset. Compare leaderboard or validation scores. If the curated subset wins, keep it; weak or redundant members add noise that the meta-learner cannot fully ignore.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.69331 → 0.69347 (+0.00015)
-- expert 75924487 (Master) · equity · v10→v12   Add new members incrementally rather than in a single large batch. After each addition, check the validation metric. A large simultaneous expansion of ensemble inputs can introduce correlated or noisy members that degrade the meta-learner, as evidenced by a score drop when many columns are added at 
+    leaderboard score 0.69331 → 0.69347 (higher is better; improved by 0.00015)
+- expert 75924487 · equity · v10→v12   Add new members incrementally rather than in a single large batch. After each addition, check the validation metric. A large simultaneous expansion of ensemble inputs can introduce correlated or noisy members that degrade the meta-learner, as evidenced by a score drop when many columns are added at 
     evidence: ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors.
-    leaderboard score 0.69408 → 0.69305 (-0.00104)
-- expert 75145694 (Expert) · equity · v19→v22   Toggle the member on and off at least twice while keeping everything else fixed. If the score change is consistent in sign across toggles, the effect is likely real. If the magnitude is tiny and inconsistent, the member is near-neutral and can be dropped for simplicity. Avoid changing multiple membe
+    leaderboard score 0.69408 → 0.69305 (higher is better; worse by 0.00104)
+- expert 75145694 · equity · v19→v22   Toggle the member on and off at least twice while keeping everything else fixed. If the score change is consistent in sign across toggles, the effect is likely real. If the magnitude is tiny and inconsistent, the member is near-neutral and can be dropped for simplicity. Avoid changing multiple membe
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.68978 → 0.68958 (-0.00020)
-- expert 77276039 (Expert) · equity · v13→v17   Toggle the candidate member in and out of the ensemble and submit both versions. Compare scores directly: if including the new member lowers the metric, drop it. This A/B probe requires only two submissions and gives a clear signal for inclusion decisions.
+    leaderboard score 0.68978 → 0.68958 (higher is better; worse by 0.00020)
+- expert 77276039 · equity · v13→v17   Toggle the candidate member in and out of the ensemble and submit both versions. Compare scores directly: if including the new member lowers the metric, drop it. This A/B probe requires only two submissions and gives a clear signal for inclusion decisions.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score n/a → 0.69244
-- expert 77276039 (Expert) · equity · v22→v24   Add or remove one member at a time from the rank-average ensemble and evaluate after each change. Keep the member set that maximizes the target metric. When local validation is unavailable, use leaderboard feedback sparingly, changing only one member per submission.
+    leaderboard score n/a → 0.69244 (higher is better)
+- expert 77276039 · equity · v22→v24   Add or remove one member at a time from the rank-average ensemble and evaluate after each change. Keep the member set that maximizes the target metric. When local validation is unavailable, use leaderboard feedback sparingly, changing only one member per submission.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ A stronger or different candidate is available for a known weak or redundant slot. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.69028 → 0.69188 (+0.00159)
-- expert 73937748 (Master) · equity · v58→v60   Remove redundant or low-value base learners from the same model family to reduce noise in the meta-learner's input. Then create diversity within the strong alternative model family by running it with and without feature engineering, producing distinct prediction sets. Stack the pruned, more diverse 
+    leaderboard score 0.69028 → 0.69188 (higher is better; improved by 0.00159)
+- expert 73937748 · equity · v58→v60   Remove redundant or low-value base learners from the same model family to reduce noise in the meta-learner's input. Then create diversity within the strong alternative model family by running it with and without feature engineering, producing distinct prediction sets. Stack the pruned, more diverse 
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.69177 → 0.69283 (+0.00105)
-- expert 7548275 (Expert) · google · v19→v20   Ablate ensemble members one at a time by removing each model's predictions from the blend and re-submitting. Drop any member whose removal improves the score. A single weak member can degrade a rank-based metric disproportionately because noisy predictions distort the rank ordering.
+    leaderboard score 0.69177 → 0.69283 (higher is better; improved by 0.00105)
+- expert 7548275 · google · v19→v20   Ablate ensemble members one at a time by removing each model's predictions from the blend and re-submitting. Drop any member whose removal improves the score. A single weak member can degrade a rank-based metric disproportionately because noisy predictions distort the rank ordering.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.30421 → 0.39772 (+0.09351)
-- expert 6803050 (Master) · google · v39→v49   Sweep checkpoint variants one at a time across all folds, then vary ensemble size (full k-fold vs. subsets). Submit each configuration to measure its effect. Track that more folds do not always help—if some folds are weaker, including them dilutes the ensemble. Keep the configuration that scores bes
+    leaderboard score 0.30421 → 0.39772 (higher is better; improved by 0.09351)
+- expert 6803050 · google · v39→v49   Sweep checkpoint variants one at a time across all folds, then vary ensemble size (full k-fold vs. subsets). Submit each configuration to measure its effect. Track that more folds do not always help—if some folds are weaker, including them dilutes the ensemble. Keep the configuration that scores bes
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.38287 → 0.36824 (-0.01463)
-- expert 53747598 (Master) · hms · v12→v15   Before adding new diverse models, prune or disable ensemble members that are suspected to hurt or not help (e.g., models using only a subset of available inputs). This reduces noise in the blend baseline and makes it easier to attribute gains to the newly added components.
+    leaderboard score 0.38287 → 0.36824 (higher is better; worse by 0.01463)
+- expert 53747598 · hms · v12→v15   Before adding new diverse models, prune or disable ensemble members that are suspected to hurt or not help (e.g., models using only a subset of available inputs). This reduces noise in the blend baseline and makes it easier to attribute gains to the newly added components.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.23270 → 0.22838 (-0.00432)
-- expert 53424936 (Master) · hms · v22→v23   Perform leave-one-out ablation: remove one ensemble member at a time, adjust the averaging denominator, and submit. If the score improves, permanently exclude that member. This identifies members that add noise or are miscalibrated relative to the rest of the blend.
+    leaderboard score 0.23270 → 0.22838 (lower is better; improved by 0.00432)
+- expert 53424936 · hms · v22→v23   Perform leave-one-out ablation: remove one ensemble member at a time, adjust the averaging denominator, and submit. If the score improves, permanently exclude that member. This identifies members that add noise or are miscalibrated relative to the rest of the blend.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.22735 → 0.22645 (-0.00090)
-- expert 53424936 (Master) · hms · v23→v24   Evaluate the ensemble with and without the candidate on the leaderboard or a reliable validation set. If inclusion does not improve the metric, the candidate likely overlaps too much with existing members. Prioritize members that differ in training data views, architecture family, or loss function r
+    leaderboard score 0.22735 → 0.22645 (lower is better; improved by 0.00090)
+- expert 53424936 · hms · v23→v24   Evaluate the ensemble with and without the candidate on the leaderboard or a reliable validation set. If inclusion does not improve the metric, the candidate likely overlaps too much with existing members. Prioritize members that differ in training data views, architecture family, or loss function r
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.22645 → 0.22647 (+0.00002)
-- expert 53424936 (Master) · hms · v32→v33   Remove the suspected weak or redundant member, adjust the denominator accordingly, and submit. If the score improves, keep it removed. Iterate by trying removal of each member one at a time to identify which ones hurt the blend.
+    leaderboard score 0.22645 → 0.22647 (lower is better; worse by 0.00002)
+- expert 53424936 · hms · v32→v33   Remove the suspected weak or redundant member, adjust the denominator accordingly, and submit. If the score improves, keep it removed. Iterate by trying removal of each member one at a time to identify which ones hurt the blend.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.22615 → 0.22600 (-0.00015)
-- expert 50376011 (Grandmaster) · hms · v22→v26   Test subsets of available checkpoints separately before combining them. Start with the known-best subset, try adding new members, and compare. If the expanded ensemble scores worse, revert to the smaller set. Prefer a compact ensemble of consistently strong members over a larger one that includes we
+    leaderboard score 0.22615 → 0.22600 (lower is better; improved by 0.00015)
+- expert 50376011 · hms · v22→v26   Test subsets of available checkpoints separately before combining them. Start with the known-best subset, try adding new members, and compare. If the expanded ensemble scores worse, revert to the smaller set. Prefer a compact ensemble of consistently strong members over a larger one that includes we
     evidence: ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors. | ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence. | ✗ No same-split comparison establishes that the ensemble beats its strongest member.
-    leaderboard score 0.39939 → 0.39657 (-0.00282)
-- expert 50376011 (Grandmaster) · hms · v27→v31   Sweep one group at a time with uniform weights, submitting each to the leaderboard. Compare scores across groups to identify the best-performing subset before attempting to combine groups or tune weights.
+    leaderboard score 0.39939 → 0.39657 (lower is better; improved by 0.00282)
+- expert 50376011 · hms · v27→v31   Sweep one group at a time with uniform weights, submitting each to the leaderboard. Compare scores across groups to identify the best-performing subset before attempting to combine groups or tune weights.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence. | ✓ No same-split comparison establishes that the ensemble beats its strongest member. | ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors.
-    leaderboard score n/a → 0.39254
-- expert 50376011 (Grandmaster) · hms · v33→v35   Re-test each candidate model variant individually under the new aggregation scheme, compare scores, and select the best. Do not assume the ranking from the previous setup transfers; a single controlled swap per submission is sufficient to compare two candidates.
+    leaderboard score n/a → 0.39254 (lower is better)
+- expert 50376011 · hms · v33→v35   Re-test each candidate model variant individually under the new aggregation scheme, compare scores, and select the best. Do not assume the ranking from the previous setup transfers; a single controlled swap per submission is sufficient to compare two candidates.
     evidence: ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.39142 → 0.39434 (+0.00292)
-- expert 50376011 (Grandmaster) · hms · v110→v121   Test single-model, two-model, and larger ensembles (e.g., 4–5 members) on the leaderboard or validation set. If two members show inconsistent improvement over one, scale up to more members before concluding that ensembling helps. Keep the multi-model configuration code ready so scaling up is a one-l
+    leaderboard score 0.39142 → 0.39434 (lower is better; worse by 0.00292)
+- expert 50376011 · hms · v110→v121   Test single-model, two-model, and larger ensembles (e.g., 4–5 members) on the leaderboard or validation set. If two members show inconsistent improvement over one, scale up to more members before concluding that ensembling helps. Keep the multi-model configuration code ready so scaling up is a one-l
     evidence: ✓ No same-split comparison establishes that the ensemble beats its strongest member. | ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.29444 → 0.28921 (-0.00524)
-- expert 50376011 (Grandmaster) · hms · v169→v170   Search incrementally: start from the best small ensemble, add one member at a time, and submit. Also try removing each existing member. Keep the configuration that yields the best test metric. Stop expanding when adding any available new member no longer improves the score.
+    leaderboard score 0.29444 → 0.28921 (lower is better; improved by 0.00524)
+- expert 50376011 · hms · v169→v170   Search incrementally: start from the best small ensemble, add one member at a time, and submit. Also try removing each existing member. Keep the configuration that yields the best test metric. Stop expanding when adding any available new member no longer improves the score.
     evidence: ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors.
-    leaderboard score 0.25069 → 0.24948 (-0.00121)
-- expert 50376011 (Grandmaster) · hms · v170→v174   Sweep ensemble composition by adding or removing one member at a time and submitting each variant. Start from the current best subset, try the full set, then systematically drop each member to identify which ones hurt. Keep the subset that scores best.
+    leaderboard score 0.25069 → 0.24948 (lower is better; improved by 0.00121)
+- expert 50376011 · hms · v170→v174   Sweep ensemble composition by adding or removing one member at a time and submitting each variant. Start from the current best subset, try the full set, then systematically drop each member to identify which ones hurt. Keep the subset that scores best.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors. | ✓ No same-split comparison establishes that the ensemble beats its strongest member. | ✓ The current regression followed removal of members that previously had positive ablation evidence. | ✓ A stronger or different candidate is available for a known weak or redundant slot.
-    leaderboard score 0.24948 → 0.24842 (-0.00106)
-- expert 50376011 (Grandmaster) · hms · v171→v174   After trying the full set of checkpoints, remove each member one at a time and compare scores. If dropping a member improves the ensemble, leave it out. Prefer a smaller, higher-quality subset over the full set.
+    leaderboard score 0.24948 → 0.24842 (lower is better; improved by 0.00106)
+- expert 50376011 · hms · v171→v174   After trying the full set of checkpoints, remove each member one at a time and compare scores. If dropping a member improves the ensemble, leave it out. Prefer a smaller, higher-quality subset over the full set.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors. | ✓ No same-split comparison establishes that the ensemble beats its strongest member. | ✓ The current regression followed removal of members that previously had positive ablation evidence. | ✓ A stronger or different candidate is available for a known weak or redundant slot.
-    leaderboard score 0.25445 → 0.24842 (-0.00603)
-- expert 49524919 (Grandmaster) · hms · v122→v126   Submit predictions from each new model in isolation to measure standalone quality. Then toggle inclusion/exclusion of each model in the blend via loop skip conditions. Check for variable name or column assignment bugs that silently use wrong predictions. Only after confirming a model helps individua
+    leaderboard score 0.25445 → 0.24842 (lower is better; improved by 0.00603)
+- expert 49524919 · hms · v122→v126   Submit predictions from each new model in isolation to measure standalone quality. Then toggle inclusion/exclusion of each model in the blend via loop skip conditions. Check for variable name or column assignment bugs that silently use wrong predictions. Only after confirming a model helps individua
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence. | ✓ No same-split comparison establishes that the ensemble beats its strongest member.
-    leaderboard score 0.26600 → n/a
-- expert 49524919 (Grandmaster) · hms · v133→v134   Completely disable the suspect model family (remove its predictions from the blend) while ensuring all other intended models run correctly. Compare the resulting score to the best achieved with the family included. If the score improves, permanently remove that family and clean up its code.
+    leaderboard score 0.26600 → n/a (lower is better)
+- expert 49524919 · hms · v133→v134   Completely disable the suspect model family (remove its predictions from the blend) while ensuring all other intended models run correctly. Compare the resulting score to the best achieved with the family included. If the score improves, permanently remove that family and clean up its code.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.25459 → 0.24021 (-0.01438)
-- expert 49524919 (Grandmaster) · hms · v128→v134   First, test each model group in isolation by skipping all others and submitting its solo predictions to establish per-group quality. Fix any column-reference or control-flow bugs before blending. Then enable all groups that individually score well, blend them, and submit. After each change, verify t
+    leaderboard score 0.25459 → 0.24021 (lower is better; improved by 0.01438)
+- expert 49524919 · hms · v128→v134   First, test each model group in isolation by skipping all others and submitting its solo predictions to establish per-group quality. Fix any column-reference or control-flow bugs before blending. Then enable all groups that individually score well, blend them, and submit. After each change, verify t
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence. | ✓ No same-split comparison establishes that the ensemble beats its strongest member. | ✓ A stronger or different candidate is available for a known weak or redundant slot.
-    leaderboard score n/a → 0.24021
-- expert 49524919 (Grandmaster) · hms · v134→v135   Use a two-phase approach: first disable the component and submit to confirm the improvement on the leaderboard, then in a follow-up commit fully remove the dead code. This preserves the option to revert if the improvement was spurious, while eventually reducing complexity and runtime.
+    leaderboard score n/a → 0.24021 (lower is better)
+- expert 49524919 · hms · v134→v135   Use a two-phase approach: first disable the component and submit to confirm the improvement on the leaderboard, then in a follow-up commit fully remove the dead code. This preserves the option to revert if the improvement was spurious, while eventually reducing complexity and runtime.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.24021 → n/a
-- expert 49524919 (Grandmaster) · hms · v146→v148   Remove the weaker component entirely from the ensemble rather than trying to down-weight it. Even small blend weights on a substantially worse model can hurt, and removing dead code paths may also eliminate subtle side effects on shared data structures or preprocessing.
+    leaderboard score 0.24021 → n/a (lower is better)
+- expert 49524919 · hms · v146→v148   Remove the weaker component entirely from the ensemble rather than trying to down-weight it. Even small blend weights on a substantially worse model can hurt, and removing dead code paths may also eliminate subtle side effects on shared data structures or preprocessing.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✗ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.27167 → 0.23482 (-0.03685)
-- expert 52860091 (Grandmaster) · hms · v22→v23   If down-weighting the weaker model still cannot match the single-model baseline, remove it entirely. To regain ensemble diversity, introduce a model from a different architecture family rather than another checkpoint or variant of the same family, because uncorrelated errors are what make ensembles 
+    leaderboard score 0.27167 → 0.23482 (lower is better; improved by 0.03685)
+- expert 52860091 · hms · v22→v23   If down-weighting the weaker model still cannot match the single-model baseline, remove it entirely. To regain ensemble diversity, introduce a model from a different architecture family rather than another checkpoint or variant of the same family, because uncorrelated errors are what make ensembles 
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ No same-split comparison establishes that the ensemble beats its strongest member.
-    leaderboard score 0.27950 → 0.27421 (-0.00530)
-- expert 52551258 (Expert) · hms · v3→v5   Try swapping checkpoint selection (last-epoch vs best-validation) and toggling individual ensemble members one at a time, submitting after each change. If switching to best-validation checkpoints does not help, the final-epoch checkpoints may have been better regularized or the validation metric may
+    leaderboard score 0.27950 → 0.27421 (lower is better; improved by 0.00530)
+- expert 52551258 · hms · v3→v5   Try swapping checkpoint selection (last-epoch vs best-validation) and toggling individual ensemble members one at a time, submitting after each change. If switching to best-validation checkpoints does not help, the final-epoch checkpoints may have been better regularized or the validation metric may
     evidence: ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.37116 → 0.37494 (+0.00378)
-- expert 15372370 (Expert) · ranzcr · v6→v7   Switch to simple (equal-weight) averaging of predictions across all folds of a single cross-validation run. Fold-averaging is more stable because the models share the same architecture and training recipe, reducing the risk of miscalibrated blend weights.
+    leaderboard score 0.37116 → 0.37494 (lower is better; worse by 0.00378)
+- expert 15372370 · ranzcr · v6→v7   Switch to simple (equal-weight) averaging of predictions across all folds of a single cross-validation run. Fold-averaging is more stable because the models share the same architecture and training recipe, reducing the risk of miscalibrated blend weights.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.96670 → 0.96804 (+0.00135)
-- expert 50496431 (Grandmaster) · hms · v7→v8   Systematically try alternative checkpoint selections—varying which epoch or run is chosen per fold—and evaluate on the leaderboard or a held-out set. Even without changing the model or augmentation, checkpoint selection alone can yield a larger gain than adding TTA.
+    leaderboard score 0.96670 → 0.96804 (higher is better; improved by 0.00135)
+- expert 50496431 · hms · v7→v8   Systematically try alternative checkpoint selections—varying which epoch or run is chosen per fold—and evaluate on the leaderboard or a held-out set. Even without changing the model or augmentation, checkpoint selection alone can yield a larger gain than adding TTA.
     evidence: ✓ A stronger or different candidate is available for a known weak or redundant slot.
-    leaderboard score 0.42697 → 0.42196 (-0.00501)
-- expert 50496431 (Grandmaster) · hms · v18→v22   Toggle ensemble members and augmentation on/off one or two at a time, submitting each variant. Start by isolating the effect of test-time augmentation alone, then ablate model groups. Track which additions improve the score and which hurt, converging on the subset where every included component cont
+    leaderboard score 0.42697 → 0.42196 (lower is better; improved by 0.00501)
+- expert 50496431 · hms · v18→v22   Toggle ensemble members and augmentation on/off one or two at a time, submitting each variant. Start by isolating the effect of test-time augmentation alone, then ablate model groups. Track which additions improve the score and which hurt, converging on the subset where every included component cont
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.34209 → 0.33898 (-0.00311)
-- expert 50496431 (Grandmaster) · hms · v22→v23   When ablating an ensemble member, treat it as a single-variable experiment: remove only that member, submit, and immediately compare. If the score worsens, restore the member before making any other changes. Never stack an ablation with other modifications (e.g., preprocessing tuning), because the d
+    leaderboard score 0.34209 → 0.33898 (lower is better; improved by 0.00311)
+- expert 50496431 · hms · v22→v23   When ablating an ensemble member, treat it as a single-variable experiment: remove only that member, submit, and immediately compare. If the score worsens, restore the member before making any other changes. Never stack an ablation with other modifications (e.g., preprocessing tuning), because the d
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant.
-    leaderboard score 0.33898 → 0.39115 (+0.05217)
-- expert 50496431 (Grandmaster) · hms · v44→v45   Enable or disable one model branch at a time and submit to the leaderboard (or evaluate on validation) to isolate its marginal contribution. Keep the branch enabled only if the score improves.
+    leaderboard score 0.33898 → 0.39115 (lower is better; worse by 0.05217)
+- expert 50496431 · hms · v44→v45   Enable or disable one model branch at a time and submit to the leaderboard (or evaluate on validation) to isolate its marginal contribution. Keep the branch enabled only if the score improves.
     evidence: ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.37087 → 0.35027 (-0.02061)
-- expert 50496431 (Grandmaster) · hms · v72→v75   Ablate ensemble members one at a time by toggling each on/off and submitting. Compare scores to the full-ensemble baseline. Remove any member whose exclusion improves the score. Do this iteratively, re-checking after each removal, because interactions between members can shift.
+    leaderboard score 0.37087 → 0.35027 (lower is better; improved by 0.02061)
+- expert 50496431 · hms · v72→v75   Ablate ensemble members one at a time by toggling each on/off and submitting. Compare scores to the full-ensemble baseline. Remove any member whose exclusion improves the score. Do this iteratively, re-checking after each removal, because interactions between members can shift.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score n/a → 0.27839
-- expert 50496431 (Grandmaster) · hms · v80→v81   After modifying any single ensemble member, re-test inclusion/exclusion of every other member one at a time. Do not assume a previously helpful member is now unnecessary just because another member was upgraded; architecturally diverse models (e.g., 2D vs 3D backbones) often remain complementary.
+    leaderboard score n/a → 0.27839 (lower is better)
+- expert 50496431 · hms · v80→v81   After modifying any single ensemble member, re-test inclusion/exclusion of every other member one at a time. Do not assume a previously helpful member is now unnecessary just because another member was upgraded; architecturally diverse models (e.g., 2D vs 3D backbones) often remain complementary.
     evidence: ✗ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.29794 → 0.27445 (-0.02349)
-- expert 50496431 (Grandmaster) · hms · v104→v106   Remove the member in a controlled submission where no other change is made (or where other changes are subsequently reverted). If the score worsens, the member is contributing positively and should be kept. Avoid confounding the removal with other simultaneous changes.
+    leaderboard score 0.29794 → 0.27445 (lower is better; improved by 0.02349)
+- expert 50496431 · hms · v104→v106   Remove the member in a controlled submission where no other change is made (or where other changes are subsequently reverted). If the score worsens, the member is contributing positively and should be kept. Avoid confounding the removal with other simultaneous changes.
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.27115 → 0.28677 (+0.01561)
-- expert 50496431 (Grandmaster) · hms · v134→v136   First add the new fusion model to the ensemble and submit. Then try swapping it with each existing member that covers similar modalities and compare scores. A fusion model may be redundant if its component modalities are already well-represented by separate specialist models in the blend; keep which
+    leaderboard score 0.27115 → 0.28677 (lower is better; worse by 0.01561)
+- expert 50496431 · hms · v134→v136   First add the new fusion model to the ensemble and submit. Then try swapping it with each existing member that covers similar modalities and compare scores. A fusion model may be redundant if its component modalities are already well-represented by separate specialist models in the blend; keep which
     evidence: ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors. | ✓ The current regression followed removal of members that previously had positive ablation evidence. | ✓ A stronger or different candidate is available for a known weak or redundant slot.
-    leaderboard score 0.28595 → 0.23302 (-0.05293)
-- expert 50496431 (Grandmaster) · hms · v137→v138   Toggle one member at a time (swap in the alternative, swap out the current best contributor) and submit. If the score degrades, keep the original member. Do not change multiple factors simultaneously when testing a single member's contribution, or the signal is confounded.
+    leaderboard score 0.28595 → 0.23302 (lower is better; improved by 0.05293)
+- expert 50496431 · hms · v137→v138   Toggle one member at a time (swap in the alternative, swap out the current best contributor) and submit. If the score degrades, keep the original member. Do not change multiple factors simultaneously when testing a single member's contribution, or the signal is confounded.
     evidence: ✓ A compatible unused candidate has reasonable standalone predictions and potentially different residual errors. | ✓ A stronger or different candidate is available for a known weak or redundant slot. | ✗ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.25172 → 0.25541 (+0.00370)
-- expert 50496431 (Grandmaster) · hms · v161→v163   Revert to the proven ensemble composition that excludes the new model. Keep the new model code available for future tuning but do not force it into the blend. Gains often come from re-tuning preprocessing or other parameters alongside the established members rather than from the new architecture its
+    leaderboard score 0.25172 → 0.25541 (lower is better; worse by 0.00370)
+- expert 50496431 · hms · v161→v163   Revert to the proven ensemble composition that excludes the new model. Keep the new model code available for future tuning but do not force it into the blend. Gains often come from re-tuning preprocessing or other parameters alongside the established members rather than from the new architecture its
     evidence: ✓ An active member has repeatedly worsened the fixed blend or seems redundant. | ✓ The current regression followed removal of members that previously had positive ablation evidence.
-    leaderboard score 0.26705 → 0.22940 (-0.03765)
+    leaderboard score 0.26705 → 0.22940 (lower is better; improved by 0.03765)

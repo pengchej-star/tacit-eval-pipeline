@@ -1,10 +1,10 @@
 # Change spectral image rendering  `T.4.4.5`   2 edits, 0 experts
-2 scored cases, median improvement +0.01220, 1 improved
+2 scored cases (improvement signed by each competition's direction), median +0.00923, 1 improved
 
 
-- expert 49576186 (Expert) · hms · v22→v24   Apply a standard colormap (e.g., jet) to map scalar spectrogram values to 3-channel RGB, then feed to the pretrained backbone. Compare against the baseline input format on the leaderboard or validation. Be aware this may not help and can even hurt if the original channel encoding already carries use
+- expert 49576186 · hms · v22→v24   Apply a standard colormap (e.g., jet) to map scalar spectrogram values to 3-channel RGB, then feed to the pretrained backbone. Compare against the baseline input format on the leaderboard or validation. Be aware this may not help and can even hurt if the original channel encoding already carries use
     evidence: ✓ A scalar spectral image is being mapped to channels arbitrarily for an image backbone. | ✓ The most recent front-end changes have not yet been scored, so the immediate next step is a scoring run rather than a new front-end experiment. | ✓ Strong public solutions or top-scoring approaches use a different spectrogram rendering or resolution strategy than the current pipeline.
-    leaderboard score 0.36216 → 0.37436 (+0.01220)
-- expert 49576186 (Expert) · hms · v115→v125   Experiment with restricting the spectrogram to the informative frequency band (removing high-frequency noise) and try perceptually uniform colormaps instead of rainbow-type ones. Evaluate each change on the leaderboard or a robust validation split, as both frequency range and colormap can materially
+    leaderboard score 0.36216 → 0.37436 (lower is better; worse by 0.01220)
+- expert 49576186 · hms · v115→v125   Experiment with restricting the spectrogram to the informative frequency band (removing high-frequency noise) and try perceptually uniform colormaps instead of rainbow-type ones. Evaluate each change on the leaderboard or a robust validation split, as both frequency range and colormap can materially
     evidence: ✓ A scalar spectral image is being mapped to channels arbitrarily for an image backbone. | ✓ The proposed front-end change was previously bundled with other modifications and has never been ablated in isolation. | ✓ The most recent front-end changes have not yet been scored, so the immediate next step is a scoring run rather than a new front-end experiment. | ✓ The best-scoring configuration used a higher sampling rate or wider filter band than what is currently proposed. | ✓ A previously tested time-frequency factorization (resolution/shape) yielded a competitive score and should be considered before trying untested alternatives. | ✓ The current time-frequency representation obscures short events or narrow frequency structure.
-    leaderboard score 0.27783 → 0.26861 (-0.00923)
+    leaderboard score 0.27783 → 0.26861 (lower is better; improved by 0.00923)

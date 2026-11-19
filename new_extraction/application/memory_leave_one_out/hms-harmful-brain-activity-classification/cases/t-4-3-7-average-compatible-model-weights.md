@@ -1,7 +1,7 @@
 # Average compatible model weights  `T.4.3.7`   1 edits, 0 experts
-1 scored cases, median improvement -0.00016, 0 improved
+1 scored cases (improvement signed by each competition's direction), median +0.00016, 1 improved
 
 
-- expert 18550705 (Master) · commonlitreadabilityprize · v10→v11   Apply stochastic weight averaging to each constituent model's checkpoints before inference. This smooths the loss landscape and reduces variance of individual model predictions, which can translate to a small ensemble-level improvement.
+- expert 18550705 · commonlitreadabilityprize · v10→v11   Apply stochastic weight averaging to each constituent model's checkpoints before inference. This smooths the loss landscape and reduces variance of individual model predictions, which can translate to a small ensemble-level improvement.
     evidence: ✓ Compatible snapshots occupy nearby useful solutions and individual predictions vary.
-    leaderboard score 0.45300 → 0.45284 (-0.00016)
+    leaderboard score 0.45300 → 0.45284 (lower is better; improved by 0.00016)

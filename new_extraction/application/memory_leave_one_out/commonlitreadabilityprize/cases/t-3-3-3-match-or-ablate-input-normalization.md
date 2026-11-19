@@ -1,31 +1,31 @@
 # Match or ablate input normalization  `T.3.3.3`   9 edits, 0 experts
-6 scored cases, median improvement +0.01220, 4 improved
+6 scored cases (improvement signed by each competition's direction), median +0.01220, 3 improved
 
 
-- expert 49524919 (Grandmaster) · hms · v26→v27   Apply channel-wise instance normalization (zero-mean, unit-variance per channel per sample) instead of global transforms. This aligns each channel's distribution independently, which better suits multi-channel spectrograms where channels have heterogeneous scales.
+- expert 49524919 · hms · v26→v27   Apply channel-wise instance normalization (zero-mean, unit-variance per channel per sample) instead of global transforms. This aligns each channel's distribution independently, which better suits multi-channel spectrograms where channels have heterogeneous scales.
     evidence: ✓ Input scale, channel order or reshape differs from the checkpoint training pipeline. | ✓ Existing checkpoints were trained with different transforms from the proposed inference change.
-    leaderboard score 0.47345 → 0.45265 (-0.02080)
-- expert 49576186 (Expert) · hms · v22→v24   Apply a standard colormap (e.g., jet) to map scalar spectrogram values to 3-channel RGB, then feed to the pretrained backbone. Compare against the baseline input format on the leaderboard or validation. Be aware this may not help and can even hurt if the original channel encoding already carries use
+    leaderboard score 0.47345 → 0.45265 (lower is better; improved by 0.02080)
+- expert 49576186 · hms · v22→v24   Apply a standard colormap (e.g., jet) to map scalar spectrogram values to 3-channel RGB, then feed to the pretrained backbone. Compare against the baseline input format on the leaderboard or validation. Be aware this may not help and can even hurt if the original channel encoding already carries use
     evidence: ✓ Input scale, channel order or reshape differs from the checkpoint training pipeline. | ✓ Existing checkpoints were trained with different transforms from the proposed inference change.
-    leaderboard score 0.36216 → 0.37436 (+0.01220)
-- expert 52200959 (Master) · hms · v33→v34   Fill missing values, clip extreme values, apply a log-transform to compress dynamic range, then z-score normalize. Resize to a resolution the pretrained backbone expects. This chain brings the distribution closer to what ImageNet-pretrained weights assume and avoids numerical issues from raw spectro
+    leaderboard score 0.36216 → 0.37436 (lower is better; worse by 0.01220)
+- expert 52200959 · hms · v33→v34   Fill missing values, clip extreme values, apply a log-transform to compress dynamic range, then z-score normalize. Resize to a resolution the pretrained backbone expects. This chain brings the distribution closer to what ImageNet-pretrained weights assume and avoids numerical issues from raw spectro
     evidence: ✗ Whitespace, spelling changes or text cropping differ from the trained tokenizer inputs. | ✓ Small visual details are lost at the current image resize and compatible higher-resolution inference is available. | ✓ Input scale, channel order or reshape differs from the checkpoint training pipeline. | ✓ Raw signals show fixed-frequency interference or extreme amplitude artifacts.
-    leaderboard score n/a → 0.41865
-- expert 15082684 (Master) · ranzcr · v17→v18   Compute the channel-wise mean and standard deviation on the training set and use those values for normalization at both training and inference. For single-channel images replicated to three channels, use the same statistic for all channels. Verify the statistics match between training and inference 
+    leaderboard score n/a → 0.41865 (lower is better)
+- expert 15082684 · ranzcr · v17→v18   Compute the channel-wise mean and standard deviation on the training set and use those values for normalization at both training and inference. For single-channel images replicated to three channels, use the same statistic for all channels. Verify the statistics match between training and inference 
     evidence: ✓ Small visual details are lost at the current image resize and compatible higher-resolution inference is available. | ✓ Input scale, channel order or reshape differs from the checkpoint training pipeline. | ✓ Existing checkpoints were trained with different transforms from the proposed inference change.
-    leaderboard score n/a → 0.96509
-- expert 15173072 (Contributor) · ranzcr · v15→v21   Default to the canonical normalization statistics for the pretraining dataset (e.g., the dataset-wide mean/std the model was trained with). Deviating from these values almost always hurts because the model's learned features expect a specific input distribution. If the exact training stats are unkno
+    leaderboard score n/a → 0.96509 (higher is better)
+- expert 15173072 · ranzcr · v15→v21   Default to the canonical normalization statistics for the pretraining dataset (e.g., the dataset-wide mean/std the model was trained with). Deviating from these values almost always hurts because the model's learned features expect a specific input distribution. If the exact training stats are unkno
     evidence: ✓ Input scale, channel order or reshape differs from the checkpoint training pipeline. | ✓ Existing checkpoints were trained with different transforms from the proposed inference change. | ✗ Small visual details are lost at the current image resize and compatible higher-resolution inference is available.
-    leaderboard score n/a → 0.95243
-- expert 15173072 (Contributor) · ranzcr · v21→v28   Always use the exact normalization mean and standard deviation that the pretrained backbone was originally trained with. Do not guess or hand-tune these values; mismatched normalization silently degrades predictions even when the model otherwise loads correctly.
+    leaderboard score n/a → 0.95243 (higher is better)
+- expert 15173072 · ranzcr · v21→v28   Always use the exact normalization mean and standard deviation that the pretrained backbone was originally trained with. Do not guess or hand-tune these values; mismatched normalization silently degrades predictions even when the model otherwise loads correctly.
     evidence: ✓ Input scale, channel order or reshape differs from the checkpoint training pipeline. | ✓ Existing checkpoints were trained with different transforms from the proposed inference change.
-    leaderboard score 0.95243 → 0.96462 (+0.01220)
-- expert 50496431 (Grandmaster) · hms · v109→v111   Try multiple reshape configurations that trade off the two spatial dimensions (e.g., more time steps along width vs. more channels along height). Evaluate each by submitting or validating, and test the interaction with other ensemble members since a reshape that is suboptimal alone may still contrib
+    leaderboard score 0.95243 → 0.96462 (higher is better; improved by 0.01220)
+- expert 50496431 · hms · v109→v111   Try multiple reshape configurations that trade off the two spatial dimensions (e.g., more time steps along width vs. more channels along height). Evaluate each by submitting or validating, and test the interaction with other ensemble members since a reshape that is suboptimal alone may still contrib
     evidence: ✓ Input scale, channel order or reshape differs from the checkpoint training pipeline. | ✓ An available channel or modality captures structure not present in the active input.
-    leaderboard score 0.27038 → 0.25772 (-0.01266)
-- expert 50496431 (Grandmaster) · hms · v111→v115   Try several height×width factorizations of the same total length, keeping the longer axis aligned with the primary signal dimension (e.g., time). Evaluate each on a held-out metric. Small changes in aspect ratio can cause large score swings, so test at least 3–4 factorizations before settling.
+    leaderboard score 0.27038 → 0.25772 (lower is better; improved by 0.01266)
+- expert 50496431 · hms · v111→v115   Try several height×width factorizations of the same total length, keeping the longer axis aligned with the primary signal dimension (e.g., time). Evaluate each on a held-out metric. Small changes in aspect ratio can cause large score swings, so test at least 3–4 factorizations before settling.
     evidence: ✓ Input scale, channel order or reshape differs from the checkpoint training pipeline. | ✓ Existing checkpoints were trained with different transforms from the proposed inference change.
-    leaderboard score 0.25772 → 0.27768 (+0.01995)
-- expert 50496431 (Grandmaster) · hms · v206→v208   When experimenting with input normalization at inference, keep changes small and consistent with training preprocessing. If a normalization change (e.g., switching from linear scaling to log scaling) causes a large score regression, revert immediately rather than trying to tune it further, because t
+    leaderboard score 0.25772 → 0.27768 (lower is better; worse by 0.01995)
+- expert 50496431 · hms · v206→v208   When experimenting with input normalization at inference, keep changes small and consistent with training preprocessing. If a normalization change (e.g., switching from linear scaling to log scaling) causes a large score regression, revert immediately rather than trying to tune it further, because t
     evidence: ✓ Input scale, channel order or reshape differs from the checkpoint training pipeline. | ✓ Existing checkpoints were trained with different transforms from the proposed inference change. | ✓ The labeled event occupies only part of the available time or image extent.
-    leaderboard score 0.22628 → 0.25986 (+0.03359)
+    leaderboard score 0.22628 → 0.25986 (lower is better; worse by 0.03359)

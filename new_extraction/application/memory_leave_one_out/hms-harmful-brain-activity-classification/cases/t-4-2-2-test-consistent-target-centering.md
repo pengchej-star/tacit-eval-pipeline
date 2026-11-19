@@ -1,5 +1,5 @@
 # Test consistent target centering  `T.4.2.2`   1 edits, 0 experts
 
-- expert 58130512 (Master) · learning · v103→v105   Try per-fold target centering (subtract each fold's training mean, then average the fold means to reconstruct the global offset at inference). Compare validation metrics against the fixed global shift. If per-fold centering shows no improvement or adds instability, revert to the simpler fixed shift 
+- expert 58130512 · learning · v103→v105   Try per-fold target centering (subtract each fold's training mean, then average the fold means to reconstruct the global offset at inference). Compare validation metrics against the fixed global shift. If per-fold centering shows no improvement or adds instability, revert to the simpler fixed shift 
     evidence: ✗ Outcomes contain censoring or the metric evaluates risk ranking within known subgroups. | ✓ Target centering differs across folds or from the inference output scale. | ✓ A known best value for the target-transform parameter exists from prior experiments and can serve as the baseline for further sweeps. | ✓ Ensemble weighting or blending interacts with the target centering change, so isolation is needed to attribute the effect. | ✓ The training sample distribution does not match the test distribution, and resampling or reweighting could better align the target.
-    leaderboard score 0.82432 → n/a
+    leaderboard score 0.82432 → n/a (higher is better)
