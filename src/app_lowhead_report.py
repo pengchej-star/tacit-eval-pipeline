@@ -40,8 +40,10 @@ def main():
         line = dict(case=c["case_id"], tier=c["tier"], v_old=s_old, v_new=s_new,
                     expert_gain=None if s_old is None or s_new is None else sgn * (s_new - s_old))
         for run in sorted(args.runs.glob(f"{c['case_id']}__claude__*")):
-            cond = run.name.split("__")[2]
             meta = json.loads((run / "meta.json").read_text()) if (run / "meta.json").exists() else {}
+            if not meta:
+                continue                     # preempted or still running
+            cond = f"{run.name.split('__')[2]}@{meta.get('model', '?').replace('wine-claude-', '')}"
             g = graded.get(run.name)
             score = float(g["score"]) if g and g["status"] == "OK" else None
             reads = (meta.get("memory_reads") or {}).get("events", [])
@@ -53,12 +55,16 @@ def main():
         out.append(line)
 
     f = lambda x, d=4: "—" if x is None else f"{x:+.{d}f}" if isinstance(x, float) and abs(x) < 0.5 else f"{x:.{d}f}"
-    print(f"{'case':24s} {'tier':11s} {'v_old':>7s} {'v_new':>7s} {'expert':>8s} | {'no_memory':>9s} {'gain':>8s} | {'memory':>8s} {'gain':>8s} {'files':>5s} | cost nm/m")
-    for l in out:
-        nm, m = l.get("no_memory", {}), l.get("memory", {})
-        print(f"{l['case']:24s} {l['tier'][:11]:11s} {f(l['v_old']):>7s} {f(l['v_new']):>7s} {f(l['expert_gain']):>8s} | "
-              f"{f(nm.get('score')):>9s} {f(nm.get('gain')):>8s} | {f(m.get('score')):>8s} {f(m.get('gain')):>8s} {m.get('memory_files_opened', '—')!s:>5s} | "
-              f"{nm.get('cost')}/{m.get('cost')}")
+    models = sorted({k.split("@")[1] for l in out for k in l if "@" in k})
+    for model in models:
+        print(f"\n== {model}")
+        print(f"{'case':24s} {'tier':11s} {'v_old':>7s} {'v_new':>7s} {'expert':>8s} | {'no_memory':>9s} {'gain':>8s} | {'memory':>8s} {'gain':>8s} {'files':>5s} | cost nm/m")
+        for l in out:
+            nm, m = l.get(f"no_memory@{model}", {}), l.get(f"memory@{model}", {})
+            cost = lambda x: "—" if x.get("cost") is None else f"${x['cost']:.2f}"
+            print(f"{l['case']:24s} {l['tier'][:11]:11s} {f(l['v_old']):>7s} {f(l['v_new']):>7s} {f(l['expert_gain']):>8s} | "
+                  f"{f(nm.get('score')):>9s} {f(nm.get('gain')):>8s} | {f(m.get('score')):>8s} {f(m.get('gain')):>8s} {m.get('memory_files_opened', '—')!s:>5s} | "
+                  f"{cost(nm)}/{cost(m)}")
     (args.app / "report.json").write_text(json.dumps(out, indent=1))
 
 
