@@ -215,7 +215,7 @@ def main():
     ap.add_argument("--effort", default="medium", help="reasoning effort (claude --effort; codex model_reasoning_effort, GPT models only)")
     ap.add_argument("--minutes", type=int, default=60, help="wall-clock budget for the whole run")
     ap.add_argument("--max-usd", type=float, default=30.0, help="claude --max-budget-usd per session")
-    ap.add_argument("--max-segments", type=int, default=6, help="sessions at most (the first + resumes)")
+    ap.add_argument("--max-segments", type=int, default=30, help="sessions at most (the first + resumes); Claude Sonnet often ends a session after a few minutes")
     ap.add_argument("--min-resume-minutes", type=float, default=3.0, help="do not resume when less time than this remains")
     ap.add_argument("--no-grader", action="store_true", help="do not offer /grader/grade to the agent")
     ap.add_argument("--tag", default="scratch")
