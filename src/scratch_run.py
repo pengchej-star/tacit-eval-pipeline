@@ -336,9 +336,10 @@ def main():
     meta = {"run_id": run_id, "comp": args.comp, "agent": args.agent, "model": args.model, "effort": args.effort,
             "minutes": args.minutes, "elapsed_s": round(elapsed), "segments": segments,
             "tokens": usage, "cost_usd": usage_cost(usage, prices), "prices_per_token": prices,
-            "cost_usd_reported": sum(s.get("cost_usd_reported") or 0 for s in segments) if args.agent == "claude" else None,
+            # a resumed (--continue) session reports the cumulative cost of the conversation: take the last one
+            "cost_usd_reported": next((s["cost_usd_reported"] for s in reversed(segments) if s.get("cost_usd_reported") is not None), None),
             "cost_note": "cost_usd = tokens x gateway list prices (all agents); cost_usd_reported = Claude Code's own "
-                         "estimate, only for sessions that ended by themselves",
+                         "cumulative estimate from the last session that ended by itself (misses a session killed at the deadline)",
             "grader_offered": not args.no_grader, "grader_requests": grader.n_requests,
             "n_snapshots": len(traj), "final_score": final and final.get("score"), "final_valid": bool(final and final.get("valid")),
             "best_score": best and best["score"], "best_t_s": best and best["t_s"], "tag": args.tag}
