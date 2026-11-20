@@ -3,6 +3,7 @@
 # The memory condition uses Yaqing's leave-one-out memory that leaves out the case's own competition.
 #   CONDS   default "memory no_memory"      MODEL   default wine-claude-opus-5-5
 #   MINUTES default 60                      MAXUSD  default 10           CASES   default: all in cases.json
+# A case's agent_env (cases.json) runs the agent and its grading in that env instead of the shared GPU env.
 # Usage: bash slurm/launch_lowhead.sh            (prints the sbatch lines; DRY=0 to submit)
 set -eu
 REPO=/home/pengchej/tacit-eval-pipeline
@@ -17,12 +18,13 @@ DRY=${DRY:-1}
 CASES=${CASES:-$(python3 -c "import json; print(' '.join(c['case_id'] for c in json.load(open('$APP/cases/cases.json'))))")}
 mkdir -p /data/user_data/pengchej/app_runs/logs
 for CASE in $CASES; do
-  read -r COMP EXTS < <(python3 -c "import json; c=next(c for c in json.load(open('$APP/cases/cases.json')) if c['case_id']=='$CASE'); print(c['comp'], ' '.join(c['externals']))")
+  read -r COMP AENV EXTS < <(python3 -c "import json; c=next(c for c in json.load(open('$APP/cases/cases.json')) if c['case_id']=='$CASE'); print(c['comp'], c.get('agent_env') or '-', ' '.join(c['externals']))")
+  ENVX=""; [ "$AENV" != - ] && ENVX=",RUN_ENV_DIR=/data/user_data/pengchej/software/venvs/$AENV,KERNEL=$AENV"
   for COND in $CONDS; do
     MEM=""; [ "$COND" = memory ] && MEM="$LOO/$COMP"
     CMD=(sbatch -p preempt --qos=preempt_qos --gres=gpu:1 -c 8 --mem=48G --time=$(( MINUTES / 60 + 1 )):30:00 --no-requeue
          -J "lh-${CASE:0:14}-${COND:0:3}"
-         --export=ALL,CASE=$CASE,COND=$COND,APP_DIR=$APP,MEMORY_DIR=$MEM,EXTS="$EXTS",MODEL=$MODEL,MINUTES=$MINUTES,MAXUSD=$MAXUSD,TAG=$TAG,RESULTS=$APP/results.jsonl
+         --export=ALL,CASE=$CASE,COND=$COND,APP_DIR=$APP,MEMORY_DIR=$MEM,EXTS="$EXTS",MODEL=$MODEL,MINUTES=$MINUTES,MAXUSD=$MAXUSD,TAG=$TAG,RESULTS=$APP/results.jsonl$ENVX
          $REPO/slurm/app_iterate.sbatch)
     if [ "$DRY" = 1 ]; then echo "${CMD[*]}"; else "${CMD[@]}"; fi
   done

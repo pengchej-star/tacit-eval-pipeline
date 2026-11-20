@@ -18,8 +18,10 @@ export PATH=$CONDA_PREFIX/bin:$PATH
 source "$HOME/.config/wine/litellm.env"
 REPO=/home/pengchej/tacit-eval-pipeline
 # GPU env: the single conda env, unpacked on this node's local disk from /home (nas8 is not read for it)
-RUN_ENV=$(bash "$REPO/env/ensure_local_env.sh") || { echo "could not set up the local env"; exit 1; }
-ARGS=(--app-dir "$APP_DIR" --case "$CASE" --condition "$COND" --grade --run-env "$RUN_ENV")
+# RUN_ENV_DIR + KERNEL override it with a case's own env (e.g. venvs/case-equity-73937748, which has lifelines)
+if [ -n "${RUN_ENV_DIR:-}" ]; then RUN_ENV=$RUN_ENV_DIR
+else RUN_ENV=$(bash "$REPO/env/ensure_local_env.sh") || { echo "could not set up the local env"; exit 1; }; fi
+ARGS=(--app-dir "$APP_DIR" --case "$CASE" --condition "$COND" --grade --run-env "$RUN_ENV" --kernel "${KERNEL:-kaggle-run-gpu}")
 for e in ${EXTS:-}; do ARGS+=(--external "$e"); done
 [ -n "${MEMORY_DIR:-}" ] && ARGS+=(--memory-dir "$MEMORY_DIR")
 [ -n "${MEMORY_PARTS:-}" ] && ARGS+=(--memory-parts "$MEMORY_PARTS")

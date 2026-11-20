@@ -39,6 +39,9 @@ SELECTED = [
     ("google-quest-challenge", "7676170", 25),                         # Contributor, Spearman 0.151 -> 0.157
 ]
 CONDITIONS = ("memory", "no_memory", "traceml_instruction")
+# The env a case's agent runs and is graded in, when the shared GPU env (kaggle-run-gpu) cannot run its expert code:
+# equity needs lifelines (its notebook pip-installs it from an input, which our run env does not allow).
+AGENT_ENV = {"equity-post-hct-survival-predictions": "case-equity-73937748"}
 
 
 def load_her(app: Path):
@@ -110,7 +113,7 @@ def main():
                       labels=step["fine"], magnitude=step["magnitude"]),
             ours=dict(v_old=float(ours_old["score"]), v_new=float(ours_new["score"]), runtime_s_v_old=float(ours_old["runtime_s"]),
                       env_then=Path(ours_old["run_env"]).name),
-            externals=sorted({x["spec"] for x in ours_old.get("external_inputs") or []}))
+            externals=sorted({x["spec"] for x in ours_old.get("external_inputs") or []}), agent_env=AGENT_ENV.get(comp))
         cases.append(case)
         for cond in CONDITIONS:
             ws = args.out / "workspaces" / case["case_id"] / cond
