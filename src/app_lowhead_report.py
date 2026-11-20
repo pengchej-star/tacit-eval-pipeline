@@ -54,7 +54,8 @@ def main():
                               memory_files_opened=len(opened), model=meta.get("model"))
         out.append(line)
 
-    f = lambda x, d=4: "—" if x is None else f"{x:+.{d}f}" if isinstance(x, float) and abs(x) < 0.5 else f"{x:.{d}f}"
+    f = lambda x: "—" if x is None else f"{x:.4f}"        # scores
+    g = lambda x: "—" if x is None else f"{x:+.4f}"       # gains
     models = sorted({k.split("@")[1] for l in out for k in l if "@" in k})
     for model in models:
         print(f"\n== {model}")
@@ -62,8 +63,8 @@ def main():
         for l in out:
             nm, m = l.get(f"no_memory@{model}", {}), l.get(f"memory@{model}", {})
             cost = lambda x: "—" if x.get("cost") is None else f"${x['cost']:.2f}"
-            print(f"{l['case']:24s} {l['tier'][:11]:11s} {f(l['v_old']):>7s} {f(l['v_new']):>7s} {f(l['expert_gain']):>8s} | "
-                  f"{f(nm.get('score')):>9s} {f(nm.get('gain')):>8s} | {f(m.get('score')):>8s} {f(m.get('gain')):>8s} {m.get('memory_files_opened', '—')!s:>5s} | "
+            print(f"{l['case']:24s} {l['tier'][:11]:11s} {f(l['v_old']):>7s} {f(l['v_new']):>7s} {g(l['expert_gain']):>8s} | "
+                  f"{f(nm.get('score')):>9s} {g(nm.get('gain')):>8s} | {f(m.get('score')):>8s} {g(m.get('gain')):>8s} {m.get('memory_files_opened', '—')!s:>5s} | "
                   f"{cost(nm)}/{cost(m)}")
     (args.app / "report.json").write_text(json.dumps(out, indent=1))
 
