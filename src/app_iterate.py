@@ -155,6 +155,8 @@ def main():
                      "use a memory built without it, or --allow-leak")
 
     run_id = f"{args.case}__{args.agent}__{args.condition}__{dt.datetime.now():%Y%m%d-%H%M%S}"
+    if os.environ.get("SLURM_JOB_ID"):   # two jobs of one case and condition (e.g. two models) can start in the same second
+        run_id += f"-j{os.environ['SLURM_JOB_ID']}"
     run = (args.runs / run_id).resolve()
     ws = run / "workspace"
     (ws / "output").mkdir(parents=True)
