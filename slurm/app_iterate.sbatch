@@ -27,6 +27,12 @@ for e in ${EXTS:-}; do ARGS+=(--external "$e"); done
 [ -n "${MINUTES:-}" ] && ARGS+=(--minutes "$MINUTES")
 [ -n "${MAXUSD:-}" ] && ARGS+=(--max-usd "$MAXUSD")
 [ -n "${TAG:-}" ] && ARGS+=(--tag "$TAG")
+# Writes off /data (nas8 can fill up): run dirs, grading dirs, results and the inputs cache, e.g. under /home
+[ -n "${RUNS:-}" ] && ARGS+=(--runs "$RUNS")
+[ -n "${GRADE_RUNS:-}" ] && ARGS+=(--grade-runs "$GRADE_RUNS")
+[ -n "${RESULTS:-}" ] && ARGS+=(--results "$RESULTS")
+[ -n "${INPUTS_CACHE:-}" ] && ARGS+=(--inputs-cache "$INPUTS_CACHE")
+[ -n "${BIND_INPUTS:-}" ] && ARGS+=(--bind-inputs)
 echo "app_iterate $CASE / $COND on $(hostname) at $(date)"
 cd "$REPO" && python src/app_iterate.py "${ARGS[@]}"
 echo "finished at $(date)"

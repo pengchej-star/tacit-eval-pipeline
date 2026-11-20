@@ -122,6 +122,10 @@ def main():
     ap.add_argument("--runs", type=Path, default=USER_DATA / "app_runs")
     ap.add_argument("--mlebench-cache", type=Path, default=USER_DATA / "mlebench-cache")
     ap.add_argument("--inputs-cache", type=Path, default=USER_DATA / "kaggle-inputs")
+    ap.add_argument("--bind-inputs", action="store_true",
+                    help="bind-mount external inputs read-only (and link them when grading) instead of hardlinking or copying "
+                         "them; needed when --runs is on another disk than --inputs-cache")
+    ap.add_argument("--grade-runs", type=Path, default=USER_DATA / "runs", help="run_version.py --runs-dir for the grading run")
     ap.add_argument("--staged-inputs", type=Path, default=USER_DATA / "app_eval/staged",
                     help="shared read-only copy of prepared/public, made once per competition and bind-mounted into every "
                          "run and grading (run_version.py --staged-inputs); empty string: hardlink per run as before")
@@ -178,7 +182,12 @@ def main():
             stage_inputs(public, run / "kaggle/input" / name)
     for spec in args.external:
         files_dir, _ = kaggle_inputs.fetch(spec, args.inputs_cache)
-        kaggle_inputs.mount(files_dir, run / "kaggle/input" / kaggle_inputs.parse(spec)[2])
+        dest = run / "kaggle/input" / kaggle_inputs.parse(spec)[2]
+        if args.bind_inputs:  # read-only bind of the cache entry: no per-run copy when the run dir is on another disk
+            dest.mkdir(parents=True)
+            binds += ["--bind", f"{Path(files_dir).resolve()}:/kaggle/input/{dest.name}:ro"]
+        else:
+            kaggle_inputs.mount(files_dir, dest)
 
     # Same isolation as agent_step.py. Agent flags follow her agent_cmd(): no settings, MCP, slash commands, web
     # tools or subagents; auto memory off. Permissions are skipped because the container is the sandbox.
@@ -249,7 +258,10 @@ def main():
         shutil.copy2(run / "revised_code.py", graded)
         cmd = ["python", str(REPO / "src/run_version.py"), "--comp", case["comp"], "--code-file", str(graded),
                "--run-env", str(args.run_env), "--kernel", args.kernel, "--timeout", str(args.grade_timeout),
-               "--tag", f"{args.tag}:{args.agent}:{args.model}:{args.condition}:{args.minutes}min", "--results", str(args.results)]
+               "--tag", f"{args.tag}:{args.agent}:{args.model}:{args.condition}:{args.minutes}min", "--results", str(args.results),
+               "--runs-dir", str(args.grade_runs), "--inputs-cache", str(args.inputs_cache)]
+        if args.bind_inputs:
+            cmd += ["--link-inputs"]
         for spec in args.external:
             cmd += ["--external", spec]
         if staged:

@@ -43,7 +43,7 @@ def ask(model: str, system: str, user: str, max_tokens=4000) -> dict:
         raise SystemExit("LITELLM_API_KEY is not set (source ~/.config/wine/litellm.env)")
     body = {"model": model, "max_tokens": max_tokens, "temperature": 0,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}
-    for a in range(4):
+    for a in range(8):  # the gateway has had 503 spells of minutes: back off up to ~4 min per call
         try:
             r = requests.post(GATEWAY, json=body, headers={"Authorization": f"Bearer {key}"}, timeout=300)
             r.raise_for_status()
@@ -52,7 +52,7 @@ def ask(model: str, system: str, user: str, max_tokens=4000) -> dict:
             return json.loads(txt[txt.find("{"): txt.rfind("}") + 1])
         except Exception as e:  # network, HTTP or JSON errors: retry, then give up
             err = e
-            time.sleep(2 ** a)
+            time.sleep(min(240, 5 * 2 ** a))
     raise RuntimeError(f"LLM call failed: {err}")
 
 
