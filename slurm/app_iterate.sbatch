@@ -29,6 +29,7 @@ for e in ${EXTS:-}; do ARGS+=(--external "$e"); done
 [ -n "${MINUTES:-}" ] && ARGS+=(--minutes "$MINUTES")
 [ -n "${MAXUSD:-}" ] && ARGS+=(--max-usd "$MAXUSD")
 [ -n "${TAG:-}" ] && ARGS+=(--tag "$TAG")
+[ -n "${PROMPT:-}" ] && ARGS+=(--prompt "$PROMPT")
 # Writes off /data (nas8 can fill up): run dirs, grading dirs, results and the inputs cache, e.g. under /home
 [ -n "${RUNS:-}" ] && ARGS+=(--runs "$RUNS")
 [ -n "${GRADE_RUNS:-}" ] && ARGS+=(--grade-runs "$GRADE_RUNS")

@@ -75,7 +75,8 @@ def leak_hits(memory_dir: Path, parts, case: dict) -> list:
     return hits
 
 
-def render_prompt(app_dir: Path, case: dict, condition: str, minutes: int, parts=MEMORY_PARTS) -> str:
+def render_prompt(app_dir: Path, case: dict, condition: str, minutes: int, parts=MEMORY_PARTS,
+                  prompt: Path = REPO / "src/app_iterate_prompt.md") -> str:
     """Her render_prompt with our base prompt; the planning block's hours are the real budget."""
     block = ""
     if condition == "memory":
@@ -86,7 +87,7 @@ def render_prompt(app_dir: Path, case: dict, condition: str, minutes: int, parts
         block = ("\n## Planning instruction\nThe following planning block comes from a long-running agent harness. Use it "
                  f"while deciding what to change; its time-allocation and periodic-check language is advisory here, "
                  f"because this session has a fixed limit of {minutes} minutes.\n\n" + planning + "\n")
-    p = (REPO / "src/app_iterate_prompt.md").read_text()
+    p = prompt.read_text()
     direction = "higher is better" if case["direction"] == "max" else "lower is better"
     return (p.replace("{{COMP}}", case["comp"]).replace("{{V_OLD}}", str(case["v_old"])).replace("{{MINUTES}}", str(minutes))
              .replace("{{MIN_MINUTES}}", str(round(minutes * 0.75)))
@@ -118,6 +119,8 @@ def main():
     ap.add_argument("--grade", action="store_true")
     ap.add_argument("--grade-timeout", type=int, default=2700)
     ap.add_argument("--tag", default="app-iterate")
+    ap.add_argument("--prompt", type=Path, default=REPO / "src/app_iterate_prompt.md",
+                    help="base prompt; src/app_iterate_prompt_onestep.md asks for one focused change instead of iterating")
     ap.add_argument("--results", type=Path, default=USER_DATA / "app_eval/app_iterate_results.jsonl")
     ap.add_argument("--runs", type=Path, default=USER_DATA / "app_runs")
     ap.add_argument("--mlebench-cache", type=Path, default=USER_DATA / "mlebench-cache")
@@ -168,7 +171,7 @@ def main():
             read_only_copy(memory_dir / part, run / "memory" / part)
         (ws / "memory").mkdir()  # mount point
         binds += ["--bind", f"{run / 'memory'}:/workspace/memory:ro"]
-    prompt = render_prompt(args.app_dir, case, args.condition, args.minutes, parts)
+    prompt = render_prompt(args.app_dir, case, args.condition, args.minutes, parts, args.prompt)
     (run / "prompt.txt").write_text(prompt)
 
     public = args.mlebench_cache / case["comp"] / "prepared/public"
@@ -230,7 +233,7 @@ def main():
     meta = {"run_id": run_id, "case": args.case, "comp": case["comp"], "condition": args.condition, "agent": args.agent,
             "start_code": {"expert": case["expert"], "v_old": case["v_old"], "step_id": case.get("step_id"),
                            "expert_next": case.get("v_new"), "code_file": case.get("code_file")},
-            "model": args.model, "effort": args.effort, "minutes": args.minutes, "max_usd": args.max_usd,
+            "model": args.model, "effort": args.effort, "minutes": args.minutes, "prompt": args.prompt.name, "max_usd": args.max_usd,
             "elapsed_s": round(elapsed), "timed_out": rc in (124, 137) or elapsed >= limit, "rc": rc,
             "num_turns": final.get("num_turns"), "cost_usd_reported": final.get("total_cost_usd"), "usage": final.get("usage"),
             "has_code": (run / "revised_code.py").exists(), "has_report": (run / "report.json").exists(),

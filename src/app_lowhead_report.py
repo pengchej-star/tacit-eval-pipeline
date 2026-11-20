@@ -3,7 +3,8 @@ in each condition, all scored on our split in the same env, with the agent's cos
 
   python src/app_lowhead_report.py [--app /data/user_data/pengchej/app_eval/app_lowhead]
 
-Improvements are signed so that > 0 is better for every metric (KL on hms is lower-is-better).
+Runs are grouped by model and prompt: "iterate-60min" (src/app_iterate_prompt.md, use the time to iterate) and
+"one-step" (src/app_iterate_prompt_onestep.md, one focused change). Improvements are signed so that > 0 is better for every metric (KL on hms is lower-is-better).
 """
 import argparse
 import json
@@ -43,7 +44,8 @@ def main():
             meta = json.loads((run / "meta.json").read_text()) if (run / "meta.json").exists() else {}
             if not meta:
                 continue                     # preempted or still running
-            cond = f"{run.name.split('__')[2]}@{meta.get('model', '?').replace('wine-claude-', '')}"
+            variant = "one-step" if "onestep" in meta.get("prompt", "") else f"iterate-{meta.get('minutes')}min"
+            cond = f"{run.name.split('__')[2]}@{meta.get('model', '?').replace('wine-claude-', '')} {variant}"
             g = graded.get(run.name)
             score = float(g["score"]) if g and g["status"] == "OK" else None
             reads = (meta.get("memory_reads") or {}).get("events", [])
