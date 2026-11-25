@@ -11,6 +11,9 @@
 #     slurm/scratch_run.sbatch
 #SBATCH -J scratch
 #SBATCH -o /data/user_data/pengchej/scratch_runs/logs/%x_%j.log
+#SBATCH --open-mode=append
+# Preemption: submit with --requeue (preempt partition, PreemptMode=REQUEUE). The run id ends in j<job id>, so the
+# requeued job finds its run directory and scratch_run.py resumes it with the budget that is left.
 set -u
 # tacit-eval without conda activate (conda imports thousands of files from nas8 and is slow on a cold node)
 export CONDA_PREFIX=/data/user_data/pengchej/software/anaconda3/envs/tacit-eval
@@ -18,13 +21,14 @@ export PATH=$CONDA_PREFIX/bin:$PATH
 source "$HOME/.config/wine/litellm.env"
 REPO=/home/pengchej/tacit-eval-pipeline
 RUN_ENV=$(bash "$REPO/env/ensure_local_env.sh") || { echo "could not set up the local env"; exit 1; }
-ARGS=(--comp "$COMP" --agent "$AGENT" --model "$MODEL" --minutes "${MINUTES:-60}" --run-env "$RUN_ENV")
+ARGS=(--comp "$COMP" --agent "$AGENT" --model "$MODEL" --minutes "${MINUTES:-60}" --run-env "$RUN_ENV"
+      --run-suffix "j$SLURM_JOB_ID")
 [ -n "${EFFORT:-}" ] && ARGS+=(--effort "$EFFORT")
 [ -n "${MAXUSD:-}" ] && ARGS+=(--max-usd "$MAXUSD")
 [ -n "${TAG:-}" ] && ARGS+=(--tag "$TAG")
 [ -n "${NO_GRADER:-}" ] && ARGS+=(--no-grader)
 [ -n "${RUNS:-}" ] && ARGS+=(--runs "$RUNS")
 [ -n "${RESULTS:-}" ] && ARGS+=(--results "$RESULTS")
-echo "scratch_run $COMP / $AGENT / $MODEL / ${MINUTES:-60} min on $(hostname) at $(date)"
+echo "scratch_run $COMP / $AGENT / $MODEL / ${MINUTES:-60} min on $(hostname) at $(date) (restart ${SLURM_RESTART_COUNT:-0})"
 cd "$REPO" && python src/scratch_run.py "${ARGS[@]}"
 echo "finished at $(date)"

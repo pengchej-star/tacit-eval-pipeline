@@ -59,6 +59,9 @@ Local, unlimited, not rate-limited. Use it whenever it's useful to you:
 """
 CONTINUE = ("The session is still running: about {left} minutes of the {minutes}-minute budget remain. Do not stop. Keep "
             "improving the score (validation, features, models, ensembling, TTA) and keep /kaggle/working/submission.csv valid.")
+RESTARTED = ("The machine was restarted (the cluster preempted the job). Every process you had running was killed, including "
+             "background training; files in /workspace and /kaggle/working are kept. About {left} minutes of the {minutes}-minute "
+             "budget remain. Check what finished, restart what you still need, and keep /kaggle/working/submission.csv valid.")
 
 
 def model_prices(model: str, key: str) -> dict:
@@ -137,12 +140,16 @@ def usage_cost(u: dict, prices: dict):
 class Grader(threading.Thread):
     """Grades the agent's requests in grader/queue/ and snapshots every new /kaggle/working/submission.csv."""
 
-    def __init__(self, run_dir: Path, comp: str, cache: Path, t0: float):
+    def __init__(self, run_dir: Path, comp: str, cache: Path, t0: float, tick=None):
         super().__init__(daemon=True)
-        self.dir, self.comp, self.cache, self.t0 = run_dir, comp, cache, t0
+        self.dir, self.comp, self.cache, self.t0, self.tick = run_dir, comp, cache, t0, tick
         self.queue, self.sub = run_dir / "grader/queue", run_dir / "kaggle/working/submission.csv"
         self.stop, self.last, self.n_requests = threading.Event(), None, 0
         self.lock = threading.Lock()
+        snaps = sorted((run_dir / "submissions").glob("*s.csv"), key=lambda p: int(p.stem[:-1])) if (run_dir / "submissions").is_dir() else []
+        if snaps and self.sub.exists() and snaps[-1].read_bytes() == self.sub.read_bytes():
+            st = self.sub.stat()  # resumed run: the current submission.csv was already snapshotted and graded
+            self.last = (st.st_mtime_ns, st.st_size)
 
     def score(self, csv: Path) -> dict:
         with self.lock:  # grade() changes the working directory while importing mlebench
@@ -187,6 +194,8 @@ class Grader(threading.Thread):
         while not self.stop.is_set():
             self.requests()
             self.snapshot()
+            if self.tick:
+                self.tick()
             self.stop.wait(10)
         self.requests()
         self.snapshot(final=True)
@@ -218,6 +227,9 @@ def main():
     ap.add_argument("--max-segments", type=int, default=30, help="sessions at most (the first + resumes); Claude Sonnet often ends a session after a few minutes")
     ap.add_argument("--min-resume-minutes", type=float, default=3.0, help="do not resume when less time than this remains")
     ap.add_argument("--no-grader", action="store_true", help="do not offer /grader/grade to the agent")
+    ap.add_argument("--run-suffix", help="last part of the run id (default: a timestamp). If that run directory exists, the run "
+                                         "is resumed with the budget it has left: scratch_run.sbatch passes j<SLURM_JOB_ID>, so "
+                                         "a job that the cluster preempts and requeues picks up its own run")
     ap.add_argument("--tag", default="scratch")
     ap.add_argument("--runs", type=Path, default=USER_DATA / "scratch_runs")
     ap.add_argument("--results", type=Path, default=USER_DATA / "scratch_runs/results.jsonl")
@@ -236,14 +248,27 @@ def main():
     if not public.is_dir():
         ap.error(f"no prepared data at {public}")
     short = args.model.removeprefix("wine-")
-    run_id = f"{args.comp.split('-')[0][:12]}__{args.agent}__{short}__{args.minutes}min__{dt.datetime.now():%Y%m%d-%H%M%S}"
+    run_id = (f"{args.comp.split('-')[0][:12]}__{args.agent}__{short}__{args.minutes}min__"
+              f"{args.run_suffix or dt.datetime.now().strftime('%Y%m%d-%H%M%S')}")
     run = (args.runs / run_id).resolve()
-    for d in ("workspace", "kaggle/working", "home"):
-        (run / d).mkdir(parents=True)
-    write_grader(run)
+    resumed = run.exists()
+    progress_file = run / "progress.json"
+    # budget already used and finished sessions, from the job(s) this run was preempted in
+    prior = json.loads(progress_file.read_text()) if progress_file.exists() else {"used_s": 0, "segments": [], "restarts": 0}
+    if resumed:
+        if prior.get("open_segment"):  # the session that was running when the job was killed
+            o = prior.pop("open_segment")
+            prior["segments"].append({"i": o["i"], "rc": "preempted", "elapsed_s": round(prior["used_s"] - o["start_used_s"])})
+        prior["restarts"] = prior.get("restarts", 0) + 1
+        print(f"[scratch] resuming {run_id}: {prior['used_s'] / 60:.1f} of {args.minutes} min used, "
+              f"{len(prior['segments'])} sessions so far, restart {prior['restarts']}", flush=True)
+    else:
+        for d in ("workspace", "kaggle/working", "home"):
+            (run / d).mkdir(parents=True)
+        write_grader(run)
 
     staged = shared_public(public, args.staged_inputs)
-    (run / "kaggle/input" / args.comp).mkdir(parents=True)
+    (run / "kaggle/input" / args.comp).mkdir(parents=True, exist_ok=True)
     binds = ["--bind", f"{staged}:/kaggle/input/{args.comp}:ro",
              "--bind", f"{run / 'grader/queue'}:/grader/queue", "--bind", f"{run / 'grader/grade'}:/grader/grade:ro"]
     if not args.run_env.resolve().is_relative_to(SOFTWARE):  # the conda env unpacked on node-local /scratch
@@ -294,22 +319,51 @@ def main():
                  "--dangerously-bypass-approvals-and-sandbox", "-m", args.model, message]
         return [*base, "timeout", "--kill-after=30", str(limit), *a]
 
+    def has_session() -> bool:  # a conversation that --continue / resume --last can pick up
+        pat = "home/.claude/projects/*/*.jsonl" if args.agent == "claude" else "home/sessions/**/rollout-*.jsonl"
+        return any(f.stat().st_size > 0 for f in run.glob(pat))
+
     prices = model_prices(args.model, key)
-    t0 = time.time()
+    t0 = time.time() - prior["used_s"]  # snapshot times and the deadline count the budget used before a preemption
     deadline = t0 + args.minutes * 60
-    grader = Grader(run, args.comp, args.mlebench_cache, t0)
+    segments = prior["segments"]
+    state = {"open": None}
+    progress_lock = threading.Lock()  # written by the main loop and by the grader thread
+
+    def save_progress():
+        with progress_lock:
+            try:
+                p = {"used_s": round(time.time() - t0, 1), "segments": segments, "restarts": prior.get("restarts", 0)}
+                if state["open"]:
+                    p["open_segment"] = state["open"]
+                tmp = progress_file.with_suffix(".tmp")
+                tmp.write_text(json.dumps(p))
+                tmp.replace(progress_file)
+            except OSError as e:
+                print(f"[scratch] could not save progress: {e}", flush=True)
+
+    grader = Grader(run, args.comp, args.mlebench_cache, t0, tick=save_progress)
     grader.start()
     print(f"[scratch] {run_id}: {args.agent} {args.model}, {args.minutes} min", flush=True)
-    segments = []
+    first = True  # first session of this job
     while len(segments) < args.max_segments:
         left = deadline - time.time()
-        if segments and left < args.min_resume_minutes * 60:
+        if (segments or resumed) and left < args.min_resume_minutes * 60:
             break
-        message = prompt if not segments else CONTINUE.format(left=round(left / 60), minutes=args.minutes)
+        resume = bool(segments) and has_session()
+        if not resume:
+            message = prompt
+        elif resumed and first:
+            message = RESTARTED.format(left=round(left / 60), minutes=args.minutes)
+        else:
+            message = CONTINUE.format(left=round(left / 60), minutes=args.minutes)
+        first = False
         i = len(segments)
         s0 = time.time()
+        state["open"] = {"i": i, "start_used_s": round(s0 - t0, 1)}
+        save_progress()
         with open(run / f"transcript_{i}.jsonl", "w") as out, open(run / f"agent_{i}.stderr", "w") as err:
-            rc = subprocess.run(agent_cmd(message, i > 0, max(60, int(left))), env=env, stdout=out, stderr=err).returncode
+            rc = subprocess.run(agent_cmd(message, resume, max(60, int(left))), env=env, stdout=out, stderr=err).returncode
         seg = {"i": i, "rc": rc, "elapsed_s": round(time.time() - s0)}
         for line in (run / f"transcript_{i}.jsonl").read_text(errors="replace").splitlines():
             try:
@@ -320,6 +374,8 @@ def main():
                 seg["cost_usd_reported"] = msg.get("total_cost_usd")
                 seg["num_turns"] = msg.get("num_turns")
         segments.append(seg)
+        state["open"] = None
+        save_progress()
         print(f"[scratch] session {i}: rc {rc}, {seg['elapsed_s']} s, cost so far ${usage_cost(token_usage(run, args.agent), prices)}", flush=True)
         if rc in (124, 137):  # killed at the deadline
             break
@@ -340,7 +396,9 @@ def main():
             "cost_usd_reported": next((s["cost_usd_reported"] for s in reversed(segments) if s.get("cost_usd_reported") is not None), None),
             "cost_note": "cost_usd = tokens x gateway list prices (all agents); cost_usd_reported = Claude Code's own "
                          "cumulative estimate from the last session that ended by itself (misses a session killed at the deadline)",
-            "grader_offered": not args.no_grader, "grader_requests": grader.n_requests,
+            "restarts": prior.get("restarts", 0),
+            # answered requests, also those of jobs this run was preempted in
+            "grader_offered": not args.no_grader, "grader_requests": len(list((run / "grader/queue").glob("*.json"))),
             "n_snapshots": len(traj), "final_score": final and final.get("score"), "final_valid": bool(final and final.get("valid")),
             "best_score": best and best["score"], "best_t_s": best and best["t_s"], "tag": args.tag}
     (run / "meta.json").write_text(json.dumps(meta, indent=1))
@@ -349,7 +407,7 @@ def main():
         f.write(json.dumps({**{k: v for k, v in meta.items() if k != "segments"}, "n_segments": len(segments),
                             "timestamp": dt.datetime.now().isoformat(timespec="seconds")}) + "\n")
     print(f"[scratch] done: {elapsed / 60:.1f} min, {len(segments)} sessions, cost {meta['cost_usd']}, "
-          f"final {meta['final_score']}, best {meta['best_score']} ({len(traj)} snapshots, {grader.n_requests} grader calls)", flush=True)
+          f"final {meta['final_score']}, best {meta['best_score']} ({len(traj)} snapshots, {meta['grader_requests']} grader calls)", flush=True)
 
 
 if __name__ == "__main__":
