@@ -13,6 +13,14 @@ her ipynb_to_py() and history_md() from run_application.py. History lines come f
 
   python src/app_make_cases.py --her-app /data/user_data/pengchej/app_eval/ne_30788ca/new_extraction/application \\
       --out /data/user_data/pengchej/app_eval/app_lowhead
+
+--large-delta CASES_CSV (Nov 25): Yaqing's large-delta episodes (her Nov 19 slide) and their replacements, from
+triage/large_delta_cases.csv (rows with status "run"). The agent starts at the episode's first version (v_start) and the
+gold is the episode's last version (v_end); scores are Kaggle's (the experts are not re-run here, so "ours" is empty).
+The agent gets the datasets v_start attached, at the exact versions, from --inputs-csv (src/resolve_inputs.py output).
+
+  python src/app_make_cases.py --her-app .../new_extraction/application --out /data/user_data/pengchej/app_eval/large_delta/app \\
+      --large-delta triage/large_delta_cases.csv --inputs-csv triage/large_delta_inputs.csv
 """
 import argparse
 import getpass
@@ -78,6 +86,61 @@ def task_md(her: Path, comp: str, cache: Path) -> str:
     return t
 
 
+def write_app(args, ra, cases, trans):
+    """Her application-dir layout: workspaces/<case>/<condition>/{task.md,current_code.py,history.md} + cases/cases.json."""
+    args.out.mkdir(parents=True, exist_ok=True)
+    for f in ("prompt.md", "memory_instruction.md", "planning_instruction.md"):
+        shutil.copy2(args.her_app / f, args.out / f)
+    for case in cases:
+        for cond in CONDITIONS:
+            ws = args.out / "workspaces" / case["case_id"] / cond
+            ws.mkdir(parents=True, exist_ok=True)
+            (ws / "task.md").write_text(task_md(args.her_app, case["comp"], args.mlebench_cache))
+            (ws / "current_code.py").write_text(ra.ipynb_to_py(case["code_file"]))
+            (ws / "history.md").write_text(ra.history_md(case, trans))
+    (args.out / "cases").mkdir(exist_ok=True)
+    (args.out / "cases/cases.json").write_text(json.dumps(cases, indent=1))
+
+
+def kaggle_scores(traceml: Path) -> dict:
+    s = pd.concat(pd.read_parquet(traceml / f"data/{x}/state.parquet", columns=["key_id", "version_number", "score"])
+                  for x in ("paired", "humans_only"))
+    s = s.drop_duplicates(["key_id", "version_number"])
+    return {(str(k), int(v)): none(sc) for k, v, sc in zip(s.key_id, s.version_number, s.score)}
+
+
+def large_delta_cases(args, ra, kern):
+    """Cases from the large-delta table: start at v_start, gold = v_end (Kaggle scores; no runs of ours)."""
+    sel = pd.read_csv(args.large_delta, dtype={"key_id": str})
+    sel = sel[sel.status == "run"]
+    inputs = pd.read_csv(args.inputs_csv, dtype={"key_id": str}, keep_default_na=False)
+    trans = trans_for(set(sel.key_id), args.traceml)
+    score = kaggle_scores(args.traceml)
+    cases = []
+    for r in sel.itertuples():
+        key, v0, v1, comp = r.key_id, int(r.v_start), int(r.v_end), r.comp
+        rows = inputs[(inputs.key_id == key) & (inputs.version.astype(int) == v0)]
+        if (rows.spec == "").any():
+            raise SystemExit(f"{key} v{v0}: an input is not downloadable: {rows[rows.spec == ''].to_dict('records')}")
+        sgn = -1 if comp in LOWER else 1
+        s0, s1 = score.get((key, v0)), score.get((key, v1))
+        steps = sorted((t for t in trans if t["key_id"] == key and v0 <= t["v_old"] and t["v_new"] <= v1), key=lambda t: t["v_old"])
+        case = dict(
+            case_id=f"{comp.split('-')[0][:10]}_{key}_v{v0}", comp=comp, direction="min" if comp in LOWER else "max", expert=key,
+            tier=kern.author_tier.get(key, "unknown"), kernel=kern.kernel_slug.get(key, ""), v_old=v0, v_new=v1,
+            step_id=f"{key}:{v0}->{v1}", score_old=s0, code_file=str(args.notebooks / key / "versions" / f"v{v0:03d}.ipynb"),
+            prior_steps=sorted((t["step_id"] for t in trans if t["key_id"] == key and t["v_new"] <= v0),
+                               key=lambda s: int(s.split(":")[1].split("->")[0])),
+            gold=dict(v_new=v1, score_new=s1, delta=None if s0 is None or s1 is None else sgn * (s1 - s0),
+                      pattern=r.pattern, lever=r.lever, delta_yaqing=r.delta_yaqing,
+                      episode_steps=[dict(step_id=t["step_id"], goal=t["goal"], change=t["change"], labels=t["fine"],
+                                          score_new=t["score_new"]) for t in steps]),
+            ours=None, source=r.source, note=r.note if isinstance(r.note, str) else "",
+            externals=sorted(set(rows.spec)), agent_env=(r.agent_env if isinstance(r.agent_env, str) and r.agent_env else AGENT_ENV.get(comp)))
+        cases.append(case)
+    return cases, trans
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--her-app", type=Path, required=True, help="new_extraction/application from branch extraction_eval")
@@ -85,9 +148,21 @@ def main():
     ap.add_argument("--traceml", type=Path, default=USER_DATA / "traceml/hf")
     ap.add_argument("--notebooks", type=Path, default=USER_DATA / "traceml/extracted/human")
     ap.add_argument("--mlebench-cache", type=Path, default=USER_DATA / "mlebench-cache")
+    ap.add_argument("--large-delta", type=Path, help="cases csv (triage/large_delta_cases.csv) instead of the low-headroom SELECTED list")
+    ap.add_argument("--inputs-csv", type=Path, default=REPO / "triage/large_delta_inputs.csv", help="src/resolve_inputs.py output")
     args = ap.parse_args()
 
     ra = load_her(args.her_app)
+    if args.large_delta:
+        kern = pd.read_parquet(args.traceml / "extras/kernels.parquet", columns=["kernel_id", "kernel_slug", "author_tier"])
+        kern = kern.assign(key_id=kern.kernel_id.astype(str)).set_index("key_id")
+        cases, trans = large_delta_cases(args, ra, kern)
+        write_app(args, ra, cases, trans)
+        for c in cases:
+            print(f"{c['case_id']:28s} {c['tier'][:11]:11s} v{c['v_old']}->v{c['v_new']}  Kaggle {c['score_old']}->{c['gold']['score_new']}  "
+                  f"prior steps {len(c['prior_steps'])}  env {c['agent_env'] or '-'}  ext {c['externals']}")
+        print(f"wrote {args.out}")
+        return
     trans = trans_for({k for _, k, _ in SELECTED}, args.traceml)
     kern = pd.read_parquet(args.traceml / "extras/kernels.parquet", columns=["kernel_id", "kernel_slug", "author_tier"])
     kern = kern.assign(key_id=kern.kernel_id.astype(str)).set_index("key_id")
@@ -97,9 +172,6 @@ def main():
         if r["status"] == "OK" and r.get("key_id") not in (None, ""):
             runs[(str(r["key_id"]), int(r["version"]))] = r            # latest OK run of each version
 
-    args.out.mkdir(parents=True, exist_ok=True)
-    for f in ("prompt.md", "memory_instruction.md", "planning_instruction.md"):
-        shutil.copy2(args.her_app / f, args.out / f)
     cases = []
     for comp, key, v in SELECTED:
         step = next(t for t in trans if t["key_id"] == key and t["v_old"] == v)
@@ -115,14 +187,7 @@ def main():
                       env_then=Path(ours_old["run_env"]).name),
             externals=sorted({x["spec"] for x in ours_old.get("external_inputs") or []}), agent_env=AGENT_ENV.get(comp))
         cases.append(case)
-        for cond in CONDITIONS:
-            ws = args.out / "workspaces" / case["case_id"] / cond
-            ws.mkdir(parents=True, exist_ok=True)
-            (ws / "task.md").write_text(task_md(args.her_app, comp, args.mlebench_cache))
-            (ws / "current_code.py").write_text(ra.ipynb_to_py(case["code_file"]))
-            (ws / "history.md").write_text(ra.history_md(case, trans))
-    (args.out / "cases").mkdir(exist_ok=True)
-    (args.out / "cases/cases.json").write_text(json.dumps(cases, indent=1))
+    write_app(args, ra, cases, trans)
     for c in cases:
         print(f"{c['case_id']:26s} {c['tier'][:11]:11s} v{c['v_old']}->v{c['v_new']}  ours {c['ours']['v_old']:.4f}->{c['ours']['v_new']:.4f}  "
               f"Kaggle {c['score_old']}->{c['gold']['score_new']}  prior steps {len(c['prior_steps'])}  ext {c['externals']}")

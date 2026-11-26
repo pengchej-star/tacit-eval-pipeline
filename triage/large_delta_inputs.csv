@@ -1,0 +1,90 @@
+key_id,version,comp,kind,source_version_id,spec,slug,dataset_version,created,gb,note,kernel_version
+13521245,6,ranzcr-clip-catheter-line-classification,dataset,1664914,dataset:xhlulu/efficientnet-keras-source-code@2,efficientnet-keras-source-code,2.0,11/20/2020 15:49:25,0.0,,
+13521245,6,ranzcr-clip-catheter-line-classification,dataset,1744405,dataset:xhlulu/keras-efficientnet-noisy-students@1,keras-efficientnet-noisy-students,1.0,12/14/2020 22:10:53,2.17,,
+13521245,6,ranzcr-clip-catheter-line-classification,dataset,1666454,dataset:xhlulu/kerasapplications@1,kerasapplications,1.0,11/21/2020 05:57:19,0.0,,
+13521245,6,ranzcr-clip-catheter-line-classification,kernel,49428711,kernel:xhlulu/ranzcr-efficientnet-tpu-training,ranzcr-efficientnet-tpu-training,,,,"kaggle_inputs fetches the current output, not this version",5.0
+13521245,10,ranzcr-clip-catheter-line-classification,dataset,1664914,dataset:xhlulu/efficientnet-keras-source-code@2,efficientnet-keras-source-code,2.0,11/20/2020 15:49:25,0.0,,
+13521245,10,ranzcr-clip-catheter-line-classification,dataset,1744405,dataset:xhlulu/keras-efficientnet-noisy-students@1,keras-efficientnet-noisy-students,1.0,12/14/2020 22:10:53,2.17,,
+13521245,10,ranzcr-clip-catheter-line-classification,dataset,1666454,dataset:xhlulu/kerasapplications@1,kerasapplications,1.0,11/21/2020 05:57:19,0.0,,
+13521245,10,ranzcr-clip-catheter-line-classification,kernel,49595836,kernel:xhlulu/ranzcr-efficientnet-tpu-training,ranzcr-efficientnet-tpu-training,,,,"kaggle_inputs fetches the current output, not this version",8.0
+18423958,4,commonlitreadabilityprize,dataset,1042664,dataset:abhishek/roberta-base@1,roberta-base,1.0,03/28/2020 21:42:54,0.5,,
+18423958,4,commonlitreadabilityprize,dataset,2383189,dataset:andretugan/commonlit-roberta-0467@1,commonlit-roberta-0467,1.0,06/30/2021 15:03:46,2.5,,
+18423958,4,commonlitreadabilityprize,dataset,1212718,dataset:marshal02/robertalarge@2,robertalarge,2.0,06/04/2020 06:01:42,1.43,,
+18423958,4,commonlitreadabilityprize,dataset,918137,dataset:radream/pretrained-albert-pytorch@2,pretrained-albert-pytorch,2.0,01/30/2020 03:11:51,2.5,,
+18423958,4,commonlitreadabilityprize,dataset,2279836,dataset:rhtsingh/commonlit-roberta-base-i@1,commonlit-roberta-base-i,1.0,05/28/2021 12:53:42,2.49,,
+18423958,4,commonlitreadabilityprize,dataset,2279832,dataset:rhtsingh/commonlit-roberta-large-ii@1,commonlit-roberta-large-ii,1.0,05/28/2021 12:53:00,7.11,,
+18423958,4,commonlitreadabilityprize,dataset,2263042,dataset:rhtsingh/roberta-large-itptfit@1,roberta-large-itptfit,1.0,05/23/2021 16:39:06,7.11,,
+18423958,4,commonlitreadabilityprize,dataset,2440961,dataset:vineethakkinapalli/albert-large-without-pretrain@1,albert-large-without-pretrain,1.0,07/19/2021 11:16:56,0.36,,
+18423958,4,commonlitreadabilityprize,dataset,2409466,dataset:vineethakkinapalli/clrp-distilroberta-baseuncased-finetune@2,clrp-distilroberta-baseuncased-finetune,2.0,07/09/2021 11:20:36,7.11,,
+18423958,8,commonlitreadabilityprize,dataset,1042664,dataset:abhishek/roberta-base@1,roberta-base,1.0,03/28/2020 21:42:54,0.5,,
+18423958,8,commonlitreadabilityprize,dataset,2383189,dataset:andretugan/commonlit-roberta-0467@1,commonlit-roberta-0467,1.0,06/30/2021 15:03:46,2.5,,
+18423958,8,commonlitreadabilityprize,dataset,1212718,dataset:marshal02/robertalarge@2,robertalarge,2.0,06/04/2020 06:01:42,1.43,,
+18423958,8,commonlitreadabilityprize,dataset,918137,dataset:radream/pretrained-albert-pytorch@2,pretrained-albert-pytorch,2.0,01/30/2020 03:11:51,2.5,,
+18423958,8,commonlitreadabilityprize,dataset,2406894,dataset:ravoxsg/t5large@1,t5large,1.0,07/08/2021 14:12:45,2.95,,
+18423958,8,commonlitreadabilityprize,dataset,2279836,dataset:rhtsingh/commonlit-roberta-base-i@1,commonlit-roberta-base-i,1.0,05/28/2021 12:53:42,2.49,,
+18423958,8,commonlitreadabilityprize,dataset,2279832,dataset:rhtsingh/commonlit-roberta-large-ii@1,commonlit-roberta-large-ii,1.0,05/28/2021 12:53:00,7.11,,
+18423958,8,commonlitreadabilityprize,dataset,2263042,dataset:rhtsingh/roberta-large-itptfit@1,roberta-large-itptfit,1.0,05/23/2021 16:39:06,7.11,,
+18423958,8,commonlitreadabilityprize,dataset,2448868,dataset:vineethakkinapalli/albert-large-without-pretrain@2,albert-large-without-pretrain,2.0,07/21/2021 15:26:08,6.71,,
+18423958,8,commonlitreadabilityprize,dataset,2409466,dataset:vineethakkinapalli/clrp-distilroberta-baseuncased-finetune@2,clrp-distilroberta-baseuncased-finetune,2.0,07/09/2021 11:20:36,7.11,,
+18426209,3,commonlitreadabilityprize,dataset,1042664,dataset:abhishek/roberta-base@1,roberta-base,1.0,03/28/2020 21:42:54,0.5,,
+18426209,3,commonlitreadabilityprize,dataset,2383189,dataset:andretugan/commonlit-roberta-0467@1,commonlit-roberta-0467,1.0,06/30/2021 15:03:46,2.5,,
+18426209,3,commonlitreadabilityprize,dataset,1212718,dataset:marshal02/robertalarge@2,robertalarge,2.0,06/04/2020 06:01:42,1.43,,
+18426209,3,commonlitreadabilityprize,dataset,2279836,dataset:rhtsingh/commonlit-roberta-base-i@1,commonlit-roberta-base-i,1.0,05/28/2021 12:53:42,2.49,,
+18426209,3,commonlitreadabilityprize,dataset,2279832,dataset:rhtsingh/commonlit-roberta-large-ii@1,commonlit-roberta-large-ii,1.0,05/28/2021 12:53:00,7.11,,
+18426209,3,commonlitreadabilityprize,dataset,2263042,dataset:rhtsingh/roberta-large-itptfit@1,roberta-large-itptfit,1.0,05/23/2021 16:39:06,7.11,,
+18426209,5,commonlitreadabilityprize,dataset,1042664,dataset:abhishek/roberta-base@1,roberta-base,1.0,03/28/2020 21:42:54,0.5,,
+18426209,5,commonlitreadabilityprize,dataset,2383189,dataset:andretugan/commonlit-roberta-0467@1,commonlit-roberta-0467,1.0,06/30/2021 15:03:46,2.5,,
+18426209,5,commonlitreadabilityprize,dataset,906797,dataset:maroberti/roberta-transformers-pytorch@1,roberta-transformers-pytorch,1.0,01/22/2020 16:41:47,3.68,,
+18426209,5,commonlitreadabilityprize,dataset,1212718,dataset:marshal02/robertalarge@2,robertalarge,2.0,06/04/2020 06:01:42,1.43,,
+18426209,5,commonlitreadabilityprize,dataset,2279836,dataset:rhtsingh/commonlit-roberta-base-i@1,commonlit-roberta-base-i,1.0,05/28/2021 12:53:42,2.49,,
+18426209,5,commonlitreadabilityprize,dataset,2279832,dataset:rhtsingh/commonlit-roberta-large-ii@1,commonlit-roberta-large-ii,1.0,05/28/2021 12:53:00,7.11,,
+18426209,5,commonlitreadabilityprize,dataset,2263042,dataset:rhtsingh/roberta-large-itptfit@1,roberta-large-itptfit,1.0,05/23/2021 16:39:06,7.11,,
+18426209,5,commonlitreadabilityprize,kernel,68510675,,,,,,kernel version not in Meta Kaggle (private or deleted),
+49524919,54,hms-harmful-brain-activity-classification,dataset,7644177,dataset:gunesevitan/hms-hbac-dataset@36,hms-hbac-dataset,36.0,02/17/2024 16:52:18,0.18,,
+49524919,55,hms-harmful-brain-activity-classification,dataset,7644721,dataset:gunesevitan/hms-hbac-dataset@37,hms-hbac-dataset,37.0,02/17/2024 18:50:13,0.73,,
+50496431,32,hms-harmful-brain-activity-classification,dataset,7664446,dataset:cooolz/hms-oneimage@2,hms-oneimage,2.0,02/20/2024 14:52:39,0.5,,
+52200959,34,hms-harmful-brain-activity-classification,dataset,7392775,dataset:cdeotte/brain-spectrograms@1,brain-spectrograms,1.0,01/13/2024 03:25:31,6.9,,
+52200959,34,hms-harmful-brain-activity-classification,dataset,7392733,dataset:cdeotte/kaggle-kl-div@1,kaggle-kl-div,1.0,01/13/2024 03:04:58,0.0,,
+52200959,34,hms-harmful-brain-activity-classification,dataset,7810897,dataset:konstantinboyko/hms-resnet1d-gru-weights-v82@1,hms-resnet1d-gru-weights-v82,1.0,03/10/2024 23:38:37,0.61,,
+52200959,34,hms-harmful-brain-activity-classification,dataset,7570342,dataset:nartaa/eeg-spectrograms@1,eeg-spectrograms,1.0,02/06/2024 10:58:29,16.41,,
+52200959,34,hms-harmful-brain-activity-classification,dataset,7752462,dataset:nartaa/efficientnetb-tf-keras@4,efficientnetb-tf-keras,4.0,03/03/2024 17:25:04,0.8,,
+52200959,34,hms-harmful-brain-activity-classification,dataset,7818976,dataset:nartaa/features-head-starter-models@10,features-head-starter-models,10.0,03/11/2024 20:44:27,3.84,,
+52200959,34,hms-harmful-brain-activity-classification,dataset,7776446,dataset:nartaa/hms-eeg@1,hms-eeg,1.0,03/06/2024 14:02:34,13.13,,
+52200959,34,hms-harmful-brain-activity-classification,kernel,160700706,kernel:andreasbis/hms-train-efficientnetb0,hms-train-efficientnetb0,,,,"kaggle_inputs fetches the current output, not this version",1.0
+52200959,34,hms-harmful-brain-activity-classification,kernel,161586765,kernel:andreasbis/hms-train-efficientnetb1,hms-train-efficientnetb1,,,,"kaggle_inputs fetches the current output, not this version",1.0
+52200959,34,hms-harmful-brain-activity-classification,kernel,160674831,kernel:andreasbis/hms-train-resnet34d,hms-train-resnet34d,,,,"kaggle_inputs fetches the current output, not this version",1.0
+52200959,38,hms-harmful-brain-activity-classification,dataset,7392775,dataset:cdeotte/brain-spectrograms@1,brain-spectrograms,1.0,01/13/2024 03:25:31,6.9,,
+52200959,38,hms-harmful-brain-activity-classification,dataset,7392733,dataset:cdeotte/kaggle-kl-div@1,kaggle-kl-div,1.0,01/13/2024 03:04:58,0.0,,
+52200959,38,hms-harmful-brain-activity-classification,dataset,7810897,dataset:konstantinboyko/hms-resnet1d-gru-weights-v82@1,hms-resnet1d-gru-weights-v82,1.0,03/10/2024 23:38:37,0.61,,
+52200959,38,hms-harmful-brain-activity-classification,dataset,7570342,dataset:nartaa/eeg-spectrograms@1,eeg-spectrograms,1.0,02/06/2024 10:58:29,16.41,,
+52200959,38,hms-harmful-brain-activity-classification,dataset,7752462,dataset:nartaa/efficientnetb-tf-keras@4,efficientnetb-tf-keras,4.0,03/03/2024 17:25:04,0.8,,
+52200959,38,hms-harmful-brain-activity-classification,dataset,7818976,dataset:nartaa/features-head-starter-models@10,features-head-starter-models,10.0,03/11/2024 20:44:27,3.84,,
+52200959,38,hms-harmful-brain-activity-classification,dataset,7776446,dataset:nartaa/hms-eeg@1,hms-eeg,1.0,03/06/2024 14:02:34,13.13,,
+52200959,38,hms-harmful-brain-activity-classification,kernel,160700706,kernel:andreasbis/hms-train-efficientnetb0,hms-train-efficientnetb0,,,,"kaggle_inputs fetches the current output, not this version",1.0
+52200959,38,hms-harmful-brain-activity-classification,kernel,161586765,kernel:andreasbis/hms-train-efficientnetb1,hms-train-efficientnetb1,,,,"kaggle_inputs fetches the current output, not this version",1.0
+52200959,38,hms-harmful-brain-activity-classification,kernel,160674831,kernel:andreasbis/hms-train-resnet34d,hms-train-resnet34d,,,,"kaggle_inputs fetches the current output, not this version",1.0
+53762022,8,hms-harmful-brain-activity-classification,dataset,7392733,dataset:cdeotte/kaggle-kl-div@1,kaggle-kl-div,1.0,01/13/2024 03:04:58,0.0,,
+53762022,8,hms-harmful-brain-activity-classification,dataset,7810897,dataset:konstantinboyko/hms-resnet1d-gru-weights-v82@1,hms-resnet1d-gru-weights-v82,1.0,03/10/2024 23:38:37,0.61,,
+53762022,8,hms-harmful-brain-activity-classification,dataset,7805987,dataset:naomideenen/efficientnet-b1-ownspectrograms@1,efficientnet-b1-ownspectrograms,1.0,03/10/2024 09:24:58,0.13,,
+53762022,8,hms-harmful-brain-activity-classification,dataset,7752462,dataset:nartaa/efficientnetb-tf-keras@4,efficientnetb-tf-keras,4.0,03/03/2024 17:25:04,0.8,,
+53762022,8,hms-harmful-brain-activity-classification,dataset,7946649,dataset:nartaa/features-head-starter-models@11,features-head-starter-models,11.0,03/26/2024 11:32:50,3.85,,
+53762022,8,hms-harmful-brain-activity-classification,kernel,160700706,kernel:andreasbis/hms-train-efficientnetb0,hms-train-efficientnetb0,,,,"kaggle_inputs fetches the current output, not this version",1.0
+53762022,8,hms-harmful-brain-activity-classification,kernel,160674831,kernel:andreasbis/hms-train-resnet34d,hms-train-resnet34d,,,,"kaggle_inputs fetches the current output, not this version",1.0
+53762022,8,hms-harmful-brain-activity-classification,kernel,165876189,kernel:naomideenen/train,train,,,,"kaggle_inputs fetches the current output, not this version",16.0
+53762022,9,hms-harmful-brain-activity-classification,dataset,7392733,dataset:cdeotte/kaggle-kl-div@1,kaggle-kl-div,1.0,01/13/2024 03:04:58,0.0,,
+53762022,9,hms-harmful-brain-activity-classification,dataset,2378330,dataset:cdeotte/rapids@16,rapids,16.0,06/29/2021 00:53:18,9.79,,
+53762022,9,hms-harmful-brain-activity-classification,dataset,7402356,dataset:cdeotte/tf-efficientnet-imagenet-weights@1,tf-efficientnet-imagenet-weights,1.0,01/14/2024 19:30:20,0.31,,
+53762022,9,hms-harmful-brain-activity-classification,dataset,7810897,dataset:konstantinboyko/hms-resnet1d-gru-weights-v82@1,hms-resnet1d-gru-weights-v82,1.0,03/10/2024 23:38:37,0.61,,
+53762022,9,hms-harmful-brain-activity-classification,dataset,7805987,dataset:naomideenen/efficientnet-b1-ownspectrograms@1,efficientnet-b1-ownspectrograms,1.0,03/10/2024 09:24:58,0.13,,
+53762022,9,hms-harmful-brain-activity-classification,dataset,7752462,dataset:nartaa/efficientnetb-tf-keras@4,efficientnetb-tf-keras,4.0,03/03/2024 17:25:04,0.8,,
+53762022,9,hms-harmful-brain-activity-classification,dataset,7946649,dataset:nartaa/features-head-starter-models@11,features-head-starter-models,11.0,03/26/2024 11:32:50,3.85,,
+53762022,9,hms-harmful-brain-activity-classification,dataset,7754261,dataset:rafaelzimmermann1/3-diff-time-specs-hms@2,3-diff-time-specs-hms,2.0,03/04/2024 01:57:34,18.8,,
+53762022,9,hms-harmful-brain-activity-classification,dataset,8028982,dataset:rafaelzimmermann1/train-lf-hms@2,train-lf-hms,2.0,04/04/2024 13:59:03,0.25,,
+53762022,9,hms-harmful-brain-activity-classification,kernel,160700706,kernel:andreasbis/hms-train-efficientnetb0,hms-train-efficientnetb0,,,,"kaggle_inputs fetches the current output, not this version",1.0
+53762022,9,hms-harmful-brain-activity-classification,kernel,160674831,kernel:andreasbis/hms-train-resnet34d,hms-train-resnet34d,,,,"kaggle_inputs fetches the current output, not this version",1.0
+53762022,9,hms-harmful-brain-activity-classification,kernel,158958765,kernel:cdeotte/tf-efficientnet-whl-files,tf-efficientnet-whl-files,,,,"kaggle_inputs fetches the current output, not this version",1.0
+53762022,9,hms-harmful-brain-activity-classification,kernel,165876189,kernel:naomideenen/train,train,,,,"kaggle_inputs fetches the current output, not this version",16.0
+7253130,3,google-quest-challenge,dataset,808847,dataset:akensert/bert-base-from-tfhub@1,bert-base-from-tfhub,1.0,11/23/2019 15:14:12,0.44,,
+7253130,3,google-quest-challenge,kernel,24251312,kernel:akensert/bert-tokenization,bert-tokenization,,,,"kaggle_inputs fetches the current output, not this version",3.0
+7253130,5,google-quest-challenge,dataset,808847,dataset:akensert/bert-base-from-tfhub@1,bert-base-from-tfhub,1.0,11/23/2019 15:14:12,0.44,,
+7253130,5,google-quest-challenge,kernel,24251312,kernel:akensert/bert-tokenization,bert-tokenization,,,,"kaggle_inputs fetches the current output, not this version",3.0
