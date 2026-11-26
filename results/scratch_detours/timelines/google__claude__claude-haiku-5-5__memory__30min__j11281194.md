@@ -1,0 +1,68 @@
+# gquest · haiku · cheatsheet
+
+run google__claude__claude-haiku-5-5__memory__30min__j11281194; 70 steps; best 0.38614 (higher is better); final 0.38614
+
+Knowledge the agent reports using (from the cheatsheet):
+- T.2.2: T.2.2.1 Keep related samples together (applied): Checked that rows sharing a question (duplicated question_title across answers) must not straddle train/validation; used GroupKFold on question_title for the 4-fold CV.
+- T.2.2: T.2.2.3 Validate on the target population (not applied): Considered whether the train subgroup matches the test population; test has no duplicated questions, so the grouped split was kept as the closest approximation.
+
+-   0.0 min · step   0 · says: I'll start by reading the competition files and the memory taxonomy.
+-   0.0 min · step   1 · READS CHEATSHEET: `ls -la /kaggle/input/google-quest-challenge; cat /kaggle/input/google-quest-challenge/description.md | head -80; ls /workspace; ls /workspace/memory; nvidia-smi`
+-   0.0 min · step   2 · READS CHEATSHEET: `{"file_path": "/workspace/memory/taxonomy.md"}`
+-   0.1 min · step   2 · says: The taxonomy is read. Next I'll check the data shape, whether pretrained weights are reachable, and which local models exist.
+-   0.1 min · step   3 · READS CHEATSHEET: `cd /workspace; head -c 600 /kaggle/input/google-quest-challenge/train.csv; echo; python -c " import pandas as pd tr=pd.read_csv('/kaggle/input/google-quest-chal`
+-   0.1 min · step   3 · says: Test set is 608 rows, and HF is reachable. I'll read the validation-design and checkpoint-selection memory, and write a quick baseline submission so a valid file exists early.
+-   0.2 min · step   4 · READS CHEATSHEET: `cd /workspace/memory; cat attention/t-2-2-choose-the-validation-design.md | head -60; echo ----; cat attention/t-4-1*.md 2>/dev/null | head -5; ls cases | grep `
+-   0.2 min · step   5 · SUBMISSION 0.36031  (new best)
+-   0.3 min · step   5 · says: Baseline submission is valid (608 rows, columns match). Next I'll fine-tune a transformer with grouped 4-fold CV. Grouping by question title follows the duplicated-question structure from the description, so related rows stay on one side of each split.
+-   1.9 min · step   6 · says: The log shows `nan` for a fold's Spearman score. I'll check the full log to see whether that is a real problem or just an artifact of constant columns.
+-   2.0 min · step   8 · says: Every fold reports NaN, which points to NaN predictions rather than a scoring quirk. I'll stop the run and check the predictions and the loss directly.
+-   2.0 min · step   9 · KILL: `pkill -f ft.py; sleep 3; cd /workspace/code && python -c " import pandas as pd, numpy as np from scipy.stats import spearmanr tr=pd.read_csv('/kaggle/input/goog`
+-   2.1 min · step   9 · says: The labels are clean, so the NaNs come from the model. `pkill` isn't available here, so I'll kill the process by PID. Next I'll add a loss and NaN check to see whether training diverges under bf16 autocast.
+-   2.2 min · step  10 · KILL: `for p in $(ps -eo pid,cmd | grep "ft.py" | grep -v grep | awk '{print $1}'); do kill $p; done; sleep 3; nvidia-smi --query-gpu=memory.used --format=csv,noheader`
+-   2.3 min · step  10 · says: `ps` isn't available either, so the earlier kill didn't happen and the old job is still on the GPU. I'll find it through `/proc` and kill it, then check the new run.
+-   2.3 min · step  11 · says: Two `ft.py` runs are active (PIDs 153 and 358), which is why the GPU memory is doubled. I'll kill both and relaunch a single clean run.
+-   2.3 min · step  12 · KILL: `kill 153 358 2>/dev/null; sleep 5; nvidia-smi --query-gpu=memory.used --format=csv,noheader; cd /workspace/code && nohup python ft.py microsoft/deberta-v3-base `
+-   2.4 min · step  13 · says: The shell blocks long foreground sleeps, so I'll poll with a Monitor-style until-loop on the log file.
+-   2.5 min · step  15 · says: The GPU is idle and there are no fold lines, so the run likely exited. I'll read the end of the log.
+-   2.5 min · step  16 · says: The first loss is finite (0.738) and the process is alive, so training is running. I'll wait for the first fold's metrics.
+-   2.7 min · step  20 · says: The monitors keep expiring with no output, so I'll check the log directly.
+-   2.7 min · step  21 · says: Training is running at 92% GPU utilization, but no epoch has finished yet. I'll check again shortly.
+-   2.8 min · step  22 · says: The monitor shows the loss is NaN in fold 0 at epoch 0, even though the first step's loss was finite. The run is diverging, not just mis-scored. I'll stop it and switch to fp32 with TF32 and a NaN guard, then add a NaN check on the loss so a bad run fails fast.
+-   2.8 min · step  23 · KILL: `for d in /proc/[0-9]*; do c=$(tr '\0' ' ' < $d/cmdline 2>/dev/null); case "$c" in python*ft.py*) kill ${d#/proc/} 2>/dev/null && echo "killed ${d#/proc/}";; esa`
+-   2.9 min · step  23 · says: The monitor notifications above are just the earlier watchers ending, not new instructions. The NaN run was killed and RoBERTa in fp32 is now running. I'll check that it produces finite losses.
+-   3.0 min · step  26 · says: The RoBERTa run is still loading the model. I'll poll with a Monitor until it reports a first loss, an error, or a fold result.
+-   3.1 min · step  30 · says: The GPU shows 0 MiB and the log has no progress, so the process may have died. I'll check the log and the process list.
+-   3.2 min · step  31 · says: The RoBERTa process is alive but still loading weights. I'll wait on one monitor for its first loss or an error.
+-   3.3 min · step  34 · says: The RoBERTa run has a finite first loss (0.66) and is training. The monitor notifications are repeats, so I'll stop arming new ones and check the log directly.
+-   3.4 min · step  35 · says: Monitor notifications are repeating and not adding information, so I'll stop arming monitors. I'll record the memory I used now, then check training with a plain wait.
+-   6.8 min · step  36 · says: RoBERTa finished with grouped-CV OOF Spearman 0.348 and finite predictions in every fold. I'll write its test predictions as the submission, mapped back to `sample_submission` order, then launch DeBERTa in fp32 for an ensemble.
+-   6.8 min · step  37 · SUBMISSION 0.37795  (new best)
+-   6.9 min · step  37 · says: The RoBERTa submission is written (608 rows, columns match, OOF 0.348). DeBERTa is now running in fp32, so I'll check that it trains without NaNs.
+-   7.0 min · step  39 · ERROR (call took 0.0 min): Traceback (most recent call last): | RuntimeError: mat1 and mat2 must have the same dtype, but got Half and Float | Thu Nov 26 02:14:18 UTC 2026
+-   7.0 min · step  39 · says: DeBERTa crashed with a Half/Float dtype mismatch. The backbone is probably loading in fp16 from its config. I'll force fp32 at load time and relaunch.
+-   7.1 min · step  41 · says: Nothing yet, since the model is still loading. I'll check again in a moment.
+-   7.2 min · step  43 · says: DeBERTa is training in fp32 with a finite first loss. I'll wait for the first fold result to confirm the NaN is gone.
+-   7.5 min · step  44 · says: DeBERTa's fold 0 epoch 0 gives 0.307 with no NaNs, so the fp32 fix holds. About 8 of the 30 minutes are used. I'll wait for the full run.
+-  10.8 min · step  46 · says: DeBERTa OOF is 0.340, below RoBERTa's 0.348. I'll blend the two on OOF to see whether the ensemble helps.
+-  10.9 min · step  47 · says: The 2:1 RoBERTa/DeBERTa blend scores best on OOF (0.354). My last command overwrote the submission with the RoBERTa-only file, so I'll rewrite the 2:1 blend now. I'll also start a RoBERTa-large run in the remaining time.
+-  10.9 min · step  48 · SUBMISSION 0.37849  (new best)
+-  11.8 min · step  49 · says: RoBERTa-large is stable, with fold 0 epoch 0 at 0.326. Each epoch is slower, though, so I'll check whether it can finish inside the 30-minute budget. It started at 02:14, so the deadline is about 02:44.
+-  15.1 min · step  51 · says: RoBERTa-large finished with OOF 0.343. I'll search blend weights across the three models on OOF, then write the best blend.
+-  15.2 min · step  52 · says: The equal-weight blend (1,1,1) scores 0.3577 OOF, essentially tied with 2,1,2 at 0.3578. I'll use equal weights since they are simpler and less tuned to OOF. The last loop iteration overwrote the submission, so I'll rewrite it. With about 14 minutes left, I'll also launch one more diverse backbone (ELECTRA-base).
+-  15.2 min · step  53 · SUBMISSION 0.37964  (new best)
+-  15.6 min · step  54 · says: ELECTRA is training stably. Its first fold is weaker at epoch 0 (0.250), and it should finish in about 4 minutes. I'll wait for it.
+-  17.5 min · step  55 · says: ELECTRA finished at OOF 0.311, weaker than the others. I'll test whether adding it helps the blend before changing the submission.
+-  17.6 min · step  56 · says: ELECTRA lowers the blend OOF (0.3564 with weight 0.5), so I'll leave it out. The last call rewrote the submission with weight 0, so I'll restore the 3-model equal blend. The remaining time is about 12 minutes; I'll try one more RoBERTa-base seed with a different max length to add variance.
+-  17.6 min · step  57 · SUBMISSION 0.37964
+-  20.6 min · step  59 · says: The max-length-384 RoBERTa variant is the strongest single model so far, at OOF 0.359. I'll check blends that include it.
+-  20.7 min · step  60 · says: The 4-model blend with weights 1,1,1,2 reaches OOF 0.364, up from 0.358. I'll write it as the submission. About 9 minutes remain, so I'll also launch one more RoBERTa-base seed at length 384 for variance reduction.
+-  20.7 min · step  61 · SUBMISSION 0.38493  (new best)
+-  20.8 min · step  61 · says: The `rob3` run uses the same arguments as `rob2`, and the seeds are fixed, so it would just reproduce the same model. I'll stop it and change the seed offset first.
+-  20.8 min · step  62 · KILL: `for d in /proc/[0-9]*; do c=$(tr '\0' ' ' < $d/cmdline 2>/dev/null); case "$c" in "python ft.py roberta-base rob3"*) kill ${d#/proc/} && echo killed;; esac; don`
+-  23.8 min · step  64 · says: The seeded run finished at OOF 0.355. I'll check the five-model blend against the four-model one.
+-  23.9 min · step  65 · says: The 5-model blend with weights 1,1,1,2,2 is best at OOF 0.3665. The last loop overwrote the submission, so I'll rewrite it and check the file. I'll also correct `knowledge_used.json`: it lists a T.1.5.1 entry that I never actually read from memory.
+-  24.0 min · step  66 · says: The submission validates: 608 rows, columns match, no NaNs, values in [0,1]. About six minutes of the 30-minute budget remain, so I'll run one more seeded RoBERTa-base variant (about 3.5 minutes) and add it to the blend only if it finishes in time.
+-  24.0 min · step  66 · SUBMISSION 0.38554  (new best)
+-  27.1 min · step  70 · SUBMISSION 0.38614  (new best)
+-  27.2 min · step  70 · says: The final submission is a six-model blend at OOF Spearman 0.368. It is written to `/kaggle/working/submission.csv` and validates against `sample_submission.csv`: 608 rows, matching columns and `qa_id` order, no NaNs, values in [0,1].  **Result:** Grouped 4-fold CV on `question_title`, mean column-wise Spearman over the 30 targets.  | Model | OOF Spearman | |---|---| | TF-IDF Ridge (baseline, not i

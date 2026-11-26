@@ -1,0 +1,24 @@
+# ranzcr · haiku · no cheatsheet
+
+run ranzcr__claude__claude-haiku-5-5__30min__20261120-104811; 29 steps; best 0.92763 (higher is better); final 0.92763
+
+-   0.1 min · step   2 · says: Time is tight (30 min), so I'll write a baseline submission first, then cache resized images and train a pretrained CNN.
+-   0.2 min · step   3 · SUBMISSION 0.5  (new best)
+-   1.6 min · step   4 · says: The caching log is still empty, so I'll check whether the background job is actually running.
+-   3.4 min · step   8 · says: Still no output after several minutes. I'll check whether the process is alive and how far the reads have gotten.
+-   3.6 min · step   9 · says: Two caching jobs are running at once (the first launch was not dead after all), and reads are slow, about 80 ms per image. I'll kill both, check the clock, and restart a single job with progress logging.
+-   3.6 min · step  10 · KILL: `for p in /proc/[0-9]*; do c=$(tr '\0' ' ' < $p/cmdline 2>/dev/null); case "$c" in "python -I prep.py"*) kill ${p#/proc/} 2>/dev/null;; esac; done; sleep 2; date`
+-   4.1 min · step  16 · says: The image cache is still building. The background wait will notify me when it finishes, so I'll pause until then.  Status so far: - **Baseline submission written:** `/kaggle/working/submission.csv` (per-column train means, 3009 rows, valid format). - **Image cache:** a single `prep.py` job is resizing train and test images to 288px grayscale into `/workspace/cache`. The earlier duplicate job is ki
+-   5.4 min · step  16 · says: Caching finished: train is 27074×288×288 and test is 3009×288×288. I'll start training now. The timm pretrained weights need internet access, which the earlier check suggested is available.
+-   7.0 min · step  17 · says: The notifications above are stale re-announcements of the caching job I already handled. ResNet50 is training at about 38 s per epoch, with validation AUC 0.837 after epoch 2. I'll wait for it to finish.
+-   7.0 min · step  18 · says: ResNet50 training is running in the background and will notify me when it's done. At ~38 s per epoch, 8 epochs should take about 5 minutes. Once it finishes, I'll check validation AUC and copy its test predictions to `/kaggle/working/submission.csv` if they beat the baseline.
+-  12.9 min · step  19 · says: ResNet50 finished with validation AUC about 0.906. I'll put its predictions in place as the submission, then start a second backbone so I can ensemble.
+-  13.3 min · step  20 · SUBMISSION 0.9112  (new best)
+-  14.0 min · step  21 · says: The ResNet50 submission is now in `/kaggle/working/submission.csv`. It has 3009 rows, the same columns as the sample, and matching IDs. Its held-out validation AUC is about 0.906, against roughly 0.5 for the baseline (train means), so this is a real improvement.  I've started EfficientNet-B0 (8 epochs, lr 1e-3) in the background. Once it finishes, I'll check its validation AUC and, if it's useful,
+-  18.6 min · step  22 · says: EfficientNet-B0 peaked at 0.918 in epoch 5 and then overfit, so its saved final model scored 0.890. That is below ResNet50's 0.906, so I'm keeping the ResNet50 submission. About 18 minutes have elapsed, so I'll try a shorter 5-epoch schedule that should finish before the peak is lost.
+-  18.7 min · step  24 · says: The 5-epoch EfficientNet-B0 run is training in the background. I'll read its validation AUC when it reports completion. The submission stays at ResNet50 (validation AUC 0.906) unless this run gets a higher score.
+-  22.1 min · step  25 · says: The 5-epoch EfficientNet-B0 finished with validation AUC 0.910 at its final epoch. That beats ResNet50's final-epoch 0.906, so I'll switch the submission to it and validate the file.
+-  22.1 min · step  26 · SUBMISSION 0.92763  (new best)
+-  22.2 min · step  26 · says: The submission is now the 5-epoch EfficientNet-B0 model, with validation AUC 0.910 (final epoch). The file has 3009 rows, columns and IDs matching the sample, and no NaNs. Predictions are in the valid range.  About 22 minutes of the 30-minute budget have passed. I'll try one more run that could help: ResNet50 with a 5-epoch schedule, which is the same length that worked for EfficientNet-B0. Then I
+-  22.3 min · step  28 · says: The 5-epoch ResNet50 run is training in the background. I'll compare its final validation AUC with EfficientNet-B0's 0.910 when it reports, and keep whichever scores higher.
+-  27.7 min · step  29 · says: The 5-epoch ResNet50 finished at validation AUC 0.887, below EfficientNet-B0's 0.910, so the submission stays as is. The run took about 5 minutes and I'm close to the time limit. I'll leave the current file alone and stop here.  **Final state** - `/kaggle/working/submission.csv` is the 5-epoch EfficientNet-B0 model (`efficientnet_b0`, lr 1e-3, flip TTA, 90/10 split). Validation mean AUC is **0.910

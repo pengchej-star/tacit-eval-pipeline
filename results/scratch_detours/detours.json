@@ -1,0 +1,1289 @@
+{
+ "about": "Detours read from results/scratch_detours/timelines/*.md (and raw transcripts where a narration was too short) by four Claude subagents with one shared definition (kinds own_bug, env, resource, dead_end, shipped_regression, other; cheatsheet_related caused / avoided_similar / no), Nov 26. One spot-check per group by the main session. minutes_lost of shipped_regression entries is not comparable across groups (some logged 0, some the minutes after the better file); docs/scratch_detours.md leaves them out of the minute totals.",
+ "pairs": [
+  {
+   "comp": "amex",
+   "model": "opus",
+   "runs": {
+    "no_memory": {
+     "main_path": "polars per-customer aggregates (~1.6k feats) -> XGBoost GPU 5-fold, submission overwritten after every fold (hidden 0.78505..0.78727; the run's hidden best 0.78727 is the 3-of-5-fold partial file, the finished 5-fold scored 0.78673) -> + CatBoost GPU, 50/50 rank blend (0.78675) -> + 2nd and 3rd XGBoost seeds, equal 4-model rank blend (final 0.78646)",
+     "detours": [
+      {
+       "start_min": 1.5,
+       "end_min": 3.6,
+       "minutes_lost": 2.1,
+       "kind": "env",
+       "description": "XGBoost DMatrix crashed on the pandas-3 'str' dtype of the string categorical columns; training had been launched behind a 120 s sleep, so the crash surfaced only after 2 min; fixed by converting to category codes.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 13.7,
+       "end_min": 17.6,
+       "minutes_lost": 0.2,
+       "kind": "resource",
+       "description": "CPU LightGBM launched in parallel for the blend had not finished a single fold when it died at turn end; never relaunched (ran in parallel, so little agent time lost).",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 17.5,
+       "end_min": 18.7,
+       "minutes_lost": 1.0,
+       "kind": "env",
+       "description": "Background jobs (2nd XGBoost with 4/5 folds done, and the LightGBM) were killed when the agent's turn ended; it wrote a resume script and re-ran the missing fold.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 17.7,
+       "end_min": 17.8,
+       "minutes_lost": 0.1,
+       "kind": "own_bug",
+       "description": "The resume script used NF before defining it and crashed with NameError; fixed with sed and relaunched.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 22.2,
+       "end_min": 26.7,
+       "minutes_lost": 4.4,
+       "kind": "env",
+       "description": "The 3rd XGBoost (4/5 folds) was again killed at turn end (setsid did not help); the agent waited 3.3 min in a timeout loop on the dead process, then re-ran the last fold in the foreground.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 13.7,
+       "end_min": 27.2,
+       "minutes_lost": 7.8,
+       "kind": "shipped_regression",
+       "description": "After the XGB+CatBoost blend (hidden 0.78675), adding a 2nd and then a 3rd XGBoost seed lowered the hidden score at every write (0.78567-0.78683, final 0.78646) while OOF rose by +0.0004. Magnitude -0.0003, noise level. minutes_lost is the 13.5-min span minus the nested detours above.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": null
+    },
+    "memory": {
+     "main_path": "polars per-customer aggregates (~1.26k feats, explicit D_63/D_64 mapping) -> XGBoost GPU 5-fold (0.78781) -> + 2nd XGBoost variant, rank blend (0.78771, transient dip; model kept in the final blend) -> + 3rd XGBoost variant, 0.4/0.3/0.3 rank blend (best = final 0.78859)",
+     "detours": [
+      {
+       "start_min": 0.3,
+       "end_min": 0.4,
+       "minutes_lost": 0.1,
+       "kind": "own_bug",
+       "description": "The first feature script encoded D_63/D_64 with per-file categorical codes (train/test mismatch); caught ~5 s after launch and restarted with an explicit shared mapping (the agent credits T.4.1.2 'Reuse fitted categorical mappings' for the fix).",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 1.6,
+       "end_min": 3.5,
+       "minutes_lost": 0.3,
+       "kind": "resource",
+       "description": "Trained a CPU LightGBM alongside the GPU XGBoost, logged as T.6.1.3.1 'Add a different model family'; killed after XGB fold 0 as too slow for the 30-min budget (ran in parallel, little agent time lost).",
+       "cheatsheet_related": "caused"
+      },
+      {
+       "start_min": 22.7,
+       "end_min": 25.3,
+       "minutes_lost": 2.6,
+       "kind": "dead_end",
+       "description": "Fast high-learning-rate 4th XGBoost (CV 0.7933) plus a rank/logit/probability averaging comparison; neither improved OOF, so the submission stayed unchanged.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": "Read ~0.5 min in all, mostly bundled into data-inspection commands: taxonomy head (0.1 min), attention/t-4-1 feature-encoding page and a cases listing (0.55 min), and one more cases listing at 26.4 min to correct a node id in its log. It also kept knowledge_used.json up to date (about 5 writes, ~0.3 min). Visible effects: the explicit D_63/D_64 mapping right after the taxonomy read (T.4.1.2), and the parallel LightGBM (T.6.1.3.1), which was dropped. Seed averaging (T.6.1.4.2) drove the late-run path that gave the best score, but the no-cheatsheet run built the same kind of multi-seed XGBoost blend without it."
+    }
+   },
+   "comparison": "The cheatsheet run lost ~3.0 min to detours, against ~7.8 min (plus a ~7.8-min shipped-regression stretch) without it. Its final score was its best, 0.78859 vs 0.78646. The no-cheatsheet run's losses were the pandas-3 dtype crash and background jobs killed at turn end. The cheatsheet run avoided the turn-end kills by waiting in the foreground, which has nothing to do with the cheatsheet. Its only cheatsheet-cited detour was the parallel LightGBM (T.6.1.3.1), and that was itself a small detour, so the difference can't be credited to the cheatsheet."
+  },
+  {
+   "comp": "amex",
+   "model": "haiku",
+   "runs": {
+    "no_memory": {
+     "main_path": "polars aggregates -> LightGBM 5-fold (0.78552) -> + trend/diff features (best 0.78888) -> LightGBM params/seed variant v3 swapped in (0.78705) -> v3+v4 rank blend (final 0.78794)",
+     "detours": [
+      {
+       "start_min": 0.2,
+       "end_min": 0.8,
+       "minutes_lost": 0.6,
+       "kind": "own_bug",
+       "description": "The polars feature script cast string categoricals (e.g. D_63 = 'CO') to float and crashed on the train file; fixed by keeping categorical last values as strings.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 12.9,
+       "end_min": 26.1,
+       "minutes_lost": 13.2,
+       "kind": "shipped_regression",
+       "description": "Swapped in LightGBM variant v3 on OOF +0.00009, measured with its own Amex-metric reimplementation, whose top-4% term is wrong (OOF ~0.538 against ~0.79 official). v2's OOF had not been saved, so a blend could not be checked. Hidden score fell from 0.78888 to 0.78705. It then trained v4 and installed a v3+v4 blend (0.78794). The final is 0.0009 below the v2 submission.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": null
+    },
+    "memory": {
+     "main_path": "polars aggregates -> LightGBM 5-fold lr 0.05 (0.78459) -> lr 0.03 variant (best 0.78641) -> 2-way rank blend (0.7848) -> + seed/feature-fraction variant, 3-way (0.78505) -> + 4th seed, 4-way (final 0.78567)",
+     "detours": [
+      {
+       "start_min": 1.0,
+       "end_min": 1.1,
+       "minutes_lost": 0.1,
+       "kind": "own_bug",
+       "description": "The drafted Amex metric was 'muddled' and was rewritten before use. The rewrite still scores a perfect ranking at ~0.6 (top-4% term wrong, the same flaw as the no-cheatsheet run); this was never noticed.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 1.3,
+       "end_min": 1.55,
+       "minutes_lost": 0.3,
+       "kind": "own_bug",
+       "description": "Training crashed twice: first on raw string categorical values ('CR') kept by the aggregation, then on nulls in the category list. Fixed with shared integer codes and a null placeholder.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 13.6,
+       "end_min": 13.7,
+       "minutes_lost": 0.1,
+       "kind": "own_bug",
+       "description": "The blend check run through exec() was a no-op; rerun with the metric defined explicitly.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 13.6,
+       "end_min": 25.7,
+       "minutes_lost": 12.0,
+       "kind": "shipped_regression",
+       "description": "After the lr=0.03 LightGBM (hidden best 0.78641), it installed a 2-way rank blend on OOF +0.0001 (hidden 0.7848). It then trained two more seeds for a 3-way (0.78505) and a 4-way (0.78567) blend. The knowledge log credits T.6.1.1 'Compare the best member with the blend' and T.6.1.4.2 'Average independently trained seeds', but those entries were written right after the decision, and the no-cheatsheet run took a similar path. The final is 0.0007 below the best.",
+       "cheatsheet_related": "caused"
+      }
+     ],
+     "cheatsheet_overhead": "Read ~0.2 min at the start: taxonomy.md (68.7 KB, of which only a 2 KB preview was shown inline), the heads of the attention pages t-5-2 (choose a different predictor) and t-4-1 (feature encoding), a cases listing and an evidence-registry grep. Knowledge-log upkeep took ~0.3 min, including correcting two mislabeled node ids at 13.9 min. No visible plan change: it said 'Memory is generic, so I'll use it as a starting point', and its pipeline (aggregates -> LightGBM -> variants -> OOF-gated blends) matches the no-cheatsheet run. The later blending is framed as T.6.1.1/T.6.1.4.2."
+    }
+   },
+   "comparison": "Both runs lost about the same time. Mid-run bugs were small (0.6 vs 0.5 min), and each spent ~12-13 min after its best submission on variants and blends that lowered the hidden score (-0.0009 without, -0.0007 with). Both used the same broken Amex-metric reimplementation and made decisions on OOF differences of ~1e-4. The cheatsheet run credits its blend path to T.6.1.x, but the no-cheatsheet run did the same without it, so no difference can be traced to the cheatsheet. All the hidden-score differences involved (≤0.002) are probably within test-set noise."
+  },
+  {
+   "comp": "aes2",
+   "model": "opus",
+   "runs": {
+    "no_memory": {
+     "main_path": "TF-IDF LightGBM on CPU (abandoned) + DeBERTa-v3-base regression (NaN debugging) -> TF-IDF Ridge fallback (0.74676 at 16 min) -> 2 DeBERTa folds (1 epoch, 512 tokens) + Ridge with OOF-tuned thresholds (0.81632) -> 3 folds (0.81304, transient dip) -> 4 folds (best = final 0.82268)",
+     "detours": [
+      {
+       "start_min": 0.6,
+       "end_min": 9.7,
+       "minutes_lost": 9.0,
+       "kind": "env",
+       "description": "DeBERTa-v3-base loss went NaN after the first step because transformers 5 loads the checkpoint in fp16 and AdamW was updating fp16 weights. There were three wrong fixes first (attention-mask dtype, then bf16 autocast off -> fp32/TF32), plus a duplicate training process because pkill and ps are missing. It found the cause with a parameter-finiteness check and fixed it with dtype=float32.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 9.7,
+       "end_min": 11.8,
+       "minutes_lost": 2.1,
+       "kind": "resource",
+       "description": "Relaunched two folds x 2 epochs in parallel on one GPU; too slow to finish in time, so both were killed and restarted with 1 epoch.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 0.6,
+       "end_min": 16.2,
+       "minutes_lost": 0.3,
+       "kind": "resource",
+       "description": "TF-IDF LightGBM 5-fold on CPU finished only one fold in ~15 min. It was killed and replaced by a quick Ridge, so the first submission appeared only at 16.1 min. It ran in parallel, so little agent time was lost.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": null
+    },
+    "memory": {
+     "main_path": "DeBERTa-v3-base regression (NaN debugging) + TF-IDF LightGBM 5-fold on CPU -> fold-0 DeBERTa (2 epochs, 768 tokens) 0.7/0.3 blend with LightGBM, OOF-tuned thresholds (best 0.8281 at 19 min) -> + fast fold-1 DeBERTa, 2-fold blend (0.82702) -> 65/35 fold weighting (final 0.82551)",
+     "detours": [
+      {
+       "start_min": 1.2,
+       "end_min": 7.2,
+       "minutes_lost": 6.0,
+       "kind": "env",
+       "description": "Same fp16-weights NaN. One wrong fix (bf16 -> fp32/TF32, max_len 768), then duplicate processes from the missing pkill/ps had to be found through /proc. A 20-step debug showed NaN after the first optimizer step, and the load report showed fp16; fixed with dtype=float32.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 8.2,
+       "end_min": 11.1,
+       "minutes_lost": 1.5,
+       "kind": "resource",
+       "description": "Started DeBERTa fold 1 alongside fold 0 on the same GPU; both slowed so much that fold 1 was killed so fold 0 could finish (~1.5 min of fold-0 progress lost, fold 1 discarded).",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 19.2,
+       "end_min": 24.1,
+       "minutes_lost": 4.9,
+       "kind": "shipped_regression",
+       "description": "With fold 0 + LightGBM submitted (hidden 0.8281), it trained a faster fold-1 DeBERTa (1 epoch, 512 tokens; QWK 0.781 vs 0.814) and re-blended with thresholds re-tuned on both folds (0.82702). It then applied an unvalidated 65/35 fold weighting (0.82551). The final is 0.0026 below the best. The extra fold was partly meant to cross-check the T.8.3.1 thresholds, but the main stated aim was a second model to average.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 24.3,
+       "end_min": 25.7,
+       "minutes_lost": 1.4,
+       "kind": "dead_end",
+       "description": "Tried TF-IDF Ridge as an extra blend member and re-checked the DeBERTa/LightGBM weight; neither beat the current mix in the cross-fold check, so the submission stayed unchanged.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": "Read ~0.5-0.8 min at the start, bundled with data inspection: the first 60 lines of the taxonomy, a grep for threshold/ordinal/round, the attention list, the attention/t-8-3 output-granularity page and a cases listing. At 10.2 min it read the t-8-3-1 'map predictions to label levels' case (~0.1 min), and it wrote the knowledge log twice (~0.2 min). Reported uses were T.1.3.1 (a quick TF-IDF+LightGBM baseline) and T.8.3.1 (tuned QWK cut-points). The no-cheatsheet run did both without the cheatsheet: it also had a TF-IDF LightGBM and threshold-optimised QWK. The only visibly cheatsheet-driven addition is the cross-fold check of the thresholds. The 'early safe baseline' did not arrive early: the first submission came at 19 min."
+    }
+   },
+   "comparison": "The cheatsheet run lost less to mid-run detours (8.9 vs 11.4 min) but added a 4.9-min shipped regression, and the no-cheatsheet run had none. Final scores were 0.82551 (best 0.8281) with the cheatsheet and 0.82268 without. The largest item in both runs is the same environment bug (transformers 5 loading DeBERTa in fp16). The cheatsheet run fixed it ~3 min faster, after one wrong fix instead of three, without consulting the cheatsheet. None of the difference can be traced to the cheatsheet."
+  },
+  {
+   "comp": "aes2",
+   "model": "haiku",
+   "runs": {
+    "no_memory": {
+     "main_path": "TF-IDF Ridge with tuned thresholds (0.79453) -> DeBERTa-v3-base on fold 0 (NaN debugging), 0.7/0.3 blend with TF-IDF (0.82655) -> + DeBERTa fold 1, 2-fold blend (best = final 0.83062) -> fold 2 cut off by the timer",
+     "detours": [
+      {
+       "start_min": 1.1,
+       "end_min": 7.1,
+       "minutes_lost": 5.9,
+       "kind": "env",
+       "description": "DeBERTa-v3-base NaN from fp16-loaded weights. It first tried fp32/TF32 (no effect) and lost track of processes: with no pkill/ps, a chained command relaunched on top of the old run and two jobs wrote to one log. It then found the fp16 gradient dtype and forced fp32 weights.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 23.9,
+       "end_min": 30.0,
+       "minutes_lost": 6.1,
+       "kind": "resource",
+       "description": "Launched DeBERTa fold 2 with ~6 min left although fold 1 had taken ~7 min; it was cut off by the timer. This was at the end of the run, so it displaced no other work.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": null
+    },
+    "memory": {
+     "main_path": "TF-IDF Ridge with plain rounding (0.76622) -> DeBERTa-v3-base on 90% / 10% holdout (NaN debugging), 2 epochs (~12 min), 0.9/0.1 blend with TF-IDF (best = final 0.80313) -> 2nd seed cut off by the timer",
+     "detours": [
+      {
+       "start_min": 1.2,
+       "end_min": 8.2,
+       "minutes_lost": 7.0,
+       "kind": "env",
+       "description": "Same fp16-weights NaN. It retried in fp32/TF32, had duplicate processes from the missing pkill/ps, and left the eval path in bf16. A longer diagnosis followed (NaN check, AdamW with foreach=False, plain GPU/CPU AdamW sanity tests) before it found the fp16 embedding dtype and forced fp32.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 20.4,
+       "end_min": 30.0,
+       "minutes_lost": 9.6,
+       "kind": "resource",
+       "description": "Launched a second DeBERTa seed (a ~12-min run) with ~9.6 min left, noting that it would probably finish after the timer. It reached only epoch 0. This was at the end of the run, so it displaced no other work.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": "Read ~0.1 min: the first 6 KB of taxonomy.md at the start, nothing else. It wrote an empty knowledge log ('[]') at 9.5 min and reported no knowledge used. No visible effect on the plan."
+    }
+   },
+   "comparison": "The cheatsheet run lost more: 7.0 vs 5.9 min mid-run on the same fp16 NaN bug, plus 9.6 vs 6.1 min at the end on a final model that the timer cut off. Neither run shipped a regression. The cheatsheet was barely read (one taxonomy skim, no knowledge used), so none of this traces to it. The lower final score with the cheatsheet (0.80313 vs 0.83062) comes from the main path (a 12-min single-holdout DeBERTa, a TF-IDF model with plain rounding), not from detours."
+  },
+  {
+   "comp": "commonlit",
+   "model": "opus",
+   "runs": {
+    "no_memory": {
+     "main_path": "constant-mean placeholder -> deberta-v3-large 5-fold (fp16 NaN fixed; watcher writes a submission after each fold) -> reseeded retrain of the weakest fold 4 -> ridge stack of the DeBERTa OOF plus 6 readability features (final = best, 0.51878)",
+     "detours": [
+      {
+       "start_min": 1.0,
+       "end_min": 7.6,
+       "minutes_lost": 6.6,
+       "kind": "env",
+       "description": "DeBERTa-v3-large trained to NaN because the installed transformers loads the checkpoint weights in fp16. The agent spent about 2.5 min on NaN training and about 4 min debugging (including a NameError 'tpf' in its own debug patch) before forcing fp32.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 7.6,
+       "end_min": 8.0,
+       "minutes_lost": 0.4,
+       "kind": "env",
+       "description": "Restarted the 5-fold run it had just launched, to add per-fold checkpointing. pkill and ps are missing, so it had to find the duplicate process through /proc and kill it.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 22.8,
+       "end_min": 22.9,
+       "minutes_lost": 0.1,
+       "kind": "own_bug",
+       "description": "Its loop to kill the old watcher also matched its own shell, which killed the command, so it ran the steps again.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 26.2,
+       "end_min": 26.4,
+       "minutes_lost": 0.2,
+       "kind": "dead_end",
+       "description": "A TF-IDF ridge blend (weight 0.02) improved OOF only from 0.5113 to 0.5110. It was written anyway and scored slightly worse on the hidden set (0.53909 -> 0.53968). The readability stack replaced it 0.7 min later.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 26.5,
+       "end_min": 26.7,
+       "minutes_lost": 0.2,
+       "kind": "dead_end",
+       "description": "Tried a cross-validated linear rescaling of the predictions and did not apply it.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": null
+    },
+    "memory": {
+     "main_path": "TF-IDF ridge baseline -> deberta-v3-large 5-fold (fp16 NaN fixed) -> + roberta-large 5-fold, 0.5/0.5 OOF blend (best, 0.51995) -> + electra-large -> + deberta-v3-base, equal-weight 4-model average (final, 0.52353)",
+     "detours": [
+      {
+       "start_min": 1.2,
+       "end_min": 3.2,
+       "minutes_lost": 2.0,
+       "kind": "env",
+       "description": "Same fp16 bug as the no-cheatsheet run: deberta-v3-large produced NaN because the checkpoint weights loaded in fp16. Diagnosed in about 0.3 min and forced to float32.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 3.2,
+       "end_min": 6.7,
+       "minutes_lost": 1.5,
+       "kind": "env",
+       "description": "pkill and ps are missing, so the original fp16 run (PID 265) kept running and shared the GPU with the fixed run until the agent noticed it at 6.7. Fold 0 took about 3.3 min, against about 1.5 min for later folds, so the 1.5 min is an estimate.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 17.4,
+       "end_min": 21.9,
+       "minutes_lost": 4.5,
+       "kind": "shipped_regression",
+       "description": "Added electra-large as a third 5-fold member. OOF improved (0.501 -> 0.4976), but the hidden score got worse (0.51995 -> 0.52134). The stated reason was only that about 8 min remained. Afterwards it was recorded as T.6.1.1 in knowledge_used.json, but only that node's taxonomy title had been seen.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 22.0,
+       "end_min": 25.6,
+       "minutes_lost": 3.6,
+       "kind": "shipped_regression",
+       "description": "Added deberta-v3-base as a fourth member. OOF improved (0.4976 -> 0.4934), but the hidden score got worse (0.52134 -> 0.52353), and this became the final submission.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 25.8,
+       "end_min": 26.0,
+       "minutes_lost": 0.2,
+       "kind": "dead_end",
+       "description": "Tested adding TF-IDF ridge to the blend at 2-15% weight: no gain, not applied.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 26.1,
+       "end_min": 29.5,
+       "minutes_lost": 3.4,
+       "kind": "dead_end",
+       "description": "Trained a second deberta-v3-base (lr 2e-5). The 5-model blend was slightly worse on OOF, so it was not used.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": "0.0-0.2 min, 4 shell calls: grepped the taxonomy node list, listed the attention and cases folders, and read the head of t-5-2 ('choose backbone scale or family'). It then chose deberta-v3-large citing T.5.2.1. The no-cheatsheet run chose the same backbone without it, and the file's first check even warned that larger variants often fail to beat a smaller model, so there was no visible change to the plan. The T.6.2.2.2 and T.6.1.1 entries in knowledge_used.json were added after the ensemble steps, and the agent never opened those nodes' files."
+    }
+   },
+   "comparison": "Detours by minutes lost: ~7.5 without the cheatsheet, ~15.2 with it. Both runs hit the same DeBERTa fp16-NaN bug. The cheatsheet run fixed it faster (2.0 min plus ~1.5 min of GPU sharing, against 6.6 min), but then lost ~8 min to two ensemble additions that improved OOF and worsened the hidden score (final 0.5235 against its own best of 0.5200), plus ~3.6 min of discarded end-game trials. Counting only detours the agent could see (no shipped regressions), the totals are about equal (7.5 vs 7.1). None of the differences trace to cheatsheet content."
+  },
+  {
+   "comp": "commonlit",
+   "model": "haiku",
+   "runs": {
+    "no_memory": {
+     "main_path": "TF-IDF ridge baseline -> roberta-large (lr 2e-5, then 1e-5; OOF 0.742; weight 0 from 13.6 on) -> roberta-base 5-fold x5 seeds + TF-IDF weighted blend -> ridge stack over the 5 roberta-base seeds' and TF-IDF OOF predictions (final = best, 0.49694)",
+     "detours": [
+      {
+       "start_min": 0.3,
+       "end_min": 2.3,
+       "minutes_lost": 2.0,
+       "kind": "dead_end",
+       "description": "roberta-large at lr 2e-5 scored fold-0 RMSE 0.737, worse than the TF-IDF baseline (0.693). Its per-fold writer had already overwritten the baseline submission with a worse file (hidden 0.704 -> 0.768). The agent killed the run and restored the baseline.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 2.3,
+       "end_min": 2.9,
+       "minutes_lost": 0.6,
+       "kind": "env",
+       "description": "pkill, ps and cmp are missing. The 'killed' run (PID 109) was still alive and would have overwritten the submission, so the agent found it through /proc and killed it.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 2.9,
+       "end_min": 7.0,
+       "minutes_lost": 4.1,
+       "kind": "dead_end",
+       "description": "Reran roberta-large at lr 1e-5 with warmup: OOF 0.742, still worse than TF-IDF. From the 13.6 blend on, roberta-large has weight 0, and it is not in the final stack.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 7.0,
+       "end_min": 11.6,
+       "minutes_lost": 4.6,
+       "kind": "own_bug",
+       "description": "The rerun script did not save out-of-fold predictions, so roberta-large was trained a third time just to get OOF for blending. The model got weight 0 two minutes later.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 13.7,
+       "end_min": 15.1,
+       "minutes_lost": 1.4,
+       "kind": "env",
+       "description": "deberta-v3-base gave NaN on fold 0 under bf16 autocast, and again with autocast disabled, so it was abandoned with the cause not found. The Opus runs traced the same symptom to transformers loading DeBERTa-v3 weights in fp16.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 20.6,
+       "end_min": 20.7,
+       "minutes_lost": 0.1,
+       "kind": "own_bug",
+       "description": "A blend-weight indexing bug (6 weights for 5 columns) raised a ValueError; fixed.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 22.8,
+       "end_min": 24.6,
+       "minutes_lost": 1.8,
+       "kind": "dead_end",
+       "description": "Trained electra-base as a new backbone. NNLS gave it zero blend weight, so the submission was kept.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 24.7,
+       "end_min": 26.4,
+       "minutes_lost": 1.7,
+       "kind": "dead_end",
+       "description": "A 6th roberta-base seed did not improve the blend. Its validation line also crashed with a NameError ('ss').",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 26.5,
+       "end_min": 26.7,
+       "minutes_lost": 0.2,
+       "kind": "dead_end",
+       "description": "TF-IDF ridge alpha sweep: the blend did not improve, so the previous submission was kept.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": null
+    },
+    "memory": {
+     "main_path": "TF-IDF ridge baseline -> roberta-base 5-fold (OOF 0.563) -> (deberta-v3-base NaN, dropped) -> electra-base -> roberta-large -> 2nd roberta-base -> NNLS blend + TF-IDF -> extra word 1-3-gram ridge members, alpha 3/10/30 (final = best, 0.49446)",
+     "detours": [
+      {
+       "start_min": 3.8,
+       "end_min": 7.6,
+       "minutes_lost": 3.8,
+       "kind": "env",
+       "description": "deberta-v3-base produced NaN loss from the first epoch, which crashed the script. A retry with autocast disabled was still NaN, so it switched to ELECTRA. This is the same unresolved symptom as in the no-cheatsheet run.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 23.6,
+       "end_min": 24.0,
+       "minutes_lost": 0.4,
+       "kind": "dead_end",
+       "description": "TF-IDF alpha 0.3/3.0 made the blend slightly worse. The script overwrote the submission anyway, and the alpha-1.0 blend was restored.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 24.4,
+       "end_min": 24.6,
+       "minutes_lost": 0.2,
+       "kind": "dead_end",
+       "description": "A char 3-6-gram ridge member got zero blend weight, so the submission was kept.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 25.4,
+       "end_min": 25.5,
+       "minutes_lost": 0.1,
+       "kind": "own_bug",
+       "description": "A filename tag mismatch (oof_w13_10 vs w13_10.0) crashed the alpha-10 blend; fixed and rerun.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": "About 0.1 min. At 0.0 it listed /workspace/memory and cat'ed taxonomy.md; the file is 43 KB, so the tool showed only a 2 KB preview. At 3.8 it grepped three taxonomy headings ('Replace the learned predictor', 'Change how the model is fitted', 'Combine existing predictions') in the same call that waited on a training run. It reported no knowledge used, and there was no visible change to the plan."
+    }
+   },
+   "comparison": "Detours by minutes lost: ~16.5 without the cheatsheet, ~4.5 with it. About 11 of the no-cheatsheet minutes went into roberta-large (trained three times, OOF worse than TF-IDF, never in the final model). The cheatsheet run started with roberta-base and got a good model in under 4 min. Its only sizeable detour was the same DeBERTa NaN. The run gave no cheatsheet reason for picking roberta-base: it saw only a 2 KB taxonomy preview and reported no knowledge used. So the gap cannot be traced to the cheatsheet, and the final hidden scores are almost equal (0.4969 vs 0.4945)."
+  },
+  {
+   "comp": "gquest",
+   "model": "opus",
+   "runs": {
+    "no_memory": {
+     "main_path": "deberta-v3-base 5-fold (fp16 NaN fixed) -> TF-IDF ridge safety net -> + roberta-base 5-fold, rank blend -> + 2nd roberta-base seed -> + TF-IDF ridge in the blend -> stronger word+char ridge (final = best, 0.40716)",
+     "detours": [
+      {
+       "start_min": 0.4,
+       "end_min": 2.8,
+       "minutes_lost": 2.4,
+       "kind": "env",
+       "description": "deberta-v3-base gave a NaN score because transformers loaded the weights in fp16. The agent diagnosed it, forced fp32, and also cut the schedule to 2 epochs and 384 tokens.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 2.8,
+       "end_min": 5.9,
+       "minutes_lost": 1.2,
+       "kind": "env",
+       "description": "pkill, pgrep and ps are missing, so the original fp16 run (PID 97) survived. It shared the GPU (epochs took ~2 min instead of ~1 min) and wrote NaN lines into the same log until it was killed at 5.9. The 1.2 min is an estimate.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 16.7,
+       "end_min": 19.9,
+       "minutes_lost": 3.2,
+       "kind": "dead_end",
+       "description": "Trained electra-base as a third backbone (CV 0.321). It lowered the OOF blend and was left out.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 23.6,
+       "end_min": 23.9,
+       "minutes_lost": 0.3,
+       "kind": "dead_end",
+       "description": "Tried per-target blend weights: the gain was below the 0.001 threshold, so they were discarded.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": null
+    },
+    "memory": {
+     "main_path": "constant train-mean placeholder (ungradable) -> deberta-v3-base (NaN, abandoned) -> roberta-base 5-fold with a submission after each fold; only 4 folds finished (best 0.3824 with 3 folds, final 0.38059 with 4). No second model, no TF-IDF blend.",
+     "detours": [
+      {
+       "start_min": 0.5,
+       "end_min": 0.6,
+       "minutes_lost": 0.1,
+       "kind": "own_bug",
+       "description": "The safety-net file predicts the train mean in every column. Mean column Spearman is then undefined and the grader rejects it, so no valid submission existed until 11.1. The agent could not see this.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 0.7,
+       "end_min": 6.7,
+       "minutes_lost": 6.0,
+       "kind": "env",
+       "description": "deberta-v3-base: the first epoch (~2.5 min) scored NaN. The kill failed (pkill, pgrep and ps are missing). A relaunch with loss logging still gave NaN. At 5.6 the agent diagnosed fp16-loaded weights and forced fp32, but the loss went NaN again after a few steps, so at 6.7 it abandoned DeBERTa for roberta-base.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 23.5,
+       "end_min": 27.8,
+       "minutes_lost": 4.2,
+       "kind": "other",
+       "description": "The agent's clock estimate ran ~3 min fast: it thought ~10 min had passed at 6.6 and ~22 min at 19.5. At 23.5 it ended its first session, believing the timer had run out. Ending the session killed the background training while fold 4 was loading. The resumed session then waited ~4 min, with the GPU idle, for a fold that never came.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": "0.0-0.2 min, 2 shell calls on the cheatsheet: grepped taxonomy.md for rank/spearman/postproc/threshold and read the t-7 'change the output mapping' attention file. It reported T.7.5 (remove ineffective postprocessing) as considered but not applied, and used raw sigmoid outputs as the no-cheatsheet run did. No visible change to the plan."
+    }
+   },
+   "comparison": "Detours by minutes lost: ~7.1 without the cheatsheet, ~10.3 with it. Without it, Opus fixed the shared DeBERTa fp16 NaN in 2.4 min and went on to a 3-transformer + TF-IDF blend (0.407). With it, the same NaN cost 6 min and ended in abandoning DeBERTa. Another ~4 min was lost when a wrong clock estimate made it end its session early and fold 4 was killed. The final score was 0.381. Neither detour traces to the cheatsheet, which took ~0.2 min to read and did not change the plan."
+  },
+  {
+   "comp": "gquest",
+   "model": "haiku",
+   "runs": {
+    "no_memory": {
+     "main_path": "TF-IDF word ridge baseline -> roberta-base on a random 90/10 holdout, blended with TF-IDF -> extra roberta seeds (4-seed average) + char TF-IDF ridge -> ridge alpha tuning (best 0.41364, final 0.41234)",
+     "detours": [
+      {
+       "start_min": 0.3,
+       "end_min": 2.1,
+       "minutes_lost": 1.8,
+       "kind": "resource",
+       "description": "The baseline command ended with `find / -name config.json`, a scan for local checkpoints that hung until the 120 s tool timeout. The submission had already been written at 0.3.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 2.3,
+       "end_min": 7.9,
+       "minutes_lost": 5.6,
+       "kind": "own_bug",
+       "description": "The holdout score was NaN because np.mean averaged over Spearman values from constant holdout columns. The agent read this as a model that was not learning: it killed a working fp16 run, switched to bf16, and ran a foreground debug run before finding the metric bug and switching to nanmean.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 7.9,
+       "end_min": 9.1,
+       "minutes_lost": 1.2,
+       "kind": "other",
+       "description": "It checked the GPU while the relaunched run was still loading, concluded the run had died, started a duplicate with setsid and killed the original. Missing ps, pgrep and fuser made the processes hard to see.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 17.7,
+       "end_min": 19.6,
+       "minutes_lost": 1.9,
+       "kind": "dead_end",
+       "description": "A 5th roberta seed did not improve the holdout blend. A stale guard threshold let it overwrite the submission anyway, and the agent then restored the 4-seed blend.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 19.9,
+       "end_min": 21.8,
+       "minutes_lost": 1.9,
+       "kind": "dead_end",
+       "description": "A 6th seed, swapped in for seed 3, did not improve the blend.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 21.8,
+       "end_min": 22.0,
+       "minutes_lost": 0.2,
+       "kind": "dead_end",
+       "description": "Averaging all six seeds did not improve the blend.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 23.4,
+       "end_min": 24.7,
+       "minutes_lost": 1.3,
+       "kind": "dead_end",
+       "description": "Char ridge at alpha 30 and 100 was worse than alpha 10. The sweep overwrote the saved alpha-10 prediction files, which had to be regenerated.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 25.2,
+       "end_min": 25.5,
+       "minutes_lost": 0.3,
+       "kind": "shipped_regression",
+       "description": "Word ridge at alpha 10 nudged the holdout blend from 0.41807 to 0.41812 and was written. The hidden score dropped from 0.41364 to 0.41234, and that became the final submission.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": null
+    },
+    "memory": {
+     "main_path": "TF-IDF ridge baseline -> grouped 4-fold CV (GroupKFold on question_title) -> roberta-base fp32 -> + deberta-v3-base fp32 -> + roberta-large -> roberta-base at length 384 x3 seeds -> weighted OOF blend of 6 transformers (final = best, 0.38614). TF-IDF was never blended.",
+     "detours": [
+      {
+       "start_min": 0.4,
+       "end_min": 2.9,
+       "minutes_lost": 2.5,
+       "kind": "env",
+       "description": "deberta-v3-base gave NaN predictions. pkill and ps are missing, so the kill failed and two runs shared the GPU. A relaunch also went NaN, and the agent switched to roberta-base in fp32. At 7.0 it found that the weights load in fp16.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 6.9,
+       "end_min": 7.1,
+       "minutes_lost": 0.2,
+       "kind": "env",
+       "description": "The DeBERTa relaunch in fp32 crashed with a Half/Float dtype mismatch because the checkpoint weights load in fp16. The agent forced fp32 at load.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 10.8,
+       "end_min": 10.9,
+       "minutes_lost": 0.2,
+       "kind": "own_bug",
+       "description": "The blend-search loop left the last candidate, not the best, as the submission and had to be rewritten. The same slip recurred at 15.2, 17.6 and 23.9, each costing seconds.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 15.2,
+       "end_min": 17.6,
+       "minutes_lost": 2.4,
+       "kind": "dead_end",
+       "description": "Trained electra-base (OOF 0.311). It lowered the blend and was left out.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 20.7,
+       "end_min": 20.8,
+       "minutes_lost": 0.1,
+       "kind": "own_bug",
+       "description": "Launched rob3 with the same arguments and seeds as rob2, so it would only reproduce rob2. Killed it and relaunched with a new seed offset.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": "0.0-0.2 min: listed /workspace/memory, read taxonomy.md, then read the t-2-2 'choose the validation design' attention file, the head of t-4-1, the case list and the evidence registry. The one visible change to the plan: it used GroupKFold on question_title (T.2.2.1, 'keep related samples together') where the no-cheatsheet run used a random 90/10 holdout."
+    }
+   },
+   "comparison": "Detours by minutes lost: ~14.2 without the cheatsheet, ~5.4 with it. The largest no-cheatsheet detour (5.6 min) was a NaN-Spearman scare caused by constant columns in a small 10% holdout. The cheatsheet run's grouped 4-fold CV gave larger validation folds and never showed that artifact, even though its code used the same np.mean. The agent chose grouping to avoid leakage, not to avoid this bug, so the link is at most incidental. Despite fewer detours, the cheatsheet run scored lower (0.386 vs 0.414). It never blended in TF-IDF, while the no-cheatsheet run's first RoBERTa+TF-IDF blend already reached 0.411 on the hidden set."
+  },
+  {
+   "comp": "equity",
+   "model": "opus",
+   "runs": {
+    "no_memory": {
+     "main_path": "own KM/NA targets + numpy C-index (lifelines missing) -> 8 GBDTs on CPU (LGBM/CatBoost/XGB on KM and NA targets + XGB/CatBoost Cox), stratified 5-fold -> equal-weight rank average (final 0.68416). A one-model LGBM-KM quick check written at 13.2 min was the hidden best (0.6853).",
+     "detours": [
+      {
+       "start_min": 0.4,
+       "end_min": 0.6,
+       "minutes_lost": 0.2,
+       "kind": "env",
+       "description": "lifelines not installed (pip download failed), so it rewrote KM/NA and the C-index by hand.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 0.6,
+       "end_min": 4.6,
+       "minutes_lost": 4.0,
+       "kind": "env",
+       "description": "Newer pandas string dtype made the `dtype==object` categorical check miss columns, so LGBM crashed at once; its wait loop only watched for 'xgb_km', so the crash went unnoticed for ~4 min.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 4.6,
+       "end_min": 6.4,
+       "minutes_lost": 1.8,
+       "kind": "resource",
+       "description": "XGBoost GPU memory allocation failure (cuMemCreate) in the relaunched run; it moved every model to CPU and relaunched.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 6.4,
+       "end_min": 13.0,
+       "minutes_lost": 6.6,
+       "kind": "own_bug",
+       "description": "Sign flip on the KM/NA-target regressions (it negated predictions that were already risk scores); the slow CPU run (4000-iteration CatBoost) went 6 min with no output until a quick check gave C-index 0.305, then it was killed and relaunched with fewer iterations.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 13.0,
+       "end_min": 13.4,
+       "minutes_lost": 0.4,
+       "kind": "env",
+       "description": "pkill and ps not available; it found and killed the old run through /proc.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 13.2,
+       "end_min": 24.7,
+       "minutes_lost": 0,
+       "kind": "shipped_regression",
+       "description": "The final 8-model rank ensemble (0.68416) replaced the one-model quick LGBM file written at 13.2 min (0.6853); hidden delta -0.0011, within noise. The ensemble was the planned main run, already relaunched at 13.0.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 25.0,
+       "end_min": 26.9,
+       "minutes_lost": 1.8,
+       "kind": "dead_end",
+       "description": "After the final file: four cheap tweaks (finer blend weights, a 9th LGBM seed, per-race-group ranking, an extra XGB seed), none improved CV, none adopted.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 26.2,
+       "end_min": 26.3,
+       "minutes_lost": 0.1,
+       "kind": "own_bug",
+       "description": "Named a script grp.py, which shadowed the stdlib grp module and crashed pandas import; renamed and reran.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": null
+    },
+    "memory": {
+     "main_path": "6 GBDTs (LGBM on KM/NA targets, XGB Cox, CatBoost KM/Cox, XGB on KM target), 5-fold -> rank-normalized subset blend with members chosen by OOF stratified C-index (best = final 0.68422) -> seed bagging of the XGB models (not adopted).",
+     "detours": [
+      {
+       "start_min": 0.4,
+       "end_min": 1.6,
+       "minutes_lost": 1.2,
+       "kind": "env",
+       "description": "Same pandas string-dtype problem as the no-cheatsheet run: the `==object` categorical check missed columns and the first run crashed; fixed with is_numeric_dtype.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 1.6,
+       "end_min": 3.3,
+       "minutes_lost": 1.7,
+       "kind": "own_bug",
+       "description": "Same sign flip on KM/NA-target predictions as the no-cheatsheet run; caught when the first models printed C-index ~0.31, then fixed and relaunched.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 5.0,
+       "end_min": 5.2,
+       "minutes_lost": 0.2,
+       "kind": "env",
+       "description": "pkill and ps not available, so the wrong-sign run kept running beside the fixed one until it was found and killed through /proc.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 18.6,
+       "end_min": 27.4,
+       "minutes_lost": 8.8,
+       "kind": "dead_end",
+       "description": "After the final file: 3 extra seeds each of XGB Cox and XGB-KM; seed-averaged models moved CV by ~0.0001 and the best blend did not use them, so the submission was left unchanged.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": "3 commands at 0.0-0.1 min, bundled with data inspection: taxonomy.md head -50, grep 'ensembl|rank' in taxonomy, the head of the T.5.2.3 'rank-normalize before blending' case file and T.5.2 attention files. About 0.3 min; it wrote its training script at 0.4 min, the same time as the no-cheatsheet run. No visible plan change: the no-cheatsheet run had already planned a rank ensemble at 0.1 min; the only difference is OOF-chosen blend members."
+    }
+   },
+   "comparison": "Without the cheatsheet ~14.9 min went to detours, 13.0 of them before its final file (a pandas-dtype crash that went unnoticed, a GPU allocation failure, and a sign bug that wasted a 6.6-min CPU run), plus a noise-level shipped regression. With the cheatsheet ~11.9 min, only 3.1 before its file: the same two bugs, caught in 1-2 min each because its script printed per-model CV early. It then spent 8.8 leftover minutes on seed bagging that didn't help. Hidden scores are equal (0.68416 vs 0.68422). The faster bug-catching comes from how it watched its logs, not from what it read (one rank-normalisation note the other run had already planned), so it cannot be traced to the cheatsheet."
+  },
+  {
+   "comp": "equity",
+   "model": "haiku",
+   "runs": {
+    "no_memory": {
+     "main_path": "XGB Cox (CPU after a CUDA crash) -> integer-coded categoricals -> + XGB AFT rank blend -> + CatBoost Cox (3-model blend) -> CatBoost depth sweep 4 (worse) / 8 / 10 (best = final 0.68158) -> depth 12 (killed by its timeout).",
+     "detours": [
+      {
+       "start_min": 0.2,
+       "end_min": 0.3,
+       "minutes_lost": 0.1,
+       "kind": "env",
+       "description": "XGBoost crashed in its CUDA backend; reran the same script on CPU.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 0.6,
+       "end_min": 0.9,
+       "minutes_lost": 0.3,
+       "kind": "own_bug",
+       "description": "Passed enable_categorical in the params dict where XGBoost ignores it, so string columns were not encoded; rerun with explicit integer codes (small gain).",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 1.5,
+       "end_min": 1.6,
+       "minutes_lost": 0.1,
+       "kind": "own_bug",
+       "description": "CatBoost failed on NaN in categorical columns; filled with a 'missing' token.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 4.6,
+       "end_min": 4.7,
+       "minutes_lost": 0.1,
+       "kind": "env",
+       "description": "pgrep not available, so a wait returned early; it checked for the output file instead.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 5.3,
+       "end_min": 8.0,
+       "minutes_lost": 2.7,
+       "kind": "own_bug",
+       "description": "Shallower-CatBoost variant made by a sed edit crashed after 2.5 min with NameError ('best' used before definition).",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 8.0,
+       "end_min": 12.8,
+       "minutes_lost": 4.8,
+       "kind": "dead_end",
+       "description": "Rerun of the shallower CatBoost (depth 4, lr 0.03): blend 0.6692 vs 0.6702, discarded.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 22.5,
+       "end_min": 29.9,
+       "minutes_lost": 7.4,
+       "kind": "resource",
+       "description": "After the final file: a depth-12 CatBoost run was too slow and was killed by its own timeout (exit 137) before finishing.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": null
+    },
+    "memory": {
+     "main_path": "XGB Cox on GPU (numpy C-index) -> CatBoost Cox on CPU in background + XGB depth sweep on GPU -> 50/50 rank blend -> many small XGB variants (seeds, lr 0.01/0.005, stronger subsampling, min_child_weight 40, full-data refits) folded into the blend (best = final 0.68019; files written in between dipped by up to 0.0001 on the hidden set, noise level, so not counted).",
+     "detours": [
+      {
+       "start_min": 0.2,
+       "end_min": 0.2,
+       "minutes_lost": 0.1,
+       "kind": "env",
+       "description": "lifelines not installed; wrote a numpy C-index.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 0.3,
+       "end_min": 0.3,
+       "minutes_lost": 0.1,
+       "kind": "env",
+       "description": "pandas string dtype broke the `==object` categorical check (string-to-float error); switched to a numeric-dtype check.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 0.6,
+       "end_min": 0.7,
+       "minutes_lost": 0.1,
+       "kind": "env",
+       "description": "CatBoost Cox loss not supported on GPU; moved it to CPU.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 3.2,
+       "end_min": 3.2,
+       "minutes_lost": 0.1,
+       "kind": "own_bug",
+       "description": "Variant script used ETA/MD in params before parsing them; moved argument parsing up.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 8.6,
+       "end_min": 9.0,
+       "minutes_lost": 0.4,
+       "kind": "dead_end",
+       "description": "XGB depth 5 with lower learning rate did not improve the blend.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 9.1,
+       "end_min": 9.1,
+       "minutes_lost": 0.1,
+       "kind": "own_bug",
+       "description": "Seed variable again defined after params; fixed.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 10.1,
+       "end_min": 10.7,
+       "minutes_lost": 0.6,
+       "kind": "dead_end",
+       "description": "Ordinal encoding + missing-count features: XGB 0.6659 vs 0.6699, dropped.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 10.7,
+       "end_min": 13.1,
+       "minutes_lost": 1.7,
+       "kind": "dead_end",
+       "description": "Two regularization variants (colsample 0.4, min_child_weight 10) plus seeds: the 6-model blend scored 0.67242 vs 0.67247 for the current file, so it kept the current file (time excludes the seed bug below).",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 11.6,
+       "end_min": 12.3,
+       "minutes_lost": 0.7,
+       "kind": "own_bug",
+       "description": "The two 'seed' runs were identical because the sed substitution for the seed matched nothing; added the seed and reran.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 16.7,
+       "end_min": 17.1,
+       "minutes_lost": 0.4,
+       "kind": "dead_end",
+       "description": "XGB AFT model (0.6642 alone) lowered the blend at every weight; left out.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 18.0,
+       "end_min": 19.3,
+       "minutes_lost": 1.3,
+       "kind": "dead_end",
+       "description": "Two more strong-subsampling variants (second seed, lower colsample); blend 0.67302-0.67305 vs 0.67308, not used.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 20.7,
+       "end_min": 21.3,
+       "minutes_lost": 0.6,
+       "kind": "dead_end",
+       "description": "Depth-5 strong-subsampling XGB did not improve the blend.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 22.8,
+       "end_min": 23.6,
+       "minutes_lost": 0.8,
+       "kind": "dead_end",
+       "description": "min_child_weight 60 variant scored below the mcw-40 model; its blend-check script also had a broken line; not used.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": "At 0.0 min: ls /workspace/memory, then cat of the whole taxonomy.md (38 KB) and ls of attention/cases; at 0.1 min a grep of the taxonomy for survival/concordance/censor/efs terms. About 0.1 min. It reported using no knowledge, and its plan (XGB Cox + CatBoost Cox, rank blend) is the same family as the no-cheatsheet run. No visible change."
+    }
+   },
+   "comparison": "The cheatsheet run lost fewer minutes (~7.0 vs ~15.5). The no-cheatsheet run lost ~8 min before its final file (a sed bug, then a worse shallower CatBoost) and 7.4 leftover minutes on a depth-12 run killed by its timeout. The cheatsheet run's ~7 min is spread over about a dozen sub-minute XGB variants and small bugs. The difference cannot be traced to the cheatsheet: it read only the taxonomy and reported using nothing. Its hidden score was also slightly lower (0.68019 vs 0.68158)."
+  },
+  {
+   "comp": "hms",
+   "model": "opus",
+   "runs": {
+    "no_memory": {
+     "main_path": "prior fallback -> Kaggle 10-min spectrograms only (prep ~2.3 min) -> EfficientNet-b0 and -b1, 5-fold GroupKFold by patient, trained in parallel -> 0.3/0.7 blend -> power-0.9 sharpening (best = final 0.639) -> cheap post-hoc tweaks (none adopted).",
+     "detours": [
+      {
+       "start_min": 24.9,
+       "end_min": 25.3,
+       "minutes_lost": 0.4,
+       "kind": "dead_end",
+       "description": "After the final file: mixing in the label prior (2%/5%) and a per-class log-offset calibration checked on split halves; neither helped, not used.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 25.7,
+       "end_min": 26.5,
+       "minutes_lost": 0.8,
+       "kind": "dead_end",
+       "description": "After the final file: LightGBM on time-pooled spectrogram features (0.921 KL alone) made the blend worse at any weight; dropped.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 26.6,
+       "end_min": 26.9,
+       "minutes_lost": 0.3,
+       "kind": "dead_end",
+       "description": "After the final file: a finer weight/power grid (picked the current settings) and a geometric-mean blend (worse on both halves); nothing changed.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": null
+    },
+    "memory": {
+     "main_path": "prior fallback -> Kaggle spectrogram + 50 s raw-EEG STFT image (prep ~8.4 min) -> EfficientNet-b0, GroupKFold by patient, 2 epochs on all data + 2 epochs on the >=10-vote subset; folds trained 2+2+1 after an OOM -> 5-fold average (best = final 0.7854). Not counted as a detour, but notable: its own validation showed the >=10-vote second stage worsened all-sample KL in every fold (e.g. fold 1 0.58 -> 0.66, fold 4 0.49 -> 0.56), and it shipped those models anyway as 'a bet'.",
+     "detours": [
+      {
+       "start_min": 1.2,
+       "end_min": 1.5,
+       "minutes_lost": 0.3,
+       "kind": "env",
+       "description": "pandas groupby.apply dropped the group column in preprocessing; switched to a cumcount-based middle-row pick and relaunched train prep.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 11.3,
+       "end_min": 16.9,
+       "minutes_lost": 5.6,
+       "kind": "resource",
+       "description": "Launched 5 single-fold trainings in parallel on one GPU; pkill and ps were missing, so the stopped timing run kept ~23 GB; all 5 folds hit CUDA OOM. It relaunched 2 folds at a time with fewer epochs (4->2, second stage 3->2).",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": "head -50 of taxonomy.md (0.0 min), ls attention (0.2), head -40 of the T.2.4 'choose validation evidence' attention file (0.5), all bundled with data inspection; under 0.3 min. It credited T.2.4.2 (GroupKFold by patient; the no-cheatsheet run also used patient GroupKFold) and T.3.3 (the >=10-vote second stage). T.3.3 was never opened (it is at taxonomy line 66, beyond the 50 lines read), the second stage was already in train.py at 2.9 min, and the credit was added at 21.7 min. No plan change visibly comes from what it read."
+    }
+   },
+   "comparison": "The no-cheatsheet run had no detours before its final file and only 1.5 min of cheap post-hoc tweaks after it. The cheatsheet run lost ~5.9 min before its file (a pandas prep bug, then five parallel folds OOM-ing), which forced fewer epochs. On top of that, its raw-EEG preprocessing took ~8 vs ~2 min. None of these detours trace to the cheatsheet. Its much worse hidden score (0.7854 vs 0.639) comes mainly from the high-vote second stage and the short training. It credited that stage to T.3.3, but never read T.3.3, so the credit is after the fact."
+  },
+  {
+   "comp": "hms",
+   "model": "haiku",
+   "runs": {
+    "no_memory": {
+     "main_path": "prior baseline -> LightGBM on spectrogram summary features (patient-grouped CV) -> small 2D CNN on spectrograms (checked on one holdout fold) -> 0.8 CNN + 0.2 LightGBM blend (best 0.6995) -> 5-fold CNN + 6 more unvalidated CNN seed sets re-blended (final 0.72001).",
+     "detours": [
+      {
+       "start_min": 8.1,
+       "end_min": 9.4,
+       "minutes_lost": 1.3,
+       "kind": "own_bug",
+       "description": "First CNN run gave NaN holdout KL (NaNs in spectrograms) and crashed in the final prediction call; zero-filled and fixed, then reran.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 11.3,
+       "end_min": 12.5,
+       "minutes_lost": 1.2,
+       "kind": "dead_end",
+       "description": "20-epoch CNN (holdout 0.657) was slightly worse than 12 epochs (0.654); kept 12.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 12.9,
+       "end_min": 28.5,
+       "minutes_lost": 0,
+       "kind": "shipped_regression",
+       "description": "After the best file (12.9 min, 0.6995), it promoted 7 successive re-blends with a 5-fold CNN and extra seed sets, never validated, and each was worse on the hidden set: 0.71021 -> ... -> 0.72001 final (delta +0.0205 KL, lower is better). That was 15.6 min of work after the best file.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": null
+    },
+    "memory": {
+     "main_path": "prior baseline -> LightGBM on spectrogram summary features (patient-grouped 5-fold OOF) -> boosting-round sweep 400 / 900 / 200 / 100 / 50 (100 rounds = hidden best 0.86365) -> leaves/min_data variants and 2- then 3-model LightGBM blends promoted by OOF (final 0.87143). It never tried a CNN.",
+     "detours": [
+      {
+       "start_min": 0.4,
+       "end_min": 0.9,
+       "minutes_lost": 0.5,
+       "kind": "own_bug",
+       "description": "Wrapped feature extraction in `timeout 100` as a background job; with ps/pgrep missing it could not tell whether it was alive, assumed it was killed, and restarted it without the timeout.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 7.5,
+       "end_min": 17.3,
+       "minutes_lost": 9.8,
+       "kind": "dead_end",
+       "description": "900 rounds at lr 0.03 took ~10 min and was worse (OOF 1.073 vs 1.051); discarded.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 20.9,
+       "end_min": 21.5,
+       "minutes_lost": 0.6,
+       "kind": "dead_end",
+       "description": "50 rounds (OOF 0.973) worse than 100 (0.967); not used.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 22.8,
+       "end_min": 23.8,
+       "minutes_lost": 1.0,
+       "kind": "dead_end",
+       "description": "Variant g (min_data_in_leaf 200, 150 rounds; OOF 0.964), run after variant f, not used.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 23.9,
+       "end_min": 24.6,
+       "minutes_lost": 0.7,
+       "kind": "dead_end",
+       "description": "Variant h (15 leaves, 120 rounds; OOF 0.962) not promoted; the later blend retrained a 15-leaf/100-round model from scratch instead of reusing it.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 21.6,
+       "end_min": 28.6,
+       "minutes_lost": 0,
+       "kind": "shipped_regression",
+       "description": "After the 100-round file (20.9 min, 0.86365) it promoted variant f (0.87315), a 2-model blend (0.87982) and a 3-model blend (0.87143 final) on small OOF gains; all were worse on the hidden set (final delta +0.0078 KL, lower is better). That was ~7 min of work after the best file.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": "ls /workspace/memory and cat of the whole taxonomy.md at 0.0 min; about 0.1 min. It reported using no knowledge, and its first steps (prior baseline, LightGBM on spectrogram summaries) match the no-cheatsheet run. No visible change."
+    }
+   },
+   "comparison": "The no-cheatsheet run lost fewer minutes to process detours (~2.5 vs ~12.6). Most of the cheatsheet run's loss is one slow 900-round LightGBM run that was worse. Both runs ended with a shipped regression after OOF-driven late changes: 15.6 min of unvalidated CNN seed ensembling (+0.0205 KL) without the cheatsheet, ~7 min of LightGBM variants and blends (+0.0078) with it. The cheatsheet run never got past LightGBM (hidden 0.87 vs 0.70-0.72). It read only the taxonomy and reported using nothing, so none of this traces to the cheatsheet."
+  },
+  {
+   "comp": "ranzcr",
+   "model": "opus",
+   "runs": {
+    "no_memory": {
+     "main_path": "cache train/test as 384px grayscale (0.2-5.2) -> EfficientNet-B3 (ns_jft) 6 epochs, flip TTA, submission re-copied after epochs (5.5-17.5) -> 3-epoch B3 rerun so the schedule ends before overfitting (17.7-24.2) -> 0.3/0.7 probability blend of the two (24.3, best 0.92984) -> rank-averaged blend (24.6, 0.92924) -> + 1-epoch B3 at 10% weight (28.1, final 0.92915)",
+     "detours": [
+      {
+       "start_min": 13.7,
+       "end_min": 17.5,
+       "minutes_lost": 3.5,
+       "kind": "own_bug",
+       "description": "train.py overwrote its prediction file every epoch with no best-epoch copy, and the 6-epoch B3 kept training past its epoch-4 peak (val 0.9162 -> 0.9019); the two past-peak epochs (~3.5 min) only degraded the model and lost the peak predictions (agent: 'I only kept the final epoch's predictions'), forcing a 3-epoch rerun (the rerun itself is 70% of the best blend, so it is not counted).",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 17.5,
+       "end_min": 24.3,
+       "minutes_lost": 0.0,
+       "kind": "shipped_regression",
+       "description": "The same wait command auto-copied the overfit final-epoch file over the epoch-4 submission even though the log it printed showed val falling; hidden score dropped 0.9234 -> 0.92053 and stayed there until the blend at 24.3 (work time already counted in the previous entry).",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 24.5,
+       "end_min": 24.6,
+       "minutes_lost": 0.1,
+       "kind": "shipped_regression",
+       "description": "Re-tuned blend weights on the same 8% holdout and switched to rank averaging for +0.0014 val; hidden fell 0.92984 -> 0.92924 (noise-level).",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 25.2,
+       "end_min": 28.1,
+       "minutes_lost": 2.9,
+       "kind": "shipped_regression",
+       "description": "After declaring the run finished, trained a 1-epoch B3 (val 0.891 alone) and blended it at 10% for +0.0015 val; hidden fell to 0.92915, the final submission, below the 0.92984 best written at 24.3 (noise-level).",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": null
+    },
+    "memory": {
+     "main_path": "read taxonomy + T.4.3 note (0.0-1.0) -> throughput benchmark, cache 448px grayscale (1.2-7.5) -> label-prior fallback submission (9.3) -> EfficientNetV2-S 11 epochs, bf16, patient-grouped 10% holdout (7.6-15.9, hidden 0.95235) -> 2nd V2-S 8 epochs, 0.4/0.6 blend (16.1-22.3, 0.95815) -> 3rd V2-S 6 epochs, member ablation, 3-model blend (22.5-27.2, best = final 0.9595)",
+     "detours": [],
+     "cheatsheet_overhead": "Read the first 3,000 chars of taxonomy.md and listed attention/ (0.0, in parallel with data inspection that ran until 0.9), the first 1,500 chars of the T.4.3 'change signal or image representation' note plus a case listing (1.0), and the first 1,200 chars of the T.7.1 ensemble-membership note at 22.5 while model 3 was launching; wrote/updated knowledge_used.json three times. Under 0.5 min of its own time, none on the critical path. Visible plan effect is small: it cites T.4.3 for 448px single-channel input, but the note is a generic option list and the no-cheatsheet run also chose grayscale (384px); the T.7.1 note arrived after it had already said it would keep model 3 only if the holdout improved, and only produced an explicit ablation table that kept the same 3-model blend."
+    }
+   },
+   "comparison": "The cheatsheet run had no detours (0 min) versus ~6.5 min without it: two epochs trained past the peak whose overfit predictions replaced a better submission (hidden 0.9234 -> 0.9205), plus two late blend tweaks that each lowered the hidden score slightly (best 0.92984, final 0.92915). This does not trace to the cheatsheet: the cheatsheet run had the same weakness (only last-epoch predictions kept; its 11-epoch model slipped 0.9464 -> 0.9433 val) and handled it the same way with a shorter second schedule, its only mid-run read (T.7.1) came after it had already decided to gate model 3 on the holdout, and it ran out of time before any post-best tinkering. Hardware is a larger confound: the cheatsheet run had an RTX PRO 6000 Blackwell (~42 s/epoch, V2-S at 448px) versus an RTX A6000 (~105 s/epoch, B3 at 384px), so it trained 25 epochs over 3 models instead of 10."
+  },
+  {
+   "comp": "ranzcr",
+   "model": "haiku",
+   "runs": {
+    "no_memory": {
+     "main_path": "train-mean baseline (0.2) -> cache 288px grayscale with cv2 Pool (0.2-5.4, restarted once) -> ResNet50 8 epochs, flip TTA, random 10% split (5.4-12.9, hidden 0.9112) -> EfficientNet-B0 8 epochs (overfit, discarded) -> EfficientNet-B0 5 epochs (18.6-22.1, best = final 0.92763) -> ResNet50 5 epochs (worse, discarded); said it would ensemble but never did",
+     "detours": [
+      {
+       "start_min": 1.6,
+       "end_min": 3.7,
+       "minutes_lost": 0.5,
+       "kind": "env",
+       "description": "`ps` was missing, so the agent could not see its background caching job, launched a second copy, and two jobs competed for slow NAS reads (~80 ms/image); at 3.6 it killed both and restarted one with 16 workers. The cache still finished at 5.4 (comparable to the other runs), so the wall-clock cost was small even though ~2 min of agent time went to it.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 13.3,
+       "end_min": 18.6,
+       "minutes_lost": 5.3,
+       "kind": "dead_end",
+       "description": "EfficientNet-B0 for 8 epochs at lr 1e-3 peaked at val 0.918 (epoch 5) then overfit to 0.890; train.py saves only final-epoch predictions, so the run was discarded in favour of ResNet50 (0.906). It did lead to the 5-epoch schedule used next.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 22.2,
+       "end_min": 27.7,
+       "minutes_lost": 5.5,
+       "kind": "dead_end",
+       "description": "Retrained ResNet50 on the 5-epoch schedule that had worked for B0; val 0.887 < 0.910, discarded and never blended.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": null
+    },
+    "memory": {
+     "main_path": "read taxonomy + T.5.1 note and a T.5.1.3 case (0.0-0.2) -> copy sample_submission as placeholder (0.2) -> cache 320px grayscale with PIL Pool (0.3-6.3) -> EfficientNet-B0 6 epochs (6.5-9.5, hidden 0.93686) -> + B3 8 epochs, mean ensemble (11.2-15.5, 0.94563) -> + B2 6 epochs (15.5-18.2, 0.9475) -> + B0 8 epochs (18.2-20.8, 0.94745, a 0.00005 noise-level dip; this member stays in the final best) -> B0 seed 1 rejected -> + B2 seed 2 (23.0-25.8, best = final 0.94908) -> B0 seed 3 rejected; members added only if holdout ensemble AUC rose",
+     "detours": [
+      {
+       "start_min": 1.5,
+       "end_min": 6.5,
+       "minutes_lost": 0.2,
+       "kind": "env",
+       "description": "A chained 'wait for cache, then train' command hit the 2-min tool timeout, was moved to the background and never started training; the agent then fired ~10 Monitor/wait calls that returned immediately (ERROR at 4.2). Caching was the bottleneck, so training started at 6.5, only ~0.2 min after the cache finished at 6.3.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 9.5,
+       "end_min": 11.4,
+       "minutes_lost": 1.8,
+       "kind": "own_bug",
+       "description": "submit.py failed because the sample_submission label columns are int dtype, and the B3 launch chained after it with && did not start (GPU idle ~1.7 min); the retry then hit 'permission denied' because the placeholder had been made with cp from the read-only sample file, fixed with chmod. The agent ties the placeholder check to T.1, but the no-cheatsheet run also wrote a baseline first (with pandas, no such bug), so not counted as cheatsheet-caused.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 20.8,
+       "end_min": 22.8,
+       "minutes_lost": 2.0,
+       "kind": "dead_end",
+       "description": "Trained another EfficientNet-B0 with seed 1 (val 0.924 alone); adding it lowered ensemble val 0.9433 -> 0.9426, so it was discarded.",
+       "cheatsheet_related": "no"
+      },
+      {
+       "start_min": 26.0,
+       "end_min": 27.6,
+       "minutes_lost": 1.6,
+       "kind": "dead_end",
+       "description": "After declaring the run finished, trained a 5-epoch B0 with seed 3 (val 0.922 alone); adding it lowered ensemble val 0.94346 -> 0.9432, discarded with the submission untouched.",
+       "cheatsheet_related": "no"
+      }
+     ],
+     "cheatsheet_overhead": "Ran `cat taxonomy.md` (51 KB; the agent only saw the 2 KB preview), listed attention/, read the first 60 lines of the T.5.1 'replace the model family' note and the first 40 lines of a T.5.1.3 case file ('change pretrained backbone or capacity': 24 scored cases, median -0.0017) at 0.0-0.2, interleaved with data inspection; wrote knowledge_used.json at 3.8 while waiting for the cache. About 0.3 min, nothing on the critical path. No visible plan change: the nodes it reports (placeholder format check; start from one pretrained CNN, then try capacity) match what the no-cheatsheet run did anyway (baseline first, pretrained timm CNN, backbone swaps), and the case file's mostly negative evidence on capacity changes did not stop it adding B3/B2."
+    }
+   },
+   "comparison": "Without the cheatsheet Haiku lost ~11.3 min, almost all to two discarded ~5.4-min training runs (an overfit 8-epoch B0 and a 5-epoch ResNet50); with it, ~5.6 min (a submission-writer dtype/permission bug that delayed the B3 launch, a dead chained launch, and two ~2-min rejected seed runs). The gap is not traceable to the cheatsheet: the cheatsheet run had a faster GPU (RTX PRO 6000 Blackwell, 17-29 s/epoch vs L40, 36-64 s/epoch), so each rejected run cost less, and it averaged every model into an ensemble so its overfit B3 (final val 0.908) still counted instead of being thrown away, which neither its reported nodes nor its reads point to. The cheatsheet run also introduced a bug of its own (read-only placeholder copy) that the other run did not have."
+  }
+ ],
+ "notes": [
+  "Minutes are from the first transcript event. minutes_lost for shipped_regression entries is 0 by convention (it is a hidden-score loss, not a time loss); the description gives the score delta and the minutes of work spent after the better file. Detours after the run's final submission file (leftover-time experiments) are counted but say so in the description."
+ ]
+}
