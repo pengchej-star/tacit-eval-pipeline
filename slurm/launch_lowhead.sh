@@ -15,6 +15,8 @@ MINUTES=${MINUTES:-60}
 MAXUSD=${MAXUSD:-10}
 TAG=${TAG:-app-lowhead-1120}
 DRY=${DRY:-1}
+REQUEUE=${REQUEUE:-1}                              # a preempted run is requeued and starts over (new run dir)
+RQ=--requeue; [ "$REQUEUE" = 1 ] || RQ=--no-requeue
 PROMPT=${PROMPT:-}                                  # e.g. $REPO/src/app_iterate_prompt_onestep.md
 JSUF=""; [ -n "$PROMPT" ] && JSUF="-$(basename "$PROMPT" .md | sed 's/app_iterate_prompt_\?//')"
 CASES=${CASES:-$(python3 -c "import json; print(' '.join(c['case_id'] for c in json.load(open('$APP/cases/cases.json'))))")}
@@ -24,7 +26,7 @@ for CASE in $CASES; do
   ENVX=""; [ "$AENV" != - ] && ENVX=",RUN_ENV_DIR=/data/user_data/pengchej/software/venvs/$AENV,KERNEL=$AENV"
   for COND in $CONDS; do
     MEM=""; [ "$COND" = memory ] && MEM="$LOO/$COMP"
-    CMD=(sbatch -p preempt --qos=preempt_qos --gres=gpu:1 -c 8 --mem=48G --time=$(( MINUTES / 60 + 1 )):30:00 --no-requeue
+    CMD=(sbatch -p preempt --qos=preempt_qos --gres=gpu:1 -c 8 --mem=48G --time=$(( MINUTES / 60 + 1 )):30:00 $RQ
          -J "lh-${CASE:0:14}-${COND:0:3}${JSUF}"
          --export=ALL,CASE=$CASE,COND=$COND,APP_DIR=$APP,MEMORY_DIR=$MEM,EXTS="$EXTS",MODEL=$MODEL,MINUTES=$MINUTES,MAXUSD=$MAXUSD,TAG=$TAG,RESULTS=$APP/results.jsonl,PROMPT=$PROMPT$ENVX
          $REPO/slurm/app_iterate.sbatch)
