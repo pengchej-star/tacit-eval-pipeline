@@ -1,0 +1,37 @@
+case_id,model,condition,agent_change,agent_node,match,note
+commonlitr_18423958_v4,opus,no_memory,"Revert ALBERT-large -> RoBERTa-base (v3 setup)",T.2.1.3,yes,
+commonlitr_18423958_v4,opus,memory,"Revert ALBERT-large -> RoBERTa-base (v3 setup)",T.2.1.3,yes,
+commonlitr_18423958_v4,haiku,no_memory,"Revert ALBERT-large -> RoBERTa-base (v3 setup)",T.2.1.3,yes,
+commonlitr_18423958_v4,haiku,memory,"Revert ALBERT-large -> RoBERTa-base (v3 setup)",T.2.1.3,yes,"Reported T.5.2.2 (retain the smaller backbone), same action"
+commonlitr_18426209_v3,opus,no_memory,"Revert RoBERTa-large -> RoBERTa-base (v2 setup)",T.2.1.3,no,"The expert left the broken swap and added a member; the revert was also needed because the large checkpoints are not attached"
+commonlitr_18426209_v3,opus,memory,"Revert RoBERTa-large -> RoBERTa-base (v2 setup)",T.2.1.3,no,"Same as no_memory; reported T.5.2.2"
+commonlitr_18426209_v3,haiku,no_memory,"Revert RoBERTa-large -> RoBERTa-base (v2 setup)",T.2.1.3,no,"Same as Opus"
+commonlitr_18426209_v3,haiku,memory,"Revert RoBERTa-large -> RoBERTa-base (v2 setup)",T.2.1.3,no,"Same as no_memory; reported T.5.2.2"
+google_7253130_v3,opus,no_memory,"Map test predictions per target onto the discrete training label values (where OOF Spearman improves)",T.7.2,no,
+google_7253130_v3,opus,memory,"Constant lr 3e-5 -> linear warmup then linear decay",T.5.3,partial,"Gold node, different setting: the expert lowered the constant lr to 1e-5 and changed dropout"
+google_7253130_v3,haiku,no_memory,"Prepend host and category to question_title",T.3.4.3,no,
+google_7253130_v3,haiku,memory,"Masked mean pooling instead of plain average pooling",T.4.4.1,no,"Opened only taxonomy.md"
+hms_49524919_v54,opus,no_memory,"Add the 5 best_kl checkpoints to the 5 best_sq_2 ones (10-model average)",T.5.1.5,partial,"Same parent T.5.1 (more members), but the same EEGNet family, not a new 2D family"
+hms_49524919_v54,opus,memory,"Raise probabilities to the power 0.9 before normalizing",T.6,no,"Opened T.5.2 and case T.5.2.5, tested snapshot averaging, rejected it"
+hms_49524919_v54,haiku,no_memory,"Sigmoid per fold, then average (instead of averaging logits)",T.5.3,no,
+hms_49524919_v54,haiku,memory,"Shrink probabilities toward uniform (0.98 p + 0.02/6)",T.6,no,"Opened T.5.3 (aggregation), reported it as not applied"
+hms_52551258_v2,opus,no_memory,"Build the predictor from the attached 10-fold MultimodalModel checkpoints (raw EEG + spectrograms)",T.4.1.1,yes,"Forced: v2's own checkpoint is missing"
+hms_52551258_v2,opus,memory,"Build the predictor from the attached 10-fold MultimodalModel checkpoints (raw EEG + spectrograms)",T.4.1.1,yes,"Forced: v2's own checkpoint is missing; reported nothing"
+hms_52551258_v2,haiku,no_memory,"Output floor 0.001 -> 0.01 before renormalizing",T.6,no,"Did not run (librosa and checkpoint missing)"
+hms_52551258_v2,haiku,memory,"Output floor 0.001 -> 0.01 before renormalizing",T.6,no,"Did not finish in time"
+hms_53762022_v8,opus,no_memory,,,na,"No result: the job was put on hold on Nov 25"
+hms_53762022_v8,opus,memory,"Restore v7's 0.45/0.15/0.40 blend of three models",T.5.1.4,no,"Only model 1 loaded, so the submission is model 1 alone"
+hms_53762022_v8,haiku,no_memory,"Restore v7's 0.45/0.15/0.40 blend of three models",T.5.1.4,no,"Keras weights failed to load; did not run"
+hms_53762022_v8,haiku,memory,"Restore v7's 0.45/0.15/0.40 blend of three models",T.5.1.4,no,"Keras weights failed to load; did not run"
+hms_52200959_v34,opus,no_memory,"Remove os._exit so all three families run; blend 0.2/0.3/0.5",T.5.1.4,yes,"Did not run (merge fix not finished in time)"
+hms_52200959_v34,opus,memory,"Remove os._exit; blend 0.6/0.4 (Keras family skipped)",T.5.1.4,yes,
+hms_52200959_v34,haiku,no_memory,"Horizontal-flip TTA for model 1",T.5.2.3,no,"Did not finish in time"
+hms_52200959_v34,haiku,memory,"Remove os._exit so model 2 runs and the blend is written",T.5.1.4,yes,"Opened only taxonomy.md; did not finish in time"
+ranzcr_13521245_v6,opus,no_memory,"Horizontal-flip TTA",T.7.3.4,no,"Also switched to the attached checkpoint at 600x600 as a required fix (the expert's v6->v7 step)"
+ranzcr_13521245_v6,opus,memory,"Decode test images at 600x600 to match the model",T.1.1.3,yes,"Made the expert's v6->v7 step its one change and stopped; the other three did the same step as a required fix and added TTA"
+ranzcr_13521245_v6,haiku,no_memory,"Horizontal-flip TTA",T.7.3.4,no,"Also did the expert's v6->v7 step as a required fix"
+ranzcr_13521245_v6,haiku,memory,"4-view flip TTA",T.7.3.4,no,"Also did the expert's v6->v7 step as a required fix"
+hms_50496431_v29,opus,no_memory,"Revert the v29 crop offset (+10 -> +5); LightGBM fallback when no weights are found",T.2.2.2,no,"The score comes from the LightGBM fallback, not from the notebook's models"
+hms_50496431_v29,opus,memory,"Re-enable the NetMix member removed in v23",T.5.1.4,partial,"Same parent T.5.1: restored an old member, where the expert added a new family; no weights, so the score is a uniform fallback"
+hms_50496431_v29,haiku,no_memory,"Montage list [LL,LP,RP,RP] -> [LL,LP,RP,RR]",T.1.6,partial,"The expert's v30 also fixed a lead name in brain_leads, a minor part of the episode; did not run"
+hms_50496431_v29,haiku,memory,"Revert the v29 crop offset (+10 -> +5)",T.2.2.2,no,"Did not run"
