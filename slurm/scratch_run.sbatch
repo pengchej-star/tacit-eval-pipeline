@@ -27,6 +27,7 @@ ARGS=(--comp "$COMP" --agent "$AGENT" --model "$MODEL" --minutes "${MINUTES:-60}
 [ -n "${MAXUSD:-}" ] && ARGS+=(--max-usd "$MAXUSD")
 [ -n "${TAG:-}" ] && ARGS+=(--tag "$TAG")
 [ -n "${NO_GRADER:-}" ] && ARGS+=(--no-grader)
+[ -n "${MEMORY_DIR:-}" ] && ARGS+=(--memory-dir "$MEMORY_DIR")    # cheatsheet condition (leave-one-out memory without this competition)
 [ -n "${RUNS:-}" ] && ARGS+=(--runs "$RUNS")
 [ -n "${RESULTS:-}" ] && ARGS+=(--results "$RESULTS")
 echo "scratch_run $COMP / $AGENT / $MODEL / ${MINUTES:-60} min on $(hostname) at $(date) (restart ${SLURM_RESTART_COUNT:-0})"

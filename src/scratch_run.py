@@ -33,6 +33,7 @@ import getpass
 import json
 import os
 import shutil
+import stat
 import subprocess
 import threading
 import time
@@ -62,6 +63,37 @@ CONTINUE = ("The session is still running: about {left} minutes of the {minutes}
 RESTARTED = ("The machine was restarted (the cluster preempted the job). Every process you had running was killed, including "
              "background training; files in /workspace and /kaggle/working are kept. About {left} minutes of the {minutes}-minute "
              "budget remain. Check what finished, restart what you still need, and keep /kaggle/working/submission.csv valid.")
+
+
+MEMORY_PARTS = ("taxonomy.md", "attention", "cases", "evidence")  # as in app_iterate.py
+
+
+def leak_hits(memory_dir: Path, comp: str) -> list:
+    """Memory files that name this competition: the full slug, or '· <first part of the slug> ·' as cases/ files write it."""
+    needles = [comp, f"· {comp.split('-')[0]} ·"]
+    hits = []
+    for part in MEMORY_PARTS:
+        p = memory_dir / part
+        for f in ([p] if p.is_file() else sorted(p.rglob("*.md"))):
+            text = f.read_text(errors="replace")
+            hits += [f"{f.relative_to(memory_dir)}: {n}" for n in needles if n in text]
+    return hits
+
+
+def read_knowledge_used(f: Path):
+    """The agent's knowledge_used.json; a malformed file (e.g. cut off at the deadline) must not lose the run's results row."""
+    if not f.is_file():
+        return None
+    try:
+        return json.loads(f.read_text())
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as e:
+        return {"error": str(e)[:200], "raw": f.read_text(errors="replace")[:4000]}
+
+
+def read_only_copy(src: Path, dest: Path):
+    shutil.copytree(src, dest) if src.is_dir() else shutil.copy2(src, dest)
+    for p in [dest, *dest.rglob("*")] if dest.is_dir() else [dest]:
+        p.chmod(p.stat().st_mode & ~(stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH))
 
 
 def model_prices(model: str, key: str) -> dict:
@@ -227,6 +259,9 @@ def main():
     ap.add_argument("--max-segments", type=int, default=30, help="sessions at most (the first + resumes); Claude Sonnet often ends a session after a few minutes")
     ap.add_argument("--min-resume-minutes", type=float, default=3.0, help="do not resume when less time than this remains")
     ap.add_argument("--no-grader", action="store_true", help="do not offer /grader/grade to the agent")
+    ap.add_argument("--memory-dir", type=Path, help="cheatsheet condition: a leave-one-out memory built WITHOUT this competition "
+                                                    "(e.g. .../memory_leave_one_out/<comp>), copied read-only to /workspace/memory")
+    ap.add_argument("--allow-leak", action="store_true", help="run even if the memory names this competition")
     ap.add_argument("--run-suffix", help="last part of the run id (default: a timestamp). If that run directory exists, the run "
                                          "is resumed with the budget it has left: scratch_run.sbatch passes j<SLURM_JOB_ID>, so "
                                          "a job that the cluster preempts and requeues picks up its own run")
@@ -247,8 +282,15 @@ def main():
     public = args.mlebench_cache / args.comp / "prepared/public"
     if not public.is_dir():
         ap.error(f"no prepared data at {public}")
+    cond = "memory" if args.memory_dir else "no_memory"
+    if args.memory_dir:
+        if not all((args.memory_dir / p).exists() for p in MEMORY_PARTS):
+            ap.error(f"--memory-dir {args.memory_dir} lacks one of {MEMORY_PARTS}")
+        if (hits := leak_hits(args.memory_dir, args.comp)) and not args.allow_leak:
+            ap.error(f"the memory names this competition ({len(hits)} hits, e.g. {hits[:3]}); use the leave-one-out memory "
+                     f"built without {args.comp}, or --allow-leak")
     short = args.model.removeprefix("wine-")
-    run_id = (f"{args.comp.split('-')[0][:12]}__{args.agent}__{short}__{args.minutes}min__"
+    run_id = (f"{args.comp.split('-')[0][:12]}__{args.agent}__{short}__{cond}__{args.minutes}min__"
               f"{args.run_suffix or dt.datetime.now().strftime('%Y%m%d-%H%M%S')}")
     run = (args.runs / run_id).resolve()
     resumed = run.exists()
@@ -269,14 +311,28 @@ def main():
 
     staged = shared_public(public, args.staged_inputs)
     (run / "kaggle/input" / args.comp).mkdir(parents=True, exist_ok=True)
-    binds = ["--bind", f"{staged}:/kaggle/input/{args.comp}:ro",
-             "--bind", f"{run / 'grader/queue'}:/grader/queue", "--bind", f"{run / 'grader/grade'}:/grader/grade:ro"]
+    binds = ["--bind", f"{staged}:/kaggle/input/{args.comp}:ro"]
+    if not args.no_grader:  # with --no-grader the agent gets no route to the test labels at all
+        binds += ["--bind", f"{run / 'grader/queue'}:/grader/queue", "--bind", f"{run / 'grader/grade'}:/grader/grade:ro"]
     if not args.run_env.resolve().is_relative_to(SOFTWARE):  # the conda env unpacked on node-local /scratch
         binds += ["--bind", f"{args.run_env.resolve()}:{args.run_env.resolve()}:ro"]
+    if args.memory_dir:
+        if not (run / "memory").exists():  # a resumed run keeps its copy (complete: copied to memory.tmp, then renamed)
+            tmp = run / "memory.tmp"
+            if tmp.exists():
+                subprocess.run(["chmod", "-R", "u+w", str(tmp)], check=False)
+                shutil.rmtree(tmp)
+            tmp.mkdir()
+            for part in MEMORY_PARTS:
+                read_only_copy(args.memory_dir / part, tmp / part)
+            tmp.rename(run / "memory")
+        (run / "workspace/memory").mkdir(exist_ok=True)  # mount point
+        binds += ["--bind", f"{run / 'memory'}:/workspace/memory:ro"]
 
+    memory_block = (REPO / "src/scratch_memory_instruction.md").read_text() if args.memory_dir else ""
     prompt = ((REPO / "src/scratch_task.md").read_text().replace("{{COMP}}", args.comp)
               .replace("{{MINUTES}}", str(args.minutes)).replace("{{DIRECTION}}", DIRECTION.get(args.comp, "see description.md"))
-              .replace("{{GRADER_BLOCK}}", "" if args.no_grader else GRADER_BLOCK))
+              .replace("{{GRADER_BLOCK}}", ("" if args.no_grader else GRADER_BLOCK) + memory_block))
     (run / "prompt.txt").write_text(prompt)
 
     env = {k: v for k, v in os.environ.items() if not k.startswith(("APPTAINERENV_", "ANTHROPIC_"))}
@@ -396,7 +452,8 @@ def main():
             "cost_usd_reported": next((s["cost_usd_reported"] for s in reversed(segments) if s.get("cost_usd_reported") is not None), None),
             "cost_note": "cost_usd = tokens x gateway list prices (all agents); cost_usd_reported = Claude Code's own "
                          "cumulative estimate from the last session that ended by itself (misses a session killed at the deadline)",
-            "restarts": prior.get("restarts", 0),
+            "restarts": prior.get("restarts", 0), "condition": cond, "memory_dir": str(args.memory_dir or ""),
+            "knowledge_used": read_knowledge_used(run / "workspace/knowledge_used.json") if args.memory_dir else None,
             # answered requests, also those of jobs this run was preempted in
             "grader_offered": not args.no_grader, "grader_requests": len(list((run / "grader/queue").glob("*.json"))),
             "n_snapshots": len(traj), "final_score": final and final.get("score"), "final_valid": bool(final and final.get("valid")),
