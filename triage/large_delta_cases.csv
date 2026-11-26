@@ -1,10 +1,15 @@
 comp,key_id,v_start,v_end,pattern,lever,delta_yaqing,source,agent_env,status,note
-commonlitreadabilityprize,18423958,4,8,build,multi-backbone ensemble composition and blending,0.5790,yaqing_table,,run,start version v4 (1.042) is much worse than v3 (0.462): the episode mostly recovers a regression
+commonlitreadabilityprize,18423958,4,8,build,multi-backbone ensemble composition and blending,0.579,yaqing_table,,run,start version v4 (1.042) is much worse than v3 (0.462): the episode mostly recovers a regression
 hms-harmful-brain-activity-classification,53762022,8,9,build,pipeline architecture and code restructure,0.3218,yaqing_table,kaggle-run-tf,pending_tf,needs TensorFlow; start version v8 (0.684) is much worse than v7 (0.409)
-hms-harmful-brain-activity-classification,52551258,2,3,build,model architecture and ensemble pipeline,0.2868,yaqing_table,,pending_input,v2 attached an old version of ryanirl/hms-models that Meta Kaggle no longer lists
+hms-harmful-brain-activity-classification,52551258,2,3,build,model architecture and ensemble pipeline,0.2868,yaqing_table,,replace,"v2 attached version 1 of ryanirl/hms-models; versions 1-17 now return HTTP 404 (only the current v18 downloads, which lacks files v2 loads)"
 commonlitreadabilityprize,18426209,3,5,build,new ensemble member and inference pipeline,0.2812,yaqing_table,,replace,v3 reads ../input/robertaattention and ../input/clrp-roberta-large: private or unknown datasets; also v3 (0.741) is much worse than v2 (0.463)
 ranzcr-clip-catheter-line-classification,13521245,6,10,sweep,pretrained checkpoint and image resize,0.1554,yaqing_table,,replace,v6 attached output version 5 of kernel xhlulu/ranzcr-efficientnet-tpu-training; Kaggle serves only the latest output; TensorFlow
 hms-harmful-brain-activity-classification,49524919,54,55,build,multi-model stacking (1D+2D),0.1176,yaqing_table,,run,
 google-quest-challenge,7253130,3,5,sweep,dropout rate and learning rate,0.1118,yaqing_table,,replace,v3 trains for about 540 min on Kaggle (cannot run inside a 30-min session); TensorFlow; v3 has no Kaggle score in TraceML
 hms-harmful-brain-activity-classification,50496431,29,32,build,adding the NetOneImage model,0.1061,yaqing_table,,replace,v29 attached three private datasets (ids 4402010 4425104 4410903); also v29 (0.460) is much worse than v28 (0.397)
 hms-harmful-brain-activity-classification,52200959,34,38,sweep,multi-model blend weights,0.0966,yaqing_table,kaggle-run-tf,pending_tf,needs TensorFlow
+google-quest-challenge,6803050,26,30,build,model architecture (multi-head) and checkpoint,0.0958,yaqing_rank_10,,run,"replacement: next runnable episode in her ranking (build/sweep, Delta from her scores.json)"
+hms-harmful-brain-activity-classification,49524919,35,46,build,1D EEG model pipeline,0.0726,yaqing_rank_12,,run,"replacement: next runnable episode in her ranking (build/sweep, Delta from her scores.json)"
+hms-harmful-brain-activity-classification,50376011,7,8,build,ensemble infrastructure,0.0491,yaqing_rank_19,,run,"replacement: next runnable episode in her ranking (build/sweep, Delta from her scores.json)"
+hms-harmful-brain-activity-classification,49524919,6,13,sweep,checkpoint version and TTA toggle,0.0426,yaqing_rank_24,,run,"replacement: next runnable episode in her ranking (build/sweep, Delta from her scores.json)"
+hms-harmful-brain-activity-classification,50376011,31,37,build,fold-level averaging infrastructure and model indexing,0.0371,yaqing_rank_27,,run,"replacement: next runnable episode in her ranking (build/sweep, Delta from her scores.json)"
