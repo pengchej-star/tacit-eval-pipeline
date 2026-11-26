@@ -15,3 +15,5 @@ hms-harmful-brain-activity-classification,49524919,6,13,sweep,checkpoint version
 hms-harmful-brain-activity-classification,50376011,31,37,build,fold-level averaging infrastructure and model indexing,0.0371,yaqing_rank_27,,replace,"start code imports the author's own library gezi (and colorama, and stubs TensorFlow); not in our env: all 3 Haiku runs that finished were EXEC_FAILED (Nov 25)"
 hms-harmful-brain-activity-classification,49524919,21,25,sweep,checkpoint version and class multipliers,0.0289,yaqing_rank_37,,run,replacement for 50376011: next runnable episode in her ranking
 hms-harmful-brain-activity-classification,49524919,142,148,build,multitaper spectrogram pipeline,0.0266,yaqing_rank_39,,run,replacement for 50376011: next runnable episode in her ranking
+hms-harmful-brain-activity-classification,49524919,72,76,build,ensemble member addition (CoaT-Lite),0.0201,yaqing_rank_47,,run,replacement for TF case 53762022 (run alongside the TF attempt)
+hms-harmful-brain-activity-classification,49524919,98,105,build,spectrogram ensemble composition and weights,0.0188,yaqing_rank_48,,run,replacement for TF case 52200959 (run alongside the TF attempt)
