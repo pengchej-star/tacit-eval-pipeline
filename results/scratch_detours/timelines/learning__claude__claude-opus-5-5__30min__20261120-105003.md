@@ -1,0 +1,52 @@
+# aes2 · opus · no cheatsheet
+
+run learning__claude__claude-opus-5-5__30min__20261120-105003; 36 steps; best 0.82268 (higher is better); final 0.82268
+
+-   0.0 min · step   1 · ERROR (call took 0.0 min): 
+-   2.1 min · step   4 · ERROR (call took 1.5 min): 
+-   2.3 min · step   5 · says: Loss went NaN — the attention mask was float64. I'm fixing it to long, cutting max_len to 512 for speed, and running 2 folds in parallel.
+-   2.3 min · step   6 · KILL: `cd /workspace; pkill -f deb.py; sed -i 's/m=np.zeros((len(bi),L))/m=np.zeros((len(bi),L),dtype=np.int64)/; s/ML=1024/ML=512/' deb.py; sleep 3; nohup python deb.`
+-   4.2 min · step   9 · KILL: `cd /workspace; kill 178; sleep 60; tail -n 4 deb0.log deb1.log 2>/dev/null || (tail -n 4 deb1.log)`
+-   5.3 min · step   9 · says: Still NaN under bf16 autocast. I'll drop autocast and use fp32 with TF32 matmuls instead.
+-   5.3 min · step  10 · KILL: `cd /workspace; kill 311 312; sed -i "s/^model=AutoModel/torch.backends.cuda.matmul.allow_tf32=True;torch.backends.cudnn.allow_tf32=True\nmodel=AutoModel/; s/   `
+-   6.8 min · step  10 · says: Still NaN in fp32, so precision isn't the cause. I'll print per-step losses and gradient norms to find where it diverges.
+-   7.1 min · step  11 · KILL: `cd /workspace; for p in /proc/[0-9]*; do c=$(tr '\0' ' ' < $p/cmdline 2>/dev/null); [[ "$c" == "python deb.py"* ]] && kill ${p#/proc/}; done; python -c "import `
+-   9.4 min · step  13 · says: Found it: transformers 5 loads the checkpoint as fp16 by default, so AdamW was updating fp16 weights. I'll force fp32 weights and turn bf16 autocast back on.
+-  11.6 min · step  17 · says: At about 200 steps per ~90s with two jobs sharing the GPU, 2 epochs won't fit in the time left. I'm restarting both folds with 1 epoch.
+-  11.8 min · step  18 · KILL: `cd /workspace; for p in /proc/[0-9]*; do c=$(tr '\0' ' ' < $p/cmdline 2>/dev/null); [[ "$c" == "python deb.py"* ]] && kill ${p#/proc/}; done; sed -i 's/^E=2/E=1`
+-  12.1 min · step  18 · says: Each epoch is about 1460 steps, roughly 11 minutes. Meanwhile I'm writing the blend script: it fits threshold-optimised QWK on the overlapping OOF predictions.
+-  14.1 min · step  22 · says: Waiting on training progress.
+-  14.2 min · step  24 · says: I'm waiting for these to finish.
+-  14.3 min · step  24 · says: Progress is fine; still waiting.
+-  14.7 min · step  24 · says: Waiting.
+-  14.8 min · step  24 · says: Waiting.
+-  15.3 min · step  25 · says: About 16 of the 30 minutes are gone. LightGBM is too slow to finish all 5 folds, and there's no submission on disk yet, so I'm writing a quick Ridge fallback now.
+-  16.1 min · step  26 · SUBMISSION 0.74676  (new best)
+-  16.2 min · step  26 · says: A valid submission is now on disk (Ridge, OOF QWK 0.730). I'm killing LightGBM so it can't overwrite anything late.
+-  16.2 min · step  27 · KILL: `for p in /proc/[0-9]*; do c=$(tr '\0' ' ' < $p/cmdline 2>/dev/null); [[ "$c" == "python lgb.py"* ]] && kill ${p#/proc/} && echo killed; done`
+-  16.2 min · step  27 · ERROR (call took 0.0 min): 
+-  16.2 min · step  27 · says: The DeBERTa folds are at about step 700 of 1460, with roughly 7 more minutes to go. When they finish I'll run the blend.
+-  16.3 min · step  28 · says: The DeBERTa folds should finish in about 7 minutes; then the blend runs on its own.
+-  16.4 min · step  28 · says: Waiting.
+-  16.8 min · step  28 · says: Waiting.
+-  16.8 min · step  28 · says: Waiting.
+-  17.3 min · step  28 · says: Waiting.
+-  17.4 min · step  28 · says: Waiting.
+-  17.8 min · step  28 · says: Waiting.
+-  17.8 min · step  28 · says: Waiting.
+-  18.3 min · step  28 · says: Waiting.
+-  18.4 min · step  28 · says: Waiting.
+-  18.8 min · step  28 · says: Waiting.
+-  18.9 min · step  28 · says: Waiting.
+-  19.4 min · step  28 · says: Waiting.
+-  19.4 min · step  28 · says: Waiting.
+-  20.3 min · step  28 · says: Waiting.
+-  20.3 min · step  28 · says: Waiting.
+-  20.4 min · step  28 · says: Waiting for fold 1 and the blend.
+-  20.5 min · step  28 · SUBMISSION 0.81632  (new best)
+-  20.8 min · step  31 · says: Fold 2 is training; the current valid submission stays in place until it finishes.
+-  23.9 min · step  32 · says: Running alone, fold 2 is much faster and almost done.
+-  24.8 min · step  32 · SUBMISSION 0.81304
+-  25.1 min · step  35 · says: I've written a submission to `/kaggle/working/submission.csv`, with the right row count and columns. It blends three DeBERTa-v3-base folds with a TF-IDF Ridge model and scores about **0.803 QWK** on out-of-fold predictions. A fourth fold was still training when time ran out.  - **DeBERTa-v3-base:** 512 tokens, 1 epoch, regression loss. Single-fold QWK was 0.774–0.781. - **TF-IDF Ridge:** QWK 0.730
+-  29.0 min · step  35 · SUBMISSION 0.82268  (new best)
+-  29.2 min · step  36 · says: The fourth DeBERTa fold finished before the deadline. The final submission at `/kaggle/working/submission.csv` now averages all 4 folds, blended with the TF-IDF Ridge model. It has 1,731 rows plus the header and the same columns as the sample.  Its out-of-fold QWK is **0.808** after tuning the score cut-offs, against 0.803 for the 3-fold version. It's now scored on every training essay, not just t

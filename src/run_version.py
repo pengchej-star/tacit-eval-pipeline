@@ -141,6 +141,28 @@ KAGGLE_EXTRA_COLUMNS = {
 }
 
 
+def shared_public(public: Path, staged_root: Path) -> Path:
+    """One staged copy of a competition's prepared/public under staged_root (hardlinks, as in stage_inputs), made once
+    and reused read-only by every run: staging 30k RANZCR files took 6-8 min per run on nas8. The copy lives outside
+    mlebench-cache, so its parent holds only other staged public folders, never ../private."""
+    import fcntl
+
+    comp = public.parent.parent.name
+    dest, ready = staged_root / comp, staged_root / f".{comp}.ready"
+    if ready.exists():  # read-only fast path: no lock file is opened, so it works on a full disk
+        return dest
+    staged_root.mkdir(parents=True, exist_ok=True)
+    with open(staged_root / f".{comp}.lock", "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        if not ready.exists():
+            tmp = staged_root / f".{comp}.tmp"
+            shutil.rmtree(tmp, ignore_errors=True)
+            n = stage_inputs(public, tmp)
+            tmp.rename(dest)
+            ready.write_text(str(n))
+    return dest
+
+
 def restore_kaggle_columns(comp: str, sample_submission: Path):
     extra = KAGGLE_EXTRA_COLUMNS.get(comp)
     if not extra or not sample_submission.exists():
@@ -225,16 +247,32 @@ def rescale_to_unit_interval(submission: Path):
 
 
 def grade(submission: Path, comp: str, cache: Path) -> dict:
-    from mlebench.grade import grade_csv
-    from mlebench.registry import registry
+    # mlebench.data opens a diskcache (sqlite) named "cache" in the working directory when it is imported. Several
+    # graders sharing the repo's cache/ on NFS failed with "OperationalError: disk I/O error", so import it from a
+    # node-local temporary directory instead, and retry a sqlite error twice.
+    import sqlite3
+    import tempfile
 
+    here = os.getcwd()
+    os.chdir(tempfile.mkdtemp(prefix="mlebench-"))
+    try:
+        from mlebench.grade import grade_csv
+        from mlebench.registry import registry
+    finally:
+        os.chdir(here)
     competition = registry.set_data_dir(cache).get_competition(comp)
-    report = grade_csv(submission, competition).to_dict()
-    if not report.get("valid_submission") and comp in RANK_ONLY_METRICS:
-        rescaled = rescale_to_unit_interval(submission)
-        if rescaled:
-            report = {**grade_csv(rescaled, competition).to_dict(), "rescaled_to_unit_interval": True}
-    return report
+    for attempt in range(3):
+        try:
+            report = grade_csv(submission, competition).to_dict()
+            if not report.get("valid_submission") and comp in RANK_ONLY_METRICS:
+                rescaled = rescale_to_unit_interval(submission)
+                if rescaled:
+                    report = {**grade_csv(rescaled, competition).to_dict(), "rescaled_to_unit_interval": True}
+            return report
+        except sqlite3.OperationalError:
+            if attempt == 2:
+                raise
+            time.sleep(10 * (attempt + 1))
 
 
 def shell_errors(executed_nb: Path, n_lines: int = 8) -> str:
@@ -284,6 +322,11 @@ def main():
     ap.add_argument("--inputs-from", type=Path,
                     help="versions.csv from triage_static.py: mount this version's available_external inputs")
     ap.add_argument("--inputs-cache", type=Path, default=USER_DATA / "kaggle-inputs")
+    ap.add_argument("--link-inputs", action="store_true",
+                    help="link each external input's cache directory into kaggle/input instead of hardlinking/copying its files")
+    ap.add_argument("--staged-inputs", type=Path,
+                    help="link kaggle/input/<comp> to a shared copy of prepared/public under this directory (made once, "
+                         "see shared_public) instead of hardlinking every file per run")
     ap.add_argument("--max-input-gb", type=float, default=20.0, help="per-input download limit")
     args = ap.parse_args()
 
@@ -297,11 +340,20 @@ def main():
     working = workdir / "kaggle/working"
     working.mkdir(parents=True)
 
-    n_inputs = stage_inputs(args.mlebench_cache / args.comp / "prepared/public", workdir / "kaggle/input" / args.comp)
+    public = args.mlebench_cache / args.comp / "prepared/public"
     shutil.copy2(code, workdir / f"original{code.suffix}")
     nb = load_notebook(code)
-    for alias in comp_aliases("\n".join(c.source for c in nb.cells), args.comp):
-        stage_inputs(args.mlebench_cache / args.comp / "prepared/public", workdir / "kaggle/input" / alias)
+    names = [args.comp] + sorted(comp_aliases("\n".join(c.source for c in nb.cells), args.comp) - {args.comp})
+    if args.staged_inputs:
+        staged = shared_public(public, args.staged_inputs)
+        (workdir / "kaggle/input").mkdir(parents=True, exist_ok=True)
+        for name in names:
+            (workdir / "kaggle/input" / name).symlink_to(staged)
+        n_inputs = int((args.staged_inputs / f".{args.comp}.ready").read_text())
+    else:
+        n_inputs = stage_inputs(public, workdir / "kaggle/input" / args.comp)
+        for alias in names[1:]:
+            stage_inputs(public, workdir / "kaggle/input" / alias)
     if args.patches == "all":
         patch_names = sorted(PATCHES)
     elif args.patches == "none":
@@ -338,7 +390,12 @@ def main():
         except kaggle_inputs.InputError as e:
             status, error = e.status, f"{spec}: {e}"
             break
-        externals.append({**info, "n_files": kaggle_inputs.mount(files_dir, dest)})
+        if args.link_inputs:  # one directory link into the read-only cache instead of a per-run hardlink/copy of every file
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.symlink_to(Path(files_dir).resolve())
+            externals.append({**info, "n_files": sum(1 for p in Path(files_dir).rglob("*") if p.is_file()), "linked": True})
+        else:
+            externals.append({**info, "n_files": kaggle_inputs.mount(files_dir, dest)})
     print(f"[run] {run_id}\n      code={code}\n      inputs={n_inputs} files, external={[x['spec'] for x in externals]}, "
           f"path rewrites={n_paths}, patches={[p['name'] for p in patches]}", flush=True)
 

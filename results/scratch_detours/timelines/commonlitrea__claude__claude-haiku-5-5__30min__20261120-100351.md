@@ -1,0 +1,60 @@
+# commonlit · haiku · no cheatsheet
+
+run commonlitrea__claude__claude-haiku-5-5__30min__20261120-100351; 51 steps; best 0.49694 (lower is better); final 0.49694
+
+-   0.0 min · step   1 · says: Data is small: 2.6MB train, 287KB test, and the metric is RMSE. First I'll secure a baseline submission, then check whether pretrained weights can be downloaded.
+-   0.2 min · step   2 · ERROR (call took 0.1 min): 
+-   0.2 min · step   2 · says: Baseline is saved (CV RMSE 0.693), and Hugging Face is reachable. Next I'll fine-tune a pretrained transformer, which should do much better on this task. The script runs in the background and rewrites the submission after each fold.
+-   0.2 min · step   2 · SUBMISSION 0.7042  (new best)
+-   1.4 min · step   3 · SUBMISSION 0.76818
+-   2.0 min · step   3 · says: The roberta-large run is training on the GPU. I'll check the first fold's result.
+-   2.1 min · step   4 · says: The sleep was blocked, so I'll check progress directly. I'll also confirm where the log actually landed, since I used relative paths.
+-   2.2 min · step   5 · says: Fold 0 RMSE is 0.737, worse than the TF-IDF baseline's 0.693. The submission file now holds a single-fold roberta-large model that is worse than the baseline, so I'll stop the run. I'll restore the baseline and rerun with a lower learning rate and warmup, which usually stabilizes roberta-large. The new run writes to a separate file so it can't overwrite a better submission.
+-   2.2 min · step   6 · KILL: `pkill -f ft.py; sleep 3; cd /workspace && python base.py && cp /kaggle/working/submission.csv /workspace/baseline_sub.csv && sed -e 's/lr=2e-5/lr=1e-5/' -e 's/i`
+-   2.3 min · step   6 · SUBMISSION 0.7042
+-   2.4 min · step   6 · says: The `pkill` command doesn't exist here, so the old run may still be using the GPU. Also, my `&&` chain got backgrounded as a whole, so I need to check what actually ran.
+-   2.8 min · step   7 · says: The GPU still shows about 20 GB in use, which suggests the old roberta run is alive alongside the new one. `ps` and `pkill` are unavailable, so I'll find the processes through `/proc`.
+-   2.8 min · step   8 · says: The old `ft.py` (PID 109) is still running and will overwrite the submission when its next fold finishes. I'll kill it and confirm the restored baseline is the file on disk.
+-   2.8 min · step   9 · KILL: `kill 109; sleep 5; [ -d /proc/109 ] && echo "still alive" || echo "ft.py stopped"; cmp /kaggle/working/submission.csv /workspace/baseline_sub.csv && echo "submi`
+-   5.0 min · step  10 · says: `diff` isn't installed either, so I'll compare the files with Python and check the new run's log.
+-   5.1 min · step  11 · says: The baseline is still the submission on disk, and the new run writes to `/workspace/ft_sub.csv`. Its folds are at 0.723 and 0.757, so it is still behind the TF-IDF baseline's CV of 0.693. The likely gain is from blending the two, which I can measure on out-of-fold predictions. I'll check the time budget, then wait for the run to finish.
+-   5.1 min · step  12 · says: The run started around 15:04, so the 30-minute budget ends near 15:34. The new run doesn't save out-of-fold predictions, so I can't measure a blend weight directly. I'll wait for it to finish and then decide the blend.
+-   5.3 min · step  15 · says: Fold 2 came in at 0.703, so the running OOF RMSE is 0.728. The fine-tune run doesn't save out-of-fold predictions, so I can't tune a blend weight. I'll wait for the last two folds, then decide the blend.
+-   7.0 min · step  16 · says: The fine-tune finished with OOF RMSE 0.742, which is worse than the TF-IDF baseline's 0.693. It may still help in a blend, but I didn't save its out-of-fold predictions, so I can't pick a weight. I'll rerun it with OOF saved (about 6 minutes), and save the TF-IDF OOF too.
+-   7.2 min · step  17 · says: The TF-IDF OOF RMSE is 0.692 with the same fold split the transformer uses, so the two sets of out-of-fold predictions are directly comparable. I'll wait for the OOF-saving run to finish.
+-  11.6 min · step  18 · says: Both OOF sets now use the same KFold split. I'll pick the blend weight on OOF and apply it to the test predictions.
+-  11.6 min · step  19 · SUBMISSION 0.64914  (new best)
+-  11.7 min · step  19 · says: The blend's OOF RMSE of 0.608 is a bigger gain than I'd expect from averaging two models, so I'll check the saved OOF arrays for NaNs or misalignment before trusting it.
+-  11.8 min · step  20 · says: The OOF arrays are clean: no NaNs, lengths match, and the error correlation of 0.63 explains why blending helps. About 15 minutes remain, so I'll train one more backbone (roberta-base, which is quicker) and blend three models on OOF.
+-  13.5 min · step  22 · says: Roberta-base does much better than roberta-large here, with folds around 0.62–0.66. I'll blend all three models on OOF and write the best combination.
+-  13.6 min · step  23 · says: The three-way blend is at OOF 0.573, from 0.640 for roberta-base alone. About 14 minutes remain, enough for one more backbone. I'll try deberta-v3-base, which often does well on readability tasks, and blend it in only if it helps OOF.
+-  13.6 min · step  23 · SUBMISSION 0.60776  (new best)
+-  14.4 min · step  25 · ERROR (call took 0.7 min): Traceback (most recent call last): | AssertionError | Fri Nov 20 15:18:48 UTC 2026
+-  14.5 min · step  25 · says: DeBERTa-v3 produced NaN on the first fold. The likely cause is bf16 autocast, which is known to be unstable with DeBERTa-v3. I have about 14 minutes left, so I'll retry in fp32 (autocast disabled), which is slower but should still fit.
+-  15.0 min · step  27 · ERROR (call took 0.5 min): Traceback (most recent call last): | AssertionError | Fri Nov 20 15:19:26 UTC 2026
+-  15.1 min · step  27 · says: DeBERTa still gives NaN in fp32, so bf16 isn't the cause. With about 13 minutes left, I'll stop chasing it and keep the three-model blend. I'll confirm the final submission on disk.
+-  15.2 min · step  28 · says: The submission is valid. About 13 minutes remain, so I'll use them on another roberta-base run with different seeds on the same folds. Averaging seeds should reduce variance, and blending on OOF will show whether it helps.
+-  16.8 min · step  30 · says: The second seed finished. I'll blend it in and keep the result only if OOF improves.
+-  16.8 min · step  31 · SUBMISSION 0.60506  (new best)
+-  16.9 min · step  31 · says: The blend improved to OOF 0.569. About 12 minutes remain, so I'll run one more roberta-base seed and blend it the same way.
+-  18.7 min · step  34 · says: Three seeds plus TF-IDF gives OOF 0.564. About 11 minutes remain, so I'll run one more seed and then validate the final file.
+-  18.7 min · step  34 · SUBMISSION 0.59572  (new best)
+-  20.6 min · step  37 · ERROR (call took 0.0 min): Traceback (most recent call last): |   File "<string>", line 16, in <module> | ValueError: matmul: Input operand 1 has a mismatch in its core dimension 0, with gufunc signature (n?,k),(k,m?)->(n?,m?) (size 6 is different from 5) | rb-seed avg 0.6243 | valid:
+-  20.6 min · step  37 · says: The script has an indexing bug: the 5-element weight tuple plus its remainder gives 6 weights for 5 columns. Nothing was written, so the valid 3-seed submission is still on disk. I'll fix it with a 4-weight grid, using TF-IDF as the remainder.
+-  20.7 min · step  38 · SUBMISSION 0.59665
+-  20.8 min · step  39 · says: About 9 minutes remain, enough for one more roberta-base seed. I'll run it, blend it in if OOF improves, and validate again.
+-  22.7 min · step  42 · says: The submission is at `/kaggle/working/submission.csv`. It has 284 rows, matches the sample's columns and IDs, and has no missing values. The out-of-fold (OOF) RMSE is **0.564**, against 0.692 for the TF-IDF baseline.  **What's in the blend** - Four RoBERTa-base seeds, each trained 5-fold with a learning rate of 3e-5, averaged with weights 0, 0.1, 0.4 and 0.1. - A TF-IDF word and char n-gram Ridge 
+-  22.8 min · step  42 · says: About 7 minutes remain. I'll try ELECTRA-base as a new backbone, since it may add diversity to the blend. The blend is only rewritten if OOF improves.
+-  24.6 min · step  44 · says: ELECTRA finished with fold RMSEs around 0.60–0.71. I'll add it to the blend, with weights fit on OOF, and rewrite the submission only if OOF improves.
+-  24.6 min · step  45 · says: I've stopped here, with about 5 minutes left. The final submission is the one from earlier, with OOF RMSE 0.564.  The last attempt was ELECTRA-base. It trained cleanly, but the blend fit gave it zero weight, and adding it made OOF slightly worse (0.5646 against 0.5638). So I kept the previous submission.  `/kaggle/working/submission.csv` is valid: it has the sample's columns, the same 284 IDs and 
+-  24.7 min · step  45 · says: About 5 minutes remain. One more RoBERTa-base seed takes roughly 2 minutes, so I'll run it, blend it in only if OOF improves, and validate the file in the same step.
+-  26.4 min · step  46 · ERROR (call took 1.6 min): Traceback (most recent call last): |   File "<string>", line 18, in <module> | NameError: name 'ss' is not defined. Did you mean: 's'? | nnls oof 0.5646 {'rb': np.float64(0.059), 'rb2': np.float64(0.176), 'rb3': np.float64(0.274), 'rb4': np.float64(0.079),
+-  26.4 min · step  46 · says: The new seed finished, but the blend's OOF is 0.5646, which doesn't beat the current 0.5638, so the submission was not rewritten. The traceback came from my validation line, which used `ss` before defining it. I'll rerun that check on its own.
+-  26.5 min · step  47 · says: I'm stopping with about 4 minutes left. The submission on disk is the same valid one as before, with OOF RMSE 0.564, and it passes the format check against the sample.  The last run was another RoBERTa-base seed (rb6). Its folds scored 0.61–0.67, but blending it in gave OOF 0.5646, which doesn't beat the current 0.5638, so I kept the existing submission. My validation line also had a bug that cras
+-  26.5 min · step  47 · says: About 3 minutes remain. A RoBERTa run won't finish in time, so I'll try a fast TF-IDF Ridge alpha sweep. It only replaces the TF-IDF model if OOF improves, and the blend is re-checked afterwards.
+-  26.7 min · step  48 · says: I'm stopping now, with under 3 minutes left. The submission on disk is unchanged from before and still valid: 284 rows, columns and IDs match the sample, and there are no missing values. Its OOF RMSE is 0.564.  The last attempt tuned the TF-IDF Ridge alpha. Alpha 0.3 gave a slightly better single-model score (0.689 against 0.692), but the blend came out at 0.5649, which doesn't beat 0.5638, so I k
+-  26.8 min · step  48 · says: About 3 minutes remain. I'll try one cheap addition, a stacked Ridge over the model OOFs plus simple text statistics, and only overwrite the submission if OOF improves.
+-  26.9 min · step  49 · says: The stack's OOF dropped from 0.564 to 0.481, which is too large a gain to accept without checking. Before the timer ends, I'll rerun it without the text-length features to see where the gain comes from.
+-  26.9 min · step  49 · SUBMISSION 0.49694  (new best)
+-  27.1 min · step  50 · says: The stack scores 0.482 even without the text-length features, so the gain comes from the model OOFs and not from the length stats. A drop from 0.564 to 0.482 is larger than I'd expect from stacking, so I'll check whether a simple bias or scale correction explains it.
+-  27.2 min · step  51 · says: I'm stopping here, with about 2 minutes left. The submission on disk is the stacked Ridge, and it's structurally valid. I'm not confident its gain is real, though.  **What's on disk:** `/kaggle/working/submission.csv`, a Ridge stack over the six model OOF predictions (five RoBERTa-base seeds plus TF-IDF). It passed the format check: 284 rows, columns and IDs match the sample, and there are no NaNs

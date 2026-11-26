@@ -23,6 +23,9 @@ results/*
 !results/runs.jsonl
 !results/agent_runs.jsonl
 !results/agent_pilot/
+!results/large_delta_knowledge/
+!results/scratch_detours/
+results/large_delta_knowledge/gold_items.jsonl
 
 # Triage CSVs are deliverables and must stay tracked
 !triage/*.csv

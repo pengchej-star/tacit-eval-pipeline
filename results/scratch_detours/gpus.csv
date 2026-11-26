@@ -1,0 +1,29 @@
+run_id,slurm_job,node,gpu,source
+amex__claude__claude-opus-5-5__30min__20261120-093201,11224570,babel-w5-20,l40,sacct (job matched by run start time)
+amex__claude__claude-haiku-5-5__30min__20261120-094851,11224571,babel-y9-08,a100_40gb,sacct (job matched by run start time)
+learning__claude__claude-haiku-5-5__30min__20261120-095613,11224547,babel-x5-20,6000ada,sacct (job matched by run start time)
+google__claude__claude-haiku-5-5__30min__20261120-100253,11224551,babel-t9-24,a6000,sacct (job matched by run start time)
+commonlitrea__claude__claude-opus-5-5__30min__20261120-100351,11224554,babel-v9-28,l40s,sacct (job matched by run start time)
+commonlitrea__claude__claude-haiku-5-5__30min__20261120-100351,11224555,babel-v9-28,l40s,sacct (job matched by run start time)
+equity__claude__claude-opus-5-5__30min__20261120-102658,11224558,babel-x5-20,6000ada,sacct (job matched by run start time)
+equity__claude__claude-haiku-5-5__30min__20261120-103249,11224559,babel-v9-28,l40s,sacct (job matched by run start time)
+hms__claude__claude-opus-5-5__30min__20261120-104035,11224562,babel-w9-32,a6000,sacct (job matched by run start time)
+ranzcr__claude__claude-opus-5-5__30min__20261120-104714,11224566,babel-t9-24,a6000,sacct (job matched by run start time)
+ranzcr__claude__claude-haiku-5-5__30min__20261120-104811,11224567,babel-x5-32,l40,sacct (job matched by run start time)
+learning__claude__claude-opus-5-5__30min__20261120-105003,11224789,babel-s9-16,a6000,sacct (job matched by run start time)
+google__claude__claude-opus-5-5__30min__20261120-105301,11224855,babel-m5-24,l40s,sacct (job matched by run start time)
+hms__claude__claude-haiku-5-5__30min__20261120-105600,11225127,babel-p9-20,l40s,sacct (job matched by run start time)
+learning__claude__claude-opus-5-5__memory__30min__j11280917,11280917,babel-w9-26,a6000,sacct
+amex__claude__claude-haiku-5-5__memory__30min__j11280930,11280930,babel-w5-16,l40,sacct
+amex__claude__claude-opus-5-5__memory__30min__j11280929,11280929,babel-s9-24,a6000,sacct
+learning__claude__claude-haiku-5-5__memory__30min__j11280918,11280918,babel-w5-20,l40,sacct
+commonlitrea__claude__claude-opus-5-5__memory__30min__j11280921,11280921,babel-m9-32,rtx_pro_6000,sacct
+equity__claude__claude-opus-5-5__memory__30min__j11280923,11280923,babel-x5-32,l40,sacct
+hms__claude__claude-opus-5-5__memory__30min__j11280925,11280925,babel-z5-20,rtx_pro_6000,sacct
+hms__claude__claude-haiku-5-5__memory__30min__j11280926,11280926,babel-z9-28,rtx_pro_6000,sacct
+ranzcr__claude__claude-opus-5-5__memory__30min__j11280927,11280927,babel-z5-20,rtx_pro_6000,sacct
+ranzcr__claude__claude-haiku-5-5__memory__30min__j11280928,11280928,babel-aa9-24,rtx_pro_6000,sacct
+google__claude__claude-haiku-5-5__memory__30min__j11281194,11281194,babel-l5-28,rtx_pro_6000,sacct
+google__claude__claude-opus-5-5__memory__30min__j11281202,11281202,babel-t9-32,a6000,sacct
+commonlitrea__claude__claude-haiku-5-5__memory__30min__j11281224,11281224,babel-w5-32,l40,sacct
+equity__claude__claude-haiku-5-5__memory__30min__j6000eq,11279391,babel-aa9-16,rtx_pro_6000,interactive job; GPU name from nvidia-smi in the transcript
