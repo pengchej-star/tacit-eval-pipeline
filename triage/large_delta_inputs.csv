@@ -113,3 +113,4 @@ key_id,version,comp,kind,source_version_id,spec,slug,dataset_version,created,gb,
 7253130,3,google-quest-challenge,kernel,24251312,kernel:akensert/bert-tokenization,bert-tokenization,,,,"kaggle_inputs fetches the current output, not this version",3.0
 7253130,5,google-quest-challenge,dataset,808847,dataset:akensert/bert-base-from-tfhub@1,bert-base-from-tfhub,1.0,11/23/2019 15:14:12,0.44,,
 7253130,5,google-quest-challenge,kernel,24251312,kernel:akensert/bert-tokenization,bert-tokenization,,,,"kaggle_inputs fetches the current output, not this version",3.0
+52551258,2,hms-harmful-brain-activity-classification,dataset,7855175,dataset:ryanirl/hms-models,hms-models,,,,substituted: current version; the attached version 1 is gone (404),
